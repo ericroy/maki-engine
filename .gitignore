@@ -32,9 +32,11 @@ desktop.ini
 *.sbr
 *.sdf
 *.opensdf
+*.vcxproj.user
 Debug/
 Release/
 Debug_core/
 Debug_framework/
 Release_core/
 Release_framework/
+bullet-2.81-rev2613/

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\core\MakiAllocator.h" />
+    <ClInclude Include="src\core\MakiArchive.h" />
+    <ClInclude Include="src\core\MakiArray.h" />
+    <ClInclude Include="src\core\MakiAssetLibrary.h" />
+    <ClInclude Include="src\core\MakiAssetManifest.h" />
+    <ClInclude Include="src\core\MakiBase64.h" />
+    <ClInclude Include="src\core\MakiBoundingBox.h" />
+    <ClInclude Include="src\core\MakiBoundingSphere.h" />
+    <ClInclude Include="src\core\MakiConfig.h" />
+    <ClInclude Include="src\core\MakiConsole.h" />
+    <ClInclude Include="src\core\MakiDocument.h" />
+    <ClInclude Include="src\core\MakiDrawCommand.h" />
+    <ClInclude Include="src\core\MakiDrawCommandList.h" />
+    <ClInclude Include="src\core\MakiEngine.h" />
+    <ClInclude Include="src\core\MakiFont.h" />
+    <ClInclude Include="src\core\MakiFontManager.h" />
+    <ClInclude Include="src\core\MakiFrustum.h" />
+    <ClInclude Include="src\core\MakiHandleOrRid.h" />
+    <ClInclude Include="src\core\MakiInputState.h" />
+    <ClInclude Include="src\core\MakiMacros.h" />
+    <ClInclude Include="src\core\MakiManager.h" />
+    <ClInclude Include="src\core\MakiMaterial.h" />
+    <ClInclude Include="src\core\MakiMaterialManager.h" />
+    <ClInclude Include="src\core\MakiMatrix44.h" />
+    <ClInclude Include="src\core\MakiMesh.h" />
+    <ClInclude Include="src\core\MakiMeshManager.h" />
+    <ClInclude Include="src\core\MakiQuaternion.h" />
+    <ClInclude Include="src\core\MakiRect.h" />
+    <ClInclude Include="src\core\MakiRenderCore.h" />
+    <ClInclude Include="src\core\MakiRenderer.h" />
+    <ClInclude Include="src\core\MakiRenderPayload.h" />
+    <ClInclude Include="src\core\MakiRenderState.h" />
+    <ClInclude Include="src\core\MakiResource.h" />
+    <ClInclude Include="src\core\MakiResourcePool.h" />
+    <ClInclude Include="src\core\MakiResourceProvider.h" />
+    <ClInclude Include="src\core\MakiSafeQueue.h" />
+    <ClInclude Include="src\core\MakiShader.h" />
+    <ClInclude Include="src\core\MakiShaderProgram.h" />
+    <ClInclude Include="src\core\MakiShaderProgramManager.h" />
+    <ClInclude Include="src\core\MakiSkeleton.h" />
+    <ClInclude Include="src\core\MakiSkeletonAnimation.h" />
+    <ClInclude Include="src\core\MakiSkeletonAnimationManager.h" />
+    <ClInclude Include="src\core\MakiSkeletonManager.h" />
+    <ClInclude Include="src\core\MakiTexture.h" />
+    <ClInclude Include="src\core\MakiTextureManager.h" />
+    <ClInclude Include="src\core\MakiTextureSet.h" />
+    <ClInclude Include="src\core\MakiTextureSetManager.h" />
+    <ClInclude Include="src\core\MakiThread.h" />
+    <ClInclude Include="src\core\MakiTimer.h" />
+    <ClInclude Include="src\core\MakiTypes.h" />
+    <ClInclude Include="src\core\MakiVector2.h" />
+    <ClInclude Include="src\core\MakiVector3.h" />
+    <ClInclude Include="src\core\MakiVector4.h" />
+    <ClInclude Include="src\core\MakiVertexFormat.h" />
+    <ClInclude Include="src\core\MakiVertexFormatManager.h" />
+    <ClInclude Include="src\core\MakiWindow.h" />
+    <ClInclude Include="src\core\dependencies\miniz.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\dependencies\stb_truetype.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\DDSTextureLoader.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiDirect3DCommon.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiDirect3DGPUTypes.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiDirect3DRenderCore.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\windows\MakiWin32Window.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\core_stdafx.h" />
+    <ClInclude Include="src\core\MakiUtil.h" />
+    <ClInclude Include="src\core\MakiPseudoSingleton.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\MakiArchive.cpp" />
+    <ClCompile Include="src\core\MakiAssetLibrary.cpp" />
+    <ClCompile Include="src\core\MakiAssetManifest.cpp" />
+    <ClCompile Include="src\core\MakiBoundingBox.cpp" />
+    <ClCompile Include="src\core\MakiConfig.cpp" />
+    <ClCompile Include="src\core\MakiConsole.cpp" />
+    <ClCompile Include="src\core\MakiDocument.cpp" />
+    <ClCompile Include="src\core\MakiDrawCommand.cpp" />
+    <ClCompile Include="src\core\MakiEngine.cpp" />
+    <ClCompile Include="src\core\MakiFont.cpp" />
+    <ClCompile Include="src\core\MakiFontManager.cpp" />
+    <ClCompile Include="src\core\MakiInputState.cpp" />
+    <ClCompile Include="src\core\MakiMaterial.cpp" />
+    <ClCompile Include="src\core\MakiMaterialManager.cpp" />
+    <ClCompile Include="src\core\MakiMatrix44.cpp" />
+    <ClCompile Include="src\core\MakiMesh.cpp" />
+    <ClCompile Include="src\core\MakiMeshManager.cpp" />
+    <ClCompile Include="src\core\MakiQuaternion.cpp" />
+    <ClCompile Include="src\core\MakiRenderCore.cpp" />
+    <ClCompile Include="src\core\MakiRenderer.cpp" />
+    <ClCompile Include="src\core\MakiResource.cpp" />
+    <ClCompile Include="src\core\MakiResourceProvider.cpp" />
+    <ClCompile Include="src\core\MakiShader.cpp" />
+    <ClCompile Include="src\core\MakiShaderProgram.cpp" />
+    <ClCompile Include="src\core\MakiShaderProgramManager.cpp" />
+    <ClCompile Include="src\core\MakiSkeleton.cpp" />
+    <ClCompile Include="src\core\MakiSkeletonAnimation.cpp" />
+    <ClCompile Include="src\core\MakiSkeletonAnimationManager.cpp" />
+    <ClCompile Include="src\core\MakiSkeletonManager.cpp" />
+    <ClCompile Include="src\core\MakiTexture.cpp" />
+    <ClCompile Include="src\core\MakiTextureManager.cpp" />
+    <ClCompile Include="src\core\MakiTextureSet.cpp" />
+    <ClCompile Include="src\core\MakiTextureSetManager.cpp" />
+    <ClCompile Include="src\core\MakiTimer.cpp" />
+    <ClCompile Include="src\core\MakiVector3.cpp" />
+    <ClCompile Include="src\core\MakiVector4.cpp" />
+    <ClCompile Include="src\core\MakiVertexFormat.cpp" />
+    <ClCompile Include="src\core\MakiVertexFormatManager.cpp" />
+    <ClCompile Include="src\core\MakiWindow.cpp" />
+    <ClCompile Include="src\core\dependencies\miniz.cpp">
+      <Filter>dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\dependencies\stb_truetype.cpp">
+      <Filter>dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\direct3d\DDSTextureLoader.cpp">
+      <Filter>direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\direct3d\MakiDirect3DCommon.cpp">
+      <Filter>direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\direct3d\MakiDirect3DRenderCore.cpp">
+      <Filter>direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\windows\MakiWin32Window.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\core_stdafx.cpp" />
+    <ClCompile Include="src\core\direct3d\MakiDirect3DGPUTypes.cpp">
+      <Filter>direct3d</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="dependencies">
+      <UniqueIdentifier>{2bc94d35-70ad-47dd-876c-b8fd4379d79c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="direct3d">
+      <UniqueIdentifier>{8398cfb1-f6c7-45fc-8d21-cc3109a3f528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="windows">
+      <UniqueIdentifier>{3270858f-fa45-49a6-bd80-0f7b0fc9a19a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

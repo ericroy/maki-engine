@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\framework\MakiDebugNetListener.h" />
+    <ClInclude Include="src\framework\MakiDebugTextureWidget.h" />
+    <ClInclude Include="src\framework\MakiEntity.h" />
+    <ClInclude Include="src\framework\MakiLight.h" />
+    <ClInclude Include="src\framework\MakiMeshEntity.h" />
+    <ClInclude Include="src\framework\MakiScene.h" />
+    <ClInclude Include="src\framework\MakiSceneLoader.h" />
+    <ClInclude Include="src\framework\MakiScreenString.h" />
+    <ClInclude Include="src\framework\MakiSkinnedMeshEntity.h" />
+    <ClInclude Include="src\framework\MakiCamera.h" />
+    <ClInclude Include="src\framework\MakiCascadeHelper.h" />
+    <ClInclude Include="src\framework\MakiDebugArmature.h" />
+    <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\MakiPhysicsLink.h" />
+    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
+    <ClInclude Include="src\framework\MakiPhysicsWorld.h" />
+    <ClInclude Include="src\framework\MakiCharacterEntity.h" />
+    <ClInclude Include="src\framework\MakiAnimationBlender.h" />
+    <ClInclude Include="src\framework\MakiTween.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\framework\MakiEntity.cpp" />
+    <ClCompile Include="src\framework\MakiLight.cpp" />
+    <ClCompile Include="src\framework\MakiMeshEntity.cpp" />
+    <ClCompile Include="src\framework\MakiScene.cpp" />
+    <ClCompile Include="src\framework\MakiSceneLoader.cpp" />
+    <ClCompile Include="src\framework\MakiScreenString.cpp" />
+    <ClCompile Include="src\framework\MakiSkinnedMeshEntity.cpp" />
+    <ClCompile Include="src\framework\MakiCamera.cpp" />
+    <ClCompile Include="src\framework\MakiDebugArmature.cpp" />
+    <ClCompile Include="src\framework\MakiDebugNetListener.cpp" />
+    <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\MakiPhysicsLink.cpp" />
+    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
+    <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
+    <ClCompile Include="src\framework\MakiCharacterEntity.cpp" />
+    <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
+  </ItemGroup>
+</Project>
