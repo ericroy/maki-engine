@@ -30,3 +30,4 @@ from . import archive
 from . import doc
 from . import manifest
 from . import util
+from . import watch

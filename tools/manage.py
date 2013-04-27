@@ -6,6 +6,9 @@ import traceback
 from optparse import OptionParser
 from toolchain import *
 
+def _watch(*args):
+    watch.watch_forever()
+
 def _build(*args):
     assert len(args) >= 1, 'build command expects src (and optional dst)'
     src = util.clean_path(args[0])
@@ -74,6 +77,7 @@ def _export_skeleton(*args):
     exporters.export_skeleton(args[0], args[1], *args[2:])
 
 COMMANDS = {
+    'watch': _watch,
     'build': _build,
     'build_all': _build_all,
     'archive': _archive,

@@ -248,7 +248,7 @@ namespace MakiWatch
 
             process.StartInfo.WorkingDirectory = rootDir;
             process.StartInfo.FileName = "python.exe";
-            process.StartInfo.Arguments = "tools/manage.py build \"" + target + "\"";
+            process.StartInfo.Arguments = "../manage.py build \"" + target + "\"";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
