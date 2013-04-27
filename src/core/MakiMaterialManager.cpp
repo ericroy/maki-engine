@@ -60,8 +60,8 @@ namespace Maki
 
 	void MaterialManager::ReloadAssets()
 	{
-		const auto end = resPool->End();
-		for(auto iter = resPool->Begin(); iter != end; ++iter) {
+		const ResourcePool<Material>::Iterator end = resPool->End();
+		for(ResourcePool<Material>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 			Material *mat = iter.Ptr();
 			Rid rid = mat->rid;
 			if(rid != RID_NONE) {

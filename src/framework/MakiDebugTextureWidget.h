@@ -13,7 +13,7 @@ namespace Maki
 		DebugTextureWidget(Rid materialRid, Handle texture, float size)
 			: Entity()
 		{
-			auto res = ResourceProvider::Get();
+			ResourceProvider *res = ResourceProvider::Get();
 			
 			Material mat;
 			mat.Load(materialRid);
@@ -21,10 +21,10 @@ namespace Maki
 			TextureSet ts;
 			ts.textures[ts.textureCount++] = texture;
 			TextureManager::AddRef(texture);
-			mat.textureSet = res->textureSetManager->Add(std::move(ts));
+			mat.textureSet = res->textureSetManager->Add(Move(ts));
 		
-			Handle material = res->materialManager->Add(std::move(mat));
-			Handle mesh = res->meshManager->Add(std::move(Mesh(Mesh::PremadeObject_UnitRect)));
+			Handle material = res->materialManager->Add(Move(mat));
+			Handle mesh = res->meshManager->Add(Move(Mesh(Mesh::PremadeObject_UnitRect)));
 
 			MeshEntity *me = new MeshEntity(mesh, material);
 			AddChild(me);

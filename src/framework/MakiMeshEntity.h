@@ -22,7 +22,7 @@ namespace Maki
 	public:
 		Handle mesh;
 		Handle material;
-		std::vector<DrawCommand> drawCommands;
+		Array<DrawCommand> drawCommands;
 
 	private:
 		float meshScale;

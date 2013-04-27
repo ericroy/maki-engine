@@ -21,11 +21,11 @@ namespace Maki
 			SetSize(size);
 		}
 
-		Array(Array &&other)
-			: count(other.count), data(other.data)
+		Array(const Movable<Array> &other)
+			: count(other.obj->count), data(other.obj->data)
 		{
-			other.count = 0;
-			other.data = nullptr;
+			other.obj->count = 0;
+			other.obj->data = nullptr;
 		}
 
 		~Array()

@@ -58,7 +58,7 @@ namespace Maki
 
 	public:
 		DrawCommand();
-		DrawCommand(DrawCommand &&other);
+		DrawCommand(const Movable<DrawCommand> &other);
 		~DrawCommand();
 
 		inline uint64 GetKey() const { return key; }
@@ -67,7 +67,7 @@ namespace Maki
 		inline void Clear();
 
 	private:
-		DrawCommand(const DrawCommand &other) { assert("Copy construction not allowed"); }
+		DrawCommand(const DrawCommand &other) {}
 		inline void Copy(const DrawCommand &other);
 
 	private:

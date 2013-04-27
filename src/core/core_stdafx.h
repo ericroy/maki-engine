@@ -18,6 +18,7 @@
 #include "core/MakiAllocator.h"
 #include "core/MakiTypes.h"
 #include "core/MakiMacros.h"
+#include "core/MakiMovable.h"
 #include "core/MakiConsole.h"
 #include "core/MakiArray.h"
 #include "core/MakiMatrix44.h"

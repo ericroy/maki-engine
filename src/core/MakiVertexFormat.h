@@ -53,7 +53,6 @@ namespace Maki
 
 	public:
 		VertexFormat();
-		VertexFormat(VertexFormat &&other) { assert("Move constructor not implemented"); }
 		~VertexFormat();
 
 		inline bool operator==(const VertexFormat &other) const

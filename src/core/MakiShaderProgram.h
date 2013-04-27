@@ -23,7 +23,6 @@ namespace Maki
 
 	public:
 		ShaderProgram();
-		ShaderProgram(ShaderProgram &&other) { assert("Move constructor not implemented"); }
 		~ShaderProgram();
 
 		bool Load(Rid rid, Variant variant);

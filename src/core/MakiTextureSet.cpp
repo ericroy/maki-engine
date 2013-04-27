@@ -13,15 +13,15 @@ namespace Maki
 		memset(textureRids, (uint32)RID_NONE, sizeof(textureRids));
 	}
 	
-	TextureSet::TextureSet(TextureSet &&other)
-		: textureCount(other.textureCount)
+	TextureSet::TextureSet(const Movable<TextureSet> &other)
+		: textureCount(other.obj->textureCount)
 	{
-		memcpy(textures, other.textures, sizeof(textures));
-		memcpy(textureRids, other.textureRids, sizeof(textureRids));
+		memcpy(textures, other.obj->textures, sizeof(textures));
+		memcpy(textureRids, other.obj->textureRids, sizeof(textureRids));
 
-		memset(other.textures, (uint32)HANDLE_NONE, sizeof(textures));
-		memset(other.textureRids, (uint32)RID_NONE, sizeof(textureRids));
-		other.textureCount = 0;
+		memset(other.obj->textures, (uint32)HANDLE_NONE, sizeof(textures));
+		memset(other.obj->textureRids, (uint32)RID_NONE, sizeof(textureRids));
+		other.obj->textureCount = 0;
 	}
 
 	TextureSet::~TextureSet()
@@ -31,7 +31,7 @@ namespace Maki
 
 	bool TextureSet::Load(uint8 count, Rid *textureRids)
 	{
-		auto res = ResourceProvider::Get();
+		ResourceProvider *res = ResourceProvider::Get();
 
 		textureCount = count;
 		for(uint8 i = 0; i < count; i++) {

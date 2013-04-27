@@ -20,7 +20,7 @@ namespace Maki
 
 	public:
 		Resource() : rid(RID_NONE) {}
-		Resource(Resource &&other);
+		Resource(const Movable<Resource> &other);
 		explicit Resource(const Resource &other) { rid = other.rid; }
 		virtual ~Resource() {}
 
@@ -31,5 +31,6 @@ namespace Maki
 		// This is an index into the data in the programmatically generated ResourceLibrary class
 		Rid rid;
 	};
+
 
 } // namespace Maki

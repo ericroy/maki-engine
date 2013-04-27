@@ -16,7 +16,7 @@ namespace Maki
 	}
 
 	bool SceneLoader::Load(Rid rid, Entity *parentNodeForScene, std::vector<Camera *> *cameras, std::vector<Light *> *lights, std::vector<Entity *> *physicsHulls) {
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 
 		Document doc;
 		if(!doc.Load(rid)) {
@@ -131,7 +131,7 @@ namespace Maki
 			UpdateFlags(flagsNode, flags);
 		}
 
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		MeshEntity *me = new MeshEntity(eng->assets->PathToRid(meshPath), eng->assets->PathToRid(matPath));
 		me->SetFlags(flags);
 
@@ -171,7 +171,7 @@ namespace Maki
 			UpdateFlags(flagsNode, flags);
 		}
 
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		SkinnedMeshEntity *me = new SkinnedMeshEntity(eng->assets->PathToRid(meshPath), eng->assets->PathToRid(matPath), eng->assets->PathToRid(skelPath));
 		me->SetFlags(flags);
 

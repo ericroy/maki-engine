@@ -62,8 +62,8 @@ namespace Maki
 		Upload();
 	}
 
-	Mesh::Mesh(Mesh &&other)
-		: Resource(std::forward<Mesh>(other)),
+	Mesh::Mesh(const Movable<Mesh> &other)
+		: Resource((const Movable<Resource> &)other),
 		vertexCount(0),
 		faceCount(0),
 		meshFlags(0),
@@ -79,26 +79,26 @@ namespace Maki
 		buffer(nullptr),
 		vertexInsertionIndex(0),
 		indexInsertionIndex(0),
-		dynamic(false),
-		siblings(std::move(other.siblings))
+		dynamic(false)
 	{
-		std::swap(vertexCount, other.vertexCount);
-		std::swap(faceCount, other.faceCount);
-		std::swap(meshFlags, other.meshFlags);
-		std::swap(vertexAttributeFlags, other.vertexAttributeFlags);
-		std::swap(vertexStride, other.vertexStride);
-		std::swap(indicesPerFace, other.indicesPerFace);
-		std::swap(bytesPerIndex, other.bytesPerIndex);
-		std::swap(vertexDataSize, other.vertexDataSize);
-		std::swap(vertexData, other.vertexData);
-		std::swap(indexDataSize, other.indexDataSize);
-		std::swap(indexData, other.indexData);
-		std::swap(vertexFormat, other.vertexFormat);
-		std::swap(buffer, other.buffer);
-		std::swap(vertexInsertionIndex, other.vertexInsertionIndex);
-		std::swap(indexInsertionIndex, other.indexInsertionIndex);
-		std::swap(dynamic, other.dynamic);
-		std::swap(bounds, other.bounds);
+		std::swap(siblings, other.obj->siblings);
+		std::swap(vertexCount, other.obj->vertexCount);
+		std::swap(faceCount, other.obj->faceCount);
+		std::swap(meshFlags, other.obj->meshFlags);
+		std::swap(vertexAttributeFlags, other.obj->vertexAttributeFlags);
+		std::swap(vertexStride, other.obj->vertexStride);
+		std::swap(indicesPerFace, other.obj->indicesPerFace);
+		std::swap(bytesPerIndex, other.obj->bytesPerIndex);
+		std::swap(vertexDataSize, other.obj->vertexDataSize);
+		std::swap(vertexData, other.obj->vertexData);
+		std::swap(indexDataSize, other.obj->indexDataSize);
+		std::swap(indexData, other.obj->indexData);
+		std::swap(vertexFormat, other.obj->vertexFormat);
+		std::swap(buffer, other.obj->buffer);
+		std::swap(vertexInsertionIndex, other.obj->vertexInsertionIndex);
+		std::swap(indexInsertionIndex, other.obj->indexInsertionIndex);
+		std::swap(dynamic, other.obj->dynamic);
+		std::swap(bounds, other.obj->bounds);
 	}
 
 
@@ -185,12 +185,12 @@ namespace Maki
 		const uint32 meshCount = *(uint32 *)data;
 		data += sizeof(uint32);
 
-		auto res = ResourceProvider::Get();
+		ResourceProvider *res = ResourceProvider::Get();
 		data += LoadMeshData(data, upload);
 		for(uint32 i = 1; i < meshCount; i++) {
 			Mesh nextMesh;
 			data += nextMesh.LoadMeshData(data, upload);
-			siblings.push_back(res->meshManager->Add(std::move(nextMesh)));
+			siblings.push_back(res->meshManager->Add(Move(nextMesh)));
 		}
 
 		assert(data == start + bytesRead);

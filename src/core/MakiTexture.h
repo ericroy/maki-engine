@@ -17,7 +17,6 @@ namespace Maki
 
 	public:
 		Texture();
-		Texture(Texture &&other) { assert("Move constructor not implemented"); }
 		~Texture();
 
 	private:

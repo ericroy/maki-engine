@@ -20,19 +20,19 @@ namespace Maki
 	{
 	}
 
-	DrawCommand::DrawCommand(DrawCommand &&other)
-		: key(other.key),
-		mesh(other.mesh),
-		material(other.material),
-		shaderProgram(other.shaderProgram),
-		textureSet(other.textureSet),
-		vertexFormat(other.vertexFormat)
+	DrawCommand::DrawCommand(const Movable<DrawCommand> &other)
+		: key(other.obj->key),
+		mesh(HANDLE_NONE),
+		material(HANDLE_NONE),
+		shaderProgram(HANDLE_NONE),
+		textureSet(HANDLE_NONE),
+		vertexFormat(HANDLE_NONE)
 	{
-		MeshManager::AddRef(mesh);
-		MaterialManager::AddRef(material);
-		ShaderProgramManager::AddRef(shaderProgram);
-		TextureSetManager::AddRef(textureSet);
-		VertexFormatManager::AddRef(vertexFormat);
+		std::swap(mesh, other.obj->mesh);
+		std::swap(material, other.obj->material);
+		std::swap(shaderProgram, other.obj->shaderProgram);
+		std::swap(textureSet, other.obj->textureSet);
+		std::swap(vertexFormat, other.obj->vertexFormat);
 	}
 	
 	DrawCommand::~DrawCommand()

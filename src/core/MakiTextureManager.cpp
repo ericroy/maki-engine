@@ -73,7 +73,7 @@ namespace Maki
 
 	bool TextureManager::LoadData(Texture *tex, Rid rid)
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 
 		uint32 bytesRead;
 		char *data = eng->assets->AllocRead(rid, &bytesRead);
@@ -91,8 +91,8 @@ namespace Maki
 
 	void TextureManager::ReloadAssets()
 	{
-		const auto end = resPool->End();
-		for(auto iter = resPool->Begin(); iter != end; ++iter) {
+		const ResourcePool<Texture>::Iterator end = resPool->End();
+		for(ResourcePool<Texture>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 			Texture *tex = iter.Ptr();
 			Rid rid = tex->rid;
 			if(rid != RID_NONE) {

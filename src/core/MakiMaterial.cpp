@@ -18,17 +18,17 @@ namespace Maki
 	{
 	}
 
-	Material::Material(Material &&other)
-		: Resource(std::forward<Material>(other)),
-		uniformCount(other.uniformCount),
-		textureSet(other.textureSet),
-		shaderProgram(other.shaderProgram)
+	Material::Material(const Movable<Material> &other)
+		: Resource((const Movable<Resource> &)other),
+		uniformCount(other.obj->uniformCount),
+		textureSet(other.obj->textureSet),
+		shaderProgram(other.obj->shaderProgram)
 	{
-		other.uniformCount = 0;
-		other.textureSet = HANDLE_NONE;
-		other.shaderProgram = HANDLE_NONE;
-		memcpy(uniformValues, other.uniformValues, sizeof(UniformValue)*uniformCount);
-		memset(other.uniformValues, 0, sizeof(UniformValue)*MAX_UNIFORMS);
+		other.obj->uniformCount = 0;
+		other.obj->textureSet = HANDLE_NONE;
+		other.obj->shaderProgram = HANDLE_NONE;
+		memcpy(uniformValues, other.obj->uniformValues, sizeof(UniformValue)*uniformCount);
+		memset(other.obj->uniformValues, 0, sizeof(UniformValue)*MAX_UNIFORMS);
 	}
 
 	Material::Material(const Material &other)
@@ -102,8 +102,8 @@ namespace Maki
 
 	bool Material::Load(Rid rid)
 	{
-		auto res = ResourceProvider::Get();
-		auto eng = Engine::Get();
+		ResourceProvider *res = ResourceProvider::Get();
+		Engine *eng = Engine::Get();
 
 		if(rid == RID_NONE) {
 			Console::Error("Failed to load material, rid is RID_NONE");

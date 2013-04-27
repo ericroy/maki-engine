@@ -105,14 +105,14 @@ namespace Maki
 			end = head = freeHead = -1;
 		}
 
-		inline Handle Alloc(T &&value)
+		inline Handle Alloc(const Movable<T> &value)
 		{
 			Handle handle = Alloc();
 			assert(handle != HANDLE_NONE);
 			T *mem = Get(handle);
 			assert(mem);
 			// Use placement new to call move constructor
-			new(mem) T(std::move(value));
+			new(mem) T(value);
 			return handle;
 		}
 

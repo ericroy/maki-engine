@@ -14,7 +14,7 @@ namespace Maki
 		lineIndex(0),
 		material(HANDLE_NONE)
 	{
-		auto *oldRes = ResourceProvider::SetCurrent(&res);
+		ResourceProvider *oldRes = ResourceProvider::SetCurrent(&res);
 
 		res.vertexFormatManager = new VertexFormatManager(1);
 		res.shaderProgramManager = new ShaderProgramManager(3);
@@ -34,7 +34,7 @@ namespace Maki
 			m.PushVertexData(sizeof(Point)*2, (char *)verts);
 			m.PushIndexData(sizeof(uint16)*2, (char *)indices);
 			m.Upload();
-			Handle h = res.meshManager->Add(std::move(m));
+			Handle h = res.meshManager->Add(Move(m));
 			lines.push_back(h);
 		}
 
@@ -49,7 +49,7 @@ namespace Maki
 
 	void DebugPhysicsRenderer::Draw(btDynamicsWorld *world)
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		lineIndex = 0;
 		world->setDebugDrawer(this);
 		world->debugDrawWorld();

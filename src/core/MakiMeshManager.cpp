@@ -34,8 +34,8 @@ namespace Maki
 
 	void MeshManager::ReloadAssets()
 	{
-		const auto end = resPool->End();
-		for(auto iter = resPool->Begin(); iter != end; ++iter) {
+		const ResourcePool<Mesh>::Iterator end = resPool->End();
+		for(ResourcePool<Mesh>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 			Mesh *mesh = iter.Ptr();
 			Rid rid = mesh->rid;
 			if(rid != RID_NONE) {

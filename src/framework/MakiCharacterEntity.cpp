@@ -14,7 +14,7 @@ namespace Maki
 	{
 		SetFlag(Flag_Draw, false);
 
-		auto world = PhysicsWorld::Get();
+		PhysicsWorld *world = PhysicsWorld::Get();
 		
 		const float radius = 0.4f;
 		const float height = 1.8f;
@@ -29,7 +29,7 @@ namespace Maki
 		body->setAngularFactor(0.0f);
 		world->AddRigidBody(body);
 
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		bool ok = blender.Load(eng->assets->PathToRid("animations/player_blend.mdoc"));
 		assert(ok);
 	}
@@ -48,7 +48,7 @@ namespace Maki
 		Vector4 deltaVel(0.0f);
 
 		// Read controller input and apply velocities to the rigid body
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		InputState::Controller *c = eng->inputState->GetPlayer(0)->controller;
 
 		// Create vectors to describe the thumbstick influences from the controller.

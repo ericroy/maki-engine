@@ -139,7 +139,7 @@ namespace Maki
 
 	AnimationBlender::Node *AnimationBlender::LoadRecursive(Document::Node *n)
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 
 		if(n->ValueEquals("blend")) {
 			Node *subNodes[2] = {nullptr, nullptr};

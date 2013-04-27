@@ -18,7 +18,7 @@ namespace Maki
 		// Move the mesh into the manager and get a handle
 		Mesh m;
 		f->RenderAsMesh(str, &m);
-		mesh = ResourceProvider::Get()->meshManager->Add(std::move(m));
+		mesh = ResourceProvider::Get()->meshManager->Add(Move(m));
 		
 		drawCommand.SetMaterial(f->material);
 		drawCommand.SetMesh(mesh);

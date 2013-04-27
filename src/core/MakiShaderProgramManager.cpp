@@ -32,7 +32,7 @@ namespace Maki
 			return HANDLE_NONE;
 		}
 
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		if(!eng->renderer->CreateShaderProgram(shader)) {
 			resPool->Free(handle & HANDLE_VALUE_MASK);
 			return HANDLE_NONE;
@@ -43,9 +43,9 @@ namespace Maki
 
 	void ShaderProgramManager::ReloadAssets()
 	{
-		auto eng = Engine::Get();
-		const auto end = resPool->End();
-		for(auto iter = resPool->Begin(); iter != end; ++iter) {
+		Engine *eng = Engine::Get();
+		const ResourcePool<ShaderProgram>::Iterator end = resPool->End();
+		for(ResourcePool<ShaderProgram>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 			ShaderProgram *shader = iter.Ptr();
 			Rid rid = shader->rid;
 			ShaderProgram::Variant variant = shader->variant;

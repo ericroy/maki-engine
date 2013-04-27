@@ -90,7 +90,7 @@ namespace Maki
 
 	void ResourceProvider::ReloadAssets()
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		if(eng != nullptr) {
 			eng->renderer->SyncWithCore();
 		}
@@ -108,7 +108,7 @@ namespace Maki
 
 	void ResourceProvider::ReloadAsset(Rid rid)
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 		if(eng != nullptr) {
 			eng->renderer->SyncWithCore();
 		}

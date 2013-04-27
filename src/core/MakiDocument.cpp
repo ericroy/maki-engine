@@ -557,7 +557,7 @@ namespace Maki
 
 	uint16 DocumentBinarySerializer::GetOrAdd(std::vector<std::string> &stringTable, char *str)
 	{
-		auto iter = std::find(stringTable.begin(), stringTable.end(), str);
+		std::vector<std::string>::iterator iter = std::find(stringTable.begin(), stringTable.end(), str);
 		if(iter != stringTable.end()) {
 			return iter - stringTable.begin();
 		}

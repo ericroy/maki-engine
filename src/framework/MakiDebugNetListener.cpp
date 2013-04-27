@@ -71,7 +71,7 @@ namespace Maki
 	}
 
 	void DebugNetListener::FireNotification(Rid rid) {
-		auto iter = listeners.find(rid);
+		std::map< Rid, std::function<void(Rid)> >::iterator iter = listeners.find(rid);
 		if(iter != listeners.end()) {
 			Console::Info("Notifying registered listener about changes to <rid %d>", rid);
 			iter->second(rid);

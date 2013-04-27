@@ -11,7 +11,7 @@ namespace Maki
 
 	public:
 		TextureSet();
-		TextureSet(TextureSet &&other);
+		TextureSet(const Movable<TextureSet> &other);
 		~TextureSet();
 		bool operator==(const TextureSet &other) const;
 		bool Load(uint8 count, Rid *textureRids);

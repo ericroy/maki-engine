@@ -19,7 +19,6 @@ namespace Maki
 
 	public:
 		Font();
-		Font(Font &&other) { assert("Move constructor not implemented"); }
 		virtual ~Font();
 		bool operator==(const Font &other) const;
 		bool Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);

@@ -92,7 +92,7 @@ namespace Maki
 
 		// Adds an item to the resource pool using move semantics
 		// Adds a reference
-		inline Handle Add(T &&item) { return resPool->Alloc(std::move(item)) | managerId; }
+		inline Handle Add(const Movable<T> &item) { return resPool->Alloc(item) | managerId; }
 
 		// Adds an item to the resource pool, relying on copy constructor
 		// Adds a reference
@@ -115,8 +115,8 @@ namespace Maki
 		void DumpItems()
 		{
 			Console::Info("Manager items:");
-			auto end = resPool->End();
-			for(auto iter = resPool->Begin(); iter != end; ++iter) {
+			const ResourcePool<T>::Iterator end = resPool->End();
+			for(ResourcePool<T>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 				Console::Info("Item handle=%d refcount=%d", iter.Index(), iter.RefCount());
 			}
 		}

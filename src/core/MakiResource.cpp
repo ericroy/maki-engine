@@ -4,10 +4,10 @@
 namespace Maki
 {
 		
-	Resource::Resource(Resource &&other)
+	Resource::Resource(const Movable<Resource> &other)
 	{
-		rid = other.rid;
-		other.rid = RID_NONE;
+		rid = other.obj->rid;
+		other.obj->rid = RID_NONE;
 	}
 
 } // namespace Maki

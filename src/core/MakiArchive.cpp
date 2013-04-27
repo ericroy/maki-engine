@@ -12,12 +12,13 @@ namespace Maki
 	{
 	}
 
-	Archive::Archive(Archive &&other)
-		: fp(other.fp), ridStart(other.ridStart), bodyOffset(other.bodyOffset), entries(std::move(other.entries))
+	Archive::Archive(const Movable<Archive> &other)
+		: fp(other.obj->fp), ridStart(other.obj->ridStart), bodyOffset(other.obj->bodyOffset)
 	{
-		other.fp = nullptr;
-		other.ridStart = 0;
-		other.bodyOffset = 0;
+		std::swap(entries, other.obj->entries);
+		other.obj->fp = nullptr;
+		other.obj->ridStart = 0;
+		other.obj->bodyOffset = 0;
 	}
 
 	Archive::~Archive()

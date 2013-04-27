@@ -14,7 +14,7 @@ namespace Maki
 		materialSlot(-1),
 		poseDirty(true)
 	{
-		auto res = ResourceProvider::Get();
+		ResourceProvider *res = ResourceProvider::Get();
 		
 		Handle matHandle = HANDLE_NONE;
 		if(matId.isHandle) {

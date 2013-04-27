@@ -40,8 +40,8 @@ namespace Maki
 
 	bool Font::Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize)
 	{
-		auto res = ResourceProvider::Get();
-		auto eng = Engine::Get();
+		ResourceProvider *res = ResourceProvider::Get();
+		Engine *eng = Engine::Get();
 
 		char *fontData = eng->assets->AllocRead(fontRid);
 		if(fontData == nullptr) {
@@ -74,10 +74,10 @@ namespace Maki
 		ts.textures[ts.textureCount++] = glyphAtlas;
 
 		// The material will take ownership of the new texture set handle
-		mat.textureSet = res->textureSetManager->Add(std::move(ts));
+		mat.textureSet = res->textureSetManager->Add(Move(ts));
 
 		// And finally, we will accept ownerhip of the material handle
-		material = res->materialManager->Add(std::move(mat));
+		material = res->materialManager->Add(Move(mat));
 
 
 		this->pixelSize = pixelSize;

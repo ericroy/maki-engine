@@ -16,13 +16,18 @@ namespace Maki
 	}
 
 	MeshEntity::~MeshEntity() {
+		const uint32 count = drawCommands.count;
+		for(uint32 i = 0; i < count; i++) {
+			drawCommands[i].~DrawCommand();
+		}
+
 		MeshManager::Free(mesh);
 		MaterialManager::Free(material);
 	}
 
 	void MeshEntity::Init(HandleOrRid meshId, HandleOrRid matId)
 	{
-		auto res = ResourceProvider::Get();
+		ResourceProvider *res = ResourceProvider::Get();
 		
 		if(matId.isHandle) {
 			if(matId.handle != HANDLE_NONE) {
@@ -47,18 +52,19 @@ namespace Maki
 		bounds.Merge(BoundingBox(m->bounds.pos, m->bounds.radii));
 
 		const uint32 count = m->siblings.size()+1;
+		drawCommands.SetSize(count);
 		for(uint32 i = 0; i < count; i++) {
-			DrawCommand dc;
-			dc.SetMesh(i == 0 ? mesh : m->siblings[i-1]);
-			dc.SetMaterial(material);
-			drawCommands.push_back(std::move(dc));
+			DrawCommand *dc = &drawCommands[i];
+			new(dc) DrawCommand();
+			dc->SetMesh(i == 0 ? mesh : m->siblings[i-1]);
+			dc->SetMaterial(material);
 		}
 	}
 	
 	void MeshEntity::Draw(Renderer *renderer) {
 		Engine *eng = Engine::Get();
 
-		const uint32 count = drawCommands.size();
+		const uint32 count = drawCommands.count;
 		for(uint32 i = 0; i < count; i++) {
 #if _DEBUG
 			// I don't want to set this every draw call for efficiency reasons, but if we don't

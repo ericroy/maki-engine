@@ -35,10 +35,10 @@ namespace Maki
 
 	void SkeletonAnimationManager::ReloadAssets()
 	{
-		auto eng = Engine::Get();
+		Engine *eng = Engine::Get();
 
-		const auto end = resPool->End();
-		for(auto iter = resPool->Begin(); iter != end; ++iter) {
+		const ResourcePool<SkeletonAnimation>::Iterator end = resPool->End();
+		for(ResourcePool<SkeletonAnimation>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 			SkeletonAnimation *skelAnim = iter.Ptr();
 			Rid rid = skelAnim->rid;
 			if(rid != RID_NONE) {

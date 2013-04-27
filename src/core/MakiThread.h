@@ -7,6 +7,12 @@ namespace Maki
 
 	class Thread
 	{
+	private:
+		static void RunDispatch(Thread *instance)
+		{
+			instance->Run();
+		}
+
 	public:
 		Thread() {}
 		virtual ~Thread() {}
@@ -14,9 +20,7 @@ namespace Maki
 		inline void Start()
 		{
 			if(!thread.joinable()) {
-				thread = std::thread([this] {
-					Run();
-				});
+				thread = std::thread(RunDispatch, this);
 			}
 		}
 

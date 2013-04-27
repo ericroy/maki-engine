@@ -14,7 +14,7 @@ namespace Maki
 		Mesh m(true);
 		m.SetVertexAttributes(VertexFormat::AttributeFlag_Color);
 		m.SetIndexAttributes(2, 2);
-		mesh = ResourceProvider::Get()->meshManager->Add(std::move(m));
+		mesh = ResourceProvider::Get()->meshManager->Add(Move(m));
 	}
 
 	DebugArmature::~DebugArmature() {

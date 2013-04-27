@@ -25,7 +25,7 @@ namespace Maki
 
 	public:
 		Archive();
-		Archive(Archive &&other);
+		Archive(const Movable<Archive> &other);
 		virtual ~Archive();
 
 		inline bool IsLoaded() const { return fp != nullptr; }

@@ -69,7 +69,7 @@ namespace Maki
 		this->variant = variant;
 		this->rid = rid;
 		if(variant == Variant_Normal) {
-			auto res = ResourceProvider::Get();
+			ResourceProvider *res = ResourceProvider::Get();
 			for(uint32 i = 0; i < VariantCount-1; i++) {
 				variants[i] = res->shaderProgramManager->Load(rid, (Variant)(i+1));
 			}
