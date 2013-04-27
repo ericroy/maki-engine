@@ -4,7 +4,7 @@
 namespace Maki
 {
 		
-	Resource::Resource(const Movable<Resource> &other)
+	Resource::Resource(const MoveToken<Resource> &other)
 	{
 		rid = other.obj->rid;
 		other.obj->rid = RID_NONE;

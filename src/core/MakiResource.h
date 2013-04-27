@@ -20,7 +20,7 @@ namespace Maki
 
 	public:
 		Resource() : rid(RID_NONE) {}
-		Resource(const Movable<Resource> &other);
+		Resource(const MoveToken<Resource> &other);
 		explicit Resource(const Resource &other) { rid = other.rid; }
 		virtual ~Resource() {}
 

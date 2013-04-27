@@ -12,7 +12,7 @@ namespace Maki
 	{
 	}
 
-	Archive::Archive(const Movable<Archive> &other)
+	Archive::Archive(const MoveToken<Archive> &other)
 		: fp(other.obj->fp), ridStart(other.obj->ridStart), bodyOffset(other.obj->bodyOffset)
 	{
 		std::swap(entries, other.obj->entries);

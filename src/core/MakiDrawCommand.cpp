@@ -20,7 +20,7 @@ namespace Maki
 	{
 	}
 
-	DrawCommand::DrawCommand(const Movable<DrawCommand> &other)
+	DrawCommand::DrawCommand(const MoveToken<DrawCommand> &other)
 		: key(other.obj->key),
 		mesh(HANDLE_NONE),
 		material(HANDLE_NONE),

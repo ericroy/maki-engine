@@ -13,7 +13,7 @@ namespace Maki
 		memset(textureRids, (uint32)RID_NONE, sizeof(textureRids));
 	}
 	
-	TextureSet::TextureSet(const Movable<TextureSet> &other)
+	TextureSet::TextureSet(const MoveToken<TextureSet> &other)
 		: textureCount(other.obj->textureCount)
 	{
 		memcpy(textures, other.obj->textures, sizeof(textures));

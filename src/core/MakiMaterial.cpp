@@ -18,8 +18,8 @@ namespace Maki
 	{
 	}
 
-	Material::Material(const Movable<Material> &other)
-		: Resource((const Movable<Resource> &)other),
+	Material::Material(const MoveToken<Material> &other)
+		: Resource((const MoveToken<Resource> &)other),
 		uniformCount(other.obj->uniformCount),
 		textureSet(other.obj->textureSet),
 		shaderProgram(other.obj->shaderProgram)

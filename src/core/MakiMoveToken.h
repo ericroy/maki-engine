@@ -4,13 +4,13 @@
 namespace Maki
 {
 	template<class T>
-	class Movable
+	class MoveToken
 	{
 	public:
 		template<class U>
-		inline operator Movable<U>()
+		inline operator MoveToken<U>()
 		{
-			assert(dynamic_cast<U *>(obj) != nullptr && "Cannot cast a movable to this type");
+			assert(dynamic_cast<U *>(obj) != nullptr);
 			return {(U *)obj};
 		}
 
@@ -19,6 +19,6 @@ namespace Maki
 	};
 
 	template<class T>
-	inline Movable<T> Move(T &obj) { Movable<T> m; m.obj = &obj; return m; }
+	inline MoveToken<T> Move(T &obj) { MoveToken<T> m; m.obj = &obj; return m; }
 
 } // namespace Maki

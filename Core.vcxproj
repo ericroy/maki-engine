@@ -43,7 +43,7 @@
     <ClInclude Include="src\core\MakiMatrix44.h" />
     <ClInclude Include="src\core\MakiMesh.h" />
     <ClInclude Include="src\core\MakiMeshManager.h" />
-    <ClInclude Include="src\core\MakiMovable.h" />
+    <ClInclude Include="src\core\MakiMoveToken.h" />
     <ClInclude Include="src\core\MakiPseudoSingleton.h" />
     <ClInclude Include="src\core\MakiQuaternion.h" />
     <ClInclude Include="src\core\MakiRect.h" />

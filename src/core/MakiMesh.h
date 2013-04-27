@@ -24,7 +24,7 @@ namespace Maki
 	public:
 		Mesh(bool dynamic = false);
 		Mesh(PremadeObject objType);
-		Mesh(const Movable<Mesh> &other);
+		Mesh(const MoveToken<Mesh> &other);
 		~Mesh();
 
 		// Initialize object from mesh file

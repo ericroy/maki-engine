@@ -92,7 +92,7 @@ namespace Maki
 
 		// Adds an item to the resource pool using move semantics
 		// Adds a reference
-		inline Handle Add(const Movable<T> &item) { return resPool->Alloc(item) | managerId; }
+		inline Handle Add(const MoveToken<T> &item) { return resPool->Alloc(item) | managerId; }
 
 		// Adds an item to the resource pool, relying on copy constructor
 		// Adds a reference

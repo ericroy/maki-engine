@@ -62,8 +62,8 @@ namespace Maki
 		Upload();
 	}
 
-	Mesh::Mesh(const Movable<Mesh> &other)
-		: Resource((const Movable<Resource> &)other),
+	Mesh::Mesh(const MoveToken<Mesh> &other)
+		: Resource((const MoveToken<Resource> &)other),
 		vertexCount(0),
 		faceCount(0),
 		meshFlags(0),

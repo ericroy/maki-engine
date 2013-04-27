@@ -33,7 +33,7 @@ namespace Maki
 
 	public:
 		Material();
-		Material(const Movable<Material> &other);
+		Material(const MoveToken<Material> &other);
 		explicit Material(const Material &other);
 		virtual ~Material();
 		bool Load(Rid rid);

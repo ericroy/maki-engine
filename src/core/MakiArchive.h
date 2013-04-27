@@ -25,7 +25,7 @@ namespace Maki
 
 	public:
 		Archive();
-		Archive(const Movable<Archive> &other);
+		Archive(const MoveToken<Archive> &other);
 		virtual ~Archive();
 
 		inline bool IsLoaded() const { return fp != nullptr; }

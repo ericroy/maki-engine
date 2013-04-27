@@ -105,7 +105,7 @@ namespace Maki
 			end = head = freeHead = -1;
 		}
 
-		inline Handle Alloc(const Movable<T> &value)
+		inline Handle Alloc(const MoveToken<T> &value)
 		{
 			Handle handle = Alloc();
 			assert(handle != HANDLE_NONE);

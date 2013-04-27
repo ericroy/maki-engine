@@ -58,7 +58,7 @@ namespace Maki
 
 	public:
 		DrawCommand();
-		DrawCommand(const Movable<DrawCommand> &other);
+		DrawCommand(const MoveToken<DrawCommand> &other);
 		~DrawCommand();
 
 		inline uint64 GetKey() const { return key; }

@@ -21,7 +21,7 @@ namespace Maki
 			SetSize(size);
 		}
 
-		Array(const Movable<Array> &other)
+		Array(const MoveToken<Array> &other)
 			: count(other.obj->count), data(other.obj->data)
 		{
 			other.obj->count = 0;
