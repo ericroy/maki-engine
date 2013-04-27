@@ -33,6 +33,7 @@ desktop.ini
 *.sdf
 *.opensdf
 *.vcxproj.user
+*.suo
 Debug/
 Release/
 Debug_core/
