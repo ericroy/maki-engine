@@ -138,4 +138,23 @@ namespace Maki
 		orientation.FromMatrix(matrix);
 	}
 
+
+
+
+	class EntityFactory
+	{
+	public:
+		EntityFactory();
+		virtual ~EntityFactory();
+		virtual bool PreCreate(Document::Node *node);
+		Entity *Create();
+		virtual void PostCreate(Entity *e);
+
+	protected:
+		uint32 flags;
+		Vector4 pos;
+		Vector3 angles;
+	};
+
+
 } // namespace Maki

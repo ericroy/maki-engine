@@ -20,6 +20,7 @@
     <ClInclude Include="src\framework\MakiCharacterEntity.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\MakiBillboardEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />

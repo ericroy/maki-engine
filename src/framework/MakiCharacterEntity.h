@@ -22,4 +22,15 @@ namespace Maki
 		btRigidBody *body;
 	};
 
+
+	class CharacterEntityFactory : private EntityFactory
+	{
+	public:
+		CharacterEntityFactory();
+		virtual ~CharacterEntityFactory();
+		virtual bool PreCreate(Document::Node *node);
+		CharacterEntity *Create();
+		virtual void PostCreate(CharacterEntity *e);
+	};
+
 } // namespace Maki

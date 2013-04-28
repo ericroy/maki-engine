@@ -17,4 +17,23 @@ namespace Maki
 		Frustum frustum;
 	};
 
+
+
+	class CameraFactory : private EntityFactory
+	{
+	public:
+		CameraFactory();
+		virtual ~CameraFactory();
+		virtual bool PreCreate(Document::Node *node);
+		Camera *Create();
+		virtual void PostCreate(Camera *cam);
+
+	protected:
+		bool hasTarget;
+		Vector4 target;
+
+		bool hasFrustum;
+		Frustum frustum;
+	};
+
 } // namespace Maki

@@ -13,11 +13,11 @@ namespace Maki
 		MeshEntity();
 		MeshEntity(HandleOrRid mesh, HandleOrRid material);
 		virtual ~MeshEntity();
-		void Draw(Renderer *renderer);
+		virtual void Draw(Renderer *renderer);
 		void SetMeshScale(float scale);
 
 	protected:
-		void Init(HandleOrRid mesh, HandleOrRid material);
+		bool Init(HandleOrRid mesh, HandleOrRid material);
 
 	public:
 		Handle mesh;
@@ -29,5 +29,19 @@ namespace Maki
 		Matrix44 scaleMatrix;
 	};
 
+
+	class MeshEntityFactory : private EntityFactory
+	{
+	public:
+		MeshEntityFactory();
+		virtual ~MeshEntityFactory();
+		virtual bool PreCreate(Document::Node *node);
+		MeshEntity *Create();
+		virtual void PostCreate(MeshEntity *e);
+
+	protected:
+		Rid meshRid;
+		Rid matRid;
+	};
 
 } // namespace Maki

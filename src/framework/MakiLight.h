@@ -39,4 +39,34 @@ namespace Maki
 		Handle depthBuffer;
 	};
 
+
+	class LightFactory : private EntityFactory
+	{
+	public:
+		LightFactory();
+		virtual ~LightFactory();
+		virtual bool PreCreate(Document::Node *node);
+		Light *Create();
+		virtual void PostCreate(Light *light);
+
+	protected:
+		RenderState::LightType type;
+		bool on;
+		Vector4 diffuse;
+		Vector4 specular;
+		Vector4 ambient;
+		
+		bool hasTarget;
+		Vector4 target;
+
+		bool shadows;
+		uint32 mapWidth;
+		uint32 mapHeight;
+		bool splitShadows;
+
+		bool hasFrustum;
+		float fov;
+		Vector4 widthHeightNearFar;
+	};
+
 } // namespace Maki

@@ -153,4 +153,37 @@ namespace Maki
 		skin->SetPoseDirty(true);
 	}
 
+
+
+
+
+
+
+
+	CharacterEntityFactory::CharacterEntityFactory()
+		: EntityFactory()
+	{
+	}
+
+	CharacterEntityFactory::~CharacterEntityFactory()
+	{
+	}
+
+	bool CharacterEntityFactory::PreCreate(Document::Node *node)
+	{
+		return EntityFactory::PreCreate(node);
+	}
+
+	CharacterEntity *CharacterEntityFactory::Create()
+	{
+		return new CharacterEntity();
+	}
+
+	void CharacterEntityFactory::PostCreate(CharacterEntity *e)
+	{
+		EntityFactory::PostCreate(e);
+	}
+
+
+
 } // namespace Maki

@@ -52,7 +52,19 @@ namespace Maki
 			inline float ResolveAsFloat(const char *nodePath, float defaultValue = 0.0f) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsFloat(defaultValue); } return defaultValue; }
 			inline bool ResolveAsBool(const char *nodePath, bool *out) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsBool(out); } return false; }
 			inline bool ResolveAsBool(const char *nodePath, bool defaultValue = false) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsBool(defaultValue); } return defaultValue; }
-		
+			
+			inline bool ResolveAsVectorN(const char *nodePath, uint32 count, float *out) {
+				Document::Node *n = Resolve(nodePath);
+				if(n) {
+					assert(n->count >= count);
+					for(uint32 i = 0; i < count; i++) {
+						out[i] = n->children[i]->ValueAsFloat();
+					}
+					return true;
+				}
+				return false;
+			}
+
 		public:
 			Node *parent;
 			char *value;

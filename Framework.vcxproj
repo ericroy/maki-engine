@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
+    <ClInclude Include="src\framework\MakiBillboardEntity.h" />
     <ClInclude Include="src\framework\MakiCamera.h" />
     <ClInclude Include="src\framework\MakiCascadeHelper.h" />
     <ClInclude Include="src\framework\MakiCharacterEntity.h" />

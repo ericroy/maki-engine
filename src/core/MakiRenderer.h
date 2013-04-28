@@ -73,6 +73,7 @@ namespace Maki
 		inline RenderState::DepthTest GetDepthTest() const;
 		inline const Vector4 &GetGlobalAmbientColor() const;
 		inline ShaderProgram::Variant GetShaderVariant() const;
+		inline const Matrix44 &GetView() const;
 
 		// GPU resource creation, updates, destruction
 		// These actions are applied synchonously on the core, so they involve acquiring a mutex
@@ -219,6 +220,10 @@ namespace Maki
 		return current.shaderVariant;
 	}
 
+	inline const Matrix44 &Renderer::GetView() const
+	{
+		return current.view;
+	}
 
 
 

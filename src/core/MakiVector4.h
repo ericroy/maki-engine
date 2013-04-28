@@ -15,6 +15,7 @@ namespace Maki
 		inline Vector4() {}
 		inline Vector4(float xyz) : x(xyz), y(xyz), z(xyz), w(1.0f) {}
 		inline Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+		inline Vector4(const float *vals) : x(vals[0]), y(vals[1]), z(vals[2]), w(vals[3]) {}
 
 		// Member vector operations
 		inline float Length() const { return Length(*this); }

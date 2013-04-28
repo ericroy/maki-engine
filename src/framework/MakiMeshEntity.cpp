@@ -12,10 +12,12 @@ namespace Maki
 	MeshEntity::MeshEntity(HandleOrRid meshId, HandleOrRid matId)
 		: Entity(), mesh(HANDLE_NONE), material(HANDLE_NONE), scaleMatrix(true), meshScale(1.0f)
 	{
-		Init(meshId, matId);
+		bool ret = Init(meshId, matId);
+		assert(ret);
 	}
 
-	MeshEntity::~MeshEntity() {
+	MeshEntity::~MeshEntity()
+	{
 		const uint32 count = drawCommands.count;
 		for(uint32 i = 0; i < count; i++) {
 			drawCommands[i].~DrawCommand();
@@ -25,7 +27,7 @@ namespace Maki
 		MaterialManager::Free(material);
 	}
 
-	void MeshEntity::Init(HandleOrRid meshId, HandleOrRid matId)
+	bool MeshEntity::Init(HandleOrRid meshId, HandleOrRid matId)
 	{
 		ResourceProvider *res = ResourceProvider::Get();
 		
@@ -59,6 +61,8 @@ namespace Maki
 			dc->SetMesh(i == 0 ? mesh : m->siblings[i-1]);
 			dc->SetMaterial(material);
 		}
+
+		return true;
 	}
 	
 	void MeshEntity::Draw(Renderer *renderer) {
@@ -83,6 +87,68 @@ namespace Maki
 		bounds.radii *= scale / meshScale;
 		meshScale = scale;
 	}
+
+
+
+
+
+
+
+
+
+
+	MeshEntityFactory::MeshEntityFactory()
+		: EntityFactory(), meshRid(RID_NONE), matRid(RID_NONE)
+	{
+	}
+
+	MeshEntityFactory::~MeshEntityFactory()
+	{
+	}
+
+	bool MeshEntityFactory::PreCreate(Document::Node *node)
+	{
+		if(!EntityFactory::PreCreate(node)) {
+			return false;
+		}
+
+		Engine *eng = Engine::Get();
+
+		const char *meshPath = node->ResolveValue("mesh.#0");
+		if(meshPath == nullptr) {
+			Console::Error("Entity did not specify a mesh");
+			return false;
+		}
+		meshRid = eng->assets->PathToRid(meshPath);
+		if(meshRid == RID_NONE) {
+			Console::Error("No RID for path: %s", meshPath);
+			return false;
+		}
+
+		const char *matPath = node->ResolveValue("material.#0");
+		if(matPath == nullptr) {
+			Console::Error("Entity did not specify a material");
+			return false;
+		}
+		matRid = eng->assets->PathToRid(matPath);
+		if(matRid == RID_NONE) {
+			Console::Error("No RID for path: %s", matRid);
+			return false;
+		}
+
+		return true;
+	}
+
+	MeshEntity *MeshEntityFactory::Create()
+	{
+		return new MeshEntity(meshRid, matRid);
+	}
+		
+	void MeshEntityFactory::PostCreate(MeshEntity *e)
+	{
+		EntityFactory::PostCreate(e);
+	}
+
 
 
 } // namespace Maki

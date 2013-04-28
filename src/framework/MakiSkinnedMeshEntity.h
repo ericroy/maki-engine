@@ -12,9 +12,9 @@ namespace Maki
 		static std::function<Entity *()> CreateDebugArmature;
 
 	public:
+		SkinnedMeshEntity();
 		SkinnedMeshEntity(HandleOrRid meshId, HandleOrRid matId, HandleOrRid skelId);
 		virtual ~SkinnedMeshEntity();
-
 		void Update(float dt);
 		inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }
 
@@ -29,5 +29,19 @@ namespace Maki
 		bool poseDirty;
 	};
 
+
+
+	class SkinnedMeshEntityFactory : private MeshEntityFactory
+	{
+	public:
+		SkinnedMeshEntityFactory();
+		virtual ~SkinnedMeshEntityFactory();
+		virtual bool PreCreate(Document::Node *node);
+		SkinnedMeshEntity *Create();
+		virtual void PostCreate(SkinnedMeshEntity *e);
+
+	protected:
+		Rid skelRid;
+	};
 
 } // namespace Maki

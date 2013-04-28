@@ -6,9 +6,17 @@ namespace Maki
 
 	std::function<Entity *()> SkinnedMeshEntity::CreateDebugArmature = nullptr;
 
+	SkinnedMeshEntity::SkinnedMeshEntity()
+		: MeshEntity(),
+		skeleton(HANDLE_NONE),
+		armature(nullptr),
+		materialSlot(-1),
+		poseDirty(true)
+	{
+	}
 
 	SkinnedMeshEntity::SkinnedMeshEntity(HandleOrRid meshId, HandleOrRid matId, HandleOrRid skelId)
-	:	MeshEntity(),
+		: MeshEntity(),
 		skeleton(HANDLE_NONE),
 		armature(nullptr),
 		materialSlot(-1),
@@ -59,7 +67,8 @@ namespace Maki
 		}
 	}
 
-	SkinnedMeshEntity::~SkinnedMeshEntity() {
+	SkinnedMeshEntity::~SkinnedMeshEntity()
+	{
 		SkeletonManager::Free(skeleton);
 		// Don't delete the armature - it was added to the scene, and will be deleted by the scene
 	}
@@ -99,6 +108,51 @@ namespace Maki
 			boneMatrices[base+10] = temp.cols[3][1];
 			boneMatrices[base+11] = temp.cols[3][2];
 		}
+	}
+
+
+
+
+
+
+
+	SkinnedMeshEntityFactory::SkinnedMeshEntityFactory()
+		: MeshEntityFactory(), skelRid(RID_NONE)
+	{
+	}
+
+	SkinnedMeshEntityFactory::~SkinnedMeshEntityFactory()
+	{
+	}
+
+	bool SkinnedMeshEntityFactory::PreCreate(Document::Node *node)
+	{
+		if(!MeshEntityFactory::PreCreate(node)) {
+			return false;
+		}
+
+		const char *skelPath = node->ResolveValue("skeleton.#0");
+		if(skelPath == nullptr) {
+			Console::Error("Entity did not specify a skeleton");
+			return false;
+		}
+		skelRid = Engine::Get()->assets->PathToRid(skelPath);
+		if(skelRid == RID_NONE) {
+			Console::Error("No RID for path: %s", skelRid);
+			return false;
+		}
+
+		return true;
+	}
+
+	SkinnedMeshEntity *SkinnedMeshEntityFactory::Create()
+	{
+		return new SkinnedMeshEntity(meshRid, matRid, skelRid);
+	}
+
+	void SkinnedMeshEntityFactory::PostCreate(SkinnedMeshEntity *e)
+	{
+		MeshEntityFactory::PostCreate(e);
 	}
 
 } // namespace Maki

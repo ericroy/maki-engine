@@ -18,7 +18,7 @@ namespace Maki
 	}
 
 	Entity::Entity(uint32 flags)
-	:	flags(flags),
+		: flags(flags),
 		position(0.0f),
 		orientation(),
 		matrix(true),
@@ -77,6 +77,57 @@ namespace Maki
 			}
 		}
 	}
+
+
+
+
+
+
+
+	EntityFactory::EntityFactory()
+		: flags(Entity::DEFAULT_FLAGS), pos(0.0f), angles(0.0f)
+	{
+	}
+
+	EntityFactory::~EntityFactory()
+	{
+	}
+
+	bool EntityFactory::PreCreate(Document::Node *node)
+	{
+		Document::Node *flagsNode = node->Resolve("flags");
+		if(flagsNode != nullptr) {
+			for(uint32 i = 0; i < flagsNode->count; i++) {
+				char *value = flagsNode->children[i]->value;
+				bool on = true;
+				if(value[0] == '!') {
+					on = false;
+					value++;
+				}
+				if(strcmp(value, "draw") == 0) { if(on) { flags |= Entity::Flag_Draw; } else { flags &= ~Entity::Flag_Draw; } }
+				else if(strcmp(value, "update") == 0) { if(on) { flags |= Entity::Flag_Update; } else { flags &= ~Entity::Flag_Update; } }
+				else if(strcmp(value, "physics") == 0) { if(on) { flags |= Entity::Flag_Physics; } else { flags &= ~Entity::Flag_Physics; } }
+				else if(strcmp(value, "process_children") == 0) { if(on) { flags |= Entity::Flag_ProcessChildren; } else { flags &= ~Entity::Flag_ProcessChildren; } }
+				else if(strcmp(value, "cast_shadow") == 0) { if(on) { flags |= Entity::Flag_CastShadow; } else { flags &= ~Entity::Flag_CastShadow; } }
+			}
+		}
+		node->ResolveAsVectorN("pos", 3, pos.vals);
+		node->ResolveAsVectorN("angles", 3, angles.vals);
+		return true;
+	}
+
+	Entity *EntityFactory::Create()
+	{
+		return new Entity(flags);
+	}
+
+	void EntityFactory::PostCreate(Entity *e)
+	{
+		e->SetFlags(flags);
+		e->SetMatrix(pos, Quaternion(angles));
+	}
+
+
 
 
 } // namespace Maki
