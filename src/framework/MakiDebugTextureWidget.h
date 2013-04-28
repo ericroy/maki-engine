@@ -24,7 +24,15 @@ namespace Maki
 			mat.textureSet = res->textureSetManager->Add(Move(ts));
 		
 			Handle material = res->materialManager->Add(Move(mat));
-			Handle mesh = res->meshManager->Add(Move(Mesh(Mesh::PremadeObject_UnitRect)));
+
+			Mesh::RectArgs args;
+			args.facingAxis = Vector4::UnitZ;
+			args.left = 0;
+			args.right = 1;
+			args.top = 0;
+			args.bottom = 1;
+
+			Handle mesh = res->meshManager->Add(Move(Mesh(Mesh::Object_Rect, args)));
 
 			MeshEntity *me = new MeshEntity(mesh, material);
 			AddChild(me);

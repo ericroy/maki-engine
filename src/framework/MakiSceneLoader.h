@@ -7,6 +7,7 @@ namespace Maki
 	class MeshEntity;
 	class SkinnedMeshEntity;
 	class CharacterEntity;
+	class BillboardEntity;
 	class Light;
 	class Camera;
 

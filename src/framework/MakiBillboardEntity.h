@@ -4,7 +4,7 @@
 
 namespace Maki
 {
-	class BillboardEntity : public MeshEntity
+	class BillboardEntity : public Entity
 	{
 	public:
 		enum BillboardMode
@@ -15,61 +15,39 @@ namespace Maki
 		};
 
 	public:
-		BillboardEntity(HandleOrRid mesh, HandleOrRid material)
-			: MeshEntity(mesh, material), mode(BillboardMode_None), facingAxis(Vector4::UnitX), pivotAxis(Vector4::UnitZ)
-		{
-		}
+		BillboardEntity(HandleOrRid matId, HandleOrRid texId);
+		BillboardEntity(HandleOrRid matId, HandleOrRid texId, BillboardMode mode, const Vector4 &facingAxis, const Vector4 &pivotAxis);
+		virtual ~BillboardEntity();
+		void Draw(Renderer *renderer);
 
-		BillboardEntity(HandleOrRid mesh, HandleOrRid material, BillboardMode mode, const Vector4 &facingAxis = Vector4::UnitX, const Vector4 &pivotAxis = Vector4::UnitZ)
-			: MeshEntity(mesh, material), mode(mode), facingAxis(facingAxis), pivotAxis(pivotAxis)
-		{
-		}
-
-		virtual ~BillboardEntity()
-		{
-		}
-
-		inline void SetMode(BillboardMode mode, const Vector4 &facingAxis = Vector4::UnitX, const Vector4 &pivotAxis = Vector4::UnitZ)
-		{
-			this->mode = mode;
-			switch(mode) {
-			case BillboardMode_Face:
-				this->facingAxis = facingAxis;
-				break;
-			case BillboardMode_Pivot:
-				this->facingAxis = facingAxis;
-				this->pivotAxis = pivotAxis;
-				break;
-			default:
-				break;
-			}
-		}
-
-		void Draw(Renderer *renderer) {
-			if(mode == BillboardMode_None) {
-				MeshEntity::Draw(renderer);
-				return;
-			}
-			
-			Vector4 basisWorldPos(world.cols[3]);
-			Vector4 toCamera = -Vector4(renderer->GetView().cols[3]) - basisWorldPos;
-			toCamera.Normalize();
-
-			if(mode == BillboardMode_Face) {
-				orientation = Quaternion::Billboard(toCamera, facingAxis);
-			} else {
-				orientation = Quaternion::Billboard(toCamera, facingAxis, pivotAxis);
-			}
-			UpdateMatrix();
-			UpdateWorldMatrix();
-
-			MeshEntity::Draw(renderer);
-		}
+	protected:
+		bool Init(HandleOrRid matId, HandleOrRid texId);
 
 	private:
+		Handle mesh;
+		Handle material;
+		DrawCommand dc;
 		BillboardMode mode;
 		Vector4 facingAxis;
 		Vector4 pivotAxis;
+	};
+
+
+	class BillboardEntityFactory : private EntityFactory
+	{
+	public:
+		BillboardEntityFactory();
+		virtual ~BillboardEntityFactory();
+		virtual bool PreCreate(Document::Node *node);
+		BillboardEntity *Create();
+		virtual void PostCreate(BillboardEntity *e);
+
+	protected:
+		Rid matRid;
+		Rid textureRid;
+		BillboardEntity::BillboardMode mode;
+		Vector4 facing;
+		Vector4 pivot;
 	};
 
 } // namespace Maki

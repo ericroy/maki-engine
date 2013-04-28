@@ -3,6 +3,7 @@
 #include "framework/MakiMeshEntity.h"
 #include "framework/MakiSkinnedMeshEntity.h"
 #include "framework/MakiCharacterEntity.h"
+#include "framework/MakiBillboardEntity.h"
 #include "framework/MakiLight.h"
 #include "framework/MakiCamera.h"
 
@@ -60,6 +61,8 @@ namespace Maki
 					e = Create<SkinnedMeshEntity, SkinnedMeshEntityFactory>(c);
 				} else if(c->ValueEquals("character_entity")) {
 					e = Create<CharacterEntity, CharacterEntityFactory>(c);
+				} else if(c->ValueEquals("billboard_entity")) {
+					e = Create<BillboardEntity, BillboardEntityFactory>(c);
 				} else if(c->ValueEquals("light")) {
 					e = Create<Light, LightFactory>(c);
 					if(e != nullptr && lights != nullptr) {

@@ -15,15 +15,25 @@ namespace Maki
 			 MeshFlag_HasTranslucency = 1 << 0,
 		};
 
-		enum PremadeObject
+		enum Object
 		{
-			PremadeObject_UnitRect = 0,
-			PremadeObjectCount,
+			Object_Rect = 0,
+			ObjectCount,
+		};
+
+		struct ObjectArgs {};
+		struct RectArgs : public ObjectArgs
+		{
+			Vector4 facingAxis;
+			float left;
+			float right;
+			float top;
+			float bottom;
 		};
 
 	public:
 		Mesh(bool dynamic = false);
-		Mesh(PremadeObject objType);
+		Mesh(Object type, const ObjectArgs &args);
 		Mesh(const MoveToken<Mesh> &other);
 		~Mesh();
 
@@ -62,9 +72,7 @@ namespace Maki
 	private:
 		Mesh(const Mesh &) {}
 		uint32 LoadMeshData(char *data, bool upload);
-		void PremadeBasis();
-		void PremadeUnitRect();
-		void PremadeBone();
+		void MakeRect(const RectArgs &args);
 
 	public:
 		std::vector<Handle> siblings;

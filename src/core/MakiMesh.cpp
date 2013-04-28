@@ -31,7 +31,7 @@ namespace Maki
 	{
 	}
 
-	Mesh::Mesh(PremadeObject objType)
+	Mesh::Mesh(Object type, const ObjectArgs &args)
 		: Resource(),
 		vertexCount(0),
 		faceCount(0),
@@ -50,12 +50,12 @@ namespace Maki
 		indexInsertionIndex(0),
 		dynamic(false)
 	{
-		switch(objType) {
-		case PremadeObject_UnitRect:
-			PremadeUnitRect();
+		switch(type) {
+		case Object_Rect:
+			MakeRect((const RectArgs &)args);
 			break;
 		default:
-			Console::Error("Invalid premade object type: %d", objType);
+			Console::Error("Invalid premade object type: %d", type);
 			assert(false);
 		}
 		CalculateBounds();
@@ -373,11 +373,24 @@ namespace Maki
 		}
 	}
 
-	void Mesh::PremadeUnitRect()
+	void Mesh::MakeRect(const RectArgs &args)
 	{
 		SetVertexAttributes(VertexFormat::AttributeFlag_Color|VertexFormat::AttributeFlag_TexCoord);
 		indicesPerFace = 3;
 		bytesPerIndex = 2;
+
+		float xs = 1.0f;
+		float ys = 1.0f;
+		int xi = 0;
+		int yi = 1;
+		if(args.facingAxis.x > 0.0f) {
+			xi = 1;
+			yi = 2;
+		} else if(args.facingAxis.y > 0.0f) {
+			xi = 0;
+			xs = -1.0f;
+			yi = 2;
+		}
 
 		struct V {
 			float pos[3];
@@ -386,10 +399,23 @@ namespace Maki
 		};
 		V v[4] = {
 			{0, 0, 0, 255, 255, 255, 255, 0, 1},
-			{0, 1, 0, 255, 255, 255, 255, 0, 0},
-			{1, 1, 0, 255, 255, 255, 255, 1, 0},
-			{1, 0, 0, 255, 255, 255, 255, 1, 1},
+			{0, 0, 0, 255, 255, 255, 255, 0, 0},
+			{0, 0, 0, 255, 255, 255, 255, 1, 0},
+			{0, 0, 0, 255, 255, 255, 255, 1, 1},
 		};
+
+		v[0].pos[xi] = args.left;
+		v[0].pos[yi] = args.bottom;
+
+		v[1].pos[xi] = args.left;
+		v[1].pos[yi] = args.top;
+
+		v[2].pos[xi] = args.right;
+		v[2].pos[yi] = args.top;
+
+		v[3].pos[xi] = args.right;
+		v[3].pos[yi] = args.bottom;
+		
 		PushVertexData(sizeof(v), (char *)v);
 		
 		uint16 f[6] = {0, 1, 2, 0, 2, 3};

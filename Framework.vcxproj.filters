@@ -39,5 +39,6 @@
     <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
     <ClCompile Include="src\framework\MakiCharacterEntity.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
+    <ClCompile Include="src\framework\MakiBillboardEntity.cpp" />
   </ItemGroup>
 </Project>
