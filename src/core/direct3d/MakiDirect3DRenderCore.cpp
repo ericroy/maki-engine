@@ -578,11 +578,11 @@ namespace Maki
 	{
 		int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
 		if(location != -1) {
-			memcpy(((char *)mapped.pData) + location, state.view.Ptr(), 16*sizeof(float));
+			memcpy(((char *)mapped.pData) + location, state.view.vals, 16*sizeof(float));
 		}
 		location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
 		if(location != -1) {
-			memcpy(((char *)mapped.pData) + location, state.projection.Ptr(), sizeof(state.projection));
+			memcpy(((char *)mapped.pData) + location, state.projection.vals, sizeof(state.projection));
 		}
 		location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
 		if(location != -1) {
@@ -630,17 +630,17 @@ namespace Maki
 	{
 		int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
 		if(location != -1) {
-			memcpy(((char *)mapped.pData) + location, model.Ptr(), sizeof(model));
+			memcpy(((char *)mapped.pData) + location, model.vals, sizeof(model));
 		}
 
 		location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
 		if(location != -1) {
-			memcpy(((char *)mapped.pData) + location, modelView.Ptr(), sizeof(modelView));
+			memcpy(((char *)mapped.pData) + location, modelView.vals, sizeof(modelView));
 		}
 
 		location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
 		if(location != -1) {
-			memcpy(((char *)mapped.pData) + location, modelViewProjection.Ptr(), sizeof(modelViewProjection));
+			memcpy(((char *)mapped.pData) + location, modelViewProjection.vals, sizeof(modelViewProjection));
 		}
 	}
 

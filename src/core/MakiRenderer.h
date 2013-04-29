@@ -51,6 +51,7 @@ namespace Maki
 		void SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil);
 		inline void SetViewport(const Rect &rect);
 		inline void SetView(const Matrix44 &view);
+		inline void SetCameraMatrix(const Matrix44 &cameraMatrix);
 		void SetPerspectiveProjection(const Frustum &frustum);
 		void SetOrthoProjection(const Frustum &frustum);
 		inline void SetCullMode(RenderState::CullMode mode);
@@ -74,7 +75,7 @@ namespace Maki
 		inline const Vector4 &GetGlobalAmbientColor() const;
 		inline ShaderProgram::Variant GetShaderVariant() const;
 		inline const Matrix44 &GetView() const;
-		inline const Vector4 &GetCameraPosition() const;
+		inline const Matrix44 &GetCameraMatrix() const;
 
 		// GPU resource creation, updates, destruction
 		// These actions are applied synchonously on the core, so they involve acquiring a mutex
@@ -105,7 +106,7 @@ namespace Maki
 
 	private:
 		// Memebers that are used to provide convenience functions but are not part of the renderstate
-		Vector4 cameraPos;
+		Matrix44 cameraMatrix;
 	};
 
 
@@ -137,10 +138,13 @@ namespace Maki
 	inline void Renderer::SetView(const Matrix44 &view)
 	{
 		current.view = view;
-		
-		Matrix44 cameraMatrix;
 		Matrix44::AffineInverse(view, cameraMatrix);
-		cameraPos = cameraMatrix * Vector4(0.0f);
+	}
+
+	inline void Renderer::SetCameraMatrix(const Matrix44 &cameraMatrix)
+	{
+		this->cameraMatrix = cameraMatrix;
+		Matrix44::AffineInverse(cameraMatrix, current.view);
 	}
 
 	inline void Renderer::SetLightCount(uint32 lightCount, uint32 shadowLightCount, uint32 cascadedShadowLightCount)
@@ -234,9 +238,9 @@ namespace Maki
 		return current.view;
 	}
 
-	inline const Vector4 &Renderer::GetCameraPosition() const
+	inline const Matrix44 &Renderer::GetCameraMatrix() const
 	{
-		return cameraPos;
+		return cameraMatrix;
 	}
 
 

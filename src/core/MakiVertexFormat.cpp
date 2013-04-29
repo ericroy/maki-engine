@@ -18,4 +18,14 @@ namespace Maki
 	VertexFormat::~VertexFormat() {
 	}
 
+	void VertexFormat::PushAttribute(Attribute attr, DataType type, uint8 count)
+	{
+		assert(count <= 64);
+		attrFlags |= 1<<attr;
+		formats[attr].type = type;
+		formats[attr].count = count;
+		stride += DataTypeSizes[type]*count;
+		attrCount++;
+	}
+
 } // namespace Maki

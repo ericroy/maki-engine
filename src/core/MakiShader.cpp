@@ -28,6 +28,13 @@ namespace Maki
 		"uModelViewProjection"
 	};
 
+
+	Shader::MaterialUniformLocation::MaterialUniformLocation(int32 location, char *name)
+		: location(location)
+	{
+		strcpy_s(this->name, name);
+	}
+
 	Shader::FrameUniform Shader::GetFrameUniformByName(const char *name)
 	{
 		for(int32 i = 0; i < FrameUniformCount; i++) {

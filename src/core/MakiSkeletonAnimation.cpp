@@ -8,6 +8,29 @@ namespace Maki
 	
 	float SkeletonAnimation::debugRateCoeff = 1.0f;
 	
+
+	SkeletonAnimation::State::State(uint32 size)
+		: currentFrame(0.0f)
+	{
+		SetSize(size);
+	}
+	
+	SkeletonAnimation::State::State()
+		: currentFrame(0.0f)
+	{
+	}
+	
+	void SkeletonAnimation::State::SetSize(uint32 size)
+	{
+		currentKeyFrames.SetSize(size);
+		currentKeyFrames.Zero();
+	}
+
+
+
+
+
+
 	SkeletonAnimation::SkeletonAnimation()
 		: Resource(),
 		frameCount(0),

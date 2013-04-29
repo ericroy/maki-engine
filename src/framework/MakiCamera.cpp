@@ -44,9 +44,7 @@ namespace Maki
 			return false;
 		}
 
-		if(node->ResolveAsVectorN("target_pos", 3, target.vals)) {
-			hasTarget = true;
-		}
+		hasTarget = node->ResolveAsVectorN("target_pos", 3, target.vals);
 
 		Document::Node *frustumNode = node->Resolve("frustum");
 		if(frustumNode != nullptr) {
@@ -72,18 +70,9 @@ namespace Maki
 		EntityFactory::PostCreate(cam);
 
 		if(hasTarget) {
-			Vector3 look = target - pos;
-			look.Normalize();
-
-			Vector3 lookXY = look;
-			lookXY.z = 0.0f;
-			lookXY.Normalize();
-
-			Quaternion q1;
-			q1.FromRotationArc(Vector3(0.0f, 0.0f, -1.0f), look);
-
-			q1.ToEulerAngles(angles);
-			cam->SetOrientation(Quaternion(angles));
+			Matrix44 lookAt;
+			Matrix44::LookAt(pos, target, Vector4::UnitZ, lookAt);
+			cam->SetWorldMatrix(lookAt);
 		}
 
 		if(hasFrustum) {

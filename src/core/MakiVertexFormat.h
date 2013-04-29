@@ -54,30 +54,13 @@ namespace Maki
 	public:
 		VertexFormat();
 		~VertexFormat();
-
-		inline bool operator==(const VertexFormat &other) const
-		{
-			if(attrFlags != other.attrFlags) {
-				return false;
-			}
-			return memcmp(formats, other.formats, sizeof(formats)) == 0;
-		}
-
-		inline bool HasAttribute(Attribute attr) const { return (attrFlags & (1<<attr)) != 0; }
-		inline DataType GetDataType(Attribute attr) const { return (DataType)formats[attr].type; }
-		inline uint8 GetDataCount(Attribute attr) const { return formats[attr].count; }
-		inline int32 GetStride() const { return stride; }
-		inline int32 GetAttributeCount() const { return attrCount; }
-
-		void PushAttribute(Attribute attr, DataType type, uint8 count)
-		{
-			assert(count <= 64);
-			attrFlags |= 1<<attr;
-			formats[attr].type = type;
-			formats[attr].count = count;
-			stride += DataTypeSizes[type]*count;
-			attrCount++;
-		}
+		inline bool operator==(const VertexFormat &other) const;
+		inline bool HasAttribute(Attribute attr) const;
+		inline DataType GetDataType(Attribute attr) const;
+		inline uint8 GetDataCount(Attribute attr) const;
+		inline int32 GetStride() const;
+		inline int32 GetAttributeCount() const;
+		void PushAttribute(Attribute attr, DataType type, uint8 count);
 
 	public:
 		uint16 stride;
@@ -92,5 +75,42 @@ namespace Maki
 			uint64 equalityKey;
 		};
 	};
+
+
+
+
+
+	inline bool VertexFormat::operator==(const VertexFormat &other) const
+	{
+		if(attrFlags != other.attrFlags) {
+			return false;
+		}
+		return memcmp(formats, other.formats, sizeof(formats)) == 0;
+	}
+
+	bool VertexFormat::HasAttribute(Attribute attr) const
+	{
+		return (attrFlags & (1<<attr)) != 0;
+	}
+
+	VertexFormat::DataType VertexFormat::GetDataType(Attribute attr) const
+	{
+		return (DataType)formats[attr].type;
+	}
+
+	uint8 VertexFormat::GetDataCount(Attribute attr) const
+	{
+		return formats[attr].count;
+	}
+
+	int32 VertexFormat::GetStride() const
+	{
+		return stride;
+	}
+
+	int32 VertexFormat::GetAttributeCount() const
+	{
+		return attrCount;
+	}
 
 } // namespace Maki

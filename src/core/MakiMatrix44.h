@@ -227,11 +227,6 @@ namespace Maki
 		{
 			Transpose(*this, *this);
 		}
-
-		inline const float *Ptr() const
-		{
-			return vals;
-		}
 		
 	public:
 		union {

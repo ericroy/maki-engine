@@ -10,20 +10,14 @@ namespace Maki
 	class SkeletonAnimation : public Resource
 	{
 	public:
-		static float debugRateCoeff;
-
-	public:
 		struct State
 		{
-			State(uint32 size) : currentFrame(0.0f) { SetSize(size); }
-			State() : currentFrame(0.0f) {}
+		public:
+			State(uint32 size);
+			State();
+			void SetSize(uint32 size);
 
-			inline void SetSize(uint32 size)
-			{
-				currentKeyFrames.SetSize(size);
-				currentKeyFrames.Zero();
-			}
-
+		public:
 			Array<uint32> currentKeyFrames;
 			float currentFrame;
 		};
@@ -35,11 +29,14 @@ namespace Maki
 		};
 
 	public:
+		static float debugRateCoeff;
+
+	public:
 		SkeletonAnimation();
 		~SkeletonAnimation();
 		bool Load(Rid rid);
 		void AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose);
-		inline uint32 GetBoneCount() const { return data.count; }
+		inline uint32 GetBoneCount() const;
 
 	public:
 		float frameRate;
@@ -48,5 +45,12 @@ namespace Maki
 		// Indexed as data[boneIndex][keyframeIndex]
 		Array< Array<KeyFrame> > data;
 	};
+
+
+
+	uint32 SkeletonAnimation::GetBoneCount() const
+	{
+		return data.count;
+	}
 
 } // namespace Maki

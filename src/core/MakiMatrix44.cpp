@@ -96,37 +96,29 @@ namespace Maki
 	void Matrix44::LookAt(const Vector4 &eye, const Vector4 &target, const Vector4 &up, Matrix44 &out) {
 		Vector4 nZ = eye-target;
 		nZ.Normalize();
-
-		Vector4 nX = Vector4::Cross(nZ, up);
+		Vector4 nX = Vector4::Cross(up, nZ);
 		nX.Normalize();
-
-		Vector4 nY = Vector4::Cross(nX, nZ);
-		nY.Normalize();
+		Vector4 nY = Vector4::Cross(nZ, nX);
 		
 		out.cols[0][0] = nX.vals[0];
-		out.cols[0][1] = nX.vals[1];
-		out.cols[0][2] = nX.vals[2];
-		out.cols[0][3] = nX.vals[3];
+		out.cols[0][1] = nY.vals[0];
+		out.cols[0][2] = nZ.vals[0];
+		out.cols[0][3] = 0.0f;
 
-		out.cols[1][0] = nY.vals[0];
+		out.cols[1][0] = nX.vals[1];
 		out.cols[1][1] = nY.vals[1];
-		out.cols[1][2] = nY.vals[2];
-		out.cols[1][3] = nY.vals[3];
+		out.cols[1][2] = nZ.vals[1];
+		out.cols[1][3] = 0.0f;
 
-		out.cols[2][0] = nZ.vals[0];
-		out.cols[2][1] = nZ.vals[1];
+		out.cols[2][0] = nX.vals[2];
+		out.cols[2][1] = nY.vals[2];
 		out.cols[2][2] = nZ.vals[2];
-		out.cols[2][3] = nZ.vals[3];
+		out.cols[2][3] = 0.0f;
 
-		out.cols[3][0] = 0.0f;
-		out.cols[3][1] = 0.0f;
-		out.cols[3][2] = 0.0f;
+		out.cols[3][0] = -nX.Dot(eye);
+		out.cols[3][1] = -nY.Dot(eye);
+		out.cols[3][2] = -nZ.Dot(eye);
 		out.cols[3][3] = 1.0f;
-		
-		Matrix44 trans(true);
-		Translation(eye, trans);
-
-		out = out * trans;
 	}
 
 	void Matrix44::Frustum(float l, float r, float b, float t, float n, float f, Matrix44 &out) {

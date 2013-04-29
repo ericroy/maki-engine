@@ -102,9 +102,7 @@ namespace Maki
 		node->ResolveAsVectorN("ambient", 3, ambient.vals);
 		node->ResolveAsVectorN("specular", 3, specular.vals);
 
-		if(node->ResolveAsVectorN("target_pos", 3, target.vals)) {
-			hasTarget = true;
-		}
+		hasTarget = node->ResolveAsVectorN("target_pos", 3, target.vals);
 		shadows = node->ResolveAsBool("shadows.#0", false);
 		splitShadows = node->ResolveAsBool("split_shadows.#0", false);
 		if(shadows) {
@@ -138,18 +136,9 @@ namespace Maki
 		light->properties.ambientColor = specular;
 			
 		if(hasTarget) {
-			Vector3 look = target - pos;
-			look.Normalize();
-
-			Vector3 lookXY = look;
-			lookXY.z = 0.0f;
-			lookXY.Normalize();
-
-			Quaternion q1;
-			q1.FromRotationArc(Vector3(0.0f, 0.0f, -1.0f), look);
-
-			q1.ToEulerAngles(angles);
-			light->SetOrientation(Quaternion(angles));
+			Matrix44 lookAt;
+			Matrix44::LookAt(pos, target, Vector4::UnitZ, lookAt);
+			light->SetWorldMatrix(lookAt);
 		}
 
 		if(shadows) {

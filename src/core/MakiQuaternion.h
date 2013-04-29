@@ -57,28 +57,28 @@ namespace Maki
 		static inline Quaternion BillboardPivot(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis);
 
 		// Performs Spherical linear interpolation between two quaternions, and returns the result.
-        static inline Quaternion Slerp(float t, const Quaternion &v0, const Quaternion &v1);
+		static inline Quaternion Slerp(float t, const Quaternion &v0, const Quaternion &v1);
 		static inline Quaternion Nlerp(float t, const Quaternion &v0, const Quaternion &v1);
 
-        // Setup for spherical quadratic interpolation
-        static void Intermediate(const Quaternion &q0, const Quaternion &q1, const Quaternion &q2, Quaternion &a, Quaternion &b);
+		// Setup for spherical quadratic interpolation
+		static void Intermediate(const Quaternion &q0, const Quaternion &q1, const Quaternion &q2, Quaternion &a, Quaternion &b);
 
-        // Spherical quadratic interpolation
-        static Quaternion Squad(float t, const Quaternion& p, const Quaternion& a, const Quaternion& b, const Quaternion& q);
+		// Spherical quadratic interpolation
+		static Quaternion Squad(float t, const Quaternion& p, const Quaternion& a, const Quaternion& b, const Quaternion& q);
 
-        // Cutoff for sine near zero
-        static const float Epsilon;
-        static const Quaternion Zero;
-        static const Quaternion Identity;
+		// Cutoff for sine near zero
+		static const float Epsilon;
+		static const Quaternion Zero;
+		static const Quaternion Identity;
 
 
-        // Default constructor, initializes to identity rotation (aka 0 rads)
-        inline Quaternion() : w(1), x(0), y(0), z(0) {}
+		// Default constructor, initializes to identity rotation (aka 0 rads)
+		inline Quaternion() : w(1), x(0), y(0), z(0) {}
 		inline Quaternion(float thetaX, float thetaY, float thetaZ) { FromEulerAngles(thetaX, thetaY, thetaZ); }
 		inline Quaternion(const Vector3 &eulerAngles) { FromEulerAngles(eulerAngles); }
 		inline Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
 
-        void ToMatrix(Matrix44 &rot) const;
+		void ToMatrix(Matrix44 &rot) const;
 		void FromMatrix(const Matrix44 &m);
 
 		void FromEulerAngles(float thetaX, float thetaY, float thetaZ);
@@ -93,30 +93,30 @@ namespace Maki
 		// Start and end must be normalized!
 		void FromRotationArc(const Vector3 &start, const Vector3 &end);
 
-        inline Quaternion operator+(const Quaternion &q) const;
-        inline Quaternion operator-(const Quaternion &q) const;
-        inline Quaternion operator*(const Quaternion &q) const;
-        inline Quaternion operator*(float s) const;
-		inline Quaternion operator-() const;        
+		inline Quaternion operator+(const Quaternion &q) const;
+		inline Quaternion operator-(const Quaternion &q) const;
+		inline Quaternion operator*(const Quaternion &q) const;
+		inline Quaternion operator*(float s) const;
+		inline Quaternion operator-() const;
 
-        // functions of a quaternion
-        // Returns the dot product of the quaternion
-        inline float Dot(const Quaternion &q) const;
+		// functions of a quaternion
+		// Returns the dot product of the quaternion
+		inline float Dot(const Quaternion &q) const;
 
-        // Returns the normal length of this quaternion.
-        inline float Norm() const;
+		// Returns the normal length of this quaternion.
+		inline float Norm() const;
 
-        // Normalizes this quaternion, and returns the previous length
-        inline void Normalize(); 
-        Quaternion Inverse() const;  // apply to non-zero quaternion
-        Quaternion UnitInverse() const;  // apply to unit-length quaternion
-        Quaternion Exp() const;
-        Quaternion Log() const;
+		// Normalizes this quaternion, and returns the previous length
+		inline void Normalize(); 
+		Quaternion Inverse() const;  // apply to non-zero quaternion
+		Quaternion UnitInverse() const;  // apply to unit-length quaternion
+		Quaternion Exp() const;
+		Quaternion Log() const;
 
 		void ComputeW();
 
-        // Rotation of a vector by a quaternion
-        Vector3 operator*(const Vector3 &v) const;
+		// Rotation of a vector by a quaternion
+		Vector3 operator*(const Vector3 &v) const;
 		Vector4 operator*(const Vector4 &v) const;
 
 	public:
@@ -167,19 +167,19 @@ namespace Maki
     }
 
 	void Quaternion::Normalize(void)
-    {
-        float factor = 1.0f / sqrt(Norm());
-        w *= factor;
+	{
+		float factor = 1.0f / sqrt(Norm());
+		w *= factor;
 		x *= factor;
 		y *= factor;
 		z *= factor;
-    }
+	}
 
 
 	inline Quaternion operator*(float s, const Quaternion &q)
-    {
-        return Quaternion(s*q.w, s*q.x, s*q.y, s*q.z);
-    }
+	{
+		return Quaternion(s*q.w, s*q.x, s*q.y, s*q.z);
+	}
 
 
 	// Based on Jonathan Blow's code presented here:
@@ -231,10 +231,10 @@ namespace Maki
 
 		// Do we need to invert rotation?
 		Quaternion dst(v1);
-        if(dot < 0.0f) {
+		if(dot < 0.0f) {
 			dot = -dot;
-            dst = -v1;
-        }
+			dst = -v1;
+		}
 
 		Quaternion res = v0 * (1.0f - t) + dst * t;
 		res.Normalize();

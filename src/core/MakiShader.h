@@ -13,12 +13,10 @@ namespace Maki
 
 		struct MaterialUniformLocation
 		{
-			MaterialUniformLocation(int32 location, char *name)
-				: location(location)
-			{
-				strcpy_s(this->name, name);
-			}
+		public:
+			MaterialUniformLocation(int32 location, char *name);
 
+		public:
 			int32 location;
 			char name[UNIFORM_NAME_MAX_LENGTH];
 		};
