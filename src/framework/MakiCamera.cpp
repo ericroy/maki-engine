@@ -44,7 +44,7 @@ namespace Maki
 			return false;
 		}
 
-		hasTarget = node->ResolveAsVectorN("target_pos", 3, target.vals);
+		hasTarget = node->ResolveAsVectorN("target", 3, target.vals);
 
 		Document::Node *frustumNode = node->Resolve("frustum");
 		if(frustumNode != nullptr) {
@@ -72,6 +72,7 @@ namespace Maki
 		if(hasTarget) {
 			Matrix44 lookAt;
 			Matrix44::LookAt(pos, target, Vector4::UnitZ, lookAt);
+			Matrix44::Inverse(lookAt, lookAt);
 			cam->SetWorldMatrix(lookAt);
 		}
 

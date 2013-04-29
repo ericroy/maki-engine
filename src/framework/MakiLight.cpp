@@ -102,7 +102,7 @@ namespace Maki
 		node->ResolveAsVectorN("ambient", 3, ambient.vals);
 		node->ResolveAsVectorN("specular", 3, specular.vals);
 
-		hasTarget = node->ResolveAsVectorN("target_pos", 3, target.vals);
+		hasTarget = node->ResolveAsVectorN("target", 3, target.vals);
 		shadows = node->ResolveAsBool("shadows.#0", false);
 		splitShadows = node->ResolveAsBool("split_shadows.#0", false);
 		if(shadows) {
@@ -138,6 +138,7 @@ namespace Maki
 		if(hasTarget) {
 			Matrix44 lookAt;
 			Matrix44::LookAt(pos, target, Vector4::UnitZ, lookAt);
+			Matrix44::Inverse(lookAt, lookAt);
 			light->SetWorldMatrix(lookAt);
 		}
 

@@ -77,11 +77,11 @@ namespace Maki
 					Console::Warning("Don't know how to parse node type '%s'", c->value);
 				}
 
-				if(physicsHulls != nullptr && e->GetFlag(Entity::Flag_Physics)) {
-					physicsHulls->push_back(e);
-				}
-
 				if(e != nullptr) {
+					if(physicsHulls != nullptr && e->GetFlag(Entity::Flag_Physics)) {
+						physicsHulls->push_back(e);
+					}
+
 					container->AddChild(e);
 					Recurse(c, e, cameras, lights, physicsHulls);
 				}

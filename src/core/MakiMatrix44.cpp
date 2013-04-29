@@ -245,35 +245,93 @@ namespace Maki
 		out.cols[0][3] = d30;	out.cols[1][3] = d31;	out.cols[2][3] = d32;	out.cols[3][3] = d33;
 	}
 
+	//void Matrix44::AffineInverse(const Matrix44 &m, Matrix44 &out)
+	//{
+	//	const Vector4 translation(m.cols[3][0], m.cols[3][1], m.cols[3][2], m.cols[3][3]);
+
+	//	// Calculate the inverse of the rotation part
+	//	// Also empty out the translation portions
+	//	Transpose(m, out);
+	//	out.cols[0][3] = 0.0f;
+	//	out.cols[1][3] = 0.0f;
+	//	out.cols[2][3] = 0.0f;
+	//	out.cols[3][3] = 1.0f;
+
+	//	out.cols[3][0] = 0.0f;
+	//	out.cols[3][1] = 0.0f;
+	//	out.cols[3][2] = 0.0f;
+	//	out.cols[3][3] = 1.0f;
+	//	
+	//	// Use the inverse rotation to calculate the inverse translation
+	//	Vector4 temp = out * -translation;
+	//	out.cols[3][0] = temp.x;
+	//	out.cols[3][1] = temp.y;
+	//	out.cols[3][2] = temp.z;
+	//	out.cols[3][3] = temp.w;
+
+	//	out.cols[0][3] = 0.0f;
+	//	out.cols[1][3] = 0.0f;
+	//	out.cols[2][3] = 0.0f;
+	//	out.cols[3][3] = 1.0f;
+	//}
+
+	// Adapted from Ogre3d's implementation:
 	void Matrix44::AffineInverse(const Matrix44 &m, Matrix44 &out)
-	{
-		static const Vector4 zzz1 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-		const Vector4 translation(m.cols[3][0], m.cols[3][1], m.cols[3][2], m.cols[3][3]);
+    {
+        float m10 = m.cols[0][1], m11 = m.cols[1][1], m12 = m.cols[2][1];
+        float m20 = m.cols[0][2], m21 = m.cols[1][2], m22 = m.cols[2][2];
 
-		// Calculate the inverse of the rotation part
-		// Also empty out the translation portions
-		Transpose(m, out);
+        float t00 = m22 * m11 - m21 * m12;
+        float t10 = m20 * m12 - m22 * m10;
+        float t20 = m21 * m10 - m20 * m11;
+
+        float m00 = m.cols[0][0], m01 = m.cols[1][0], m02 = m.cols[2][0];
+
+        float invDet = 1.0f / (m00 * t00 + m01 * t10 + m02 * t20);
+
+        t00 *= invDet; t10 *= invDet; t20 *= invDet;
+
+        m00 *= invDet; m01 *= invDet; m02 *= invDet;
+
+        float r00 = t00;
+        float r01 = m02 * m21 - m01 * m22;
+        float r02 = m01 * m12 - m02 * m11;
+
+        float r10 = t10;
+        float r11 = m00 * m22 - m02 * m20;
+        float r12 = m02 * m10 - m00 * m12;
+
+        float r20 = t20;
+        float r21 = m01 * m20 - m00 * m21;
+        float r22 = m00 * m11 - m01 * m10;
+
+        float m03 = m.cols[3][0], m13 = m.cols[3][1], m23 = m.cols[3][2];
+
+        float r03 = - (r00 * m03 + r01 * m13 + r02 * m23);
+        float r13 = - (r10 * m03 + r11 * m13 + r12 * m23);
+        float r23 = - (r20 * m03 + r21 * m13 + r22 * m23);
+
+		out.cols[0][0] = r00;
+		out.cols[0][1] = r10;
+		out.cols[0][2] = r20;
 		out.cols[0][3] = 0.0f;
-		out.cols[1][3] = 0.0f;
-		out.cols[2][3] = 0.0f;
-		out.cols[3][3] = 1.0f;
 
-		out.cols[3][0] = 0.0f;
-		out.cols[3][1] = 0.0f;
-		out.cols[3][2] = 0.0f;
-		out.cols[3][3] = 1.0f;
-		
-		// Use the inverse rotation to calculate the inverse translation
-		Vector4 temp = out * -translation;
-		out.cols[3][0] = temp.x;
-		out.cols[3][1] = temp.y;
-		out.cols[3][2] = temp.z;
-		out.cols[3][3] = temp.w;
-
-		out.cols[0][3] = 0.0f;
+		out.cols[1][0] = r01;
+		out.cols[1][1] = r11;
+		out.cols[1][2] = r21;
 		out.cols[1][3] = 0.0f;
+
+		out.cols[2][0] = r02;
+		out.cols[2][1] = r12;
+		out.cols[2][2] = r22;
 		out.cols[2][3] = 0.0f;
+
+		out.cols[3][0] = r03;
+		out.cols[3][1] = r13;
+		out.cols[3][2] = r23;
 		out.cols[3][3] = 1.0f;
-	}
+    }
+
+
 
 } // namespace Maki

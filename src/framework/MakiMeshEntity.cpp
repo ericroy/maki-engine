@@ -132,7 +132,7 @@ namespace Maki
 		}
 		matRid = eng->assets->PathToRid(matPath);
 		if(matRid == RID_NONE) {
-			Console::Error("No RID for path: %s", matRid);
+			Console::Error("No RID for path: %s", matPath);
 			return false;
 		}
 

@@ -87,10 +87,10 @@ namespace Maki
 		float bottom = 0.0f;
 		float top = height;
 		V v[4] = {
-			{left, bottom, 0, 255, 255, 255, 255, 0, 1},
-			{left, top, 0, 255, 255, 255, 255, 0, 0},
-			{right, top, 0, 255, 255, 255, 255, 1, 0},
-			{right, bottom, 0, 255, 255, 255, 255, 1, 1},
+			{0, left, bottom, 255, 255, 255, 255, 0, 1},
+			{0, left, top, 255, 255, 255, 255, 0, 0},
+			{0, right, top, 255, 255, 255, 255, 1, 0},
+			{0, right, bottom, 255, 255, 255, 255, 1, 1},
 		};
 		m.PushVertexData(sizeof(v), (char *)v);
 		uint16 f[6] = {0, 2, 1, 0, 3, 2};
@@ -119,39 +119,23 @@ namespace Maki
 			Matrix44::Translation(position.x, position.y, position.z, matrix);
 			UpdateWorldMatrix();
 			renderer->Draw(dc, world);
+		
 		} else {
-			Matrix44 m = renderer->GetCameraMatrix();
-			
-			Matrix44 rot;
-			orientation.ToMatrix(rot);
-			m = m * rot;
+			Vector4 camLookDir = renderer->GetCameraMatrix() * Vector4(0.0f, 0.0f, -1.0f, 0.0f);
+			camLookDir.w = 1.0f;
+			float d = camLookDir.Dot(constraintAxis);
 
-			Vector4 constraintTransformed = m * constraintAxis;
-			Quaternion q;
-			q.FromRotationArc(constraintTransformed, constraintAxis);
-			Matrix44 constraint;
-			q.ToMatrix(constraint);
-			m = constraint * m;
-			
-			Matrix44::Translation(position.x, position.y, position.z, m);
+			// Skip colinear case
+			if(fabs(d) < 0.999995) {
+				// Eliminate look component along pivot axis
+				camLookDir -= constraintAxis * d;
 
-			renderer->Draw(dc, parent->GetWorldMatrix() * m);
+				orientation.FromRotationArc(facingAxis, -camLookDir);
+				UpdateMatrix();
+				UpdateWorldMatrix();
+			}
+			renderer->Draw(dc, world);
 		}
-
-		/*	
-		Vector4 worldPos = world * Vector4(0.0f);
-		Vector4 toCamera = renderer->GetCameraPosition() - worldPos;
-		toCamera.Normalize();
-
-		if(mode == BillboardMode_Face) {
-			orientation = Quaternion::BillboardFace(toCamera, facingAxis, constraintAxis);
-		} else {
-			orientation = Quaternion::BillboardPivot(toCamera, facingAxis, constraintAxis);
-		}
-		UpdateMatrix();
-		UpdateWorldMatrix();
-		*/
-
 	}
 
 
@@ -162,7 +146,7 @@ namespace Maki
 
 
 	BillboardEntityFactory::BillboardEntityFactory()
-		: EntityFactory(), textureRid(RID_NONE), matRid(RID_NONE), mode(BillboardEntity::BillboardMode_None), facing(Vector4::UnitZ), constraint(Vector4::UnitZ)
+		: EntityFactory(), textureRid(RID_NONE), matRid(RID_NONE), mode(BillboardEntity::BillboardMode_None), facing(Vector4::UnitX), constraint(Vector4::UnitZ)
 	{
 	}
 
