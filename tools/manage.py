@@ -103,7 +103,7 @@ def main(command, *args, **kwargs):
     return ret
 
 if __name__ == '__main__':
-    print('Project config: %s' % CONFIG_PATH)
+    #print('Project config: %s' % CONFIG_PATH)
     
     parser = OptionParser()
     options, args = parser.parse_args()

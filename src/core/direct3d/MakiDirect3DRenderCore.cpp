@@ -1109,6 +1109,11 @@ failed:
 			goto failed;
 		}
 
+		D3D11_TEXTURE2D_DESC desc;
+		tex->GetDesc(&desc);
+		t->width = desc.Width;
+		t->height = desc.Height;
+
 		D3D11_SAMPLER_DESC samplerDesc;
 		ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;

@@ -5,14 +5,14 @@ namespace Maki
 {
 
 	BillboardEntity::BillboardEntity(HandleOrRid matId, HandleOrRid texId)
-		: Entity(), mode(BillboardMode_None), facingAxis(Vector4::UnitX), pivotAxis(Vector4::UnitZ)
+		: Entity(), mode(BillboardMode_None), facingAxis(Vector4::UnitX), constraintAxis(Vector4::UnitZ)
 	{
 		bool ret = Init(matId, texId);
 		assert(ret);
 	}
 
-	BillboardEntity::BillboardEntity(HandleOrRid matId, HandleOrRid texId, BillboardMode mode, const Vector4 &facingAxis, const Vector4 &pivotAxis)
-		: Entity(), mode(mode), facingAxis(facingAxis), pivotAxis(pivotAxis)
+	BillboardEntity::BillboardEntity(HandleOrRid matId, HandleOrRid texId, BillboardMode mode, const Vector4 &facingAxis, const Vector4 &constraintAxis)
+		: Entity(), mode(mode), facingAxis(facingAxis), constraintAxis(constraintAxis)
 	{
 		bool ret = Init(matId, texId);
 		assert(ret);
@@ -20,6 +20,8 @@ namespace Maki
 
 	BillboardEntity::~BillboardEntity()
 	{
+		MeshManager::Free(mesh);
+		MaterialManager::Free(material);
 	}
 
 	bool BillboardEntity::Init(HandleOrRid matId, HandleOrRid texId)
@@ -52,8 +54,9 @@ namespace Maki
 		}
 
 		Texture *tex = TextureManager::Get(texture);
-		float width = (float)tex->width;
-		float height = (float)tex->height;
+		const float ppm = 1024.0f;
+		float width = (float)tex->width / ppm;
+		float height = (float)tex->height / ppm;
 
 		TextureSet ts;
 		ts.textureRids[ts.textureCount] = texRid;
@@ -70,13 +73,31 @@ namespace Maki
 		TextureSetManager::Free(mat->textureSet);
 		mat->textureSet = textureSet;
 
-		Mesh::RectArgs args;
-		args.facingAxis = Vector4::UnitX;
-		args.left = -width/2.0f;
-		args.right = width/2.0f;
-		args.bottom = 0.0f;
-		args.top = height;
-		Mesh m(Mesh::Object_Rect, args);
+		
+		Mesh m;
+		m.SetVertexAttributes(VertexFormat::AttributeFlag_Color|VertexFormat::AttributeFlag_TexCoord);
+		m.SetIndexAttributes(3, 2);
+		struct V {
+			float pos[3];
+			uint8 col[4];
+			float uv[2];
+		};
+		float left = -width/2.0f;
+		float right = width/2.0f;
+		float bottom = 0.0f;
+		float top = height;
+		V v[4] = {
+			{0, left, bottom, 255, 255, 255, 255, 0, 1},
+			{0, left, top, 255, 255, 255, 255, 0, 0},
+			{0, right, top, 255, 255, 255, 255, 1, 0},
+			{0, right, bottom, 255, 255, 255, 255, 1, 1},
+		};
+		m.PushVertexData(sizeof(v), (char *)v);
+		uint16 f[6] = {0, 2, 1, 0, 3, 2};
+		m.PushIndexData(sizeof(f), (char *)f);
+		m.CalculateBounds();
+		m.Upload();
+
 		bounds.Merge(BoundingBox(m.bounds.pos, m.bounds.radii));
 		mesh = res->meshManager->Add(Move(m));
 
@@ -93,14 +114,14 @@ namespace Maki
 			return;
 		}
 			
-		Vector4 basisWorldPos(world.cols[3]);
-		Vector4 toCamera = -Vector4(renderer->GetView().cols[3]) - basisWorldPos;
+		Vector4 worldPos = world * Vector4(0.0f);
+		Vector4 toCamera = renderer->GetCameraPosition() - worldPos;
 		toCamera.Normalize();
 
 		if(mode == BillboardMode_Face) {
-			orientation = Quaternion::Billboard(toCamera, facingAxis);
+			orientation = Quaternion::BillboardFace(toCamera, facingAxis, constraintAxis);
 		} else {
-			orientation = Quaternion::Billboard(toCamera, facingAxis, pivotAxis);
+			orientation = Quaternion::BillboardPivot(toCamera, facingAxis, constraintAxis);
 		}
 		UpdateMatrix();
 		UpdateWorldMatrix();
@@ -116,7 +137,7 @@ namespace Maki
 
 
 	BillboardEntityFactory::BillboardEntityFactory()
-		: EntityFactory(), textureRid(RID_NONE), matRid(RID_NONE), mode(BillboardEntity::BillboardMode_None), facing(Vector4::UnitX), pivot(Vector4::UnitZ)
+		: EntityFactory(), textureRid(RID_NONE), matRid(RID_NONE), mode(BillboardEntity::BillboardMode_None), facing(Vector4::UnitX), constraint(Vector4::UnitZ)
 	{
 	}
 
@@ -148,16 +169,18 @@ namespace Maki
 		}
 		textureRid = Engine::Get()->assets->PathToRid(texturePath);
 		if(textureRid == RID_NONE) {
-			Console::Error("No RID for path: %s", textureRid);
+			Console::Error("No RID for path: %s", texturePath);
 			return false;
 		}
 
-		Document::Node *modeNode = node->Resolve("mode");
+		Document::Node *modeNode = node->Resolve("mode.#0");
 		if(modeNode != nullptr) {
 			if(modeNode->ValueEquals("face")) {
 				mode = BillboardEntity::BillboardMode_Face;
 			} else if(modeNode->ValueEquals("pivot")) {
 				mode = BillboardEntity::BillboardMode_Pivot;
+			} else if(modeNode->ValueEquals("none")) {
+				mode = BillboardEntity::BillboardMode_None;
 			} else {
 				Console::Error("Invalid billboard mode: %s", modeNode->value);
 				return false;
@@ -168,7 +191,7 @@ namespace Maki
 			node->ResolveAsVectorN("facing", 3, facing.vals);
 		} else if(mode ==BillboardEntity::BillboardMode_Pivot) {
 			node->ResolveAsVectorN("facing", 3, facing.vals);
-			node->ResolveAsVectorN("pivot", 3, pivot.vals);
+			node->ResolveAsVectorN("constraint", 3, constraint.vals);
 		}
 
 		return true;
@@ -176,7 +199,7 @@ namespace Maki
 
 	BillboardEntity *BillboardEntityFactory::Create()
 	{
-		return new BillboardEntity(matRid, textureRid, mode, facing, pivot);
+		return new BillboardEntity(matRid, textureRid, mode, facing, constraint);
 	}
 
 	void BillboardEntityFactory::PostCreate(BillboardEntity *e)

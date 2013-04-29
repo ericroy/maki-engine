@@ -16,7 +16,7 @@ namespace Maki
 
 	public:
 		BillboardEntity(HandleOrRid matId, HandleOrRid texId);
-		BillboardEntity(HandleOrRid matId, HandleOrRid texId, BillboardMode mode, const Vector4 &facingAxis, const Vector4 &pivotAxis);
+		BillboardEntity(HandleOrRid matId, HandleOrRid texId, BillboardMode mode, const Vector4 &facingAxis, const Vector4 &constraintAxis);
 		virtual ~BillboardEntity();
 		void Draw(Renderer *renderer);
 
@@ -29,7 +29,7 @@ namespace Maki
 		DrawCommand dc;
 		BillboardMode mode;
 		Vector4 facingAxis;
-		Vector4 pivotAxis;
+		Vector4 constraintAxis;
 	};
 
 
@@ -47,7 +47,7 @@ namespace Maki
 		Rid textureRid;
 		BillboardEntity::BillboardMode mode;
 		Vector4 facing;
-		Vector4 pivot;
+		Vector4 constraint;
 	};
 
 } // namespace Maki

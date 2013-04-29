@@ -74,6 +74,7 @@ namespace Maki
 		inline const Vector4 &GetGlobalAmbientColor() const;
 		inline ShaderProgram::Variant GetShaderVariant() const;
 		inline const Matrix44 &GetView() const;
+		inline const Vector4 &GetCameraPosition() const;
 
 		// GPU resource creation, updates, destruction
 		// These actions are applied synchonously on the core, so they involve acquiring a mutex
@@ -101,6 +102,10 @@ namespace Maki
 		std::vector<RenderState *> renderStates;
 		std::vector<DrawCommandList *> commandLists;
 		RenderCore *core;
+
+	private:
+		// Memebers that are used to provide convenience functions but are not part of the renderstate
+		Vector4 cameraPos;
 	};
 
 
@@ -132,6 +137,10 @@ namespace Maki
 	inline void Renderer::SetView(const Matrix44 &view)
 	{
 		current.view = view;
+		
+		Matrix44 cameraMatrix;
+		Matrix44::AffineInverse(view, cameraMatrix);
+		cameraPos = cameraMatrix * Vector4(0.0f);
 	}
 
 	inline void Renderer::SetLightCount(uint32 lightCount, uint32 shadowLightCount, uint32 cascadedShadowLightCount)
@@ -225,6 +234,10 @@ namespace Maki
 		return current.view;
 	}
 
+	inline const Vector4 &Renderer::GetCameraPosition() const
+	{
+		return cameraPos;
+	}
 
 
 

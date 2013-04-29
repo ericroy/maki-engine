@@ -13,8 +13,19 @@ namespace Maki
 		TextureSet();
 		TextureSet(const MoveToken<TextureSet> &other);
 		~TextureSet();
-		bool operator==(const TextureSet &other) const;
 		bool Load(uint8 count, Rid *textureRids);
+		inline bool operator==(const TextureSet &other) const
+		{
+			if(textureCount != other.textureCount) {
+				return false;
+			}
+			for(uint32 i = 0; i < textureCount; i++) {
+				if(textureRids[i] != other.textureRids[i] || textureRids[i] == RID_NONE) {
+					return false;
+				}
+			}
+			return true;
+		}
 
 	private:
 		// Prevent copy construction - only move semantics are allowed

@@ -238,6 +238,7 @@ namespace MakiWatch
 
         private void CompileChange(string target)
         {
+            string manageScript = Path.Combine(System.Environment.GetEnvironmentVariable("MAKI_DIR"), "tools\\manage.py");
             string rootDir = Path.Combine(assetsDir, "..\\");
 
             log.AppendText("Compiling: " + target + "\n");
@@ -248,7 +249,7 @@ namespace MakiWatch
 
             process.StartInfo.WorkingDirectory = rootDir;
             process.StartInfo.FileName = "python.exe";
-            process.StartInfo.Arguments = "../manage.py build \"" + target + "\"";
+            process.StartInfo.Arguments = manageScript+" build \"" + target + "\"";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;

@@ -26,7 +26,7 @@ namespace Maki
 			Handle material = res->materialManager->Add(Move(mat));
 
 			Mesh::RectArgs args;
-			args.facingAxis = Vector4::UnitZ;
+			args.facingAxis = -Vector4::UnitZ;
 			args.left = 0;
 			args.right = 1;
 			args.top = 0;

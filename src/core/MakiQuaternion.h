@@ -53,8 +53,8 @@ namespace Maki
 		// toCamera: The direction from the sprite's world position to the camera's world position (normalized)
 		// spriteFaceAxis: The axis along which the untransformed sprite faces (normalized)
 		// spritePivotAxis: The axis around which the sprite is allowed to pivot (normalized)
-		static inline Quaternion Billboard(const Vector4 &toCamera, const Vector4 &spriteFaceAxis);
-		static inline Quaternion Billboard(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis);
+		static inline Quaternion BillboardFace(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spriteUpAxis);
+		static inline Quaternion BillboardPivot(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis);
 
 		// Performs Spherical linear interpolation between two quaternions, and returns the result.
         static inline Quaternion Slerp(float t, const Quaternion &v0, const Quaternion &v1);
@@ -242,15 +242,15 @@ namespace Maki
 	}
 
 
-	Quaternion Quaternion::Billboard(const Vector4 &toCamera, const Vector4 &spriteFaceAxis)
+	Quaternion Quaternion::BillboardFace(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spriteUpAxis)
 	{
-		// toCamera and spriteFaceAxis must be normalized
+		// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
 		Quaternion ret;
 		ret.FromRotationArc(spriteFaceAxis, toCamera);
 		return ret;
 	}
 
-	Quaternion Quaternion::Billboard(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis)
+	Quaternion Quaternion::BillboardPivot(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis)
 	{
 		// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
 		
