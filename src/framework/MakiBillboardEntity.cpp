@@ -82,17 +82,33 @@ namespace Maki
 			uint8 col[4];
 			float uv[2];
 		};
-		float left = -width/2.0f;
-		float right = width/2.0f;
-		float bottom = 0.0f;
-		float top = height;
-		V v[4] = {
-			{0, left, bottom, 255, 255, 255, 255, 0, 1},
-			{0, left, top, 255, 255, 255, 255, 0, 0},
-			{0, right, top, 255, 255, 255, 255, 1, 0},
-			{0, right, bottom, 255, 255, 255, 255, 1, 1},
-		};
-		m.PushVertexData(sizeof(v), (char *)v);
+		
+		if(mode == BillboardMode_Face) {
+			float left = -width/2.0f;
+			float right = width/2.0f;
+			float bottom = -height/2.0f;
+			float top = height/2.0f;
+			V v[4] = {
+				{left, bottom, 0, 255, 255, 255, 255, 0, 1},
+				{left, top, 0, 255, 255, 255, 255, 0, 0},
+				{right, top, 0, 255, 255, 255, 255, 1, 0},
+				{right, bottom, 0, 255, 255, 255, 255, 1, 1},
+			};
+			m.PushVertexData(sizeof(v), (char *)v);
+		} else {
+			float left = -width/2.0f;
+			float right = width/2.0f;
+			float bottom = 0.0f;
+			float top = height;
+			V v[4] = {
+				{0, left, bottom, 255, 255, 255, 255, 0, 1},
+				{0, left, top, 255, 255, 255, 255, 0, 0},
+				{0, right, top, 255, 255, 255, 255, 1, 0},
+				{0, right, bottom, 255, 255, 255, 255, 1, 1},
+			};
+			m.PushVertexData(sizeof(v), (char *)v);
+		}
+		
 		uint16 f[6] = {0, 2, 1, 0, 3, 2};
 		m.PushIndexData(sizeof(f), (char *)f);
 		m.CalculateBounds();
