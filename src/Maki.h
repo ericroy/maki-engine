@@ -15,6 +15,7 @@
 #include "core/MakiDocument.h"
 #include "core/MakiSkeleton.h"
 #include "core/MakiConfig.h"
+#include "core/MakiTimeSource.h"
 #include "core/MakiTimer.h"
 #include "core/MakiResourceProvider.h"
 #include "core/MakiTextureManager.h"
@@ -27,4 +28,5 @@
 #include "core/MakiSkeletonManager.h"
 #include "core/MakiSkeletonAnimationManager.h"
 #include "core/windows/MakiWin32Window.h"
+#include "core/windows/MakiWin32TimeSource.h"
 #include "core/direct3d/MakiDirect3DRenderCore.h"

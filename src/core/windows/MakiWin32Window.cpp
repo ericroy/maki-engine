@@ -114,8 +114,7 @@ namespace Maki
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
-			engine->Update();
-			engine->Draw();
+			engine->Tick();
 		}
 
 	quit:

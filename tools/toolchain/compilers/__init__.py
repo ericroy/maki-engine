@@ -11,8 +11,6 @@ COMPILERS = {
     'mskel': shutil.copyfile,
     'manim': shutil.copyfile,
     'mmesh': shutil.copyfile,
-    'ps': doc_toucher.touch,
-    'vs': doc_toucher.touch,
     'dds': shutil.copyfile,
     'png': shutil.copyfile,
     'jpg': shutil.copyfile,

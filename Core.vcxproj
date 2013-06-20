@@ -68,6 +68,7 @@
     <ClInclude Include="src\core\MakiTextureSetManager.h" />
     <ClInclude Include="src\core\MakiThread.h" />
     <ClInclude Include="src\core\MakiTimer.h" />
+    <ClInclude Include="src\core\MakiTimeSource.h" />
     <ClInclude Include="src\core\MakiTypes.h" />
     <ClInclude Include="src\core\MakiUtil.h" />
     <ClInclude Include="src\core\MakiVector2.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="src\core\MakiVertexFormatManager.h" />
     <ClInclude Include="src\core\MakiWindow.h" />
     <ClInclude Include="src\core\core_stdafx.h" />
+    <ClInclude Include="src\core\windows\MakiWin32TimeSource.h" />
     <ClInclude Include="src\core\windows\MakiWin32Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +263,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
+    <ClCompile Include="src\core\windows\MakiWin32TimeSource.cpp" />
     <ClCompile Include="src\core\windows\MakiWin32Window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

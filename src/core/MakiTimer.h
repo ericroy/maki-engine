@@ -3,6 +3,7 @@
 
 namespace Maki
 {
+	class TimeSource;
 
 	class Timer
 	{
@@ -10,44 +11,26 @@ namespace Maki
 		static const int32 N_FRAME_AVERAGE = 30;
 
 	public:
-		Timer();
+		Timer(TimeSource *source);
 		void Tick();
 
 	private:
-		inline void UpdateHistory()
-		{
-			uint32 index = updateCount % N_FRAME_AVERAGE;
-
-			// If N frames have gone by, calculate new average values
-			if(updateCount > N_FRAME_AVERAGE && index == 0) {
-				averageDelta = 0;
-				for(uint32 i = 0; i < N_FRAME_AVERAGE; i++ ) {
-					averageDelta += deltaHistory[i];
-				}
-				averageDelta /= N_FRAME_AVERAGE;
-				averageFps = 1.0f / averageDelta;
-			}
-
-			// Store the current values as historical ones
-			deltaHistory[index] = deltaSeconds;
-		}
+		void UpdateHistory();
 
 	public:
-		int64 lastTime;
-		uint32 updateCount;
+		int64 deltaMillis;
+		float deltaSeconds;
 
 		double elapsedSeconds;
-		float deltaSeconds;
-		float averageDelta;
-		
-		float fps;
+		int64 elapsedMillis;
+
 		float averageFps;
 
+	private:
+		int64 lastTime;
+		int64 updateCount;
 		float deltaHistory[N_FRAME_AVERAGE];
-
-#if defined(_WIN32) || defined(_WIN64)
-		int64 frequency;
-#endif
+		TimeSource *source;
 	};
 
 

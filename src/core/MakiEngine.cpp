@@ -2,44 +2,61 @@
 #include "core/MakiEngine.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiWindow.h"
+#include "core/MakiTimeSource.h"
 #include "core/MakiTimer.h"
 #include "core/MakiInputState.h"
+#include "core/MakiConfig.h"
 
 namespace Maki
 {
 
-	Engine::Engine(Window *window, RenderCore *core, const AssetLibrary *assets, const Config *config)
+	Engine::Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config)
 		: PseudoSingleton<Engine>(),
 		window(window),
 		config(config),
 		assets(assets),
 		renderer(nullptr),
-		timer(nullptr),
+		timeSource(timeSource),
+		updateTimer(timeSource),
+		renderTimer(timeSource),
 		inputState(nullptr)
 	{
-		timer = new Timer();
 		inputState = new InputState();
 		renderer = new Renderer(window, core, config);
+
+		static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
+		static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
+		
+		millisPerUpdate = 1000 / config->GetUint("engine.updates_per_second", DEFAULT_UPDATES_PER_SECOND);
+		maxSkippedFrames = config->GetUint("engine.max_skipped_frames", DEFAULT_MAX_SKIPPED_FRAMES);
+
+		nextUpdate = timeSource->GetTimeMillis() + millisPerUpdate;
 	}
 
 	Engine::~Engine()
 	{
 		SAFE_DELETE(renderer);
 		SAFE_DELETE(inputState);
-		SAFE_DELETE(timer);
 	}
 
-	void Engine::Update()
+	void Engine::Tick()
 	{
-		window->PollInput(inputState);
-		timer->Tick();
-		if(FrameUpdate != nullptr) {
-			FrameUpdate();
+		// While we are overdue for the next update...
+		int64 now = 0;
+		uint32 skippedFrames = 0;
+		while((now = timeSource->GetTimeMillis()) > nextUpdate && skippedFrames < maxSkippedFrames) {
+						
+			updateTimer.Tick();
+			window->PollInput(inputState);
+			if(FrameUpdate != nullptr) {
+				FrameUpdate();
+			}
+
+			nextUpdate = now + millisPerUpdate;
+			skippedFrames++;
 		}
-	}
 
-	void Engine::Draw()
-	{
+		renderTimer.Tick();
 		if(FrameDraw != nullptr) {
 			FrameDraw();
 		}

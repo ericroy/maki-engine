@@ -82,6 +82,10 @@
     <ClInclude Include="src\core\MakiUtil.h" />
     <ClInclude Include="src\core\MakiPseudoSingleton.h" />
     <ClInclude Include="src\core\MakiMoveToken.h" />
+    <ClInclude Include="src\core\windows\MakiWin32TimeSource.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\MakiTimeSource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\MakiArchive.cpp" />
@@ -144,6 +148,9 @@
     <ClCompile Include="src\core\core_stdafx.cpp" />
     <ClCompile Include="src\core\direct3d\MakiDirect3DGPUTypes.cpp">
       <Filter>direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\windows\MakiWin32TimeSource.cpp">
+      <Filter>windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

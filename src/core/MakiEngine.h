@@ -2,6 +2,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiPseudoSingleton.h"
 #include "core/MakiResourceProvider.h"
+#include "core/MakiTimer.h"
 
 namespace Maki
 {
@@ -12,25 +13,37 @@ namespace Maki
 	class Window;
 	class InputState;
 	class Timer;
+	class TimeSource;
 
 	class Engine : public PseudoSingleton<Engine>
 	{
 	public:
-		Engine(Window *window, RenderCore *core, const AssetLibrary *assets, const Config *config);
+		static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
+		static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
+
+	public:
+		Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config);
 		virtual ~Engine();
-		
-		void Update();
-		void Draw();
+		void Tick();
 
 	public:
 		std::function<void()> FrameUpdate;
 		std::function<void()> FrameDraw;
 		const Config *config;
 		const AssetLibrary *assets;
-		Timer *timer;
+		
+		Timer updateTimer;
+		Timer renderTimer;
+		
 		InputState *inputState;
 		Renderer *renderer;
 		Window *window;
+
+	private:
+		TimeSource *timeSource;
+		int64 nextUpdate;
+		uint32 millisPerUpdate;
+		uint32 maxSkippedFrames;
 	};
 
 
