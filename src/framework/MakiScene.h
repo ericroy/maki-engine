@@ -19,8 +19,8 @@ namespace Maki
 
 	public:
 		Entity *root;
-		std::vector<Camera *> cameras;
-		std::vector<Light *> lights;
+		std::vector<Entity *> cameras;
+		std::vector<Entity *> lights;
 		std::vector<Entity *> physicsHulls;
 
 	private:

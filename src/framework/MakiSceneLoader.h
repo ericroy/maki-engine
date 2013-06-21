@@ -4,22 +4,16 @@
 
 namespace Maki
 {
-	class MeshEntity;
-	class SkinnedMeshEntity;
-	class CharacterEntity;
-	class BillboardEntity;
-	class Light;
-	class Camera;
 
 	class SceneLoader
 	{
 	public:
 		SceneLoader();
 		virtual ~SceneLoader();
-		bool Load(Rid rid, Entity *parentNodeForScene, std::vector<Camera *> *cameras = nullptr, std::vector<Light *> *lights = nullptr, std::vector<Entity *> *physicsHulls = nullptr);
+		bool Load(Rid rid, Entity *parentNodeForScene, std::vector<Entity *> *cameras = nullptr, std::vector<Entity *> *lights = nullptr, std::vector<Entity *> *physicsHulls = nullptr);
 
 	private:
-		void Recurse(Document::Node *n, Entity *container, std::vector<Camera *> *cameras, std::vector<Light *> *lights, std::vector<Entity *> *physicsHulls);
+		void Recurse(Document::Node *n, Entity *container, std::vector<Entity *> *cameras, std::vector<Entity *> *lights, std::vector<Entity *> *physicsHulls);
 	};
 
 } // namespace Maki

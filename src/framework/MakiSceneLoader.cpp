@@ -29,7 +29,7 @@ namespace Maki
 	SceneLoader::~SceneLoader() {
 	}
 
-	bool SceneLoader::Load(Rid rid, Entity *parentNodeForScene, std::vector<Camera *> *cameras, std::vector<Light *> *lights, std::vector<Entity *> *physicsHulls) {
+	bool SceneLoader::Load(Rid rid, Entity *parentNodeForScene, std::vector<Entity *> *cameras, std::vector<Entity *> *lights, std::vector<Entity *> *physicsHulls) {
 		Engine *eng = Engine::Get();
 
 		Document doc;
@@ -41,7 +41,7 @@ namespace Maki
 		return true;
 	}
 
-	void SceneLoader::Recurse(Document::Node *n, Entity *container, std::vector<Camera *> *cameras, std::vector<Light *> *lights, std::vector<Entity *> *physicsHulls) {
+	void SceneLoader::Recurse(Document::Node *n, Entity *container, std::vector<Entity *> *cameras, std::vector<Entity *> *lights, std::vector<Entity *> *physicsHulls) {
 		if(n == nullptr) {
 			return;
 		}
@@ -54,24 +54,23 @@ namespace Maki
 			if(c != nullptr) {
 				Entity *e = nullptr;
 				if(c->ValueEquals("entity")) {
-					e = Create<Entity, EntityFactory>(c);
-				} else if(c->ValueEquals("mesh_entity")) {
-					e = Create<MeshEntity, MeshEntityFactory>(c);
-				} else if(c->ValueEquals("skinned_mesh_entity")) {
-					e = Create<SkinnedMeshEntity, SkinnedMeshEntityFactory>(c);
-				} else if(c->ValueEquals("character_entity")) {
-					e = Create<CharacterEntity, CharacterEntityFactory>(c);
-				} else if(c->ValueEquals("billboard_entity")) {
-					e = Create<BillboardEntity, BillboardEntityFactory>(c);
+					e = new Entity();
+					if(!e->Init(c)) {
+						Console::Error("Entity init failed");
+					}
 				} else if(c->ValueEquals("light")) {
-					e = Create<Light, LightFactory>(c);
-					if(e != nullptr && lights != nullptr) {
-						lights->push_back((Light *)e);
+					e = new Entity();
+					if(!e->Init(c)) {
+						Console::Error("Light init failed");
+					} else if(lights != nullptr) {
+						lights->push_back(e);
 					}
 				} else if(c->ValueEquals("camera")) {
-					e = Create<Camera, CameraFactory>(c);
-					if(e != nullptr && cameras != nullptr) {
-						cameras->push_back((Camera *)e);
+					e = new Entity();
+					if(!e->Init(c)) {
+						Console::Error("Camera init failed");
+					} else if(lights != nullptr) {
+						cameras->push_back(e);
 					}
 				} else {
 					Console::Warning("Don't know how to parse node type '%s'", c->value);

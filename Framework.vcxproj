@@ -11,11 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\framework\components\MakiBillboardComponent.h" />
+    <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
+    <ClInclude Include="src\framework\components\MakiCharacterComponent.h" />
+    <ClInclude Include="src\framework\components\MakiLightComponent.h" />
+    <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
+    <ClInclude Include="src\framework\components\MakiSkinnedMeshComponent.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiBillboardEntity.h" />
     <ClInclude Include="src\framework\MakiCamera.h" />
     <ClInclude Include="src\framework\MakiCascadeHelper.h" />
     <ClInclude Include="src\framework\MakiCharacterEntity.h" />
+    <ClInclude Include="src\framework\MakiComponent.h" />
     <ClInclude Include="src\framework\MakiDebugArmature.h" />
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
@@ -40,6 +47,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\framework\MakiCharacterEntity.cpp" />
+    <ClCompile Include="src\framework\MakiComponent.cpp" />
     <ClCompile Include="src\framework\MakiDebugArmature.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

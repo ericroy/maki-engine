@@ -5,6 +5,7 @@
 namespace Maki
 {
 	class Renderer;
+	class Component;
 
 	class Entity : public Aligned<SIMD_ALIGN>
 	{
@@ -20,6 +21,7 @@ namespace Maki
 		};
 
 	public:
+		static const uint32 DEFAULT_MAX_COMPONENTS = 8;
 		static const uint32 DEFAULT_FLAGS = Flag_Draw|Flag_Update|Flag_ProcessChildren|Flag_CastShadow;
 		
 	public:
@@ -27,10 +29,11 @@ namespace Maki
 		Entity(uint32 flags);
 		virtual ~Entity();
 
-		virtual void Update(float dt) {}
-		virtual void Draw(Renderer *renderer) {}
+		bool Init(Document::Node *node);
 
 		void RecursivelyUpdate(Entity **drawListHead, const Matrix44 &current, float dt);
+		void Draw(Renderer *renderer);
+
 		inline void AddChild(Entity *e) { children.push_back(e); e->parent = this; }
 		void RemoveChild(Entity *e);
 		
@@ -53,6 +56,12 @@ namespace Maki
 		inline void SetMatrix(const Vector4 &pos, const Quaternion &orient);
 		inline void SetWorldMatrix(const Vector4 &pos, const Quaternion &orient);
 		
+		// Component system interface
+		void AttachComponent(Component *c);
+		void DetachComponent(Component *c);
+		template<class T> T *GetComponent(uint64 type);
+		bool SendMessage(Component *from, uint32 message, uintptr_t arg1, uintptr_t arg2);
+
 	protected:
 		inline void UpdateWorldMatrix();
 		inline void UpdateMatrix();
@@ -72,6 +81,11 @@ namespace Maki
 		Matrix44 world;
 		Vector4 position;
 		Quaternion orientation;
+
+		// Component system
+		uint64 componentFlags;
+		uint32 componentCount;
+		Array<Component *> components;
 	};
 
 
@@ -137,6 +151,23 @@ namespace Maki
 		position.w = 1.0f;
 		orientation.FromMatrix(matrix);
 	}
+
+	template<class T> T *Entity::GetComponent(uint64 type) {
+		if((type & componentFlags) == 0) {
+			return nullptr;
+		}
+		for(uint32 i = 0; i < componentCount; i++) {
+			Component *c = components[i];
+			if(c->type == type) {
+				return dynamic_cast<T *>(c);
+			}
+		}
+		assert(false && "expected to find component");
+		return nullptr;
+	}
+
+
+
 
 
 

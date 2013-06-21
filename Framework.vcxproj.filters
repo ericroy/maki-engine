@@ -21,6 +21,25 @@
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
     <ClInclude Include="src\framework\MakiBillboardEntity.h" />
+    <ClInclude Include="src\framework\MakiComponent.h" />
+    <ClInclude Include="src\framework\components\MakiMeshComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiBillboardComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiCameraComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiCharacterComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiLightComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiSkinnedMeshComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -40,5 +59,11 @@
     <ClCompile Include="src\framework\MakiCharacterEntity.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\MakiBillboardEntity.cpp" />
+    <ClCompile Include="src\framework\MakiComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="components">
+      <UniqueIdentifier>{2ce81925-dde8-4311-a9c3-714b23be9aef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
