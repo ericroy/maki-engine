@@ -37,9 +37,6 @@
     <ClInclude Include="src\framework\components\MakiLightComponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\framework\components\MakiSkinnedMeshComponent.h">
-      <Filter>components</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -60,6 +57,15 @@
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\MakiBillboardEntity.cpp" />
     <ClCompile Include="src\framework\MakiComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiLightComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\components\MakiMeshComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

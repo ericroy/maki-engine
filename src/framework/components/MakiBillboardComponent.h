@@ -8,8 +8,11 @@ namespace Maki
 	class BillboardComponent : public Component
 	{
 	public:
+		static const Type COMPONENT_TYPE = Type::Type_Billboard;
+
+	public:
 		BillboardComponent()
-			: Component(Type_Billboard)
+			: Component(COMPONENT_TYPE)
 		{
 		}
 		virtual ~BillboardComponent()

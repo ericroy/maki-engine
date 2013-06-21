@@ -8,8 +8,11 @@ namespace Maki
 	class CharacterComponent : public Component
 	{
 	public:
+		static const Type COMPONENT_TYPE = Type::Type_Character;
+
+	public:
 		CharacterComponent()
-			: Component(Type_Character)
+			: Component(COMPONENT_TYPE)
 		{
 		}
 		virtual ~CharacterComponent()

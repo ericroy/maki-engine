@@ -21,7 +21,6 @@ namespace Maki
 		};
 
 	public:
-		static const uint32 DEFAULT_MAX_COMPONENTS = 8;
 		static const uint32 DEFAULT_FLAGS = Flag_Draw|Flag_Update|Flag_ProcessChildren|Flag_CastShadow;
 		
 	public:
@@ -58,8 +57,7 @@ namespace Maki
 		
 		// Component system interface
 		void AttachComponent(Component *c);
-		void DetachComponent(Component *c);
-		template<class T> T *GetComponent(uint64 type);
+		template<class T> T *Get() const;
 		bool SendMessage(Component *from, uint32 message, uintptr_t arg1, uintptr_t arg2);
 
 	protected:
@@ -84,8 +82,7 @@ namespace Maki
 
 		// Component system
 		uint64 componentFlags;
-		uint32 componentCount;
-		Array<Component *> components;
+		std::vector<Component *> components;
 	};
 
 
@@ -152,14 +149,21 @@ namespace Maki
 		orientation.FromMatrix(matrix);
 	}
 
-	template<class T> T *Entity::GetComponent(uint64 type) {
-		if((type & componentFlags) == 0) {
+	template<class T>
+	T *Entity::Get() const
+	{
+		if((T::COMPONENT_TYPE & componentFlags) == 0) {
 			return nullptr;
 		}
-		for(uint32 i = 0; i < componentCount; i++) {
+		const uint32 count = components.size();
+		for(uint32 i = 0; i < count; i++) {
 			Component *c = components[i];
-			if(c->type == type) {
+			if(c->componentType == T::COMPONENT_TYPE) {
+#if _DEBUG
 				return dynamic_cast<T *>(c);
+#else
+				return static_cast<T *>(c);
+#endif
 			}
 		}
 		assert(false && "expected to find component");

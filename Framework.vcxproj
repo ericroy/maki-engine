@@ -16,7 +16,6 @@
     <ClInclude Include="src\framework\components\MakiCharacterComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
-    <ClInclude Include="src\framework\components\MakiSkinnedMeshComponent.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiBillboardEntity.h" />
     <ClInclude Include="src\framework\MakiCamera.h" />
@@ -40,6 +39,9 @@
     <ClInclude Include="src\framework\MakiTween.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\MakiBillboardEntity.cpp" />
     <ClCompile Include="src\framework\MakiCamera.cpp">

@@ -15,9 +15,8 @@ namespace Maki
 		parent(nullptr),
 		physicsLink(this),
 		drawListNext(nullptr),
-		componentCount(0)
+		componentFlags(0)
 	{
-		components.SetSize(Engine::Get()->config->GetUint("framework.entity_max_components", DEFAULT_MAX_COMPONENTS));
 	}
 
 	Entity::Entity(uint32 flags)
@@ -30,15 +29,18 @@ namespace Maki
 		parent(nullptr),
 		physicsLink(this),
 		drawListNext(nullptr),
-		componentCount(0)
+		componentFlags(0)
 	{
-		components.SetSize(Engine::Get()->config->GetUint("framework.entity_max_components", DEFAULT_MAX_COMPONENTS));
 	}
 
 	Entity::~Entity() {
-		const int32 size = children.size();
-		for(int32 i = 0; i < size; i++) {
+		const int32 childCount = children.size();
+		for(int32 i = 0; i < childCount; i++) {
 			SAFE_DELETE(children[i]);
+		}
+		const int32 compCount = components.size();
+		for(int32 i = 0; i < compCount; i++) {
+			SAFE_DELETE(components[i]);
 		}
 	}
 
@@ -91,7 +93,8 @@ namespace Maki
 		world = current * matrix;
 		
 		if(GetFlag(Flag_Update) && !GetFlag(Flag_Physics)) {
-			for(uint32 i = 0; i < componentCount; i++) {
+			const uint32 count = components.size();
+			for(uint32 i = 0; i < count; i++) {
 				components[i]->Update(dt);
 			}
 		
@@ -121,7 +124,8 @@ namespace Maki
 
 	void Entity::Draw(Renderer *renderer)
 	{
-		for(uint32 i = 0; i < componentCount; i++) {
+		const uint32 count = components.size();
+		for(uint32 i = 0; i < count; i++) {
 			components[i]->Draw(renderer);
 		}
 	}
@@ -140,43 +144,17 @@ namespace Maki
 
 	void Entity::AttachComponent(Component *c)
 	{
-		assert((componentFlags & c->type) == 0 && "entity already has this component");
-		assert(componentCount < components.count && "entity ran out of room for components");
-		for(uint32 i = 0; i < componentCount; i++) {
-			if(*c < *components[i]) {
-				memmove(&components[i+1], &components[i], componentCount - i);
-				components[i] = c;
-				componentCount++;
-				componentFlags |= c->type;
-				c->Attach(this);
-				return;
-			}
-		}
-
-		// Append to end
-		components[componentCount++] = c;
-		componentFlags |= c->type;
+		assert((componentFlags & c->componentType) == 0 && "entity already has this component");
+		auto lowerBound = std::lower_bound(components.begin(), components.end(), c, Component::Comparator());
+		components.insert(lowerBound, c);
+		componentFlags |= c->componentType;
 		c->Attach(this);
-	}
-
-	void Entity::DetachComponent(Component *c)
-	{
-		assert((componentFlags & c->type) != 0 && "entity did not have this component");
-		for(uint32 i = 0; i < componentCount; i++) {
-			if(components[i] == c) {
-				memmove(&components[i], &components[i+1], componentCount-i-1);
-				componentCount--;
-				componentFlags &= ~c->type;
-				c->Detach();
-				return;
-			}
-		}
-		assert(false && "expected to find component");
 	}
 
 	bool Entity::SendMessage(Component *from, uint32 message, uintptr_t arg1, uintptr_t arg2)
 	{
-		for(uint32 i = 0; i < componentCount; i++) {
+		uint32 count = components.size();
+		for(uint32 i = 0; i < count; i++) {
 			Component *c = components[i];
 			if(c != from) {
 				if(c->HandleMessage(from, message, arg1, arg2)) {

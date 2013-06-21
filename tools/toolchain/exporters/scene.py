@@ -83,7 +83,8 @@ def export(src, dst, *args):
 
         trans = node.LclTranslation.Get()
         angles = node.LclRotation.Get()
-        n = doc.Node('mesh_entity')
+        n = doc.Node('entity')
+        n.add_child('components').add_child('mesh')
         if len(flags):
             n.add_child(flags)
         n.add_child('mesh').add_child(mesh_path)
