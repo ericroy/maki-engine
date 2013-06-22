@@ -26,8 +26,11 @@ namespace Maki
 		for(uint32 i = 0; i < count; i++) {
 			const Item &item = items[i];
 
+			// Only consider rendering meshes that are compatible with the provided masks
 			uint32 f = item.meshComp->owner->GetFlags();
 			if((f & requiredFlags) == requiredFlags && (f & disallowedFlags) == 0) {
+				
+				// Perform culling if necessary
 				if(cullingFrustum != nullptr && !item.nodeComp->bounds.empty) {
 					BoundingSphere worldBounds(item.nodeComp->GetWorldMatrix() * item.nodeComp->bounds.pos, item.nodeComp->bounds.GetRadius());
 
@@ -44,8 +47,20 @@ namespace Maki
 					}
 				}
 				
+				
+				// Submit all the draw commands for this mesh
 				Matrix44 m = item.nodeComp->GetWorldMatrix() * item.meshComp->scaleMatrix;
-				item.meshComp->Draw(renderer, m);
+				const uint32 count = item.meshComp->drawCommands.count;
+				for(uint32 i = 0; i < count; i++) {
+#if _DEBUG
+					// I don't want to set this every draw call for efficiency reasons, but if we don't
+					// then hot swapping materials doesn't have any effect.  Perhaps we'll just leave this on
+					// in debug mode for now
+					item.meshComp->drawCommands[i].SetMaterial(item.meshComp->material);
+#endif
+					renderer->Draw(item.meshComp->drawCommands[i], m);
+				}
+
 			}
 		}
 	}

@@ -18,8 +18,9 @@ namespace Maki
 		properties.attenuation = 1.0f;
 		properties.spotFactor = 1.0f;
 
-		properties.flags |= (1<<lightType);
 		mapProperties.size = Vector2(-1.0f, -1.0f);
+
+		properties.flags |= (1<<lightType);
 	}
 
 	LightComponent::LightComponent(RenderState::LightType lightType, bool on, const Vector4 &diffuseColor)
@@ -52,6 +53,8 @@ namespace Maki
 
 		Document::Node *typeNode = node->Resolve("type.#0");
 		if(typeNode != nullptr) {
+			properties.flags &= ~(1<<lightType);
+			
 			if(typeNode->ValueEquals("directional")) {
 				lightType = RenderState::LightType_Directional;
 			} else if(typeNode->ValueEquals("point")) {
@@ -60,6 +63,8 @@ namespace Maki
 				Console::Error("Invalid light type: %s", typeNode->value);
 				return false;
 			}
+
+			properties.flags |= (1<<lightType);
 		}
 
 		SetOn(node->ResolveAsBool("on.#0", true));
@@ -97,7 +102,7 @@ namespace Maki
 		if(CreateDebugWidget != nullptr) {
 			Entity *debugWidget = CreateDebugWidget();
 			if(debugWidget != nullptr) {
-				owner->AddChild(debugWidget);
+				owner->SendMessage(this, Message_DebugWidgetCreated, debugWidget, nullptr);
 			}
 		}
 #endif

@@ -21,7 +21,7 @@ namespace Maki
 				bounds.Merge(BoundingBox(meshBox->pos, meshBox->radii * meshScale));
 				break;
 
-			case Message_ArmatureCreated:
+			case Message_DebugWidgetCreated:
 				Entity *e = reinterpret_cast<Entity *>(arg1);
 				AddChild(e);
 				return true;

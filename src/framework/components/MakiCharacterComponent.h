@@ -22,6 +22,7 @@ namespace Maki
 
 		virtual void Attach(Entity *owner);
 		virtual bool Init(Document::Node *node);
+		void Update(float dt);
 
 	private:
 		AnimationBlender blender;

@@ -13,19 +13,19 @@ namespace Maki
 	public:
 		enum Type
 		{
-			Type_Mesh = 1<<0,
+			Type_SceneNode = 1<<0,
+			Type_Mesh = 1<<1,
 			Type_Light = 1<<2,
 			Type_Camera = 1<<3,
 			Type_Billboard = 1<<4,
 			Type_Character = 1<<5,
-			Type_SceneNode = 1<<6
+			Type_Skeleton = 1<<6,
 		};
 
 		enum Message
 		{
-			Message_MeshBoundsChanged = 0,
-			Message_ArmatureCreated,
-
+			Message_DebugWidgetCreated = 0,
+			Message_MeshBoundsChanged,
 			MessageCount
 		};
 

@@ -34,7 +34,17 @@ namespace Maki
 	void CameraComponent::Attach(Entity *owner)
 	{
 		Component::Attach(owner);
+
 		owner->SetFlag(Entity::Flag_Draw, false);
+
+#if _DEBUG
+		if(CreateDebugWidget != nullptr) {
+			Entity *debugWidget = CreateDebugWidget();
+			if(debugWidget != nullptr) {
+				owner->SendMessage(this, Message_DebugWidgetCreated, debugWidget, nullptr);
+			}
+		}
+#endif
 	}
 	
 }

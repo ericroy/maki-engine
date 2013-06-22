@@ -42,125 +42,127 @@ namespace Maki
 		bool ok = blender.Load(eng->assets->PathToRid("animations/player_blend.mdoc"));
 		assert(ok);
 
-		updateFunc = [&](float dt) {
-			assert(owner->children.size() >= 2);
-			Entity *skin = owner->children[0];
-			Entity *camContainer = owner->children[1];
-			Entity *cam = camContainer->children[0];
-
-			Vector4 deltaVel(0.0f);
-
-			// Read controller input and apply velocities to the rigid body
-			Engine *eng = Engine::Get();
-			InputState::Controller *c = eng->inputState->GetPlayer(0)->controller;
-
-			// Create vectors to describe the thumbstick influences from the controller.
-			// Allow these to be less than unit length, but not more.
-			Vector4 walkFactor(0.0f);
-			Vector4 camFactor(0.0f);
-			if(c != nullptr) {
-				walkFactor = Vector4(-c->GetFloat(InputState::Button_LeftThumbX), c->GetFloat(InputState::Button_LeftThumbY), 0.0f, 1.0f);
-				if(walkFactor.LengthSquared() > 1.0f) {
-					walkFactor.Normalize();
-				}
-				camFactor = Vector4(c->GetFloat(InputState::Button_RightThumbX), c->GetFloat(InputState::Button_RightThumbY), 0.0f, 1.0f);
-				if(camFactor.LengthSquared() > 1.0f) {
-					camFactor.Normalize();
-				}
-			}
-
-			// Orbit the camera according to the right thubstick influence
-			Vector4 camPerp = camContainer->GetWorldMatrix() * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-		
-			Quaternion pitchDelta, yawDelta;
-			pitchDelta.FromAngleAxis(camFactor.y * CAM_TURN_SPEED * dt, camPerp);		
-			yawDelta.FromAngleAxis(camFactor.x * CAM_TURN_SPEED * dt, Vector4::UnitZ);
-			Quaternion camOrient = yawDelta * pitchDelta * camContainer->GetOrientation();
-
-			// Recalculate the camera directions based on our change to the orientation
-			camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-			Vector4 camDir = Vector4::UnitZ.Cross(camPerp);
-
-			// Check if pitch needs clamping
-			const float thresholdUpper = -0.25f;
-			const float thresholdLower = -0.75f;
-			Vector4 toCam = camOrient * Vector4(0.0f, 0.0f, 1.0f, 0.0f);
-			float d = toCam.Dot(camDir);
-			if(d > thresholdUpper && toCam.z > 0.0f) {
-				// Clamp to north pole limit
-				Quaternion q;
-				q.FromAngleAxis(std::acos(thresholdUpper), camPerp);
-				Vector4 clampedToCam = q * camDir;
-				q.FromRotationArc(toCam, clampedToCam);
-				camOrient = q * camOrient;
-
-				// Update camera directions
-				camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-				camDir = Vector4::UnitZ.Cross(camPerp);
-			} else if(d > thresholdLower && toCam.z <= 0.0f) {
-				// Clamp to south pole limit
-				Quaternion q;
-				q.FromAngleAxis(2*MAKI_PI - std::acos(thresholdLower), camPerp);
-				Vector4 clampedToCam = q * camDir;
-				q.FromRotationArc(toCam, clampedToCam);
-				camOrient = q * camOrient;
-
-				// Update camera directions
-				camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-				camDir = Vector4::UnitZ.Cross(camPerp);
-			}
-			camContainer->SetOrientation(camOrient);
-
-		
-			// Direction the character model is facing
-			Vector4 dir = skin->GetWorldMatrix() * Vector4(0.0f, -1.0f, 0.0f, 0.0f);
-
-			// Direction the character model *should* be facing, according to the controller thumbstick
-			Vector4 targetDir = camDir * walkFactor.y + camPerp * walkFactor.x;
-			float targetDirLen = targetDir.Length();
-			if(targetDirLen < 0.000001f) {
-				targetDirLen = 0.0f;
-				targetDir = dir;
-			} else {
-				targetDir /= targetDirLen;
-			}
-
-			// Slerp the character model's facing direction towards the desired facing direction
-			Quaternion rotDelta;
-			rotDelta.FromRotationArc(dir, targetDir);
-			const Quaternion &skinOrient = skin->GetOrientation();
-
-			Quaternion finalOrientation = Quaternion::Slerp(dt * TURN_SPEED, skinOrient, rotDelta*skinOrient);
-			// Prevent drift
-			finalOrientation.Normalize();
-			skin->SetOrientation(finalOrientation);
-
-			// Add linear velocity in the target facing direction.  Scale this down by the degree
-			// to which the character is not yet facing in the right direction.  This means the character
-			// will accelerate up to the desired speed as they turn to face the move direction.
-			float speed = MOVE_SPEED * std::min(targetDirLen, 1.0f);
-			deltaVel += targetDir * speed * Clamp(dir.Dot(targetDir), 0.0f, 1.0f);
-
-			// Calculate the impulse required to give us the velocity that we want
-			Vector4 impulse = deltaVel / body->getInvMass();
-
-			// Stomp x and y velocity, then apply our desired impulse
-			btVector3 linearVel = body->getLinearVelocity();
-			linearVel.setZ(0.0f);
-			body->applyImpulse(-linearVel/body->getInvMass(), btVector3(0, 0, 0));
-			body->applyImpulse(TO_BTVEC3(impulse), btVector3(0, 0, 0));
-
-			// Update animation blend tree based on speed
-			MeshComponent *meshComp = skin->Get<MeshComponent>();
-			((AnimationBlender::Blend *)blender.root)->balance.Set(speed / MOVE_SPEED, 0.1f);
-			blender.AdvanceState(dt, 1.0f, meshComp->pose);
-			meshComp->SetPoseDirty(true);
-		};
 	}
 
 	bool CharacterComponent::Init(Document::Node *node)
 	{
 		return true;
+	}
+
+	void CharacterComponent::Update(float dt)
+	{
+		assert(owner->children.size() >= 2);
+		Entity *skin = owner->children[0];
+		Entity *camContainer = owner->children[1];
+		Entity *cam = camContainer->children[0];
+
+		Vector4 deltaVel(0.0f);
+
+		// Read controller input and apply velocities to the rigid body
+		Engine *eng = Engine::Get();
+		InputState::Controller *c = eng->inputState->GetPlayer(0)->controller;
+
+		// Create vectors to describe the thumbstick influences from the controller.
+		// Allow these to be less than unit length, but not more.
+		Vector4 walkFactor(0.0f);
+		Vector4 camFactor(0.0f);
+		if(c != nullptr) {
+			walkFactor = Vector4(-c->GetFloat(InputState::Button_LeftThumbX), c->GetFloat(InputState::Button_LeftThumbY), 0.0f, 1.0f);
+			if(walkFactor.LengthSquared() > 1.0f) {
+				walkFactor.Normalize();
+			}
+			camFactor = Vector4(c->GetFloat(InputState::Button_RightThumbX), c->GetFloat(InputState::Button_RightThumbY), 0.0f, 1.0f);
+			if(camFactor.LengthSquared() > 1.0f) {
+				camFactor.Normalize();
+			}
+		}
+
+		// Orbit the camera according to the right thubstick influence
+		Vector4 camPerp = camContainer->GetWorldMatrix() * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+		
+		Quaternion pitchDelta, yawDelta;
+		pitchDelta.FromAngleAxis(camFactor.y * CAM_TURN_SPEED * dt, camPerp);		
+		yawDelta.FromAngleAxis(camFactor.x * CAM_TURN_SPEED * dt, Vector4::UnitZ);
+		Quaternion camOrient = yawDelta * pitchDelta * camContainer->GetOrientation();
+
+		// Recalculate the camera directions based on our change to the orientation
+		camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+		Vector4 camDir = Vector4::UnitZ.Cross(camPerp);
+
+		// Check if pitch needs clamping
+		const float thresholdUpper = -0.25f;
+		const float thresholdLower = -0.75f;
+		Vector4 toCam = camOrient * Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+		float d = toCam.Dot(camDir);
+		if(d > thresholdUpper && toCam.z > 0.0f) {
+			// Clamp to north pole limit
+			Quaternion q;
+			q.FromAngleAxis(std::acos(thresholdUpper), camPerp);
+			Vector4 clampedToCam = q * camDir;
+			q.FromRotationArc(toCam, clampedToCam);
+			camOrient = q * camOrient;
+
+			// Update camera directions
+			camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+			camDir = Vector4::UnitZ.Cross(camPerp);
+		} else if(d > thresholdLower && toCam.z <= 0.0f) {
+			// Clamp to south pole limit
+			Quaternion q;
+			q.FromAngleAxis(2*MAKI_PI - std::acos(thresholdLower), camPerp);
+			Vector4 clampedToCam = q * camDir;
+			q.FromRotationArc(toCam, clampedToCam);
+			camOrient = q * camOrient;
+
+			// Update camera directions
+			camPerp = camOrient * Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+			camDir = Vector4::UnitZ.Cross(camPerp);
+		}
+		camContainer->SetOrientation(camOrient);
+
+		
+		// Direction the character model is facing
+		Vector4 dir = skin->GetWorldMatrix() * Vector4(0.0f, -1.0f, 0.0f, 0.0f);
+
+		// Direction the character model *should* be facing, according to the controller thumbstick
+		Vector4 targetDir = camDir * walkFactor.y + camPerp * walkFactor.x;
+		float targetDirLen = targetDir.Length();
+		if(targetDirLen < 0.000001f) {
+			targetDirLen = 0.0f;
+			targetDir = dir;
+		} else {
+			targetDir /= targetDirLen;
+		}
+
+		// Slerp the character model's facing direction towards the desired facing direction
+		Quaternion rotDelta;
+		rotDelta.FromRotationArc(dir, targetDir);
+		const Quaternion &skinOrient = skin->GetOrientation();
+
+		Quaternion finalOrientation = Quaternion::Slerp(dt * TURN_SPEED, skinOrient, rotDelta*skinOrient);
+		// Prevent drift
+		finalOrientation.Normalize();
+		skin->SetOrientation(finalOrientation);
+
+		// Add linear velocity in the target facing direction.  Scale this down by the degree
+		// to which the character is not yet facing in the right direction.  This means the character
+		// will accelerate up to the desired speed as they turn to face the move direction.
+		float speed = MOVE_SPEED * std::min(targetDirLen, 1.0f);
+		deltaVel += targetDir * speed * Clamp(dir.Dot(targetDir), 0.0f, 1.0f);
+
+		// Calculate the impulse required to give us the velocity that we want
+		Vector4 impulse = deltaVel / body->getInvMass();
+
+		// Stomp x and y velocity, then apply our desired impulse
+		btVector3 linearVel = body->getLinearVelocity();
+		linearVel.setZ(0.0f);
+		body->applyImpulse(-linearVel/body->getInvMass(), btVector3(0, 0, 0));
+		body->applyImpulse(TO_BTVEC3(impulse), btVector3(0, 0, 0));
+
+		// Update animation blend tree based on speed
+		MeshComponent *meshComp = skin->Get<MeshComponent>();
+		((AnimationBlender::Blend *)blender.root)->balance.Set(speed / MOVE_SPEED, 0.1f);
+		blender.AdvanceState(dt, 1.0f, meshComp->pose);
+		meshComp->SetPoseDirty(true);
 	}
 	
 }
