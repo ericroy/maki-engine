@@ -68,14 +68,6 @@ namespace Maki
 		node->ResolveAsVectorN("ambient", 3, properties.ambientColor.vals);
 		node->ResolveAsVectorN("specular", 3, properties.specularColor.vals);
 
-		Vector4 target(0.0f);
-		if(node->ResolveAsVectorN("target", 3, target.vals)) {
-			Matrix44 lookAt;
-			Matrix44::LookAt(owner->GetPosition(), target, Vector4::UnitZ, lookAt);
-			Matrix44::Inverse(lookAt, lookAt);
-			owner->SetWorldMatrix(lookAt);
-		}
-
 		if(node->ResolveAsBool("shadows.#0", false)) {
 			bool splitShadows = node->ResolveAsBool("split_shadows.#0", false);
 			uint32 mapWidth = node->ResolveAsUInt("shadow_map_size.#0", 1024);

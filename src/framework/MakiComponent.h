@@ -8,6 +8,8 @@ namespace Maki
 
 	class Component
 	{
+		friend class Entity;
+
 	public:
 		enum Type
 		{
@@ -15,7 +17,16 @@ namespace Maki
 			Type_Light = 1<<2,
 			Type_Camera = 1<<3,
 			Type_Billboard = 1<<4,
-			Type_Character = 1<<5
+			Type_Character = 1<<5,
+			Type_SceneNode = 1<<6
+		};
+
+		enum Message
+		{
+			Message_MeshBoundsChanged = 0,
+			Message_ArmatureCreated,
+
+			MessageCount
 		};
 
 		static Component *Create(const char *type);
@@ -27,46 +38,25 @@ namespace Maki
 		};
 		
 	public:
-		Component(Type type) : componentType(type) {}
+		Component(Type type) : componentType(type), owner(nullptr), messageHandler(nullptr) {}
 		virtual ~Component() {}
-		
 		virtual bool Init(Document::Node *node) = 0;
-		
+
+	protected:
 		virtual void Attach(Entity *entity)
 		{
 			owner = entity;
 		}
-
-		inline void Update(float dt)
-		{
-			if(updateFunc != nullptr) {
-				updateFunc(dt);
-			}
-		}
 		
-		inline void Draw(Renderer *renderer)
+		virtual void Detach()
 		{
-			if(drawFunc != nullptr) {
-				drawFunc(renderer);
-			}
-		}
-
-		inline bool HandleMessage(Component *sender, uint32 message, uintptr_t arg1, uintptr_t arg2)
-		{
-			if(messageHandlerFunc != nullptr) {
-				return messageHandlerFunc(sender, message, arg1, arg2);
-			}
-			return false;
+			owner = nullptr;
 		}
 
 	public:
 		uint64 componentType;
 		Entity *owner;
-
-	protected:
-		std::function<void(float)> updateFunc;
-		std::function<void(Renderer *)> drawFunc;
-		std::function<bool(Component *, uint32, uintptr_t, uintptr_t)> messageHandlerFunc;
+		std::function<bool(Component *, Message, uintptr_t, uintptr_t)> messageHandler;
 	};
 
 } // namespace Maki

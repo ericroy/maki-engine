@@ -1,46 +1,32 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiEntity.h"
 #include "framework/MakiComponent.h"
+#include "framework/MakiSystem.h"
 
 namespace Maki
 {
 
 	Entity::Entity()
 		: flags(DEFAULT_FLAGS),
-		position(0.0f),
-		orientation(),
-		matrix(true),
-		world(true),
 		updateFunc(nullptr),
-		parent(nullptr),
 		physicsLink(this),
-		drawListNext(nullptr),
 		componentFlags(0)
 	{
 	}
 
 	Entity::Entity(uint32 flags)
 		: flags(flags),
-		position(0.0f),
-		orientation(),
-		matrix(true),
-		world(true),
 		updateFunc(nullptr),
-		parent(nullptr),
 		physicsLink(this),
-		drawListNext(nullptr),
 		componentFlags(0)
 	{
 	}
 
 	Entity::~Entity() {
-		const int32 childCount = children.size();
-		for(int32 i = 0; i < childCount; i++) {
-			SAFE_DELETE(children[i]);
-		}
 		const int32 compCount = components.size();
-		for(int32 i = 0; i < compCount; i++) {
-			SAFE_DELETE(components[i]);
+		for(uint32 i = compCount-1; i >= 0; i++) {
+			Component *c = DetachComponent(i);
+			SAFE_DELETE(c);
 		}
 	}
 
@@ -63,14 +49,6 @@ namespace Maki
 			}
 		}
 		SetFlags(flags);
-
-		Vector4 pos(0.0f);
-		node->ResolveAsVectorN("pos", 3, pos.vals);
-
-		Vector4 angles(0.0f);
-		node->ResolveAsVectorN("angles", 3, angles.vals);
-				
-		SetMatrix(pos, Quaternion(angles));
 
 		// Load each component
 		Document::Node *componentList = node->Resolve("components");
@@ -130,100 +108,44 @@ namespace Maki
 		}
 	}
 
-	void Entity::RemoveChild(Entity *e) {
-		const int32 size = children.size();
-		for(int32 i = 0; i < size; i++) {
-			if(children[i] == e) {
-				e->parent = nullptr;
-				children.erase(children.begin()+i);
-				return;
-			}
-		}
-	}
-
 
 	void Entity::AttachComponent(Component *c)
 	{
 		assert((componentFlags & c->componentType) == 0 && "entity already has this component");
 		auto lowerBound = std::lower_bound(components.begin(), components.end(), c, Component::Comparator());
 		components.insert(lowerBound, c);
-		componentFlags |= c->componentType;
 		c->Attach(this);
+
+		uint64 oldComponentFlags = componentFlags;
+		componentFlags |= c->componentType;
+		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
 	}
 
-	bool Entity::SendMessage(Component *from, uint32 message, uintptr_t arg1, uintptr_t arg2)
+	void Entity::DetachComponent(Component *c)
 	{
-		uint32 count = components.size();
-		for(uint32 i = 0; i < count; i++) {
-			Component *c = components[i];
-			if(c != from) {
-				if(c->HandleMessage(from, message, arg1, arg2)) {
-					return true;
-				}
-			}
-		}
-		return false;
+		assert((componentFlags & c->componentType) != 0 && "entity doesn't have this component");
+		auto iter = std::find(components.begin(), components.end(), c);
+		assert(iter != components.end() && "entity doesn't have this component");
+		components.erase(iter);
+		c->Detach();
+
+		uint64 oldComponentFlags = componentFlags;
+		componentFlags &= ~c->componentType;
+		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	EntityFactory::EntityFactory()
-		: flags(Entity::DEFAULT_FLAGS), pos(0.0f), angles(0.0f)
+	Component *Entity::DetachComponent(uint32 index)
 	{
+		Component *c = components[index];
+		components.erase(std::begin(components) + index);
+		c->Detach();
+
+		uint64 oldComponentFlags = componentFlags;
+		componentFlags &= ~c->componentType;
+		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
+
+		return c;
 	}
-
-	EntityFactory::~EntityFactory()
-	{
-	}
-
-	bool EntityFactory::PreCreate(Document::Node *node)
-	{
-		Document::Node *flagsNode = node->Resolve("flags");
-		if(flagsNode != nullptr) {
-			for(uint32 i = 0; i < flagsNode->count; i++) {
-				char *value = flagsNode->children[i]->value;
-				bool on = true;
-				if(value[0] == '!') {
-					on = false;
-					value++;
-				}
-				if(strcmp(value, "draw") == 0) { if(on) { flags |= Entity::Flag_Draw; } else { flags &= ~Entity::Flag_Draw; } }
-				else if(strcmp(value, "update") == 0) { if(on) { flags |= Entity::Flag_Update; } else { flags &= ~Entity::Flag_Update; } }
-				else if(strcmp(value, "physics") == 0) { if(on) { flags |= Entity::Flag_Physics; } else { flags &= ~Entity::Flag_Physics; } }
-				else if(strcmp(value, "process_children") == 0) { if(on) { flags |= Entity::Flag_ProcessChildren; } else { flags &= ~Entity::Flag_ProcessChildren; } }
-				else if(strcmp(value, "cast_shadow") == 0) { if(on) { flags |= Entity::Flag_CastShadow; } else { flags &= ~Entity::Flag_CastShadow; } }
-			}
-		}
-		node->ResolveAsVectorN("pos", 3, pos.vals);
-		node->ResolveAsVectorN("angles", 3, angles.vals);
-		return true;
-	}
-
-	Entity *EntityFactory::Create()
-	{
-		return new Entity(flags);
-	}
-
-	void EntityFactory::PostCreate(Entity *e)
-	{
-		e->SetFlags(flags);
-		e->SetMatrix(pos, Quaternion(angles));
-	}
-
-
 
 
 } // namespace Maki

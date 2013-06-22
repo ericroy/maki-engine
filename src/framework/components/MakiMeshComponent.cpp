@@ -1,7 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiMeshComponent.h"
-#include "framework/MakiDebugArmature.h"
 
 namespace Maki
 {
@@ -102,12 +101,72 @@ namespace Maki
 		return Init(meshRid, matRid, skelRid);
 	}
 
+	void MeshComponent::Draw(Renderer *renderer, const Matrix44 &world)
+	{
+		Engine *eng = Engine::Get();
+
+		const uint32 count = drawCommands.count;
+		for(uint32 i = 0; i < count; i++) {
+#if _DEBUG
+			// I don't want to set this every draw call for efficiency reasons, but if we don't
+			// then hot swapping materials doesn't have any effect.  Perhaps we'll just leave this on
+			// in debug mode for now
+			drawCommands[i].SetMaterial(material);
+#endif
+			renderer->Draw(drawCommands[i], world);
+		}
+	}
+
+	void MeshComponent::Update(float dt)
+	{
+		if(skeleton == HANDLE_NONE) {
+			return;
+		}
+
+		if(!poseDirty) {
+			return;
+		}
+		poseDirty = false;
+
+		Skeleton *skel = SkeletonManager::Get(skeleton);
+
+		skel->CalculateWorldPose(pose.data, matrixPose.data);
+		if(armature != nullptr) {
+			armature->Update(skel, pose.data);
+		}
+
+		// Combine inverse bind and world matrices
+		// Store them in the material constant buffer (as 3x4 matrices)
+		Material *mat = MaterialManager::Get(material);
+		float *boneMatrices = (float *)mat->uniformValues[materialSlot].data;
+
+		Matrix44 temp;
+		for(uint32 i = 0; i < pose.count; i++) {
+			temp = matrixPose[i] * skel->inverseBindPose[i];
+			const uint32 base = i*12;
+			boneMatrices[base] = temp.cols[0][0];
+			boneMatrices[base+1] = temp.cols[0][1];
+			boneMatrices[base+2] = temp.cols[0][2];
+			boneMatrices[base+3] = temp.cols[1][0];
+			boneMatrices[base+4] = temp.cols[1][1];
+			boneMatrices[base+5] = temp.cols[1][2];
+			boneMatrices[base+6] = temp.cols[2][0];
+			boneMatrices[base+7] = temp.cols[2][1];
+			boneMatrices[base+8] = temp.cols[2][2];
+			boneMatrices[base+9] = temp.cols[3][0];
+			boneMatrices[base+10] = temp.cols[3][1];
+			boneMatrices[base+11] = temp.cols[3][2];
+		}
+	}
+
 	void MeshComponent::SetMeshScale(float scale)
 	{
 		scaleMatrix.SetIdentity();
 		Matrix44::Scale(scale, scale, scale, scaleMatrix);
-		owner->bounds.radii *= scale / meshScale;
 		meshScale = scale;
+
+		const Mesh *m = MeshManager::Get(mesh);
+		owner->SendMessage(this, Message_MeshBoundsChanged, &m->bounds, &meshScale);
 	}
 
 	bool MeshComponent::Init(HandleOrRid meshId, HandleOrRid matId, HandleOrRid skelId)
@@ -160,7 +219,7 @@ namespace Maki
 		
 			if(CreateDebugArmature != nullptr) {
 				armature = (DebugArmature *)CreateDebugArmature();
-				owner->AddChild((Entity *)armature);
+				owner->SendMessage(this, Message_ArmatureCreated, (Entity *)armature, nullptr);
 			}
 		}
 				
@@ -176,63 +235,8 @@ namespace Maki
 			dc->SetMaterial(material);
 		}
 
-
-		drawFunc = [&](Renderer *renderer) {
-			Engine *eng = Engine::Get();
-
-			const uint32 count = drawCommands.count;
-			for(uint32 i = 0; i < count; i++) {
-#if _DEBUG
-				// I don't want to set this every draw call for efficiency reasons, but if we don't
-				// then hot swapping materials doesn't have any effect.  Perhaps we'll just leave this on
-				// in debug mode for now
-				drawCommands[i].SetMaterial(material);
-#endif
-				renderer->Draw(drawCommands[i], owner->GetWorldMatrix() * scaleMatrix);
-			}
-		};
-
-		if(skeleton != HANDLE_NONE) {
-			updateFunc = [&](float dt) {
-				if(!poseDirty) {
-					return;
-				}
-				poseDirty = false;
-
-				Skeleton *skel = SkeletonManager::Get(skeleton);
-
-				skel->CalculateWorldPose(pose.data, matrixPose.data);
-				if(armature != nullptr) {
-					armature->Update(skel, pose.data);
-				}
-
-				// Combine inverse bind and world matrices
-				// Store them in the material constant buffer (as 3x4 matrices)
-				Material *mat = MaterialManager::Get(material);
-				float *boneMatrices = (float *)mat->uniformValues[materialSlot].data;
-
-				Matrix44 temp;
-				for(uint32 i = 0; i < pose.count; i++) {
-					temp = matrixPose[i] * skel->inverseBindPose[i];
-					const uint32 base = i*12;
-					boneMatrices[base] = temp.cols[0][0];
-					boneMatrices[base+1] = temp.cols[0][1];
-					boneMatrices[base+2] = temp.cols[0][2];
-					boneMatrices[base+3] = temp.cols[1][0];
-					boneMatrices[base+4] = temp.cols[1][1];
-					boneMatrices[base+5] = temp.cols[1][2];
-					boneMatrices[base+6] = temp.cols[2][0];
-					boneMatrices[base+7] = temp.cols[2][1];
-					boneMatrices[base+8] = temp.cols[2][2];
-					boneMatrices[base+9] = temp.cols[3][0];
-					boneMatrices[base+10] = temp.cols[3][1];
-					boneMatrices[base+11] = temp.cols[3][2];
-				}
-			};
-		}
-
 		// Merge our mesh's bounding box with that of the owner
-		owner->bounds.Merge(BoundingBox(m->bounds.pos, m->bounds.radii));
+		owner->SendMessage(this, Message_MeshBoundsChanged, &m->bounds, &meshScale);
 
 		return true;
 	}

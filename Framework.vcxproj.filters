@@ -66,6 +66,9 @@
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp">
       <Filter>components</Filter>
     </ClCompile>
+    <ClCompile Include="src\framework\components\MakiCharacterComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

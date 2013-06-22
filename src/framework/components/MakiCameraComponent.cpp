@@ -19,14 +19,6 @@ namespace Maki
 
 	bool CameraComponent::Init(Document::Node *node)
 	{
-		Vector4 target(0.0f);
-		if(node->ResolveAsVectorN("target", 3, target.vals)) {
-			Matrix44 lookAt;
-			Matrix44::LookAt(owner->GetPosition(), target, Vector4::UnitZ, lookAt);
-			Matrix44::Inverse(lookAt, lookAt);
-			owner->SetWorldMatrix(lookAt);
-		}
-
 		Document::Node *frustumNode = node->Resolve("frustum");
 		if(frustumNode != nullptr) {
 			frustum.Set(

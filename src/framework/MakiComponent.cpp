@@ -6,13 +6,16 @@
 #include "framework/components/MakiCameraComponent.h"
 #include "framework/components/MakiBillboardComponent.h"
 #include "framework/components/MakiCharacterComponent.h"
+#include "framework/components/MakiSceneNodeComponent.h"
 
 namespace Maki
 {
 
 	Component *Component::Create(const char *type)
 	{
-		if(strcmp(type, "mesh") == 0) {
+		if(strcmp(type, "scene_node") == 0) {
+			return new SceneNodeComponent();
+		} else if(strcmp(type, "mesh") == 0) {
 			return new MeshComponent();
 		} else if(strcmp(type, "light") == 0) {
 			return new LightComponent();

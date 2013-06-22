@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiPhysicsLink.h"
+#include "framework/MakiComponent.h"
 
 namespace Maki
 {
@@ -21,7 +22,7 @@ namespace Maki
 		};
 
 	public:
-		static const uint32 DEFAULT_FLAGS = Flag_Draw|Flag_Update|Flag_ProcessChildren|Flag_CastShadow;
+		static const uint32 DEFAULT_FLAGS = Flag_Update|Flag_ProcessChildren;
 		
 	public:
 		Entity();
@@ -32,53 +33,27 @@ namespace Maki
 
 		void RecursivelyUpdate(Entity **drawListHead, const Matrix44 &current, float dt);
 		void Draw(Renderer *renderer);
-
-		inline void AddChild(Entity *e) { children.push_back(e); e->parent = this; }
-		void RemoveChild(Entity *e);
 		
 		inline uint32 GetFlags() const { return flags; }
 		inline void SetFlags(uint32 f) { flags = f; }
 		inline bool GetFlag(Flag f) const { return (f & flags) != 0; }
 		inline void SetFlag(Flag f, bool on = true) { if(on) { flags |= f; } else { flags &= ~f; } }
-
-		inline const Matrix44 &GetMatrix() const { return matrix; }
-		inline const Matrix44 &GetWorldMatrix() const { return world; }
-		inline const Quaternion &GetOrientation() const { return orientation; }
-		inline const Vector4 &GetPosition() const { return position; }
-		inline void CalculateViewMatrix(Matrix44 &out) const { Matrix44::AffineInverse(world, out); }
-
-		inline void SetPosition(const Vector4 &pos) { SetMatrix(pos, orientation); }
-		inline void SetPosition(float x, float y, float z) { SetMatrix(Vector4(x, y, z, 1.0f), orientation); }
-		inline void SetOrientation(const Quaternion &orient) { SetMatrix(position, orient); }
-		inline void SetMatrix(const Matrix44 &m);
-		inline void SetWorldMatrix(const Matrix44 &w);
-		inline void SetMatrix(const Vector4 &pos, const Quaternion &orient);
-		inline void SetWorldMatrix(const Vector4 &pos, const Quaternion &orient);
 		
 		// Component system interface
+		inline uint64 GetComponentFlags() const { return componentFlags; }
+		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & componentType) != 0; }
 		void AttachComponent(Component *c);
+		void DetachComponent(Component *c);
+		Component *DetachComponent(uint32 index);
 		template<class T> T *Get() const;
-		bool SendMessage(Component *from, uint32 message, uintptr_t arg1, uintptr_t arg2);
-
-	protected:
-		inline void UpdateWorldMatrix();
-		inline void UpdateMatrix();
-		inline void UpdatePositionOrientation();
+		template<class T, class U> bool SendMessage(Component *from, Component::Message message, T *arg1, U *arg2);
 
 	public:
-		Entity *parent;
-		std::vector<Entity *> children;
 		std::function<void(float)> updateFunc;
-		BoundingBox bounds;
 		PhysicsLink physicsLink;
-		Entity *drawListNext;
 
 	protected:
-		uint32 flags;
-		Matrix44 matrix;
-		Matrix44 world;
-		Vector4 position;
-		Quaternion orientation;
+		uint32 flags;	
 
 		// Component system
 		uint64 componentFlags;
@@ -89,65 +64,7 @@ namespace Maki
 
 
 
-	inline void Entity::SetMatrix(const Matrix44 &m)
-	{
-		matrix = m;
-		UpdatePositionOrientation();
-		UpdateWorldMatrix();
-	}
-
-	inline void Entity::SetWorldMatrix(const Matrix44 &w)
-	{
-		world = w;
-		if(parent != nullptr && !parent->world.IsIdentity()) {
-			Matrix44 parentWorldInv;
-			Matrix44::AffineInverse(parent->world, parentWorldInv);
-			matrix = parentWorldInv * w;
-		} else {
-			matrix = world;
-		}
-		UpdatePositionOrientation();
-	}
-
-	inline void Entity::SetMatrix(const Vector4 &pos, const Quaternion &orient)
-	{
-		position = pos;
-		orientation = orient;
-		UpdateMatrix();
-		UpdateWorldMatrix();
-	}	
-
-	inline void Entity::SetWorldMatrix(const Vector4 &pos, const Quaternion &orient)
-	{
-		Matrix44 m;
-		orient.ToMatrix(m);
-		Matrix44::Translation(pos, m);
-		SetWorldMatrix(m);
-	}
-
-	inline void Entity::UpdateWorldMatrix()
-	{
-		if(parent != nullptr) {
-			world = parent->world * matrix;
-		} else {
-			world = matrix;
-		}
-	}
-
-	inline void Entity::UpdateMatrix()
-	{
-		orientation.ToMatrix(matrix);
-		Matrix44::Translation(position, matrix);
-	}
-
-	inline void Entity::UpdatePositionOrientation()
-	{
-		position.x = matrix.cols[3][0];
-		position.y = matrix.cols[3][1];
-		position.z = matrix.cols[3][2];
-		position.w = 1.0f;
-		orientation.FromMatrix(matrix);
-	}
+	
 
 	template<class T>
 	T *Entity::Get() const
@@ -172,24 +89,23 @@ namespace Maki
 
 
 
-
-
-
-
-	class EntityFactory
+	template<class T, class U>
+	bool Entity::SendMessage(Component *from, Component::Message message, T *arg1, U *arg2)
 	{
-	public:
-		EntityFactory();
-		virtual ~EntityFactory();
-		virtual bool PreCreate(Document::Node *node);
-		Entity *Create();
-		virtual void PostCreate(Entity *e);
+		uintptr_t a1 = reinterpret_cast<uintptr_t>(arg1);
+		uintptr_t a2 = reinterpret_cast<uintptr_t>(arg2);
 
-	protected:
-		uint32 flags;
-		Vector4 pos;
-		Vector3 angles;
-	};
+		uint32 count = components.size();
+		for(uint32 i = 0; i < count; i++) {
+			Component *c = components[i];
+			if(c != from && c->messageHandler != nullptr) {
+				if(c->messageHandler(from, message, a1, a2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 
 } // namespace Maki

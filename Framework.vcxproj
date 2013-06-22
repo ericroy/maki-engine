@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiCharacterComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />

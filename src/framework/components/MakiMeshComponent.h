@@ -8,6 +8,8 @@ namespace Maki
 
 	class MeshComponent : public Component
 	{
+		friend class RenderSystem;
+
 	public:
 		static const Type COMPONENT_TYPE = Type::Type_Mesh;
 		static std::function<Entity *()> CreateDebugArmature;
@@ -19,7 +21,10 @@ namespace Maki
 		virtual ~MeshComponent();
 
 		virtual bool Init(Document::Node *node);
+		void Draw(Renderer *renderer, const Matrix44 &world);
+		void Update(float dt);
 		void SetMeshScale(float scale);
+		inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }
 
 	private:
 		bool Init(HandleOrRid meshId, HandleOrRid matId, HandleOrRid skelId);
@@ -28,6 +33,7 @@ namespace Maki
 		Handle mesh;
 		Handle material;
 		Array<DrawCommand> drawCommands;
+		Entity *drawListNext;
 
 		// For skinned meshes only
 		Handle skeleton;
