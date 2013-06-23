@@ -24,10 +24,8 @@ namespace Maki
 			TypeCount
 		};
 
-		static const uint64 Message_DebugWidgetCreated = 1L << 0;
-		static const uint64 MessageAll = 0xffffffffffffffff;
-
-		static Component *Create(const char *type);
+		typedef uint64 Message;
+		static const uint64 Message_DebugWidgetCreated = 1LL << 0;
 
 		class Comparator
 		{
@@ -38,6 +36,7 @@ namespace Maki
 	public:
 		Component(Type componentType) : componentType(componentType), owner(nullptr) {}
 		virtual ~Component() {}
+
 		virtual bool Init(Document::Node *node) = 0;
 		virtual void Attach(Entity *owner) { this->owner = owner; }
 		virtual void Detach() { this->owner = nullptr; }

@@ -15,7 +15,7 @@ namespace Maki
 	{
 	}
 
-	void RenderSystem::Draw(Renderer *renderer, uint32 requiredFlags = 0, uint32 disallowedFlags = 0, const Frustum *cullingFrustum = nullptr, const Matrix44 *view = nullptr)
+	void RenderSystem::Draw(Renderer *renderer, uint32 requiredFlags, uint32 disallowedFlags, const Frustum *cullingFrustum, const Matrix44 *view)
 	{
 		Vector4 frustumPlanes[6];
 		if(cullingFrustum != nullptr) {

@@ -14,6 +14,8 @@ namespace Maki
 		{
 			MeshComponent *meshComp;
 			TransformComponent *transComp;
+
+			inline bool operator==(const Item &other) const { return meshComp == other.meshComp && transComp == other.transComp; }
 		};
 
 	public:

@@ -3,6 +3,7 @@
 #include <new>
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 #include <cmath>
 #include <assert.h>

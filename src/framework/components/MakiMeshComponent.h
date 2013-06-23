@@ -11,7 +11,7 @@ namespace Maki
 		friend class RenderSystem;
 
 	public:
-		static const uint64 COMPONENT_TYPE = Type_Mesh;
+		static const Component::Type COMPONENT_TYPE = Type_Mesh;
 
 	public:
 		MeshComponent();

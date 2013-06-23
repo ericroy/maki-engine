@@ -13,28 +13,4 @@
 namespace Maki
 {
 
-	Component *Component::Create(const char *type)
-	{
-		auto pool = ComponentPool::Get();
-		assert(pool);
-
-		if(strcmp(type, "transform") == 0) {
-			return pool->Create<TransformComponent>();
-		} else if(strcmp(type, "scene_node") == 0) {
-			return pool->Create<SceneNodeComponent>();
-		} else if(strcmp(type, "mesh") == 0) {
-			return pool->Create<MeshComponent>();
-		} else if(strcmp(type, "light") == 0) {
-			return pool->Create<LightComponent>();
-		} else if(strcmp(type, "camera") == 0) {
-			return pool->Create<CameraComponent>();
-		} else if(strcmp(type, "billboard") == 0) {
-			return pool->Create<BillboardComponent>();
-		} else if(strcmp(type, "character") == 0) {
-			return pool->Create<CharacterComponent>();
-		}
-		return nullptr;
-	}
-	
-
 } // namespace Maki

@@ -11,35 +11,59 @@ namespace Maki
 	class LightComponent;
 	class CameraComponent;
 
-	class ComponentPool : public PseudoSingleton<ComponentPool>
+	// The purpose of this base class is to allow the freeing of a Component* without knowing
+	// the type or which pool it came from
+	class ComponentPoolBase
 	{
 	public:
-		static const uint32 DEFAULT_POOL_SIZE = 128;
+		static ComponentPoolBase *PoolForType(Component::Type type)
+		{
+			return poolForType[type];
+		}
+
+		static ComponentPoolBase *PoolForTypeName(const char *typeName)
+		{
+			auto iter = poolForTypeName.find(typeName);
+			if(iter == poolForTypeName.end())
+			{
+				return nullptr;
+			}
+			return iter->second;
+		}
+
+	protected:
+		static ComponentPoolBase *poolForType[Component::TypeCount];
+		static std::map<std::string, ComponentPoolBase *> poolForTypeName;
 
 	public:
-		ComponentPool(Config *config)
-			: PseudoSingleton<ComponentPool>(),
-			transformComponents(config->GetUint("transform_component_pool_size", DEFAULT_POOL_SIZE)),
-			skeletonComponents(config->GetUint("skeleton_component_pool_size", DEFAULT_POOL_SIZE)),
-			sceneNodeComponents(config->GetUint("scene_node_component_pool_size", DEFAULT_POOL_SIZE)),
-			meshComponents(config->GetUint("mesh_component_pool_size", DEFAULT_POOL_SIZE)),
-			lightComponents(config->GetUint("light_component_pool_size", DEFAULT_POOL_SIZE)),
-			cameraComponents(config->GetUint("camera_component_pool_size", DEFAULT_POOL_SIZE))
+		virtual Component *Create() = 0;
+		virtual void Destroy(Component *c) = 0;
+	};
+
+
+
+	template<class T>
+	class ComponentPool : public ComponentPoolBase, public PseudoSingleton< ComponentPool<T> >
+	{
+	public:
+		ComponentPool(const char *typeName, uint32 size)
+			: PseudoSingleton< ComponentPool<T> >(),
+			pool(size),
+			typeName(typeName)
 		{
-			poolForType[Component::Type_Transform] = &transformComponents;
-			poolForType[Component::Type_Skeleton] = &skeletonComponents;
-			poolForType[Component::Type_SceneNode] = &sceneNodeComponents;
-			poolForType[Component::Type_Mesh] = &meshComponents;
-			poolForType[Component::Type_Light] = &lightComponents;
-			poolForType[Component::Type_Camera] = &cameraComponents;
-		}
-		
-		virtual ~ComponentPool()
-		{
+			assert(componentPoolRegistry[T::COMPONENT_TYPE] == nullptr && "This component pool already exists");
+			
+			poolForType[T::COMPONENT_TYPE] = this;
+			poolForTypeName[typeName] = this;
 		}
 
-		template<class T>
-		T *Create()
+		virtual ~ComponentPool()
+		{
+			poolForType[T::COMPONENT_TYPE] = nullptr;
+			poolForTypeName.erase(typeName);
+		}
+
+		Component *Create()
 		{
 			auto pool = (ResourcePool<T> *)poolForType[T::COMPONENT_TYPE];
 			Handle h = pool->Alloc();
@@ -54,23 +78,17 @@ namespace Maki
 			return c;
 		}
 
-		template<class T>
-		void Destroy(T *c)
+		void Destroy(Component *c)
 		{
 			auto pool = (ResourcePool<T> *)poolForType[T::COMPONENT_TYPE];
 			Handle h = c - pool->GetBaseAddr();
 			pool->Free(h);
-		}		
+		}
 
 	private:
-		ResourcePool<TransformComponent> transformComponents;
-		ResourcePool<SkeletonComponent> skeletonComponents;
-		ResourcePool<SceneNodeComponent> sceneNodeComponents;
-		ResourcePool<MeshComponent> meshComponents;
-		ResourcePool<LightComponent> lightComponents;
-		ResourcePool<CameraComponent> cameraComponents;
-
-		void *poolForType[Component::TypeCount];
+		ResourcePool<T> pool;
+		std::string typeName;
 	};
+
 
 } // namespace Maki

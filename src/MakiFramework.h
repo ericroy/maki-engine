@@ -17,6 +17,7 @@
 #include "framework/MakiPhysicsLink.h"
 #include "framework/MakiPhysicsWorld.h"
 #include "framework/MakiComponent.h"
+#include "framework/MakiComponentPool.h"
 #include "framework/components/MakiCameraComponent.h"
 #include "framework/components/MakiLightComponent.h"
 #include "framework/components/MakiMeshComponent.h"

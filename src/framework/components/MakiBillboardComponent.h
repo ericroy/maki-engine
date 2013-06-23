@@ -8,7 +8,7 @@ namespace Maki
 	class BillboardComponent : public Component
 	{
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Billboard;
+		static const Component::Type COMPONENT_TYPE = Type::Type_Billboard;
 
 	public:
 		BillboardComponent()

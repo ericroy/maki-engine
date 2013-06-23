@@ -7,7 +7,7 @@ namespace Maki
 
 	class System
 	{
-	private:
+	protected:
 		struct Message
 		{
 		public:
@@ -21,20 +21,25 @@ namespace Maki
 
 			template<class T>
 			Message(Component *from, Component::Message msg, T *arg1)
-				: from(from), msg(msg), arg2(nullptr)
+				: from(from), msg(msg), arg2(0)
 			{
 				this->arg1 = reinterpret_cast<uintptr_t>(arg1);
 			}
 
-			template<class T>
-			inline T *GetArg1() const { return reinterpret_cast<T>(arg1); }
+			Message(Component *from, Component::Message msg)
+				: from(from), msg(msg), arg1(0), arg2(0)
+			{
+			}
 
 			template<class T>
-			inline T *GetArg2() const { return reinterpret_cast<T>(arg1); }
+			inline T *GetArg1() const { return reinterpret_cast<T *>(arg1); }
+
+			template<class T>
+			inline T *GetArg2() const { return reinterpret_cast<T *>(arg2); }
 
 		public:
 			Component *from;
-			uint64 msg;
+			Component::Message msg;
 			uintptr_t arg1;
 			uintptr_t arg2;
 		};
@@ -71,16 +76,46 @@ namespace Maki
 			messages.push_back(Message(from, msg, arg1));
 		}
 
-		static void ClearMessages()
+		static void ProcessMessages()
 		{
-			messages.clear();
-		}
+			const uint32 count = systems.size();
+			uint32 iterations = 0;
+			bool done = true;
 
-	protected:
-		static std::vector<Message> messages;
+			do {
+
+				// Amalgamate messages from all systems into global queue
+				for(uint32 i = 0; i < count; i++) {
+					if(systems[i]->outgoingMessages.size()) {
+						std::copy(std::begin(systems[i]->outgoingMessages), std::end(systems[i]->outgoingMessages), std::end(messages));
+						systems[i]->outgoingMessages.clear();
+					}
+				}
+				
+				// Allow each system to process the global queue
+				if(messages.size()) {
+					for(uint32 i = 0; i < count; i++) {
+						systems[i]->ProcessMessages(messages);
+
+						// Processing the message queue could actually result in more messages being dispatched
+						// If this is the case, we'll have to run another iteration
+						if(systems[i]->outgoingMessages.size()) {
+							done = false;
+						}
+					}
+					messages.clear();
+				}
+								
+				iterations++;
+				assert(iterations < 20 && "Message dispatch iterations getting out of hand - is there a message cycle?");
+
+			} while(!done);
+		}
 
 	private:
 		static std::vector<System *> systems;
+		static std::vector<Message> messages;
+
 
 
 	public:
@@ -99,8 +134,9 @@ namespace Maki
 		{
 			return (componentMask & componentFlags) == componentMask;
 		}
-
-		virtual void ProcessMessages() {}
+		
+	protected:
+		virtual void ProcessMessages(const std::vector<Message> &messages) {}
 
 	protected:
 		virtual void Add(Entity *e) = 0;
@@ -108,6 +144,7 @@ namespace Maki
 		
 	private:
 		uint64 componentMask;
+		std::vector<Message> outgoingMessages;
 	};
 
 

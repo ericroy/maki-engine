@@ -14,6 +14,8 @@ namespace Maki
 		{
 			MeshComponent *meshComp;
 			SkeletonComponent *skelComp;
+
+			inline bool operator==(const Item &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
 		};
 
 	public:

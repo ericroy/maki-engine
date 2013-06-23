@@ -14,7 +14,7 @@ namespace Maki
 	{
 	}
 
-	void SceneGraphSystem::ProcessMessages()
+	void SceneGraphSystem::ProcessMessages(const std::vector<Message> &messages)
 	{
 		const uint32 count = messages.size();
 		for(uint32 i = 0; i < count; i++) {

@@ -27,12 +27,18 @@ namespace Maki
 	}
 
 	Entity::~Entity() {
-		auto pools = ComponentPool::Get();
+		uint64 oldComponentFlags = componentFlags;
+
 		for(uint32 i = componentCount-1; i >= 0; i--) {
+			components[i].component->Detach();
 			
-			Component *c = DetachComponent(i);
-			SAFE_DELETE(c);
+			ComponentPoolBase *pool = ComponentPoolBase::PoolForType(components[i].componentType);
+			pool->Destroy(components[i].component);
 		}
+				
+		componentFlags = 0;
+		componentCount = 0;
+		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
 	}
 
 	bool Entity::Init(Document::Node *node)
@@ -60,7 +66,14 @@ namespace Maki
 		if(componentList != nullptr) {
 			for(uint32 i = 0; i < componentList->count; i++) {
 				Document::Node *componentType = componentList->children[i];
-				Component *c = Component::Create(componentType->value);
+				
+				ComponentPoolBase *pool = ComponentPoolBase::PoolForTypeName(componentType->value);
+				if(pool == nullptr) {
+					Console::Error("No component pool exists for component of type: %s", componentType->value);
+					continue;
+				}
+				
+				Component *c = pool->Create();
 				if(c != nullptr) {
 					AttachComponent(c);
 					c->Init(node);

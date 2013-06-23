@@ -11,7 +11,7 @@ namespace Maki
 		friend class SkeletonSystem;
 
 	public:
-		static const uint64 COMPONENT_TYPE = Type_Skeleton;
+		static const Component::Type COMPONENT_TYPE = Type_Skeleton;
 		static std::function<Entity *()> CreateDebugArmature;
 
 	public:

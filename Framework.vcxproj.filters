@@ -50,6 +50,13 @@
     <ClInclude Include="src\framework\systems\MakiSkeletonSystem.h">
       <Filter>systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\framework\components\MakiTransformComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\MakiComponentPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -92,6 +99,12 @@
       <Filter>components</Filter>
     </ClCompile>
     <ClCompile Include="src\framework\systems\MakiSkeletonSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\components\MakiTransformComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiSceneGraphSystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
   </ItemGroup>

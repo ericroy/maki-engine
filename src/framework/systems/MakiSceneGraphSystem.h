@@ -12,9 +12,8 @@ namespace Maki
 	public:
 		SceneGraphSystem();
 		virtual ~SceneGraphSystem();
-		
-		void Update();
-		void ProcessMessages();
+
+		void ProcessMessages(const std::vector<Message> &messages);
 
 	private:
 		void UpdateBoundsRecurse(Entity *e);

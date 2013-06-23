@@ -10,7 +10,7 @@ namespace Maki
 		friend class SceneGraphSystem;
 
 	public:
-		static const uint64 COMPONENT_TYPE = Type_SceneNode;
+		static const Component::Type COMPONENT_TYPE = Type_SceneNode;
 
 	public:
 		SceneNodeComponent();

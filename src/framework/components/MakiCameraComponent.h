@@ -8,7 +8,7 @@ namespace Maki
 	class CameraComponent : public Component
 	{
 	public:
-		static const uint64 COMPONENT_TYPE = Type_Camera;
+		static const Component::Type COMPONENT_TYPE = Type_Camera;
 		static std::function<Entity *()> CreateDebugWidget;
 
 	public:

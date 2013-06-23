@@ -49,7 +49,7 @@ namespace Maki
 		
 		// Component stuff
 		inline uint64 GetComponentFlags() const { return componentFlags; }
-		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & (1L << componentType)) != 0; }
+		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & (1LL << componentType)) != 0; }
 		void AttachComponent(Component *component);
 		Component *DetachComponent(Component::Type componentType);
 		template<class T> inline T *Get() const;
@@ -80,14 +80,13 @@ namespace Maki
 		if((T::COMPONENT_TYPE & componentFlags) == 0) {
 			return nullptr;
 		}
-		const uint32 count = components.size();
-		for(uint32 i = 0; i < count; i++) {
-			Component *c = components[i];
-			if(c->componentType == T::COMPONENT_TYPE) {
+		for(uint32 i = 0; i < componentCount; i++) {
+			const ComponentEntry &entry = components[i];
+			if(entry.componentType == T::COMPONENT_TYPE) {
 #if _DEBUG
-				return dynamic_cast<T *>(c);
+				return dynamic_cast<T *>(entry.component);
 #else
-				return static_cast<T *>(c);
+				return static_cast<T *>(entry.component);
 #endif
 			}
 		}
