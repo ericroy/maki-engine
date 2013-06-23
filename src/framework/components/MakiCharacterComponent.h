@@ -9,7 +9,7 @@ namespace Maki
 	class CharacterComponent : public Component
 	{
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Character;
+		static const uint64 COMPONENT_TYPE = Type_Character;
 
 	private:
 		static const float TURN_SPEED;

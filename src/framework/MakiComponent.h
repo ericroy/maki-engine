@@ -11,23 +11,18 @@ namespace Maki
 		friend class Entity;
 
 	public:
-		enum Type
-		{
-			Type_SceneNode = 1<<0,
-			Type_Mesh = 1<<1,
-			Type_Light = 1<<2,
-			Type_Camera = 1<<3,
-			Type_Billboard = 1<<4,
-			Type_Character = 1<<5,
-			Type_Skeleton = 1<<6,
-		};
+		static const uint64 Type_Transform = 1L << 0;
+		static const uint64 Type_SceneNode = 1L << 1;
+		static const uint64 Type_Mesh = 1L << 2;
+		static const uint64 Type_Light = 1L << 3;
+		static const uint64 Type_Camera = 1L << 4;
+		static const uint64 Type_Billboard = 1L << 5;
+		static const uint64 Type_Character = 1L << 6;
+		static const uint64 Type_Skeleton = 1L << 7;
 
-		enum Message
-		{
-			Message_DebugWidgetCreated = 0,
-			Message_MeshBoundsChanged,
-			MessageCount
-		};
+		static const uint64 Message_DebugWidgetCreated = 1L << 0;
+		static const uint64 Message_MeshBoundsChanged = 1L << 1;
+		static const uint64 MessageAll = 0xffffffffffffffff;
 
 		static Component *Create(const char *type);
 
@@ -38,7 +33,7 @@ namespace Maki
 		};
 		
 	public:
-		Component(Type type) : componentType(type), owner(nullptr), messageHandler(nullptr) {}
+		Component(uint64 type) : componentType(type), owner(nullptr), messageHandler(nullptr) {}
 		virtual ~Component() {}
 		virtual bool Init(Document::Node *node) = 0;
 
@@ -56,7 +51,7 @@ namespace Maki
 	public:
 		uint64 componentType;
 		Entity *owner;
-		std::function<bool(Component *, Message, uintptr_t, uintptr_t)> messageHandler;
+		std::function<bool(Component *, uint64, uintptr_t, uintptr_t)> messageHandler;
 	};
 
 } // namespace Maki

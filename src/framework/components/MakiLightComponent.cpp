@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/MakiSystem.h"
 #include "framework/components/MakiLightComponent.h"
 
 namespace Maki
@@ -50,7 +51,6 @@ namespace Maki
 
 	bool LightComponent::Init(Document::Node *node)
 	{
-
 		Document::Node *typeNode = node->Resolve("type.#0");
 		if(typeNode != nullptr) {
 			properties.flags &= ~(1<<lightType);
@@ -102,7 +102,7 @@ namespace Maki
 		if(CreateDebugWidget != nullptr) {
 			Entity *debugWidget = CreateDebugWidget();
 			if(debugWidget != nullptr) {
-				owner->SendMessage(this, Message_DebugWidgetCreated, debugWidget, nullptr);
+				System::PostMessage(this, Message_DebugWidgetCreated, debugWidget);
 			}
 		}
 #endif

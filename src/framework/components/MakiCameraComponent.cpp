@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/MakiSystem.h"
 #include "framework/components/MakiCameraComponent.h"
 
 namespace Maki
@@ -41,7 +42,7 @@ namespace Maki
 		if(CreateDebugWidget != nullptr) {
 			Entity *debugWidget = CreateDebugWidget();
 			if(debugWidget != nullptr) {
-				owner->SendMessage(this, Message_DebugWidgetCreated, debugWidget, nullptr);
+				System::PostMessage(this, Message_DebugWidgetCreated, debugWidget);
 			}
 		}
 #endif

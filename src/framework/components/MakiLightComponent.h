@@ -8,7 +8,7 @@ namespace Maki
 	class LightComponent : public Component
 	{
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Light;
+		static const uint64 COMPONENT_TYPE = Type_Light;
 		static std::function<Entity *()> CreateDebugWidget;
 
 	public:

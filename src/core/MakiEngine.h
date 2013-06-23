@@ -27,7 +27,7 @@ namespace Maki
 		void Tick();
 
 	public:
-		std::function<void()> FrameUpdate;
+		std::function<void(float)> FrameUpdate;
 		std::function<void()> FrameDraw;
 		const Config *config;
 		const AssetLibrary *assets;

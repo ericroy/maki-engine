@@ -30,23 +30,19 @@ namespace Maki
 		virtual ~Entity();
 
 		bool Init(Document::Node *node);
-
-		void RecursivelyUpdate(Entity **drawListHead, const Matrix44 &current, float dt);
-		void Draw(Renderer *renderer);
 		
 		inline uint32 GetFlags() const { return flags; }
 		inline void SetFlags(uint32 f) { flags = f; }
 		inline bool GetFlag(Flag f) const { return (f & flags) != 0; }
 		inline void SetFlag(Flag f, bool on = true) { if(on) { flags |= f; } else { flags &= ~f; } }
 		
-		// Component system interface
+		// Component stuff
 		inline uint64 GetComponentFlags() const { return componentFlags; }
-		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & componentType) != 0; }
+		inline bool HasComponent(uint64 componentType) const { return (componentFlags & componentType) != 0; }
 		void AttachComponent(Component *c);
 		void DetachComponent(Component *c);
 		Component *DetachComponent(uint32 index);
-		template<class T> T *Get() const;
-		template<class T, class U> bool SendMessage(Component *from, Component::Message message, T *arg1, U *arg2);
+		template<class T> inline T *Get() const;
 
 	public:
 		std::function<void(float)> updateFunc;
@@ -55,19 +51,15 @@ namespace Maki
 	protected:
 		uint32 flags;	
 
-		// Component system
+		// Component stuff
 		uint64 componentFlags;
 		std::vector<Component *> components;
 	};
 
 
 
-
-
-	
-
 	template<class T>
-	T *Entity::Get() const
+	inline T *Entity::Get() const
 	{
 		if((T::COMPONENT_TYPE & componentFlags) == 0) {
 			return nullptr;
@@ -87,25 +79,6 @@ namespace Maki
 		return nullptr;
 	}
 
-
-
-	template<class T, class U>
-	bool Entity::SendMessage(Component *from, Component::Message message, T *arg1, U *arg2)
-	{
-		uintptr_t a1 = reinterpret_cast<uintptr_t>(arg1);
-		uintptr_t a2 = reinterpret_cast<uintptr_t>(arg2);
-
-		uint32 count = components.size();
-		for(uint32 i = 0; i < count; i++) {
-			Component *c = components[i];
-			if(c != from && c->messageHandler != nullptr) {
-				if(c->messageHandler(from, message, a1, a2)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 
 } // namespace Maki

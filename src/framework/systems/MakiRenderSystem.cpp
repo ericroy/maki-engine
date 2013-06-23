@@ -2,12 +2,12 @@
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiRenderSystem.h"
 #include "framework/components/MakiMeshComponent.h"
-#include "framework/components/MakiSceneNodeComponent.h"
+#include "framework/components/MakiTransformComponent.h"
 
 namespace Maki
 {
 	RenderSystem::RenderSystem()
-		: System(Component::Type_Mesh|Component::Type_SceneNode)
+		: System(Component::Type_Mesh)
 	{
 	}
 
@@ -30,9 +30,11 @@ namespace Maki
 			uint32 f = item.meshComp->owner->GetFlags();
 			if((f & requiredFlags) == requiredFlags && (f & disallowedFlags) == 0) {
 				
+				const Matrix44 &world = item.transComp->useWorldMatrix ? item.transComp->world : item.transComp->GetMatrix();
+
 				// Perform culling if necessary
-				if(cullingFrustum != nullptr && !item.nodeComp->bounds.empty) {
-					BoundingSphere worldBounds(item.nodeComp->GetWorldMatrix() * item.nodeComp->bounds.pos, item.nodeComp->bounds.GetRadius());
+				if(cullingFrustum != nullptr && !item.meshComp->bounds.empty) {
+					BoundingSphere worldBounds(world * (item.meshComp->bounds.pos * item.meshComp->meshScale), item.meshComp->bounds.GetRadius() * item.meshComp->meshScale);
 
 					bool cull = false;
 					for(uint32 i = 0; i < 6; i++) {
@@ -49,7 +51,7 @@ namespace Maki
 				
 				
 				// Submit all the draw commands for this mesh
-				Matrix44 m = item.nodeComp->GetWorldMatrix() * item.meshComp->scaleMatrix;
+				Matrix44 m = world * item.meshComp->scaleMatrix;
 				const uint32 count = item.meshComp->drawCommands.count;
 				for(uint32 i = 0; i < count; i++) {
 #if _DEBUG
@@ -69,7 +71,7 @@ namespace Maki
 	{
 		Item item;
 		item.meshComp = e->Get<MeshComponent>();
-		item.nodeComp = e->Get<SceneNodeComponent>();
+		item.transComp = e->Get<TransformComponent>();
 		items.push_back(item);
 	}
 
@@ -77,7 +79,7 @@ namespace Maki
 	{
 		Item item;
 		item.meshComp = e->Get<MeshComponent>();
-		item.nodeComp = e->Get<SceneNodeComponent>();
+		item.transComp = e->Get<TransformComponent>();
 		items.erase(std::find(std::begin(items), std::end(items), item));
 	}
 

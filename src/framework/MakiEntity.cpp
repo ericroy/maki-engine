@@ -66,48 +66,39 @@ namespace Maki
 		return true;
 	}
 
-	void Entity::RecursivelyUpdate(Entity **drawListHead, const Matrix44 &current, float dt) {
-		
-		world = current * matrix;
-		
-		if(GetFlag(Flag_Update) && !GetFlag(Flag_Physics)) {
-			const uint32 count = components.size();
-			for(uint32 i = 0; i < count; i++) {
-				components[i]->Update(dt);
-			}
-		
-			if(updateFunc != nullptr) {
-				updateFunc(dt);
-			}
-		}
-		
-		// Append to the draw list if we want to be drawn
-		drawListNext = nullptr;
-		if(GetFlag(Flag_Draw)) {
-			if(*drawListHead == nullptr) {
-				*drawListHead = this;
-			} else {
-				drawListNext = *drawListHead;
-				*drawListHead = this;
-			}
-		}
-		
-		if(GetFlag(Flag_ProcessChildren)) {
-			const int32 size = children.size();
-			for(int32 i = 0; i < size; i++) {
-				children[i]->RecursivelyUpdate(drawListHead, world, dt);
-			}
-		}
-	}
-
-	void Entity::Draw(Renderer *renderer)
-	{
-		const uint32 count = components.size();
-		for(uint32 i = 0; i < count; i++) {
-			components[i]->Draw(renderer);
-		}
-	}
-
+	//void Entity::RecursivelyUpdate(Entity **drawListHead, const Matrix44 &current, float dt) {
+	//	
+	//	world = current * matrix;
+	//	
+	//	if(GetFlag(Flag_Update) && !GetFlag(Flag_Physics)) {
+	//		const uint32 count = components.size();
+	//		for(uint32 i = 0; i < count; i++) {
+	//			components[i]->Update(dt);
+	//		}
+	//	
+	//		if(updateFunc != nullptr) {
+	//			updateFunc(dt);
+	//		}
+	//	}
+	//	
+	//	// Append to the draw list if we want to be drawn
+	//	drawListNext = nullptr;
+	//	if(GetFlag(Flag_Draw)) {
+	//		if(*drawListHead == nullptr) {
+	//			*drawListHead = this;
+	//		} else {
+	//			drawListNext = *drawListHead;
+	//			*drawListHead = this;
+	//		}
+	//	}
+	//	
+	//	if(GetFlag(Flag_ProcessChildren)) {
+	//		const int32 size = children.size();
+	//		for(int32 i = 0; i < size; i++) {
+	//			children[i]->RecursivelyUpdate(drawListHead, world, dt);
+	//		}
+	//	}
+	//}
 
 	void Entity::AttachComponent(Component *c)
 	{

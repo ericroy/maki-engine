@@ -11,7 +11,7 @@ namespace Maki
 		friend class RenderSystem;
 
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Mesh;
+		static const uint64 COMPONENT_TYPE = Type_Mesh;
 
 	public:
 		MeshComponent();
@@ -33,6 +33,7 @@ namespace Maki
 	private:
 		float meshScale;
 		Matrix44 scaleMatrix;
+		BoundingBox bounds;
 	};
 
 

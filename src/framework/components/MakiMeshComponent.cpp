@@ -71,9 +71,6 @@ namespace Maki
 		scaleMatrix.SetIdentity();
 		Matrix44::Scale(scale, scale, scale, scaleMatrix);
 		meshScale = scale;
-
-		const Mesh *m = MeshManager::Get(mesh);
-		owner->SendMessage(this, Message_MeshBoundsChanged, &m->bounds, &meshScale);
 	}
 
 	bool MeshComponent::Init(HandleOrRid meshId, HandleOrRid matId)
@@ -109,9 +106,7 @@ namespace Maki
 			dc->SetMaterial(material);
 		}
 
-		// Merge our mesh's bounding box with that of the owner
-		owner->SendMessage(this, Message_MeshBoundsChanged, &m->bounds, &meshScale);
-
+		bounds.Merge(m->bounds);
 		return true;
 	}
 

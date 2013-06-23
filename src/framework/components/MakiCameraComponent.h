@@ -8,7 +8,7 @@ namespace Maki
 	class CameraComponent : public Component
 	{
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Camera;
+		static const uint64 COMPONENT_TYPE = Type_Camera;
 		static std::function<Entity *()> CreateDebugWidget;
 
 	public:
@@ -19,10 +19,6 @@ namespace Maki
 
 	public:
 		Frustum frustum;
-
-		// Only for init from maki-doc...  what to do about this cruft?
-		bool hasTarget;
-		bool hasFrustum;
 	};
 
 }

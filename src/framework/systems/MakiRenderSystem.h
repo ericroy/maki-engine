@@ -6,14 +6,14 @@
 namespace Maki
 {
 	class MeshComponent;
-	class SceneNodeComponent;
+	class TransformComponent;
 
 	class RenderSystem : public System
 	{
 		struct Item
 		{
 			MeshComponent *meshComp;
-			SceneNodeComponent *nodeComp;
+			TransformComponent *transComp;
 		};
 
 	public:

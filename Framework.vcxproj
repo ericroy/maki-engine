@@ -16,6 +16,8 @@
     <ClInclude Include="src\framework\components\MakiCharacterComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
+    <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
+    <ClInclude Include="src\framework\components\MakiSkeletonComponent.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiBillboardEntity.h" />
     <ClInclude Include="src\framework\MakiCamera.h" />
@@ -36,13 +38,18 @@
     <ClInclude Include="src\framework\MakiScreenString.h" />
     <ClInclude Include="src\framework\MakiSkinnedMeshEntity.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
+    <ClInclude Include="src\framework\systems\MakiSkeletonSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiCharacterComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiSkeletonComponent.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\MakiBillboardEntity.cpp" />
     <ClCompile Include="src\framework\MakiCamera.cpp">
@@ -91,6 +98,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiSkeletonSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E2E92464-DAA8-471E-A548-2BDE0A311789}</ProjectGuid>

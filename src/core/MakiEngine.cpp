@@ -23,9 +23,6 @@ namespace Maki
 	{
 		inputState = new InputState();
 		renderer = new Renderer(window, core, config);
-
-		static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
-		static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
 		
 		millisPerUpdate = 1000 / config->GetUint("engine.updates_per_second", DEFAULT_UPDATES_PER_SECOND);
 		maxSkippedFrames = config->GetUint("engine.max_skipped_frames", DEFAULT_MAX_SKIPPED_FRAMES);
@@ -49,7 +46,7 @@ namespace Maki
 			updateTimer.Tick();
 			window->PollInput(inputState);
 			if(FrameUpdate != nullptr) {
-				FrameUpdate();
+				FrameUpdate(millisPerUpdate / 1000.0f);
 			}
 
 			nextUpdate = now + millisPerUpdate;

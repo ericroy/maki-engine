@@ -8,8 +8,10 @@ namespace Maki
 
 	class SkeletonComponent : public Component
 	{
+		friend class SkeletonSystem;
+
 	public:
-		static const Type COMPONENT_TYPE = Type::Type_Skeleton;
+		static const uint64 COMPONENT_TYPE = Type_Skeleton;
 		static std::function<Entity *()> CreateDebugArmature;
 
 	public:
