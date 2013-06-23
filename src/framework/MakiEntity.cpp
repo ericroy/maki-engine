@@ -1,7 +1,9 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiEntity.h"
 #include "framework/MakiComponent.h"
+#include "framework/MakiComponentPool.h"
 #include "framework/MakiSystem.h"
+
 
 namespace Maki
 {
@@ -10,8 +12,10 @@ namespace Maki
 		: flags(DEFAULT_FLAGS),
 		updateFunc(nullptr),
 		physicsLink(this),
-		componentFlags(0)
+		componentFlags(0),
+		componentCount(0)
 	{
+		
 	}
 
 	Entity::Entity(uint32 flags)
@@ -23,8 +27,9 @@ namespace Maki
 	}
 
 	Entity::~Entity() {
-		const int32 compCount = components.size();
-		for(uint32 i = compCount-1; i >= 0; i++) {
+		auto pools = ComponentPool::Get();
+		for(uint32 i = componentCount-1; i >= 0; i--) {
+			
 			Component *c = DetachComponent(i);
 			SAFE_DELETE(c);
 		}
@@ -100,39 +105,49 @@ namespace Maki
 	//	}
 	//}
 
-	void Entity::AttachComponent(Component *c)
+	void Entity::AttachComponent(Component *component)
 	{
-		assert((componentFlags & c->componentType) == 0 && "entity already has this component");
-		auto lowerBound = std::lower_bound(components.begin(), components.end(), c, Component::Comparator());
-		components.insert(lowerBound, c);
-		c->Attach(this);
+		assert((componentFlags & (1L << component->componentType)) == 0 && "entity already has this component");
+		assert(componentCount < MAX_COMPONENTS && "entity exhausted component slots");
+		
+		ComponentEntry ce;
+		ce.componentType = component->componentType;
+		ce.component = component;
 
+		ComponentEntry *iter = std::lower_bound(components, &components[componentCount], ce);
+		uint32 index = iter - components;
+
+		memmove(&components[index+1], &components[index], componentCount-index);
+		components[index] = ce;
+		componentCount++;
+		
 		uint64 oldComponentFlags = componentFlags;
-		componentFlags |= c->componentType;
+		componentFlags |= component->componentType;
 		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
+
+		component->Attach(this);
 	}
 
-	void Entity::DetachComponent(Component *c)
+	Component *Entity::DetachComponent(Component::Type componentType)
 	{
-		assert((componentFlags & c->componentType) != 0 && "entity doesn't have this component");
-		auto iter = std::find(components.begin(), components.end(), c);
-		assert(iter != components.end() && "entity doesn't have this component");
-		components.erase(iter);
+		assert((componentFlags & (1L << componentType)) != 0 && "entity doesn't have this component");
+		
+		ComponentEntry ce;
+		ce.componentType = componentType;
+
+		ComponentEntry *iter = std::find(components, &components[componentCount], ce);
+		uint32 index = iter - components;
+		assert(index != componentCount && "entity expected to have this component");
+
+		Component *c = iter->component;
+
+		memmove(&components[index], &components[index+1], componentCount-index-1);
+		componentCount--;
+		
 		c->Detach();
 
 		uint64 oldComponentFlags = componentFlags;
-		componentFlags &= ~c->componentType;
-		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
-	}
-
-	Component *Entity::DetachComponent(uint32 index)
-	{
-		Component *c = components[index];
-		components.erase(std::begin(components) + index);
-		c->Detach();
-
-		uint64 oldComponentFlags = componentFlags;
-		componentFlags &= ~c->componentType;
+		componentFlags &= ~componentType;
 		System::ComponentMakeupChanged(this, oldComponentFlags, componentFlags);
 
 		return c;

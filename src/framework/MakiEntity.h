@@ -21,8 +21,19 @@ namespace Maki
 			Flag_CastShadow = 1<<4,
 		};
 
+	private:
+		struct ComponentEntry
+		{
+			Component::Type componentType;
+			Component *component;
+
+			inline bool operator<(const ComponentEntry &other) const { return componentType < other.componentType; }
+			inline bool operator==(const ComponentEntry &other) const { return componentType == other.componentType; }
+		};
+
 	public:
 		static const uint32 DEFAULT_FLAGS = Flag_Update|Flag_ProcessChildren;
+		static const uint32 MAX_COMPONENTS = 16;
 		
 	public:
 		Entity();
@@ -38,22 +49,27 @@ namespace Maki
 		
 		// Component stuff
 		inline uint64 GetComponentFlags() const { return componentFlags; }
-		inline bool HasComponent(uint64 componentType) const { return (componentFlags & componentType) != 0; }
-		void AttachComponent(Component *c);
-		void DetachComponent(Component *c);
-		Component *DetachComponent(uint32 index);
+		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & (1L << componentType)) != 0; }
+		void AttachComponent(Component *component);
+		Component *DetachComponent(Component::Type componentType);
 		template<class T> inline T *Get() const;
+
+	protected:
+		// Table for storing handles to components
+		ComponentEntry components[MAX_COMPONENTS];
+
+		// Number of entries used in the components array above
+		uint32 componentCount;
+
+		// Flags indicating which components are present in this entity
+		uint64 componentFlags;
+		
+		// Entity flags (not related to components)
+		uint32 flags;
 
 	public:
 		std::function<void(float)> updateFunc;
 		PhysicsLink physicsLink;
-
-	protected:
-		uint32 flags;	
-
-		// Component stuff
-		uint64 componentFlags;
-		std::vector<Component *> components;
 	};
 
 
