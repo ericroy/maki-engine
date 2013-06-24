@@ -29,7 +29,7 @@ namespace Maki
 			virtual void Remove(Entity *e);
 
 		private:
-			std::vector<Components::SceneNode *> items;
+			std::vector<Components::SceneNode *> nodes;
 		};
 
 

@@ -21,15 +21,12 @@ namespace Maki
 
 			public:
 				Skeleton();
-				Skeleton(HandleOrRid skeletonId);
 				virtual ~Skeleton();
+				bool Init(Document::Node *props);
+				bool Init(HandleOrRid skeletonRid);
+				void OnAttach();
 
-				virtual bool Init(Document::Node *node);
-				void Update(Material *mat);
 				inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }
-
-			private:
-				bool Init(HandleOrRid skelId);
 
 			public:
 				Handle skeleton;

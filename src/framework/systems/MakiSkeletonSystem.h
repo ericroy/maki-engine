@@ -16,12 +16,12 @@ namespace Maki
 
 		class SkeletonSystem : public System
 		{
-			struct Item
+			struct Node
 			{
 				Components::Mesh *meshComp;
 				Components::Skeleton *skelComp;
 
-				inline bool operator==(const Item &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
+				inline bool operator==(const Node &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
 			};
 
 		public:
@@ -35,7 +35,7 @@ namespace Maki
 			virtual void Remove(Entity *e);
 
 		private:
-			std::vector<Item> items;
+			std::vector<Node> nodes;
 		};
 
 

@@ -74,18 +74,18 @@ namespace Maki
 
 		void RenderSystem::Add(Entity *e)
 		{
-			Item item;
-			item.meshComp = e->Get<Components::Mesh>();
-			item.transComp = e->Get<Components::Transform>();
-			items.push_back(item);
+			Node n;
+			n.meshComp = e->Get<Components::Mesh>();
+			n.transComp = e->Get<Components::Transform>();
+			nodes.push_back(n);
 		}
 
 		void RenderSystem::Remove(Entity *e)
 		{
-			Item item;
-			item.meshComp = e->Get<Components::Mesh>();
-			item.transComp = e->Get<Components::Transform>();
-			items.erase(std::find(std::begin(items), std::end(items), item));
+			Node n;
+			n.meshComp = e->Get<Components::Mesh>();
+			n.transComp = e->Get<Components::Transform>();
+			nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 		}
 
 		void RenderSystem::CalculateFrustumPlanes(const Frustum *cullingFrustum, const Matrix44 *view, Vector4 frustumPlanes[6])

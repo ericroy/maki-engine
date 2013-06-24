@@ -16,12 +16,12 @@ namespace Maki
 
 		class RenderSystem : public System
 		{
-			struct Item
+			struct Node
 			{
 				Components::Mesh *meshComp;
 				Components::Transform *transComp;
 
-				inline bool operator==(const Item &other) const { return meshComp == other.meshComp && transComp == other.transComp; }
+				inline bool operator==(const Node &other) const { return meshComp == other.meshComp && transComp == other.transComp; }
 			};
 
 		public:
@@ -38,7 +38,7 @@ namespace Maki
 			void CalculateFrustumPlanes(const Frustum *cullingFrustum, const Matrix44 *view, Vector4 frustumPlanes[6]);
 
 		private:
-			std::vector<Item> items;
+			std::vector<Node> nodes;
 		};
 
 

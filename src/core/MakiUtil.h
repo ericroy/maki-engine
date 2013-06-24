@@ -13,6 +13,7 @@ namespace Maki
 			if(x > high) return high;
 			return x;
 		}
+
 	
 	} // namespace Core
 

@@ -1,10 +1,6 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiSceneLoader.h"
-#include "framework/components/MakiLightComponent.h"
-#include "framework/components/MakiCameraComponent.h"
 #include "framework/components/MakiSceneNodeComponent.h"
-
-
 
 
 //

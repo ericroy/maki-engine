@@ -21,14 +21,14 @@ namespace Maki
 
 			public:
 				Mesh();
-				Mesh(HandleOrRid meshId, HandleOrRid materialId);
 				virtual ~Mesh();
-
-				virtual bool Init(Document::Node *node);
+				bool Init(Document::Node *props);
+				bool Init(HandleOrRid meshId, HandleOrRid matId);
+				
 				void SetMeshScale(float scale);
 
 			private:
-				bool Init(HandleOrRid meshId, HandleOrRid matId);
+				
 
 			public:
 				Handle mesh;

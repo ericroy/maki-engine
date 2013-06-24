@@ -19,7 +19,7 @@ namespace Maki
 			public:
 				SceneNode();
 				virtual ~SceneNode();
-				virtual bool Init(Document::Node *node);
+				bool Init(Document::Node *props);
 
 				inline void AddChild(Entity *e) { children.push_back(e); e->Get<SceneNode>()->parent = owner; }
 				void RemoveChild(Entity *e);

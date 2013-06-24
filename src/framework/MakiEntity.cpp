@@ -33,8 +33,6 @@ namespace Maki
 		{
 			assert((flags & (1ULL << component->type)) == 0 && "entity already has this component");
 			assert(componentCount < MAX_COMPONENTS && "entity exhausted component slots");
-		
-			component->owner = this;
 
 			Entry ce;
 			ce.type = component->type;
@@ -49,6 +47,10 @@ namespace Maki
 		
 			uint64 oldFlags = flags;
 			flags |= (1ULL << component->type);
+
+			component->owner = this;
+			component->OnAttach();
+
 			System::ComponentMakeupChanged(this, oldFlags, flags);
 		}
 
@@ -72,6 +74,7 @@ namespace Maki
 			flags &= ~(1ULL << type);
 			System::ComponentMakeupChanged(this, oldFlags, flags);
 
+			c->OnDetach();
 			c->owner = nullptr;
 			return c;
 		}

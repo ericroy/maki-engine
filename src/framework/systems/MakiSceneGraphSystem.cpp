@@ -34,12 +34,12 @@ namespace Maki
 
 		void SceneGraphSystem::Add(Entity *e)
 		{
-			items.push_back(e->Get<Components::SceneNode>());
+			nodes.push_back(e->Get<Components::SceneNode>());
 		}
 
 		void SceneGraphSystem::Remove(Entity *e)
 		{
-			items.erase(std::find(std::begin(items), std::end(items), e->Get<Components::SceneNode>()));
+			nodes.erase(std::find(std::begin(nodes), std::end(nodes), e->Get<Components::SceneNode>()));
 		}
 
 

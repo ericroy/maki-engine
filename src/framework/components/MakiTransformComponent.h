@@ -11,8 +11,6 @@ namespace Maki
 
 			class Transform : public Component
 			{
-				friend class SceneGraphSystem;
-
 			public:
 				static const Component::Type TYPE = Type_Transform;
 

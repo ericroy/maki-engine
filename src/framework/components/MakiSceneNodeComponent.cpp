@@ -23,7 +23,7 @@ namespace Maki
 				}
 			}
 
-			bool SceneNode::Init(Document::Node *node)
+			bool SceneNode::Init(Document::Node *props)
 			{
 				Vector4 target(0.0f);
 
@@ -39,13 +39,10 @@ namespace Maki
 
 			void SceneNode::RemoveChild(Entity *e)
 			{
-				const int32 size = children.size();
-				for(int32 i = 0; i < size; i++) {
-					if(children[i] == e) {
-						e->Get<SceneNode>()->parent = nullptr;
-						children.erase(children.begin()+i);
-						return;
-					}
+				auto iter = std::find(std::begin(children), std::end(children), e);
+				if(iter != children.end()) {
+					children.erase(iter);
+					e->Get<SceneNode>()->parent = nullptr;
 				}
 			}
 

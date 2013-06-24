@@ -18,17 +18,6 @@ namespace Maki
 			{
 			}
 
-			Mesh::Mesh(HandleOrRid meshId, HandleOrRid materialId)
-				: Component(TYPE),
-				mesh(HANDLE_NONE),
-				material(HANDLE_NONE),
-				scaleMatrix(true),
-				meshScale(1.0f)
-			{
-				bool ret = Init(meshId, materialId);
-				assert(ret);
-			}
-
 			Mesh::~Mesh()
 			{
 				const uint32 count = drawCommands.count;
@@ -40,11 +29,11 @@ namespace Maki
 				MaterialManager::Free(material);
 			}
 
-			bool Mesh::Init(Document::Node *node)
+			bool Mesh::Init(Document::Node *props)
 			{
 				Engine *eng = Engine::Get();
 
-				const char *meshPath = node->ResolveValue("mesh.#0");
+				const char *meshPath = props->ResolveValue("mesh.#0");
 				if(meshPath == nullptr) {
 					Console::Error("Entity did not specify a mesh");
 					return false;
@@ -55,7 +44,7 @@ namespace Maki
 					return false;
 				}
 
-				const char *matPath = node->ResolveValue("material.#0");
+				const char *matPath = props->ResolveValue("material.#0");
 				if(matPath == nullptr) {
 					Console::Error("Entity did not specify a material");
 					return false;
@@ -67,13 +56,6 @@ namespace Maki
 				}
 
 				return Init(meshRid, matRid);
-			}
-
-			void Mesh::SetMeshScale(float scale)
-			{
-				scaleMatrix.SetIdentity();
-				Matrix44::Scale(scale, scale, scale, scaleMatrix);
-				meshScale = scale;
 			}
 
 			bool Mesh::Init(HandleOrRid meshId, HandleOrRid matId)
@@ -109,6 +91,13 @@ namespace Maki
 
 				bounds.Merge(m->bounds);
 				return true;
+			}
+
+			void Mesh::SetMeshScale(float scale)
+			{
+				scaleMatrix.SetIdentity();
+				Matrix44::Scale(scale, scale, scale, scaleMatrix);
+				meshScale = scale;
 			}
 
 		} // namespace Components

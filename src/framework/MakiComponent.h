@@ -39,6 +39,9 @@ namespace Maki
 		public:
 			Component(Type type) : type(type), owner(nullptr) {}
 			virtual ~Component() {}
+			virtual bool Init(Core::Document::Node *props) { return true; }
+			virtual void OnAttach() {}
+			virtual void OnDetach() {}
 
 		public:
 			Type type;

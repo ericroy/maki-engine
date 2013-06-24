@@ -16,12 +16,6 @@
     <ClInclude Include="src\framework\components\MakiMeshComponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\framework\components\MakiCameraComponent.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\framework\components\MakiLightComponent.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h">
       <Filter>components</Filter>
@@ -54,12 +48,6 @@
     <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
     <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
-    <ClCompile Include="src\framework\components\MakiLightComponent.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp">
       <Filter>components</Filter>
     </ClCompile>

@@ -21,33 +21,33 @@ namespace Maki
 
 		void SkeletonSystem::Update()
 		{
-			const uint32 count = items.size();
+			const uint32 count = nodes.size();
 			for(uint32 i = 0; i < count; i++) {
-				const Item &item = items[i];
+				const Node &n = nodes[i];
 			
-				Material *mat = MaterialManager::Get(item.meshComp->material);
+				Material *mat = MaterialManager::Get(n.meshComp->material);
 			
-				assert(item.skelComp->skeleton != HANDLE_NONE);
+				assert(n.skelComp->skeleton != HANDLE_NONE);
 
-				if(!item.skelComp->poseDirty) {
+				if(!n.skelComp->poseDirty) {
 					return;
 				}
-				item.skelComp->poseDirty = false;
+				n.skelComp->poseDirty = false;
 
-				Skeleton *skel = SkeletonManager::Get(item.skelComp->skeleton);
+				Skeleton *skel = SkeletonManager::Get(n.skelComp->skeleton);
 
-				skel->CalculateWorldPose(item.skelComp->pose.data, item.skelComp->matrixPose.data);
+				skel->CalculateWorldPose(n.skelComp->pose.data, n.skelComp->matrixPose.data);
 				/*if(item.skelComp->armature != nullptr) {
 					item.skelComp->armature->Update(skel, item.skelComp->pose.data);
 				}*/
 
 				// Combine inverse bind and world matrices
 				// Store them in the material constant buffer (as 3x4 matrices)
-				float *boneMatrices = (float *)mat->uniformValues[item.skelComp->materialSlot].data;
+				float *boneMatrices = (float *)mat->uniformValues[n.skelComp->materialSlot].data;
 
 				Matrix44 temp;
-				for(uint32 i = 0; i < item.skelComp->pose.count; i++) {
-					temp = item.skelComp->matrixPose[i] * skel->inverseBindPose[i];
+				for(uint32 i = 0; i < n.skelComp->pose.count; i++) {
+					temp = n.skelComp->matrixPose[i] * skel->inverseBindPose[i];
 					const uint32 base = i*12;
 					boneMatrices[base] = temp.cols[0][0];
 					boneMatrices[base+1] = temp.cols[0][1];
@@ -67,18 +67,18 @@ namespace Maki
 
 		void SkeletonSystem::Add(Entity *e)
 		{
-			Item item;
-			item.meshComp = e->Get<Components::Mesh>();
-			item.skelComp = e->Get<Components::Skeleton>();
-			items.push_back(item);
+			Node n;
+			n.meshComp = e->Get<Components::Mesh>();
+			n.skelComp = e->Get<Components::Skeleton>();
+			nodes.push_back(n);
 		}
 
 		void SkeletonSystem::Remove(Entity *e)
 		{
-			Item item;
-			item.meshComp = e->Get<Components::Mesh>();
-			item.skelComp = e->Get<Components::Skeleton>();
-			items.erase(std::find(std::begin(items), std::end(items), item));
+			Node n;
+			n.meshComp = e->Get<Components::Mesh>();
+			n.skelComp = e->Get<Components::Skeleton>();
+			nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 		}
 
 
