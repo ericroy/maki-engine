@@ -13,12 +13,9 @@ namespace Maki
 		namespace Components
 		{
 
-			std::function<Entity *()> Skeleton::CreateDebugArmature = nullptr;
-
 			Skeleton::Skeleton()
 				: Component(TYPE),
 				skeleton(HANDLE_NONE),
-				armature(nullptr),
 				materialSlot(-1),
 				poseDirty(true)
 			{
@@ -77,11 +74,6 @@ namespace Maki
 				Material *mat = MaterialManager::Get(meshComp->material);
 				char *buffer = (char *)Allocator::Malloc(skel->bones.count*12*4);
 				materialSlot = mat->PushConstant("uBoneStates", skel->bones.count*12*4, buffer);
-
-				if(CreateDebugArmature != nullptr) {
-					armature = (DebugArmature *)CreateDebugArmature();
-					//System::PostMessage(this, Message_DebugWidgetCreated, (Entity *)armature);
-				}
 			}
 
 		} // namespace Components

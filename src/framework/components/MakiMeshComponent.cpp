@@ -11,6 +11,7 @@ namespace Maki
 
 			Mesh::Mesh()
 				: Component(TYPE),
+				flags(DEFAULT_FLAGS),
 				mesh(HANDLE_NONE),
 				material(HANDLE_NONE),
 				scaleMatrix(true),

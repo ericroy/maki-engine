@@ -16,6 +16,11 @@ namespace Maki
 			static ComponentPoolBase *PoolForTypeName(const char *typeName);
 
 		protected:
+			static void Register(const char *typeName, Component::Type type, ComponentPoolBase *pool);
+			static void Unregister(Component::Type type);
+
+		protected:
+			static uint64 poolTypes;
 			static ComponentPoolBase *poolForType[Component::TypeCount];
 			static std::map<std::string, ComponentPoolBase *> poolForTypeName;
 

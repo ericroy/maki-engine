@@ -29,18 +29,28 @@ namespace Maki
 				inline void SetMatrix(const Matrix44 &m);
 				inline void SetMatrix(const Vector4 &pos, const Quaternion &orient);
 
+
+				inline void SetTransformRelative(bool relative) { relativeMode = relative; }
+				inline const Matrix44 &GetWorldMatrix() const { return relativeMode ? world : matrix; }
+				inline void SetWorldMatrix(const Matrix44 &m);
+				
 			private:
 				inline void UpdateMatrix();
 				inline void UpdatePositionOrientation();
-
-			public:
-				bool useWorldMatrix;
-				Matrix44 world;
-
+				
 			private:
+				Matrix44 world;
 				Matrix44 matrix;
 				Vector4 position;
 				Quaternion orientation;
+
+				// When <relativeMode> is false (the default), the <matrix> member is a world matrix.  When <relativeMode>
+				// is true, the <matrix> member is considered to be relative to a parent coordinate system and the <world> member will
+				// be treated as the world matrix.
+				// 
+				// To get the world matrix that you need to draw or reason in world space, simply call GetWorldMatrix().
+				// <relativeMode> is set to true if this entity is added to a scene graph.
+				bool relativeMode;
 			};
 
 
@@ -56,7 +66,16 @@ namespace Maki
 				position = pos;
 				orientation = orient;
 				UpdateMatrix();
-			}	
+			}
+
+			inline void Transform::SetWorldMatrix(const Matrix44 &m)
+			{
+				if(relativeMode) {
+					world = m;
+				} else {
+					matrix = m;
+				}
+			}
 
 			inline void Transform::UpdateMatrix()
 			{

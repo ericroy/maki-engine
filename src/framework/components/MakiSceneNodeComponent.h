@@ -11,8 +11,6 @@ namespace Maki
 
 			class SceneNode : public Component
 			{
-				friend class SceneGraphSystem;
-
 			public:
 				static const Component::Type TYPE = Type_SceneNode;
 
@@ -21,8 +19,9 @@ namespace Maki
 				virtual ~SceneNode();
 				bool Init(Document::Node *props);
 
-				inline void AddChild(Entity *e) { children.push_back(e); e->Get<SceneNode>()->parent = owner; }
+				void AddChild(Entity *e);
 				void RemoveChild(Entity *e);
+				void SetWorldMatrix(const Matrix44 &world);
 
 			public:
 				Entity *parent;

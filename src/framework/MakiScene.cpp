@@ -1,6 +1,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiScene.h"
 #include "framework/MakiSceneLoader.h"
+#include "framework/MakiComponentPool.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 
@@ -11,6 +12,9 @@ namespace Maki
 
 		Scene::Scene() : root(nullptr), drawListHead(nullptr) {
 			root = new Entity();
+
+			auto pool = ComponentPool<Components::SceneNode>::Get();
+			root->AddComponent(pool->Create());
 		}
 
 		Scene::~Scene() {
@@ -27,12 +31,12 @@ namespace Maki
 			Components::SceneNode *nodeComp = e->Get<Components::SceneNode>();
 			Components::Transform *transComp = e->Get<Components::Transform>();
 
-			transComp->useWorldMatrix = true;
-			transComp->world = current * transComp->GetMatrix();
+			Matrix44 world = current * transComp->GetMatrix();
+			transComp->SetWorldMatrix(world);
 
 			const int32 size = nodeComp->children.size();
 			for(int32 i = 0; i < size; i++) {
-				UpdateRecursive(nodeComp->children[i], transComp->world, dt);
+				UpdateRecursive(nodeComp->children[i], world, dt);
 			}
 		}
 

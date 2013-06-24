@@ -17,16 +17,12 @@ namespace Maki
 				pool(size),
 				typeName(typeName)
 			{
-				assert(componentPoolRegistry[T::COMPONENT_TYPE] == nullptr && "This component pool already exists");
-			
-				poolForType[T::COMPONENT_TYPE] = this;
-				poolForTypeName[typeName] = this;
+				ComponentPoolBase::Register(typeName, T::TYPE, this);
 			}
 
 			virtual ~ComponentPool()
 			{
-				poolForType[T::COMPONENT_TYPE] = nullptr;
-				poolForTypeName.erase(typeName);
+				ComponentPoolBase::Unregister(T::TYPE);
 			}
 
 			// This is a little strange, but we don't want to manage these objects with handles.
@@ -35,19 +31,17 @@ namespace Maki
 			// I should really just write a memory allocator.
 			Component *Create()
 			{
-				auto pool = (ResourcePool<T> *)poolForType[T::COMPONENT_TYPE];
-				Handle h = pool->Alloc();
+				Handle h = pool.Alloc();
 				assert(h != HANDLE_NONE);
-				T *c = pool->Get(h);
+				T *c = pool.Get(h);
 				new(c) T();
 				return c;
 			}
 
 			void Destroy(Component *c)
 			{
-				auto pool = (ResourcePool<T> *)poolForType[T::COMPONENT_TYPE];
-				Handle h = c - pool->GetBaseAddr();
-				pool->Free(h);
+				Handle h = (T *)c - pool.GetBaseAddr();
+				pool.Free(h);
 			}
 
 		private:

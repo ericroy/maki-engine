@@ -15,7 +15,7 @@ namespace Maki
 				orientation(),
 				matrix(true),
 				world(true),
-				useWorldMatrix(false)
+				relativeMode(false)
 			{
 			}
 

@@ -14,9 +14,6 @@ namespace Maki
 
 		class Entity : public Aligned<SIMD_ALIGN>
 		{
-		public:
-			static const uint32 MAX_COMPONENTS = 16;
-
 		private:
 			struct Entry
 			{
@@ -26,6 +23,9 @@ namespace Maki
 				inline bool operator==(const Entry &other) const { return type == other.type; }
 			};
 		
+		private:
+			static const uint32 MAX_COMPONENTS = 16;
+
 		public:
 			Entity();
 			virtual ~Entity();

@@ -6,18 +6,20 @@ namespace Maki
 {
 	namespace Framework
 	{
-		class DebugArmature;
+		namespace Systems
+		{
+			class SkeletonSystem;
+		}
 
 		namespace Components
 		{
 
 			class Skeleton : public Component
 			{
-				friend class SkeletonSystem;
+				friend class Systems::SkeletonSystem;
 
 			public:
 				static const Component::Type TYPE = Type_Skeleton;
-				static std::function<Entity *()> CreateDebugArmature;
 
 			public:
 				Skeleton();
@@ -30,7 +32,6 @@ namespace Maki
 
 			public:
 				Handle skeleton;
-				DebugArmature *armature;
 				Array<Core::Skeleton::Joint> pose;
 
 			private:
