@@ -19,7 +19,7 @@ namespace Maki
 		Entity::~Entity() {
 			uint64 oldFlags = flags;
 
-			for(uint32 i = componentCount-1; i >= 0; i--) {
+			for(int32 i = componentCount-1; i >= 0; i--) {
 				ComponentPoolBase *pool = ComponentPoolBase::PoolForType(components[i].type);
 				pool->Destroy(components[i].c);
 			}

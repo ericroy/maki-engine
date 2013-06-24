@@ -39,7 +39,7 @@ namespace Maki
 		
 		protected:
 			// Table for storing handles to components
-			uint32 componentCount;
+			int32 componentCount;
 			Entry components[MAX_COMPONENTS];
 
 			// Flags indicating which components are present in this entity.
@@ -55,7 +55,7 @@ namespace Maki
 			if((T::TYPE & flags) == 0) {
 				return nullptr;
 			}
-			for(uint32 i = 0; i < componentCount; i++) {
+			for(int32 i = 0; i < componentCount; i++) {
 				const Entry &entry = components[i];
 				if(entry.type == T::TYPE) {
 	#if _DEBUG
