@@ -3,62 +3,66 @@
 
 namespace Maki
 {
-
-	class AnimationBlender
+	namespace Framework
 	{
-	public:
-		class Node
+
+		class AnimationBlender
 		{
 		public:
-			Node(float rate);
-			virtual ~Node();
-			virtual void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose) = 0;
+			class Node
+			{
+			public:
+				Node(float rate);
+				virtual ~Node();
+				virtual void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose) = 0;
 
-		public:
-			uint32 boneCount;
-			float rate;
-		};
+			public:
+				uint32 boneCount;
+				float rate;
+			};
 
-		class Anim : public Node
-		{
-		public:
-			Anim(float rate, bool loop, HandleOrRid animId);
-			virtual ~Anim();
-			void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
-			void SetFrame(float frame);
+			class Anim : public Node
+			{
+			public:
+				Anim(float rate, bool loop, HandleOrRid animId);
+				virtual ~Anim();
+				void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+				void SetFrame(float frame);
 
-		public:
-			bool loop;
-			SkeletonAnimation::State state;
-			Handle animation;	
-		};
+			public:
+				bool loop;
+				SkeletonAnimation::State state;
+				Handle animation;	
+			};
 
-		class Blend : public Node
-		{
-		public:
-			Blend(float rate, float balance, Node *first, Node *second);			
-			virtual ~Blend();
-			void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+			class Blend : public Node
+			{
+			public:
+				Blend(float rate, float balance, Node *first, Node *second);			
+				virtual ~Blend();
+				void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
 			
-		public:
-			Tween<float> balance;
-			Node *first;
-			Node *second;
-			Array<Skeleton::Joint> tempPose;
-		};
+			public:
+				Tween<float> balance;
+				Node *first;
+				Node *second;
+				Array<Skeleton::Joint> tempPose;
+			};
 		
-	public:
-		AnimationBlender();
-		~AnimationBlender();
-		bool Load(Rid rid);
-		void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+		public:
+			AnimationBlender();
+			~AnimationBlender();
+			bool Load(Rid rid);
+			void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
 
-	private:
-		Node *LoadRecursive(Document::Node *n);
+		private:
+			Node *LoadRecursive(Document::Node *n);
 
-	public:
-		Node *root;
-		std::vector<Tween<float> *> tweens;
-	};
+		public:
+			Node *root;
+			std::vector<Tween<float> *> tweens;
+		};
+
+	} // namespace Framework
 
 } // namespace Maki

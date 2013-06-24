@@ -5,13 +5,17 @@
 
 namespace Maki
 {
+	namespace Core
+	{
 
-	Texture::Texture() : Resource(), type(TextureType_Regular), width(0), height(0), handle(-1) {
-	}
+		Texture::Texture() : Resource(), type(TextureType_Regular), width(0), height(0), handle(-1) {
+		}
 	
-	Texture::~Texture() {
-		Engine::Get()->renderer->DeleteTexture(this);
-	}
+		Texture::~Texture() {
+			Engine::Get()->renderer->DeleteTexture(this);
+		}
 
 	
+	} // namespace Core
+
 } // namespace Maki

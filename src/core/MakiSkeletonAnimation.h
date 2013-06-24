@@ -5,52 +5,56 @@
 
 namespace Maki
 {
-	class Skeleton;
-
-	class SkeletonAnimation : public Resource
+	namespace Core
 	{
-	public:
-		struct State
+		class Skeleton;
+
+		class SkeletonAnimation : public Resource
 		{
 		public:
-			State(uint32 size);
-			State();
-			void SetSize(uint32 size);
+			struct State
+			{
+			public:
+				State(uint32 size);
+				State();
+				void SetSize(uint32 size);
+
+			public:
+				Array<uint32> currentKeyFrames;
+				float currentFrame;
+			};
+
+		private:
+			struct KeyFrame : public Skeleton::Joint
+			{
+				uint32 frame;
+			};
 
 		public:
-			Array<uint32> currentKeyFrames;
-			float currentFrame;
+			static float debugRateCoeff;
+
+		public:
+			SkeletonAnimation();
+			~SkeletonAnimation();
+			bool Load(Rid rid);
+			void AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose);
+			inline uint32 GetBoneCount() const;
+
+		public:
+			float frameRate;
+			uint32 frameCount;
+
+			// Indexed as data[boneIndex][keyframeIndex]
+			Array< Array<KeyFrame> > data;
 		};
 
-	private:
-		struct KeyFrame : public Skeleton::Joint
+
+
+		uint32 SkeletonAnimation::GetBoneCount() const
 		{
-			uint32 frame;
-		};
+			return data.count;
+		}
 
-	public:
-		static float debugRateCoeff;
-
-	public:
-		SkeletonAnimation();
-		~SkeletonAnimation();
-		bool Load(Rid rid);
-		void AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose);
-		inline uint32 GetBoneCount() const;
-
-	public:
-		float frameRate;
-		uint32 frameCount;
-
-		// Indexed as data[boneIndex][keyframeIndex]
-		Array< Array<KeyFrame> > data;
-	};
-
-
-
-	uint32 SkeletonAnimation::GetBoneCount() const
-	{
-		return data.count;
-	}
+	} // namespace Core
 
 } // namespace Maki

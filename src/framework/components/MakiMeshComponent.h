@@ -4,37 +4,46 @@
 
 namespace Maki
 {
-	class DebugArmature;
-
-	class MeshComponent : public Component
+	namespace Framework
 	{
-		friend class RenderSystem;
 
-	public:
-		static const Component::Type COMPONENT_TYPE = Type_Mesh;
+		class DebugArmature;
 
-	public:
-		MeshComponent();
-		MeshComponent(HandleOrRid meshId, HandleOrRid materialId);
-		virtual ~MeshComponent();
+		namespace Components
+		{
 
-		virtual bool Init(Document::Node *node);
-		void SetMeshScale(float scale);
+			class Mesh : public Component
+			{
+				friend class RenderSystem;
 
-	private:
-		bool Init(HandleOrRid meshId, HandleOrRid matId);
+			public:
+				static const Component::Type TYPE = Type_Mesh;
 
-	public:
-		Handle mesh;
-		Handle material;
-		Array<DrawCommand> drawCommands;
-		Entity *drawListNext;
+			public:
+				Mesh();
+				Mesh(HandleOrRid meshId, HandleOrRid materialId);
+				virtual ~Mesh();
 
-	private:
-		float meshScale;
-		Matrix44 scaleMatrix;
-		BoundingBox bounds;
-	};
+				virtual bool Init(Document::Node *node);
+				void SetMeshScale(float scale);
 
+			private:
+				bool Init(HandleOrRid meshId, HandleOrRid matId);
+
+			public:
+				Handle mesh;
+				Handle material;
+				Array<DrawCommand> drawCommands;
+				Entity *drawListNext;
+
+			private:
+				float meshScale;
+				Matrix44 scaleMatrix;
+				BoundingBox bounds;
+			};
+
+		} // namespace Components
+
+	} // namespace Framework
 
 } // namespace Maki

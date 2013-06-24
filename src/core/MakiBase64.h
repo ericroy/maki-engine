@@ -226,128 +226,133 @@ VERSION HISTORY:
 
 namespace Maki
 {
-	namespace Base64
+	namespace Core
 	{
 	
-		// Translation Table as described in RFC1113
-		static const char cb64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-		// Translation Table to decode (created by author)
-		static const char cd64[] = "|$$$}rstuvwxyz{$$$$$$$>?@ABCDEFGHIJKLMNOPQRSTUVW$$$$$$XYZ[\\]^_`abcdefghijklmnopq";
-
-
-		/*
-		** encodeblock
-		**
-		** encode 3 8-bit binary bytes as 4 '6-bit' characters
-		*/
-		inline void encodeblock(unsigned char *in, unsigned char *out, int len)
+		namespace Base64
 		{
-			out[0] = (unsigned char)cb64[ (int)(in[0] >> 2) ];
-			out[1] = (unsigned char)cb64[ (int)(((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4)) ];
-			out[2] = (unsigned char)(len > 1 ? cb64[ (int)(((in[1] & 0x0f) << 2) | ((in[2] & 0xc0) >> 6)) ] : '=');
-			out[3] = (unsigned char)(len > 2 ? cb64[ (int)(in[2] & 0x3f) ] : '=');
-		}
+	
+			// Translation Table as described in RFC1113
+			static const char cb64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-		/*
-		** decodeblock
-		**
-		** decode 4 '6-bit' characters into 3 8-bit binary bytes
-		*/
-		inline void decodeblock(unsigned char *in, unsigned char *out)
-		{   
-			out[0] = (unsigned char)(in[0] << 2 | in[1] >> 4);
-			out[1] = (unsigned char)(in[1] << 4 | in[2] >> 2);
-			out[2] = (unsigned char)(((in[2] << 6) & 0xc0) | in[3]);
-		}
+			// Translation Table to decode (created by author)
+			static const char cd64[] = "|$$$}rstuvwxyz{$$$$$$$>?@ABCDEFGHIJKLMNOPQRSTUVW$$$$$$XYZ[\\]^_`abcdefghijklmnopq";
 
 
+			/*
+			** encodeblock
+			**
+			** encode 3 8-bit binary bytes as 4 '6-bit' characters
+			*/
+			inline void encodeblock(unsigned char *in, unsigned char *out, int len)
+			{
+				out[0] = (unsigned char)cb64[ (int)(in[0] >> 2) ];
+				out[1] = (unsigned char)cb64[ (int)(((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4)) ];
+				out[2] = (unsigned char)(len > 1 ? cb64[ (int)(((in[1] & 0x0f) << 2) | ((in[2] & 0xc0) >> 6)) ] : '=');
+				out[3] = (unsigned char)(len > 2 ? cb64[ (int)(in[2] & 0x3f) ] : '=');
+			}
 
-		bool Decode(std::istream &src, std::ostream &dst)
-		{
-			int retcode = 0;
-			unsigned char in[4];
-			unsigned char out[3];
-			int v;
-			int i, len;
+			/*
+			** decodeblock
+			**
+			** decode 4 '6-bit' characters into 3 8-bit binary bytes
+			*/
+			inline void decodeblock(unsigned char *in, unsigned char *out)
+			{   
+				out[0] = (unsigned char)(in[0] << 2 | in[1] >> 4);
+				out[1] = (unsigned char)(in[1] << 4 | in[2] >> 2);
+				out[2] = (unsigned char)(((in[2] << 6) & 0xc0) | in[3]);
+			}
 
-			*in = (unsigned char) 0;
-			*out = (unsigned char) 0;
-			while(!src.eof()) {
-				for(len = 0, i = 0; i < 4 && !src.eof(); i++) {
-					v = 0;
-					while(!src.eof() && v == 0) {
-						v = src.get();
-						if(v != EOF) {
-							v = ((v < 43 || v > 122) ? 0 : (int) cd64[ v - 43 ]);
-							if(v != 0) {
-								v = ((v == (int)'$') ? 0 : v - 61);
+
+
+			bool Decode(std::istream &src, std::ostream &dst)
+			{
+				int retcode = 0;
+				unsigned char in[4];
+				unsigned char out[3];
+				int v;
+				int i, len;
+
+				*in = (unsigned char) 0;
+				*out = (unsigned char) 0;
+				while(!src.eof()) {
+					for(len = 0, i = 0; i < 4 && !src.eof(); i++) {
+						v = 0;
+						while(!src.eof() && v == 0) {
+							v = src.get();
+							if(v != EOF) {
+								v = ((v < 43 || v > 122) ? 0 : (int) cd64[ v - 43 ]);
+								if(v != 0) {
+									v = ((v == (int)'$') ? 0 : v - 61);
+								}
+							}
+						}
+						if(!src.eof()) {
+							len++;
+							if( v != 0 ) {
+								in[ i ] = (unsigned char) (v - 1);
+							}
+						} else {
+							in[i] = (unsigned char) 0;
+						}
+					}
+					if(len > 0) {
+						decodeblock(in, out);
+						for(i = 0; i < len - 1; i++) {
+							dst.put(out[i]);
+							if(dst.bad()){
+								return false;
 							}
 						}
 					}
-					if(!src.eof()) {
-						len++;
-						if( v != 0 ) {
-							in[ i ] = (unsigned char) (v - 1);
-						}
-					} else {
-						in[i] = (unsigned char) 0;
-					}
 				}
-				if(len > 0) {
-					decodeblock(in, out);
-					for(i = 0; i < len - 1; i++) {
-						dst.put(out[i]);
-						if(dst.bad()){
-							return false;
-						}
-					}
-				}
+				return true;
 			}
-			return true;
-		}
 
-		bool Encode(std::istream &src, std::ostream &dst, int linesize = 1024)
-		{
-			unsigned char in[3];
-			unsigned char out[4];
-			int i, len, blocksout = 0;
-			int retcode = 0;
+			bool Encode(std::istream &src, std::ostream &dst, int linesize = 1024)
+			{
+				unsigned char in[3];
+				unsigned char out[4];
+				int i, len, blocksout = 0;
+				int retcode = 0;
 
-			*in = (unsigned char)0;
-			*out = (unsigned char)0;
-			while(!src.eof()) {
-				len = 0;
-				for(i = 0; i < 3; i++) {
-					in[i] = src.get();
+				*in = (unsigned char)0;
+				*out = (unsigned char)0;
+				while(!src.eof()) {
+					len = 0;
+					for(i = 0; i < 3; i++) {
+						in[i] = src.get();
 
-					if(!src.eof()) {
-						len++;
-					}
-					else {
-						in[i] = (unsigned char) 0;
-					}
-				}
-				if(len > 0) {
-					encodeblock(in, out, len);
-					for(i = 0; i < 4; i++) {
-						dst.put(out[i]);
-						if(dst.bad()) {
-							return false;
+						if(!src.eof()) {
+							len++;
+						}
+						else {
+							in[i] = (unsigned char) 0;
 						}
 					}
-					blocksout++;
-				}
-				if(blocksout >= (linesize/4)) {
-					if( blocksout > 0 ) {
-						dst.put('\n');
+					if(len > 0) {
+						encodeblock(in, out, len);
+						for(i = 0; i < 4; i++) {
+							dst.put(out[i]);
+							if(dst.bad()) {
+								return false;
+							}
+						}
+						blocksout++;
 					}
-					blocksout = 0;
+					if(blocksout >= (linesize/4)) {
+						if( blocksout > 0 ) {
+							dst.put('\n');
+						}
+						blocksout = 0;
+					}
 				}
+				return true;
 			}
-			return true;
-		}
 
-	} // namespace Base64
+		} // namespace Base64
+
+	} // namespace Core
 
 } // namespace Maki

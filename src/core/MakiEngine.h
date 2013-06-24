@@ -6,45 +6,50 @@
 
 namespace Maki
 {
-	class Config;
-	class AssetLibrary;
-	class Renderer;
-	class RenderCore;
-	class Window;
-	class InputState;
-	class Timer;
-	class TimeSource;
-
-	class Engine : public PseudoSingleton<Engine>
+	namespace Core
 	{
-	public:
-		static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
-		static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
+	
+		class Config;
+		class AssetLibrary;
+		class Renderer;
+		class RenderCore;
+		class Window;
+		class InputState;
+		class Timer;
+		class TimeSource;
 
-	public:
-		Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config);
-		virtual ~Engine();
-		void Tick();
+		class Engine : public PseudoSingleton<Engine>
+		{
+		public:
+			static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
+			static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
 
-	public:
-		std::function<void(float)> FrameUpdate;
-		std::function<void()> FrameDraw;
-		const Config *config;
-		const AssetLibrary *assets;
+		public:
+			Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config);
+			virtual ~Engine();
+			void Tick();
+
+		public:
+			std::function<void(float)> FrameUpdate;
+			std::function<void()> FrameDraw;
+			const Config *config;
+			const AssetLibrary *assets;
 		
-		Timer updateTimer;
-		Timer renderTimer;
+			Timer updateTimer;
+			Timer renderTimer;
 		
-		InputState *inputState;
-		Renderer *renderer;
-		Window *window;
+			InputState *inputState;
+			Renderer *renderer;
+			Window *window;
 
-	private:
-		TimeSource *timeSource;
-		int64 nextUpdate;
-		uint32 millisPerUpdate;
-		uint32 maxSkippedFrames;
+		private:
+			TimeSource *timeSource;
+			int64 nextUpdate;
+			uint32 millisPerUpdate;
+			uint32 maxSkippedFrames;
 	};
 
+
+	} // namespace Core
 
 } // namespace Maki

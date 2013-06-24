@@ -5,24 +5,28 @@
 
 namespace Maki
 {
-
-	class MaterialManager : public Manager<Material, MaterialManager>
+	namespace Core
 	{
-	public:
-		static Handle DuplicateIfShared(Handle handle);
 
-	public:
-		static const int32 DEFAULT_SIZE = 64;
+		class MaterialManager : public Manager<Material, MaterialManager>
+		{
+		public:
+			static Handle DuplicateIfShared(Handle handle);
 
-	public:
-		MaterialManager(uint32 size = DEFAULT_SIZE);	
-		virtual ~MaterialManager();	
-		Handle Load(Rid rid);
-		void ReloadAssets();
-		bool ReloadAsset(Rid rid);
+		public:
+			static const int32 DEFAULT_SIZE = 64;
 
-	private:
-		void Reload(Material *mat);
-	};
+		public:
+			MaterialManager(uint32 size = DEFAULT_SIZE);	
+			virtual ~MaterialManager();	
+			Handle Load(Rid rid);
+			void ReloadAssets();
+			bool ReloadAsset(Rid rid);
+
+		private:
+			void Reload(Material *mat);
+		};
+
+	} // namespace Core
 
 } // namespace Maki

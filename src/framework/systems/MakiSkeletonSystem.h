@@ -5,32 +5,40 @@
 
 namespace Maki
 {
-	class MeshComponent;
-	class SkeletonComponent;
-
-	class SkeletonSystem : public System
+	namespace Framework
 	{
-		struct Item
-		{
-			MeshComponent *meshComp;
-			SkeletonComponent *skelComp;
 
-			inline bool operator==(const Item &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
+		namespace Components
+		{
+			class Mesh;
+			class Skeleton;
+		}
+
+		class SkeletonSystem : public System
+		{
+			struct Item
+			{
+				Components::Mesh *meshComp;
+				Components::Skeleton *skelComp;
+
+				inline bool operator==(const Item &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
+			};
+
+		public:
+			SkeletonSystem();
+			virtual ~SkeletonSystem();
+		
+			void Update();
+
+		protected:
+			void Add(Entity *e);
+			virtual void Remove(Entity *e);
+
+		private:
+			std::vector<Item> items;
 		};
 
-	public:
-		SkeletonSystem();
-		virtual ~SkeletonSystem();
-		
-		void Update();
 
-	protected:
-		void Add(Entity *e);
-		virtual void Remove(Entity *e);
-
-	private:
-		std::vector<Item> items;
-	};
-
+	} // namespace Framework
 
 } // namespace Maki

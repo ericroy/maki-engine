@@ -5,25 +5,29 @@
 
 namespace Maki
 {
-
-	class VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
+	namespace Core
 	{
-	public:
-		static const int32 DEFAULT_SIZE = 8;
 
-	public:
-		inline Handle FindOrAdd(const VertexFormat &vf)
+		class VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
 		{
-			Handle vertexFormat = Find(vf);
-			if(vertexFormat == HANDLE_NONE) {
-				return Add(vf);
-			}
-			return vertexFormat;
-		}
+		public:
+			static const int32 DEFAULT_SIZE = 8;
 
-	public:
-		VertexFormatManager(uint32 size = DEFAULT_SIZE);	
-		virtual ~VertexFormatManager();
-	};
+		public:
+			inline Handle FindOrAdd(const VertexFormat &vf)
+			{
+				Handle vertexFormat = Find(vf);
+				if(vertexFormat == HANDLE_NONE) {
+					return Add(vf);
+				}
+				return vertexFormat;
+			}
+
+		public:
+			VertexFormatManager(uint32 size = DEFAULT_SIZE);	
+			virtual ~VertexFormatManager();
+		};
+
+	} // namespace Core
 
 } // namespace Maki

@@ -4,26 +4,33 @@
 
 namespace Maki
 {
-
-	class SceneNodeComponent : public Component
+	namespace Framework
 	{
-		friend class SceneGraphSystem;
+		namespace Components
+		{
 
-	public:
-		static const Component::Type COMPONENT_TYPE = Type_SceneNode;
+			class SceneNode : public Component
+			{
+				friend class SceneGraphSystem;
 
-	public:
-		SceneNodeComponent();
-		virtual ~SceneNodeComponent();
-		virtual bool Init(Document::Node *node);
+			public:
+				static const Component::Type TYPE = Type_SceneNode;
 
-		inline void AddChild(Entity *e) { children.push_back(e); e->Get<SceneNodeComponent>()->parent = owner; }
-		void RemoveChild(Entity *e);
+			public:
+				SceneNode();
+				virtual ~SceneNode();
+				virtual bool Init(Document::Node *node);
 
-	public:
-		Entity *parent;
-		std::vector<Entity *> children;
-	};
+				inline void AddChild(Entity *e) { children.push_back(e); e->Get<SceneNode>()->parent = owner; }
+				void RemoveChild(Entity *e);
 
+			public:
+				Entity *parent;
+				std::vector<Entity *> children;
+			};
 
-}
+		} // namespace Components
+
+	} // namespace Framework
+
+} // namespace Maki

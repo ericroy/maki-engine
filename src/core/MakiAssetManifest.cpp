@@ -4,66 +4,70 @@
 
 namespace Maki
 {
+	namespace Core
+	{
 
-	AssetManifest::AssetManifest(uint32 assetCount, Rid *ridArray, const char **pathArray, const char *commonPathPrefix)
-		: ridStart(0),
-		count(assetCount),
-		ridArray(ridArray),
-		pathArray(pathArray),
-		commonPathPrefix(commonPathPrefix)
-	{
-	}
-		
-	AssetManifest::~AssetManifest()
-	{
-	}
-
-	void AssetManifest::SetRidStart(uint32 ridStart)
-	{
-		// Renumber all rids, starting at <ridStart>
-		this->ridStart = ridStart;
-		for(uint32 i = 0; i < count; i++) {
-			ridArray[i] = ridStart+i;
+		AssetManifest::AssetManifest(uint32 assetCount, Rid *ridArray, const char **pathArray, const char *commonPathPrefix)
+			: ridStart(0),
+			count(assetCount),
+			ridArray(ridArray),
+			pathArray(pathArray),
+			commonPathPrefix(commonPathPrefix)
+		{
 		}
-	}
+		
+		AssetManifest::~AssetManifest()
+		{
+		}
 
-	Rid AssetManifest::PathToRid(const char *path) const
-	{
-		std::string fullPath = commonPathPrefix + path;
-		for(uint32 i = 0; i < count; i++) {
-			if(fullPath == pathArray[i]) {
-				return TO_RID(i);
+		void AssetManifest::SetRidStart(uint32 ridStart)
+		{
+			// Renumber all rids, starting at <ridStart>
+			this->ridStart = ridStart;
+			for(uint32 i = 0; i < count; i++) {
+				ridArray[i] = ridStart+i;
 			}
 		}
-		return RID_NONE;
-	}
 
-	char *AssetManifest::AllocRead(Rid rid, uint32 *bytesRead) const
-	{
-		if(rid == RID_NONE) {
-			return false;
+		Rid AssetManifest::PathToRid(const char *path) const
+		{
+			std::string fullPath = commonPathPrefix + path;
+			for(uint32 i = 0; i < count; i++) {
+				if(fullPath == pathArray[i]) {
+					return TO_RID(i);
+				}
+			}
+			return RID_NONE;
 		}
-		const char *path = GetPath(rid);
 
-		FILE *fp = nullptr;
-		if(fopen_s(&fp, path, "rb") != 0) {
-			Console::Error("Failed to open resource: %s", path);
-			return nullptr;
-		}
+		char *AssetManifest::AllocRead(Rid rid, uint32 *bytesRead) const
+		{
+			if(rid == RID_NONE) {
+				return false;
+			}
+			const char *path = GetPath(rid);
+
+			FILE *fp = nullptr;
+			if(fopen_s(&fp, path, "rb") != 0) {
+				Console::Error("Failed to open resource: %s", path);
+				return nullptr;
+			}
 		
-		fseek(fp, 0, SEEK_END);
-		size_t size = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
+			fseek(fp, 0, SEEK_END);
+			size_t size = ftell(fp);
+			fseek(fp, 0, SEEK_SET);
 
-		char *buffer = (char *)Allocator::Malloc(size+1);
-		fread(buffer, sizeof(uint8), size, fp);
-		fclose(fp);
-		buffer[size] = 0;
+			char *buffer = (char *)Allocator::Malloc(size+1);
+			fread(buffer, sizeof(uint8), size, fp);
+			fclose(fp);
+			buffer[size] = 0;
 
-		if(bytesRead != nullptr) {
-			*bytesRead = size;
+			if(bytesRead != nullptr) {
+				*bytesRead = size;
+			}
+			return buffer;
 		}
-		return buffer;
-	}
+
+	} // namespace Core
 
 } // namespace Maki

@@ -5,41 +5,45 @@
 
 namespace Maki
 {
-
-	class ShaderProgram : public Resource
+	namespace Core
 	{
-	public:
-		enum Variant
+
+		class ShaderProgram : public Resource
 		{
-			Variant_Normal = 0,
-			Variant_Depth,
-			Variant_Shadow,
-			VariantCount
+		public:
+			enum Variant
+			{
+				Variant_Normal = 0,
+				Variant_Depth,
+				Variant_Shadow,
+				VariantCount
+			};
+
+		private:
+			static char *variantDataKey[VariantCount];
+			static char *variantMetaKey[VariantCount];
+
+		public:
+			ShaderProgram();
+			~ShaderProgram();
+
+			bool Load(Rid rid, Variant variant);
+
+			inline bool operator==(const ShaderProgram &other) const
+			{
+				return rid == other.rid && variant == other.variant;
+			}
+
+		private:
+			ShaderProgram(const ShaderProgram &) {}
+
+		public:
+			Shader vertexShader;
+			Shader pixelShader;
+			Variant variant;
+			Handle variants[VariantCount-1];
 		};
 
-	private:
-		static char *variantDataKey[VariantCount];
-		static char *variantMetaKey[VariantCount];
-
-	public:
-		ShaderProgram();
-		~ShaderProgram();
-
-		bool Load(Rid rid, Variant variant);
-
-		inline bool operator==(const ShaderProgram &other) const
-		{
-			return rid == other.rid && variant == other.variant;
-		}
-
-	private:
-		ShaderProgram(const ShaderProgram &) {}
-
-	public:
-		Shader vertexShader;
-		Shader pixelShader;
-		Variant variant;
-		Handle variants[VariantCount-1];
-	};
+	} // namespace Core
 
 } // namespace Maki

@@ -4,32 +4,40 @@
 
 namespace Maki
 {
-	TransformComponent::TransformComponent()
-		: Component(COMPONENT_TYPE),
-		position(0.0f),
-		orientation(),
-		matrix(true),
-		world(true),
-		useWorldMatrix(false)
+	namespace Framework
 	{
-	}
+		namespace Components
+		{
 
-	TransformComponent::~TransformComponent()
-	{
-	}
+			Transform::Transform()
+				: Component(TYPE),
+				position(0.0f),
+				orientation(),
+				matrix(true),
+				world(true),
+				useWorldMatrix(false)
+			{
+			}
 
-	bool TransformComponent::Init(Document::Node *node)
-	{
-		Vector4 pos(0.0f);
-		Vector4 angles(0.0f);
+			Transform::~Transform()
+			{
+			}
 
-		node->ResolveAsVectorN("pos", 3, pos.vals);
-		node->ResolveAsVectorN("angles", 3, angles.vals);
+			bool Transform::Init(Document::Node *node)
+			{
+				Vector4 pos(0.0f);
+				Vector4 angles(0.0f);
+
+				node->ResolveAsVectorN("pos", 3, pos.vals);
+				node->ResolveAsVectorN("angles", 3, angles.vals);
 		
-		SetMatrix(pos, Quaternion(angles));
+				SetMatrix(pos, Quaternion(angles));
 
-		return true;
-	}
+				return true;
+			}
 
+		} // namespace Components
 
-}
+	} // namespace Framework
+
+} // namespace Maki

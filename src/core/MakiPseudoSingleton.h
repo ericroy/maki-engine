@@ -3,39 +3,43 @@
 
 namespace Maki
 {
-
-	template<class SubClass>
-	class PseudoSingleton
+	namespace Core
 	{
-	public:
-		static inline SubClass *Get() { return current; }
-		static inline SubClass *SetCurrent(SubClass *newCurrent)
-		{
-			SubClass *oldCurrent = current;
-			current = newCurrent;
-			return oldCurrent;
-		}
 
-	private:
-		static SubClass *current;
-
-	public:
-		PseudoSingleton()
+		template<class SubClass>
+		class PseudoSingleton
 		{
-			if(current == nullptr) {
-				current = static_cast<SubClass *>(this);
+		public:
+			static inline SubClass *Get() { return current; }
+			static inline SubClass *SetCurrent(SubClass *newCurrent)
+			{
+				SubClass *oldCurrent = current;
+				current = newCurrent;
+				return oldCurrent;
 			}
-		}
 
-		virtual ~PseudoSingleton()
-		{
-			if(current == static_cast<SubClass *>(this)) {
-				current = nullptr;
+		private:
+			static SubClass *current;
+
+		public:
+			PseudoSingleton()
+			{
+				if(current == nullptr) {
+					current = static_cast<SubClass *>(this);
+				}
 			}
-		}
-	};
 
-	template<class SubClass>
-	SubClass *PseudoSingleton<SubClass>::current = nullptr;
+			virtual ~PseudoSingleton()
+			{
+				if(current == static_cast<SubClass *>(this)) {
+					current = nullptr;
+				}
+			}
+		};
+
+		template<class SubClass>
+		SubClass *PseudoSingleton<SubClass>::current = nullptr;
+
+	} // namespace Core
 
 } // namespace Maki

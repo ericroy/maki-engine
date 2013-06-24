@@ -3,13 +3,17 @@
 
 namespace Maki
 {
-
-	template<class T>
-	inline T Clamp(T x, T low, T high)
+	namespace Core
 	{
-		if(x < low) return low;
-		if(x > high) return high;
-		return x;
-	}
+
+		template<class T>
+		inline T Clamp(T x, T low, T high)
+		{
+			if(x < low) return low;
+			if(x > high) return high;
+			return x;
+		}
 	
+	} // namespace Core
+
 } // namespace Maki

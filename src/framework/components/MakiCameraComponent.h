@@ -4,21 +4,29 @@
 
 namespace Maki
 {
-
-	class CameraComponent : public Component
+	namespace Framework
 	{
-	public:
-		static const Component::Type COMPONENT_TYPE = Type_Camera;
-		static std::function<Entity *()> CreateDebugWidget;
+		namespace Components
+		{
 
-	public:
-		CameraComponent();
-		virtual ~CameraComponent();
-		virtual bool Init(Document::Node *node);
-		virtual void Attach(Entity *owner);
+			class Camera : public Component
+			{
+			public:
+				static const Component::Type TYPE = Type_Camera;
+				static std::function<Entity *()> CreateDebugWidget;
 
-	public:
-		Frustum frustum;
-	};
+			public:
+				Camera();
+				virtual ~Camera();
+				virtual bool Init(Document::Node *node);
+				virtual void Attach(Entity *owner);
 
-}
+			public:
+				Frustum frustum;
+			};
+
+		} // namespace Components
+
+	} // namespace Framework
+
+} // namespace Maki

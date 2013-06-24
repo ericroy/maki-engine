@@ -5,39 +5,44 @@
 
 namespace Maki
 {
-	SceneGraphSystem::SceneGraphSystem()
-		: System(Component::Type_SceneNode)
+	namespace Framework
 	{
-	}
+	
+		SceneGraphSystem::SceneGraphSystem()
+			: System(Component::Type_SceneNode)
+		{
+		}
 
-	SceneGraphSystem::~SceneGraphSystem()
-	{
-	}
+		SceneGraphSystem::~SceneGraphSystem()
+		{
+		}
 
-	void SceneGraphSystem::ProcessMessages(const std::vector<Message> &messages)
-	{
-		const uint32 count = messages.size();
-		for(uint32 i = 0; i < count; i++) {
-			const Message &m = messages[i];
+		void SceneGraphSystem::ProcessMessages(const std::vector<Message> &messages)
+		{
+			const uint32 count = messages.size();
+			for(uint32 i = 0; i < count; i++) {
+				const Message &m = messages[i];
 			
-			switch(m.msg)
-			{
-			case Component::Message_DebugWidgetCreated:
-				m.from->owner->Get<SceneNodeComponent>()->AddChild(m.GetArg1<Entity>());
-				break;
+				switch(m.msg)
+				{
+				case Component::Message_DebugWidgetCreated:
+					m.from->owner->Get<Components::SceneNode>()->AddChild(m.GetArg1<Entity>());
+					break;
+				}
 			}
 		}
-	}
 
-	void SceneGraphSystem::Add(Entity *e)
-	{
-		items.push_back(e->Get<SceneNodeComponent>());
-	}
+		void SceneGraphSystem::Add(Entity *e)
+		{
+			items.push_back(e->Get<Components::SceneNode>());
+		}
 
-	void SceneGraphSystem::Remove(Entity *e)
-	{
-		items.erase(std::find(std::begin(items), std::end(items), e->Get<SceneNodeComponent>()));
-	}
+		void SceneGraphSystem::Remove(Entity *e)
+		{
+			items.erase(std::find(std::begin(items), std::end(items), e->Get<Components::SceneNode>()));
+		}
 
+
+	} // namespace Framework
 
 } // namespace Maki

@@ -5,24 +5,28 @@
 
 namespace Maki
 {
-
-	class TextureSetManager : public Manager<TextureSet, TextureSetManager>
+	namespace Core
 	{
-	private:
-		struct Predicate : public std::unary_function<const TextureSet *, bool>
+
+		class TextureSetManager : public Manager<TextureSet, TextureSetManager>
 		{
-			inline bool operator()(const TextureSet *ts) const;
-			uint8 count;
-			Rid *textureRids;
+		private:
+			struct Predicate : public std::unary_function<const TextureSet *, bool>
+			{
+				inline bool operator()(const TextureSet *ts) const;
+				uint8 count;
+				Rid *textureRids;
+			};
+
+		public:
+			static const int32 DEFAULT_SIZE = 128;
+
+		public:
+			TextureSetManager(uint32 size = DEFAULT_SIZE);	
+			virtual ~TextureSetManager();	
+			Handle Load(uint8 count, Rid *textureRids);
 		};
 
-	public:
-		static const int32 DEFAULT_SIZE = 128;
-
-	public:
-		TextureSetManager(uint32 size = DEFAULT_SIZE);	
-		virtual ~TextureSetManager();	
-		Handle Load(uint8 count, Rid *textureRids);
-	};
+	} // namespace Core
 
 } // namespace Maki

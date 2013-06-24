@@ -3,21 +3,25 @@
 
 namespace Maki
 {
-
-	class HandleOrRid
+	namespace Core
 	{
-	public:
-		inline HandleOrRid() : isHandle(true), handle(HANDLE_NONE) {}
-		inline HandleOrRid(Handle h) : isHandle(true), handle(h) {}
-		inline HandleOrRid(Rid r) : isHandle(false), rid(r) {}
 
-	public:
-		bool isHandle;
-		union
+		class HandleOrRid
 		{
-			Handle handle;
-			Rid rid;
+		public:
+			inline HandleOrRid() : isHandle(true), handle(HANDLE_NONE) {}
+			inline HandleOrRid(Handle h) : isHandle(true), handle(h) {}
+			inline HandleOrRid(Rid r) : isHandle(false), rid(r) {}
+
+		public:
+			bool isHandle;
+			union
+			{
+				Handle handle;
+				Rid rid;
+			};
 		};
-	};
+
+	} // namespace Core
 
 } // namespace Maki

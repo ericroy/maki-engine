@@ -2,7 +2,6 @@
 
 namespace Maki
 {
-
 	typedef unsigned long long uint64;
 	typedef unsigned int uint32;
 	typedef unsigned short uint16;
@@ -33,6 +32,5 @@ namespace Maki
 	const float MAKI_PI = 3.14159265358979323846f;
 	const float MAKI_DEG_TO_RAD = MAKI_PI / 180.0f;
 	const float MAKI_RAD_TO_DEG = 180.0f / MAKI_PI;
-
 
 } // namespace Maki

@@ -6,33 +6,38 @@
 
 namespace Maki
 {
-	class Mesh;
-
-	class Font : public Resource
+	namespace Core
 	{
-		friend class FontManager;
-	
-	private:
-		static const int32 MIN_CHAR_CODE = 32;
-		static const int32 MAX_CHAR_CODE = 126;
-		static const int32 CHAR_CODE_COUNT = MAX_CHAR_CODE - MIN_CHAR_CODE + 1;
 
-	public:
-		Font();
-		virtual ~Font();
-		bool operator==(const Font &other) const;
-		bool Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);
-		void RenderAsMesh(const char *s, Mesh *m);
+		class Mesh;
 
-	public:
-		Handle material;
-		Rid shaderProgramRid;
-		uint32 pixelSize;
+		class Font : public Resource
+		{
+			friend class FontManager;
 	
-	private:
-		uint32 textureWidth;
-		uint32 textureHeight;
-		stbtt_bakedchar bakedChars[CHAR_CODE_COUNT];
-	};
+		private:
+			static const int32 MIN_CHAR_CODE = 32;
+			static const int32 MAX_CHAR_CODE = 126;
+			static const int32 CHAR_CODE_COUNT = MAX_CHAR_CODE - MIN_CHAR_CODE + 1;
+
+		public:
+			Font();
+			virtual ~Font();
+			bool operator==(const Font &other) const;
+			bool Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);
+			void RenderAsMesh(const char *s, Mesh *m);
+
+		public:
+			Handle material;
+			Rid shaderProgramRid;
+			uint32 pixelSize;
+	
+		private:
+			uint32 textureWidth;
+			uint32 textureHeight;
+			stbtt_bakedchar bakedChars[CHAR_CODE_COUNT];
+		};
+
+	} // namespace Core
 
 } // namespace Maki

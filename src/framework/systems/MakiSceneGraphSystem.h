@@ -5,26 +5,34 @@
 
 namespace Maki
 {
-	class SceneNodeComponent;
-
-	class SceneGraphSystem : public System
+	namespace Framework
 	{
-	public:
-		SceneGraphSystem();
-		virtual ~SceneGraphSystem();
 
-		void ProcessMessages(const std::vector<Message> &messages);
+		namespace Components
+		{
+			class SceneNode;
+		}
 
-	private:
-		void UpdateBoundsRecurse(Entity *e);
+		class SceneGraphSystem : public System
+		{
+		public:
+			SceneGraphSystem();
+			virtual ~SceneGraphSystem();
 
-	protected:
-		void Add(Entity *e);
-		virtual void Remove(Entity *e);
+			void ProcessMessages(const std::vector<Message> &messages);
 
-	private:
-		std::vector<SceneNodeComponent *> items;
-	};
+		private:
+			void UpdateBoundsRecurse(Entity *e);
 
+		protected:
+			void Add(Entity *e);
+			virtual void Remove(Entity *e);
+
+		private:
+			std::vector<Components::SceneNode *> items;
+		};
+
+
+	} // namespace Framework
 
 } // namespace Maki

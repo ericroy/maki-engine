@@ -3,22 +3,27 @@
 
 namespace Maki
 {
-	template<class T>
-	class MoveToken
+	namespace Core
 	{
-	public:
-		template<class U>
-		inline operator MoveToken<U>()
+
+		template<class T>
+		class MoveToken
 		{
-			assert(dynamic_cast<U *>(obj) != nullptr);
-			return {(U *)obj};
-		}
+		public:
+			template<class U>
+			inline operator MoveToken<U>()
+			{
+				assert(dynamic_cast<U *>(obj) != nullptr);
+				return {(U *)obj};
+			}
 
-	public:
-		T *obj;
-	};
+		public:
+			T *obj;
+		};
 
-	template<class T>
-	inline MoveToken<T> Move(T &obj) { MoveToken<T> m; m.obj = &obj; return m; }
+		template<class T>
+		inline MoveToken<T> Move(T &obj) { MoveToken<T> m; m.obj = &obj; return m; }
+
+	} // namespace Core
 
 } // namespace Maki

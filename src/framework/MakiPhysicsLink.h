@@ -3,18 +3,23 @@
 
 namespace Maki
 {
-	class Entity;
-
-	class PhysicsLink : public btMotionState
+	namespace Framework
 	{
-	public:
-		PhysicsLink(Entity *entity);
-		virtual ~PhysicsLink();
-		virtual void getWorldTransform(btTransform &worldTransform) const;
-		virtual void setWorldTransform(const btTransform &worldTransform);
 
-	public:
-		Entity *entity;
-	};
+		class Entity;
+
+		class PhysicsLink : public btMotionState
+		{
+		public:
+			PhysicsLink(Entity *entity);
+			virtual ~PhysicsLink();
+			virtual void getWorldTransform(btTransform &worldTransform) const;
+			virtual void setWorldTransform(const btTransform &worldTransform);
+
+		public:
+			Entity *entity;
+		};
+
+	} // namespace Framework
 
 } // namespace Maki

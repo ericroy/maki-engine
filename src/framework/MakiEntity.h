@@ -3,97 +3,74 @@
 #include "framework/MakiPhysicsLink.h"
 #include "framework/MakiComponent.h"
 
+using namespace Maki::Core;
+
 namespace Maki
 {
-	class Renderer;
-	class Component;
-
-	class Entity : public Aligned<SIMD_ALIGN>
+	namespace Framework
 	{
-	public:
-		enum Flag
+
+		class Component;
+
+		class Entity : public Aligned<SIMD_ALIGN>
 		{
-			Flag_None = 0,
-			Flag_Draw = 1<<0,
-			Flag_Update = 1<<1,
-			Flag_Physics = 1<<2,
-			Flag_ProcessChildren = 1<<3,
-			Flag_CastShadow = 1<<4,
+		public:
+			static const uint32 MAX_COMPONENTS = 16;
+
+		private:
+			struct Entry
+			{
+				Component::Type type;
+				Component *c;
+				inline bool operator<(const Entry &other) const { return type < other.type; }
+				inline bool operator==(const Entry &other) const { return type == other.type; }
+			};
+		
+		public:
+			Entity();
+			virtual ~Entity();
+
+			inline uint64 GetComponentFlags() const { return flags; }
+			inline bool HasComponent(Component::Type type) const { return (flags & (1ULL << type)) != 0; }
+			template<class T> inline T *Get() const;
+
+			void AddComponent(Component *component);
+			Component *RemoveComponent(Component::Type type);
+		
+		protected:
+			// Table for storing handles to components
+			uint32 componentCount;
+			Entry components[MAX_COMPONENTS];
+
+			// Flags indicating which components are present in this entity.
+			// We'll have to do something more clever here once we have more than 64 component types
+			uint64 flags;
 		};
 
-	private:
-		struct ComponentEntry
+
+
+		template<class T>
+		inline T *Entity::Get() const
 		{
-			Component::Type componentType;
-			Component *component;
-
-			inline bool operator<(const ComponentEntry &other) const { return componentType < other.componentType; }
-			inline bool operator==(const ComponentEntry &other) const { return componentType == other.componentType; }
-		};
-
-	public:
-		static const uint32 DEFAULT_FLAGS = Flag_Update|Flag_ProcessChildren;
-		static const uint32 MAX_COMPONENTS = 16;
-		
-	public:
-		Entity();
-		Entity(uint32 flags);
-		virtual ~Entity();
-
-		bool Init(Document::Node *node);
-		
-		inline uint32 GetFlags() const { return flags; }
-		inline void SetFlags(uint32 f) { flags = f; }
-		inline bool GetFlag(Flag f) const { return (f & flags) != 0; }
-		inline void SetFlag(Flag f, bool on = true) { if(on) { flags |= f; } else { flags &= ~f; } }
-		
-		// Component stuff
-		inline uint64 GetComponentFlags() const { return componentFlags; }
-		inline bool HasComponent(Component::Type componentType) const { return (componentFlags & (1LL << componentType)) != 0; }
-		void AttachComponent(Component *component);
-		Component *DetachComponent(Component::Type componentType);
-		template<class T> inline T *Get() const;
-
-	protected:
-		// Table for storing handles to components
-		ComponentEntry components[MAX_COMPONENTS];
-
-		// Number of entries used in the components array above
-		uint32 componentCount;
-
-		// Flags indicating which components are present in this entity
-		uint64 componentFlags;
-		
-		// Entity flags (not related to components)
-		uint32 flags;
-
-	public:
-		std::function<void(float)> updateFunc;
-		PhysicsLink physicsLink;
-	};
-
-
-
-	template<class T>
-	inline T *Entity::Get() const
-	{
-		if((T::COMPONENT_TYPE & componentFlags) == 0) {
+			if((T::TYPE & flags) == 0) {
+				return nullptr;
+			}
+			for(uint32 i = 0; i < componentCount; i++) {
+				const Entry &entry = components[i];
+				if(entry.type == T::TYPE) {
+	#if _DEBUG
+					return dynamic_cast<T *>(entry.c);
+	#else
+					return static_cast<T *>(entry.c);
+	#endif
+				}
+			}
+			assert(false && "expected to find component");
 			return nullptr;
 		}
-		for(uint32 i = 0; i < componentCount; i++) {
-			const ComponentEntry &entry = components[i];
-			if(entry.componentType == T::COMPONENT_TYPE) {
-#if _DEBUG
-				return dynamic_cast<T *>(entry.component);
-#else
-				return static_cast<T *>(entry.component);
-#endif
-			}
-		}
-		assert(false && "expected to find component");
-		return nullptr;
-	}
 
 
+
+	} // namespace Framework
 
 } // namespace Maki

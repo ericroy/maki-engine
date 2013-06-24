@@ -4,29 +4,33 @@
 
 namespace Maki
 {
-
-	class Texture : public Resource
+	namespace Core
 	{
-	public:
-		enum TextureType
+
+		class Texture : public Resource
 		{
-			TextureType_Regular = 0,
-			TextureType_DepthStencil,
-			TextureType_RenderTarget,
+		public:
+			enum TextureType
+			{
+				TextureType_Regular = 0,
+				TextureType_DepthStencil,
+				TextureType_RenderTarget,
+			};
+
+		public:
+			Texture();
+			~Texture();
+
+		private:
+			Texture(const Texture &) {}
+
+		public:
+			TextureType type;
+			uint32 width;
+			uint32 height;
+			uint32 handle;
 		};
 
-	public:
-		Texture();
-		~Texture();
-
-	private:
-		Texture(const Texture &) {}
-
-	public:
-		TextureType type;
-		uint32 width;
-		uint32 height;
-		uint32 handle;
-	};
+	} // namespace Core
 
 } // namespace Maki

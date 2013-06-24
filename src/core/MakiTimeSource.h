@@ -3,12 +3,16 @@
 
 namespace Maki
 {
-
-	class TimeSource
+	namespace Core
 	{
-	public:
-		virtual int64 GetTimeMillis() = 0;
-	};
 
+		class TimeSource
+		{
+		public:
+			virtual int64 GetTimeMillis() = 0;
+		};
+
+
+	} // namespace Core
 
 } // namespace Maki

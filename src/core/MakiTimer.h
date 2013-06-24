@@ -3,35 +3,39 @@
 
 namespace Maki
 {
-	class TimeSource;
-
-	class Timer
+	namespace Core
 	{
-	public:
-		static const int32 N_FRAME_AVERAGE = 30;
+		class TimeSource;
 
-	public:
-		Timer(TimeSource *source);
-		void Tick();
+		class Timer
+		{
+		public:
+			static const int32 N_FRAME_AVERAGE = 30;
 
-	private:
-		void UpdateHistory();
+		public:
+			Timer(TimeSource *source);
+			void Tick();
 
-	public:
-		int64 deltaMillis;
-		float deltaSeconds;
+		private:
+			void UpdateHistory();
 
-		double elapsedSeconds;
-		int64 elapsedMillis;
+		public:
+			int64 deltaMillis;
+			float deltaSeconds;
 
-		float averageFps;
+			double elapsedSeconds;
+			int64 elapsedMillis;
 
-	private:
-		int64 lastTime;
-		int64 updateCount;
-		float deltaHistory[N_FRAME_AVERAGE];
-		TimeSource *source;
-	};
+			float averageFps;
 
+		private:
+			int64 lastTime;
+			int64 updateCount;
+			float deltaHistory[N_FRAME_AVERAGE];
+			TimeSource *source;
+		};
+
+
+	} // namespace Core
 
 } // namespace Maki

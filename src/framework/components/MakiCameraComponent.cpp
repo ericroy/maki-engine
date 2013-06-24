@@ -5,47 +5,39 @@
 
 namespace Maki
 {
-
-	std::function<Entity *()> CameraComponent::CreateDebugWidget = nullptr;
-
-
-	CameraComponent::CameraComponent()
-		: Component(COMPONENT_TYPE), frustum(0.0f, 0.0f, 0.0f, 1.0f, 50.0f)
+	namespace Framework
 	{
-	}
-		
-	CameraComponent::~CameraComponent()
-	{
-	}
+		namespace Components
+		{
 
-	bool CameraComponent::Init(Document::Node *node)
-	{
-		Document::Node *frustumNode = node->Resolve("frustum");
-		if(frustumNode != nullptr) {
-			frustum.Set(
-				1.0f, 1.0f,
-				frustumNode->children[1]->ValueAsFloat(),
-				frustumNode->children[2]->ValueAsFloat(),
-				frustumNode->children[0]->ValueAsFloat()
-			);
-		}
-		return true;
-	}
+			std::function<Entity *()> Camera::CreateDebugWidget = nullptr;
 
-	void CameraComponent::Attach(Entity *owner)
-	{
-		Component::Attach(owner);
 
-		owner->SetFlag(Entity::Flag_Draw, false);
-
-#if _DEBUG
-		if(CreateDebugWidget != nullptr) {
-			Entity *debugWidget = CreateDebugWidget();
-			if(debugWidget != nullptr) {
-				System::PostMessage(this, Message_DebugWidgetCreated, debugWidget);
+			Camera::Camera()
+				: Component(TYPE), frustum(0.0f, 0.0f, 0.0f, 1.0f, 50.0f)
+			{
 			}
-		}
-#endif
-	}
+		
+			Camera::~Camera()
+			{
+			}
+
+			bool Camera::Init(Document::Node *node)
+			{
+				Document::Node *frustumNode = node->Resolve("frustum");
+				if(frustumNode != nullptr) {
+					frustum.Set(
+						1.0f, 1.0f,
+						frustumNode->children[1]->ValueAsFloat(),
+						frustumNode->children[2]->ValueAsFloat(),
+						frustumNode->children[0]->ValueAsFloat()
+					);
+				}
+				return true;
+			}
 	
-}
+		} // namespace Components
+
+	} // namespace Framework
+
+} // namespace Maki

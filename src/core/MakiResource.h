@@ -3,34 +3,38 @@
 
 namespace Maki
 {
-
-	class Resource
+	namespace Core
 	{
-	public:
-		template<typename T>
-		struct FindPredicate : public std::unary_function<const T *, bool>
+
+		class Resource
 		{
-			FindPredicate(Rid rid) : rid(rid) {}
-			inline bool operator()(const T *res) const
+		public:
+			template<typename T>
+			struct FindPredicate : public std::unary_function<const T *, bool>
 			{
-				return res->rid == rid;
-			}
+				FindPredicate(Rid rid) : rid(rid) {}
+				inline bool operator()(const T *res) const
+				{
+					return res->rid == rid;
+				}
+				Rid rid;
+			};
+
+		public:
+			Resource() : rid(RID_NONE) {}
+			Resource(const MoveToken<Resource> &other);
+			explicit Resource(const Resource &other) { rid = other.rid; }
+			virtual ~Resource() {}
+
+			inline bool operator==(const Resource &other) const { return rid == other.rid; }
+
+		public:
+			// Resource id
+			// This is an index into the data in the programmatically generated ResourceLibrary class
 			Rid rid;
 		};
 
-	public:
-		Resource() : rid(RID_NONE) {}
-		Resource(const MoveToken<Resource> &other);
-		explicit Resource(const Resource &other) { rid = other.rid; }
-		virtual ~Resource() {}
 
-		inline bool operator==(const Resource &other) const { return rid == other.rid; }
-
-	public:
-		// Resource id
-		// This is an index into the data in the programmatically generated ResourceLibrary class
-		Rid rid;
-	};
-
+	} // namespace Core
 
 } // namespace Maki

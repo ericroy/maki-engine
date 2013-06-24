@@ -10,56 +10,60 @@
 
 namespace Maki
 {
-
-	Timer::Timer(TimeSource *source)
-		: source(source)
+	namespace Core
 	{
-		lastTime = source->GetTimeMillis();
 
-		updateCount = 0;
-		averageFps = 0.0f;
+		Timer::Timer(TimeSource *source)
+			: source(source)
+		{
+			lastTime = source->GetTimeMillis();
 
-		deltaSeconds = 0.0f;
-		deltaMillis = 0;
+			updateCount = 0;
+			averageFps = 0.0f;
 
-		elapsedSeconds = 0.0;
-		elapsedMillis = 0;
-	}
+			deltaSeconds = 0.0f;
+			deltaMillis = 0;
 
-	void Timer::UpdateHistory()
-	{
-		uint32 index = updateCount % N_FRAME_AVERAGE;
+			elapsedSeconds = 0.0;
+			elapsedMillis = 0;
+		}
 
-		// If N frames have gone by, calculate new average values
-		if(updateCount > N_FRAME_AVERAGE && index == 0) {
-			float averageDelta = 0;
-			for(uint32 i = 0; i < N_FRAME_AVERAGE; i++ ) {
-				averageDelta += deltaHistory[i];
+		void Timer::UpdateHistory()
+		{
+			uint32 index = updateCount % N_FRAME_AVERAGE;
+
+			// If N frames have gone by, calculate new average values
+			if(updateCount > N_FRAME_AVERAGE && index == 0) {
+				float averageDelta = 0;
+				for(uint32 i = 0; i < N_FRAME_AVERAGE; i++ ) {
+					averageDelta += deltaHistory[i];
+				}
+				averageDelta /= N_FRAME_AVERAGE;
+				averageFps = 1.0f / averageDelta;
 			}
-			averageDelta /= N_FRAME_AVERAGE;
-			averageFps = 1.0f / averageDelta;
+
+			// Store the current values as historical ones
+			deltaHistory[index] = deltaSeconds;
 		}
 
-		// Store the current values as historical ones
-		deltaHistory[index] = deltaSeconds;
-	}
+		void Timer::Tick() {
+			updateCount++;
 
-	void Timer::Tick() {
-		updateCount++;
+			int64 now = source->GetTimeMillis();
+			if(now < lastTime) {
+				now = lastTime;
+			}
 
-		int64 now = source->GetTimeMillis();
-		if(now < lastTime) {
-			now = lastTime;
-		}
+			deltaMillis = now - lastTime;
+			elapsedMillis += deltaMillis;
 
-		deltaMillis = now - lastTime;
-		elapsedMillis += deltaMillis;
-
-		deltaSeconds = (now - lastTime) / 1000.0f;
-		elapsedSeconds = elapsedMillis / 1000.0f;
+			deltaSeconds = (now - lastTime) / 1000.0f;
+			elapsedSeconds = elapsedMillis / 1000.0f;
 		
-		lastTime = now;
-		UpdateHistory();
-	}
+			lastTime = now;
+			UpdateHistory();
+		}
+
+	} // namespace Core
 
 } // namespace Maki

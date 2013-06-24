@@ -6,30 +6,34 @@
 
 namespace Maki
 {
-
-	class DebugNetListener
+	namespace Framework
 	{
-		struct Context;
 
-	private:
-		static const int32 PORT = 11001;
-		static const int32 MAX_BUFFER_LENGTH = 4096;
+		class DebugNetListener
+		{
+			struct Context;
 
-	public:
-		DebugNetListener();
-		virtual ~DebugNetListener();
-		void Tick();
-		inline void RegisterListener(Rid rid, std::function<void(Rid)> f) { listeners[rid] = f; }
+		private:
+			static const int32 PORT = 11001;
+			static const int32 MAX_BUFFER_LENGTH = 4096;
 
-	private:
-		void FireNotification(Rid rid);
+		public:
+			DebugNetListener();
+			virtual ~DebugNetListener();
+			void Tick();
+			inline void RegisterListener(Rid rid, std::function<void(Rid)> f) { listeners[rid] = f; }
 
-	private:
-		Context *context;
-		char recvBuf[MAX_BUFFER_LENGTH+1];
-		std::map<Rid, std::function<void(Rid)>> listeners;
-	};
+		private:
+			void FireNotification(Rid rid);
 
-}
+		private:
+			Context *context;
+			char recvBuf[MAX_BUFFER_LENGTH+1];
+			std::map<Rid, std::function<void(Rid)>> listeners;
+		};
+
+	} // namespace Framework
+
+} // namespace Maki
 
 #endif

@@ -4,38 +4,47 @@
 
 namespace Maki
 {
-	class DebugArmature;
-
-	class SkeletonComponent : public Component
+	namespace Framework
 	{
-		friend class SkeletonSystem;
+		class DebugArmature;
 
-	public:
-		static const Component::Type COMPONENT_TYPE = Type_Skeleton;
-		static std::function<Entity *()> CreateDebugArmature;
+		namespace Components
+		{
 
-	public:
-		SkeletonComponent();
-		SkeletonComponent(HandleOrRid skeletonId);
-		virtual ~SkeletonComponent();
+			class Skeleton : public Component
+			{
+				friend class SkeletonSystem;
 
-		virtual bool Init(Document::Node *node);
-		void Update(Material *mat);
-		inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }
+			public:
+				static const Component::Type TYPE = Type_Skeleton;
+				static std::function<Entity *()> CreateDebugArmature;
 
-	private:
-		bool Init(HandleOrRid skelId);
+			public:
+				Skeleton();
+				Skeleton(HandleOrRid skeletonId);
+				virtual ~Skeleton();
 
-	public:
-		Handle skeleton;
-		DebugArmature *armature;
-		Array<Skeleton::Joint> pose;
+				virtual bool Init(Document::Node *node);
+				void Update(Material *mat);
+				inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }
 
-	private:
-		Array<Matrix44> matrixPose;
-		int32 materialSlot;
-		bool poseDirty;
-	};
+			private:
+				bool Init(HandleOrRid skelId);
 
+			public:
+				Handle skeleton;
+				DebugArmature *armature;
+				Array<Core::Skeleton::Joint> pose;
+
+			private:
+				Array<Matrix44> matrixPose;
+				int32 materialSlot;
+				bool poseDirty;
+			};
+
+
+		} // namspace Components
+
+	} // namespace Framework
 
 } // namespace Maki

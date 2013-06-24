@@ -4,35 +4,40 @@
 
 namespace Maki
 {
-	class Camera;
-	class Light;
-
-	class Scene
+	namespace Framework
 	{
-	public:
-		Scene();
-		virtual ~Scene();
-		void Clear();
-		bool Load(Rid rid);
-		
-		void Draw(Renderer *renderer, uint32 requiredFlags = 0, uint32 disallowedFlags = 0, const Frustum *cullingFrustum = nullptr, const Matrix44 *view = nullptr);
-		
-		inline void Update(float dt)
+	
+		class Camera;
+		class Light;
+
+		class Scene
 		{
-			UpdateRecursive(root, Matrix44::Identity, dt);
-		}
+		public:
+			Scene();
+			virtual ~Scene();
+			void Clear();
+			bool Load(Rid rid);
+		
+			void Draw(Renderer *renderer, uint32 requiredFlags = 0, uint32 disallowedFlags = 0, const Frustum *cullingFrustum = nullptr, const Matrix44 *view = nullptr);
+		
+			inline void Update(float dt)
+			{
+				UpdateRecursive(root, Matrix44::Identity, dt);
+			}
 
-	private:
-		void UpdateRecursive(Entity *e, const Matrix44 &current, float dt);
+		private:
+			void UpdateRecursive(Entity *e, const Matrix44 &current, float dt);
 
-	public:
-		Entity *root;
-		std::vector<Entity *> cameras;
-		std::vector<Entity *> lights;
-		std::vector<Entity *> physicsHulls;
+		public:
+			Entity *root;
+			std::vector<Entity *> cameras;
+			std::vector<Entity *> lights;
+			std::vector<Entity *> physicsHulls;
 
-	private:
-		Entity *drawListHead;
-	};
+		private:
+			Entity *drawListHead;
+		};
+
+	} // namespace Framework
 
 } // namespace Maki

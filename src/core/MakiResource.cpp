@@ -3,11 +3,15 @@
 
 namespace Maki
 {
-		
-	Resource::Resource(const MoveToken<Resource> &other)
+	namespace Core
 	{
-		rid = other.obj->rid;
-		other.obj->rid = RID_NONE;
-	}
+		
+		Resource::Resource(const MoveToken<Resource> &other)
+		{
+			rid = other.obj->rid;
+			other.obj->rid = RID_NONE;
+		}
+
+	} // namespace Core
 
 } // namespace Maki

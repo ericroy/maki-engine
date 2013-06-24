@@ -15,143 +15,147 @@ using namespace std;
 
 namespace Maki
 {
-
-	char Console::buffer[] = "";
-	std::function<void(Console::Level, char *)> Console::PrintfCallback = nullptr;
-	Console::Level Console::verbosity = Console::Level_Info;
-
-
-	void Console::Info(const char *format, ...)
+	namespace Core
 	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Info < verbosity) {
-			return;
+
+		char Console::buffer[] = "";
+		std::function<void(Console::Level, char *)> Console::PrintfCallback = nullptr;
+		Console::Level Console::verbosity = Console::Level_Info;
+
+
+		void Console::Info(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Info < verbosity) {
+				return;
+			}
+
+			va_list argList;
+			va_start(argList, format);
+
+			sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
+			strcat_s(buffer, "\n");
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Info, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_list argList;
-		va_start(argList, format);
+		void Console::Warning(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Warning < verbosity) {
+				return;
+			}
 
-		sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
-		strcat_s(buffer, "\n");
-		cout << buffer;
+			va_list argList;
+			va_start(argList, format);
 
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Info, buffer);
+			sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
+			strcat_s(buffer, "\n");
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Warning, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_end(argList);
-#endif
-	}
+		void Console::Error(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Error < verbosity) {
+				return;
+			}
 
-	void Console::Warning(const char *format, ...)
-	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Warning < verbosity) {
-			return;
+			va_list argList;
+			va_start(argList, format);
+
+			sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
+			strcat_s(buffer, "\n");
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Error, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_list argList;
-		va_start(argList, format);
+		void Console::InfoNoLineFeed(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Info < verbosity) {
+				return;
+			}
 
-		sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
-		strcat_s(buffer, "\n");
-		cout << buffer;
+			va_list argList;
+			va_start(argList, format);
 
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Warning, buffer);
+			sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
+
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Info, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_end(argList);
-#endif
-	}
+		void Console::WarningNoLineFeed(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Warning < verbosity) {
+				return;
+			}
 
-	void Console::Error(const char *format, ...)
-	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Error < verbosity) {
-			return;
+			va_list argList;
+			va_start(argList, format);
+
+			sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
+
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Warning, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_list argList;
-		va_start(argList, format);
+		void Console::ErrorNoLineFeed(const char *format, ...)
+		{
+	#if MAKI_CONSOLE_OUTPUT_ENABLED
+			if(Level_Error < verbosity) {
+				return;
+			}
 
-		sprintf_safe(buffer, MAX_BUFFER_SIZE-1, format, argList);
-		strcat_s(buffer, "\n");
-		cout << buffer;
+			va_list argList;
+			va_start(argList, format);
 
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Error, buffer);
+			sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
+
+			cout << buffer;
+
+			if(PrintfCallback != nullptr) {
+				PrintfCallback(Level_Error, buffer);
+			}
+
+			va_end(argList);
+	#endif
 		}
 
-		va_end(argList);
-#endif
-	}
 
-	void Console::InfoNoLineFeed(const char *format, ...)
-	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Info < verbosity) {
-			return;
-		}
-
-		va_list argList;
-		va_start(argList, format);
-
-		sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
-
-		cout << buffer;
-
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Info, buffer);
-		}
-
-		va_end(argList);
-#endif
-	}
-
-	void Console::WarningNoLineFeed(const char *format, ...)
-	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Warning < verbosity) {
-			return;
-		}
-
-		va_list argList;
-		va_start(argList, format);
-
-		sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
-
-		cout << buffer;
-
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Warning, buffer);
-		}
-
-		va_end(argList);
-#endif
-	}
-
-	void Console::ErrorNoLineFeed(const char *format, ...)
-	{
-#if MAKI_CONSOLE_OUTPUT_ENABLED
-		if(Level_Error < verbosity) {
-			return;
-		}
-
-		va_list argList;
-		va_start(argList, format);
-
-		sprintf_safe(buffer, MAX_BUFFER_SIZE, format, argList);
-
-		cout << buffer;
-
-		if(PrintfCallback != nullptr) {
-			PrintfCallback(Level_Error, buffer);
-		}
-
-		va_end(argList);
-#endif
-	}
-
+	} // namespace Core
 
 } // namespace Maki

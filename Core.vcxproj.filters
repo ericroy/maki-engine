@@ -66,26 +66,26 @@
     <ClInclude Include="src\core\direct3d\DDSTextureLoader.h">
       <Filter>direct3d</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiDirect3DCommon.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiDirect3DGPUTypes.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiDirect3DRenderCore.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\windows\MakiWin32Window.h">
-      <Filter>windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\core_stdafx.h" />
     <ClInclude Include="src\core\MakiUtil.h" />
     <ClInclude Include="src\core\MakiPseudoSingleton.h" />
     <ClInclude Include="src\core\MakiMoveToken.h" />
-    <ClInclude Include="src\core\windows\MakiWin32TimeSource.h">
+    <ClInclude Include="src\core\MakiTimeSource.h" />
+    <ClInclude Include="src\core\windows\MakiWindowImpl.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\MakiTimeSource.h" />
+    <ClInclude Include="src\core\windows\MakiTimeSourceImpl.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiRenderCoreImpl.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiGPUTypes.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\direct3d\MakiCommon.h">
+      <Filter>direct3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\MakiArchive.cpp" />
@@ -136,21 +136,21 @@
     <ClCompile Include="src\core\direct3d\DDSTextureLoader.cpp">
       <Filter>direct3d</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiDirect3DCommon.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiDirect3DRenderCore.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\windows\MakiWin32Window.cpp">
-      <Filter>windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
-    <ClCompile Include="src\core\direct3d\MakiDirect3DGPUTypes.cpp">
+    <ClCompile Include="src\core\windows\MakiWindowImpl.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\windows\MakiTimeSourceImpl.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\direct3d\MakiRenderCoreImpl.cpp">
       <Filter>direct3d</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\windows\MakiWin32TimeSource.cpp">
-      <Filter>windows</Filter>
+    <ClCompile Include="src\core\direct3d\MakiGPUTypes.cpp">
+      <Filter>direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\direct3d\MakiCommon.cpp">
+      <Filter>direct3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

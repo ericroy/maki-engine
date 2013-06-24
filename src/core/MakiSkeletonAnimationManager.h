@@ -5,18 +5,22 @@
 
 namespace Maki
 {
-
-	class SkeletonAnimationManager : public Manager<SkeletonAnimation, SkeletonAnimationManager>
+	namespace Core
 	{
-	public:
-		static const int32 DEFAULT_SIZE = 32;
 
-	public:
-		SkeletonAnimationManager(uint32 size = DEFAULT_SIZE);	
-		virtual ~SkeletonAnimationManager();
-		Handle Load(Rid rid);
-		void ReloadAssets();
-		bool ReloadAsset(Rid rid);
-	};
+		class SkeletonAnimationManager : public Manager<SkeletonAnimation, SkeletonAnimationManager>
+		{
+		public:
+			static const int32 DEFAULT_SIZE = 32;
+
+		public:
+			SkeletonAnimationManager(uint32 size = DEFAULT_SIZE);	
+			virtual ~SkeletonAnimationManager();
+			Handle Load(Rid rid);
+			void ReloadAssets();
+			bool ReloadAsset(Rid rid);
+		};
+
+	} // namespace Core
 
 } // namespace Maki

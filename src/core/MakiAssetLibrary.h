@@ -3,30 +3,35 @@
 
 namespace Maki
 {
-	class AssetManifest;
-	class Archive;
-
-	class AssetLibrary
+	namespace Core
 	{
-	private:
-		struct Group
+	
+		class AssetManifest;
+		class Archive;
+
+		class AssetLibrary
 		{
-			Group() : manifest(nullptr), archive(nullptr) {}
-			AssetManifest *manifest;
-			Archive *archive;
+		private:
+			struct Group
+			{
+				Group() : manifest(nullptr), archive(nullptr) {}
+				AssetManifest *manifest;
+				Archive *archive;
+			};
+
+		public:
+			AssetLibrary();
+			virtual ~AssetLibrary();
+
+			bool Mount(AssetManifest *manifest, const char *archivePath = nullptr);
+			Rid PathToRid(const char *path) const;
+			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
+
+		private:
+			uint32 totalAssetCount;
+			std::vector<Group> groups;
 		};
 
-	public:
-		AssetLibrary();
-		virtual ~AssetLibrary();
-
-		bool Mount(AssetManifest *manifest, const char *archivePath = nullptr);
-		Rid PathToRid(const char *path) const;
-		char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
-
-	private:
-		uint32 totalAssetCount;
-		std::vector<Group> groups;
-	};
+	} // namespace Core
 
 } // namespace Maki

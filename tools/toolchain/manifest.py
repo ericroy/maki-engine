@@ -15,7 +15,7 @@ TEMPLATE_HEADER = '''
 #pragma once
 #include "Maki.h"
 
-class %(name)s : public Maki::AssetManifest {
+class %(name)s : public Maki::Core::AssetManifest {
 public:
     static const unsigned int AssetCount = %(resource_count)s;
     static const char *assetPaths[AssetCount];
@@ -27,7 +27,7 @@ public:
     %(public_vars)s
 
 public:
-    Assets(void) : Maki::AssetManifest(AssetCount, rids, assetPaths, "%(common_prefix)s") {}
+    Assets(void) : Maki::Core::AssetManifest(AssetCount, rids, assetPaths, "%(common_prefix)s") {}
     virtual ~Assets() {}
 };
 
