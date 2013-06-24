@@ -12,9 +12,8 @@ namespace Maki
 
 		Scene::Scene() : root(nullptr), drawListHead(nullptr) {
 			root = new Entity();
-
-			auto pool = ComponentPool<Components::SceneNode>::Get();
-			root->AddComponent(pool->Create());
+			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_Transform)->Create());
+			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_SceneNode)->Create());
 		}
 
 		Scene::~Scene() {

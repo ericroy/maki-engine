@@ -46,7 +46,7 @@ namespace Maki
 				uintptr_t arg1;
 				uintptr_t arg2;
 			};
-
+			
 		public:
 			static void ComponentMakeupChanged(Entity *e, uint64 oldFlags, uint64 newFlags);
 			static void ProcessMessages();

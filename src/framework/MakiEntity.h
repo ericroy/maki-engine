@@ -52,7 +52,7 @@ namespace Maki
 		template<class T>
 		inline T *Entity::Get() const
 		{
-			if((T::TYPE & flags) == 0) {
+			if(((1ULL << T::TYPE) & flags) == 0) {
 				return nullptr;
 			}
 			for(int32 i = 0; i < componentCount; i++) {

@@ -13,7 +13,7 @@ namespace Maki
 
 			RenderSystem::RenderSystem()
 				: System(
-					(1ULL << Component::Type_Mesh) ||
+					(1ULL << Component::Type_Mesh) |
 					(1ULL << Component::Type_Transform)
 					)
 			{

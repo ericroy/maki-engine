@@ -17,16 +17,17 @@ namespace Maki
 		}
 
 		Entity::~Entity() {
-			uint64 oldFlags = flags;
+			// Inform systems that all our components are going away (but don't destroy the components yet,
+			// the systems need them to be available during deregistration).
+			System::ComponentMakeupChanged(this, flags, 0);
 
+			// Now that we are deregistered from the Systems, we can actually destroy our components
 			for(int32 i = componentCount-1; i >= 0; i--) {
 				ComponentPoolBase *pool = ComponentPoolBase::PoolForType(components[i].type);
 				pool->Destroy(components[i].c);
 			}
-				
 			flags = 0;
 			componentCount = 0;
-			System::ComponentMakeupChanged(this, oldFlags, flags);
 		}
 
 		void Entity::AddComponent(Component *component)
