@@ -22,7 +22,7 @@ namespace Maki
 
 		bool Scene::Load(Rid rid) {
 			SceneLoader sl;
-			return sl.Load(rid, this->root, &this->cameras, &this->lights, &this->physicsHulls);
+			return sl.Load(rid, this->root);
 		}
 
 		void Scene::UpdateRecursive(Entity *e, const Matrix44 &current, float dt)

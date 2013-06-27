@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
+    <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
     <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
     <ClInclude Include="src\framework\components\MakiSkeletonComponent.h" />
@@ -30,11 +32,15 @@
     <ClInclude Include="src\framework\framework_stdafx.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
+    <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
     <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSkeletonSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSkeletonComponent.cpp" />
@@ -62,6 +68,8 @@
     </ClCompile>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
     <ClCompile Include="src\framework\MakiSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiSceneGraphSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiSkeletonSystem.cpp" />

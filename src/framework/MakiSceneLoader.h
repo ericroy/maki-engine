@@ -12,10 +12,10 @@ namespace Maki
 		public:
 			SceneLoader();
 			virtual ~SceneLoader();
-			bool Load(Rid rid, Entity *parentNodeForScene, std::vector<Entity *> *cameras = nullptr, std::vector<Entity *> *lights = nullptr, std::vector<Entity *> *physicsHulls = nullptr);
+			bool Load(Rid rid, Entity *parentNodeForScene);
 
 		private:
-			void Recurse(Document::Node *n, Entity *container, std::vector<Entity *> *cameras, std::vector<Entity *> *lights, std::vector<Entity *> *physicsHulls);
+			void Recurse(Document::Node *n, Entity *container);
 		};
 
 	} // namespace Framework

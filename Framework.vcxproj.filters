@@ -37,6 +37,18 @@
     </ClInclude>
     <ClInclude Include="src\framework\MakiComponentPool.h" />
     <ClInclude Include="src\framework\MakiComponentPoolBase.h" />
+    <ClInclude Include="src\framework\components\MakiLightComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\components\MakiCameraComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiLightingSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiCameraSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -71,6 +83,18 @@
     </ClCompile>
     <ClCompile Include="src\framework\MakiSystem.cpp" />
     <ClCompile Include="src\framework\MakiComponentPoolBase.cpp" />
+    <ClCompile Include="src\framework\components\MakiLightComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

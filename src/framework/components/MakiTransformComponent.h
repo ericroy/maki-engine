@@ -28,7 +28,7 @@ namespace Maki
 				inline void SetOrientation(const Quaternion &orient) { SetMatrix(position, orient); }
 				inline void SetMatrix(const Matrix44 &m);
 				inline void SetMatrix(const Vector4 &pos, const Quaternion &orient);
-
+				inline void LookAt(const Vector4 &target);
 
 				inline void SetTransformRelative(bool relative) { relativeMode = relative; }
 				inline const Matrix44 &GetWorldMatrix() const { return relativeMode ? world : matrix; }
@@ -66,6 +66,14 @@ namespace Maki
 				position = pos;
 				orientation = orient;
 				UpdateMatrix();
+			}
+
+			inline void Transform::LookAt(const Vector4 &target)
+			{
+				Matrix44 lookAt;
+				Matrix44::LookAt(position, target, Vector4::UnitZ, lookAt);
+				Matrix44::Inverse(lookAt, lookAt);
+				SetMatrix(lookAt);
 			}
 
 			inline void Transform::SetWorldMatrix(const Matrix44 &m)

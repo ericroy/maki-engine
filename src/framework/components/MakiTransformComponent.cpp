@@ -27,11 +27,14 @@ namespace Maki
 			{
 				Vector4 pos(0.0f);
 				Vector4 angles(0.0f);
-
 				node->ResolveAsVectorN("pos", 3, pos.vals);
 				node->ResolveAsVectorN("angles", 3, angles.vals);
-		
 				SetMatrix(pos, Quaternion(angles));
+
+				Vector4 target(0.0f);
+				if(node->ResolveAsVectorN("target", 3, target.vals)) {
+					LookAt(target);
+				}
 
 				return true;
 			}

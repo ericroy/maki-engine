@@ -26,15 +26,6 @@ namespace Maki
 
 			bool SceneNode::Init(Document::Node *props)
 			{
-				Vector4 target(0.0f);
-
-				/*if(node->ResolveAsVectorN("target", 3, target.vals)) {
-					Matrix44 lookAt;
-					Matrix44::LookAt(GetPosition(), target, Vector4::UnitZ, lookAt);
-					Matrix44::Inverse(lookAt, lookAt);
-					SetWorldMatrix(lookAt);
-				}*/
-		
 				return true;
 			}
 

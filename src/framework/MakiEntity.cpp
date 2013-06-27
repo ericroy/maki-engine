@@ -42,7 +42,7 @@ namespace Maki
 			Entry *iter = std::lower_bound(components, &components[componentCount], ce);
 			uint32 index = iter - components;
 
-			memmove(&components[index+1], &components[index], componentCount-index);
+			memmove(&components[index+1], &components[index], (componentCount-index) * sizeof(Entry));
 			components[index] = ce;
 			componentCount++;
 		
@@ -68,7 +68,7 @@ namespace Maki
 
 			Component *c = iter->c;
 		
-			memmove(&components[index], &components[index+1], componentCount-index-1);
+			memmove(&components[index], &components[index+1], (componentCount-index-1) * sizeof(Entry));
 			componentCount--;
 		
 			uint64 oldFlags = flags;
