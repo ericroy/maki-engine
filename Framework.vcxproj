@@ -14,7 +14,9 @@
     <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
+    <ClInclude Include="src\framework\components\MakiPhysicsComponent.h" />
     <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
+    <ClInclude Include="src\framework\components\MakiScriptComponent.h" />
     <ClInclude Include="src\framework\components\MakiSkeletonComponent.h" />
     <ClInclude Include="src\framework\components\MakiTransformComponent.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
@@ -25,11 +27,12 @@
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
     <ClInclude Include="src\framework\MakiEntity.h" />
-    <ClInclude Include="src\framework\MakiPhysicsLink.h" />
     <ClInclude Include="src\framework\MakiPhysicsWorld.h" />
     <ClInclude Include="src\framework\MakiScene.h" />
     <ClInclude Include="src\framework\MakiSceneLoader.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\MakiScript.h" />
+    <ClInclude Include="src\framework\MakiScriptManager.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
     <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
@@ -43,7 +46,9 @@
     <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiPhysicsComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiScriptComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSkeletonComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiTransformComponent.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
@@ -57,7 +62,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\framework\MakiPhysicsLink.cpp" />
     <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
     <ClCompile Include="src\framework\MakiScene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -68,6 +72,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\MakiScript.cpp" />
+    <ClCompile Include="src\framework\MakiScriptManager.cpp" />
     <ClCompile Include="src\framework\MakiSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp" />
@@ -126,7 +132,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>framework/framework_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -150,7 +156,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>framework/framework_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>

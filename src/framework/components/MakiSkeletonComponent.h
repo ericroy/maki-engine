@@ -19,7 +19,8 @@ namespace Maki
 				friend class Systems::SkeletonSystem;
 
 			public:
-				static const Component::Type TYPE = Type_Skeleton;
+				static const Type TYPE = Type_Skeleton;
+				static const TypeFlag DEPENDENCIES = TypeFlag_Mesh;
 
 			public:
 				Skeleton();

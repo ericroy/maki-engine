@@ -12,7 +12,8 @@ namespace Maki
 			class Camera : public Component
 			{
 			public:
-				static const Component::Type TYPE = Type_Camera;
+				static const Type TYPE = Type_Camera;
+				static const TypeFlag DEPENDENCIES = TypeFlag_Transform;
 
 			public:
 				Camera();

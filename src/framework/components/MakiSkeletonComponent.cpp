@@ -14,7 +14,7 @@ namespace Maki
 		{
 
 			Skeleton::Skeleton()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				skeleton(HANDLE_NONE),
 				materialSlot(-1),
 				poseDirty(true)

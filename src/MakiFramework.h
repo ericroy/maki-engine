@@ -11,7 +11,6 @@
 #include "framework/MakiCascadeHelper.h"
 #include "framework/MakiDebugNetListener.h"
 #include "framework/MakiDebugPhysicsRenderer.h"
-#include "framework/MakiPhysicsLink.h"
 #include "framework/MakiPhysicsWorld.h"
 #include "framework/MakiComponent.h"
 #include "framework/MakiComponentPool.h"

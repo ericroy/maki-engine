@@ -10,7 +10,7 @@ namespace Maki
 		{
 
 			Camera::Camera()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				active(true),
 				frustum(0.0f, 0.0f, 0.0f, 1.0f, 50.0f)
 			{

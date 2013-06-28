@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			SceneGraphSystem::SceneGraphSystem()
-				: System(1ULL << Component::Type_SceneNode)
+				: System(Component::TypeFlag_SceneNode)
 			{
 			}
 

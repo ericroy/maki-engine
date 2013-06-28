@@ -11,10 +11,7 @@ namespace Maki
 		{
 
 			LightingSystem::LightingSystem()
-				: System(
-					(1ULL << Component::Type_Light) |
-					(1ULL << Component::Type_Transform)
-				)
+				: System(Component::TypeFlag_Light|Component::TypeFlag_Transform)
 			{
 			}
 

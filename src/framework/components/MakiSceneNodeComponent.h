@@ -12,7 +12,8 @@ namespace Maki
 			class SceneNode : public Component
 			{
 			public:
-				static const Component::Type TYPE = Type_SceneNode;
+				static const Type TYPE = Type_SceneNode;
+				static const TypeFlag DEPENDENCIES = TypeFlag_Transform;
 
 			public:
 				SceneNode();

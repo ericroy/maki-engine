@@ -10,7 +10,7 @@ namespace Maki
 		{
 
 			Mesh::Mesh()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				flags(DEFAULT_FLAGS),
 				mesh(HANDLE_NONE),
 				material(HANDLE_NONE),

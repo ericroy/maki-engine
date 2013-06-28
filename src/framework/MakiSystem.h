@@ -34,6 +34,19 @@ namespace Maki
 				{
 				}
 
+				Message(const Message &other)
+					: from(other.from), msg(other.msg), arg1(other.arg1), arg2(other.arg2)
+				{
+				}
+
+				inline void operator=(const Message &other)
+				{
+					from = other.from;
+					msg = other.msg;
+					arg1 = other.arg1;
+					arg2 = other.arg2;
+				}
+
 				template<class T>
 				inline T *GetArg1() const { return reinterpret_cast<T *>(arg1); }
 

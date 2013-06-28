@@ -34,6 +34,7 @@ namespace Maki
 		{
 			assert((flags & (1ULL << component->type)) == 0 && "entity already has this component");
 			assert(componentCount < MAX_COMPONENTS && "entity exhausted component slots");
+			assert((flags & component->dependencies) == component->dependencies && "entity does not have the prerequisite components");
 
 			Entry ce;
 			ce.type = component->type;

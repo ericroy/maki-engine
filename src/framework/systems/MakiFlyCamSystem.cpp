@@ -11,10 +11,7 @@ namespace Maki
 		{
 
 			FlyCamSystem::FlyCamSystem()
-				: System(
-					(1ULL << Component::Type_Camera) |
-					(1ULL << Component::Type_Transform)
-				)
+				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform)
 			{
 			}
 

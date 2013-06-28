@@ -28,7 +28,8 @@ namespace Maki
 
 			public:
 				static const uint32 DEFAULT_FLAGS = Flag_Visible;
-				static const Component::Type TYPE = Type_Mesh;
+				static const Type TYPE = Type_Mesh;
+				static const TypeFlag DEPENDENCIES = 0;
 
 			public:
 				Mesh();

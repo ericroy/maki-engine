@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			SceneNode::SceneNode()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				parent(nullptr)
 			{
 			}

@@ -21,7 +21,7 @@ namespace Maki
 
 		protected:
 			static uint64 poolTypes;
-			static ComponentPoolBase *poolForType[Component::TypeCount];
+			static std::vector<ComponentPoolBase *> poolForType;
 			static std::map<std::string, ComponentPoolBase *> poolForTypeName;
 
 		public:

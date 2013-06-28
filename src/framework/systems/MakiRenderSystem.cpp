@@ -12,10 +12,7 @@ namespace Maki
 		{
 
 			RenderSystem::RenderSystem()
-				: System(
-					(1ULL << Component::Type_Mesh) |
-					(1ULL << Component::Type_Transform)
-					)
+				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Transform)
 			{
 			}
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-#include "framework/MakiPhysicsLink.h"
 #include "framework/MakiComponent.h"
 
 using namespace Maki::Core;

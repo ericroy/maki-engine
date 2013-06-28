@@ -12,7 +12,8 @@ namespace Maki
 			class Light : public Component
 			{
 			public:
-				static const Component::Type TYPE = Type_Light;
+				static const Type TYPE = Type_Light;
+				static const TypeFlag DEPENDENCIES = TypeFlag_Transform;
 
 			public:
 				Light();

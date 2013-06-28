@@ -10,7 +10,7 @@ namespace Maki
 		{
 
 			Transform::Transform()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				position(0.0f),
 				orientation(),
 				matrix(true),

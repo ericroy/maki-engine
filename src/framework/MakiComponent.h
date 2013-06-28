@@ -19,16 +19,28 @@ namespace Maki
 				Type_Transform = 0,
 				Type_SceneNode,
 				Type_Mesh,
+				Type_Physics,
+				Type_Script,
 				Type_Light,
 				Type_Camera,
-				Type_Billboard,
-				Type_Character,
-				Type_Skeleton,
-				TypeCount
+				Type_Skeleton,				
+				Type_UserType,
 			};
 
+			typedef uint64 TypeFlag;
+			static const TypeFlag TypeFlag_Transform = 1ULL << Type_Transform;
+			static const TypeFlag TypeFlag_SceneNode = 1ULL << Type_SceneNode;
+			static const TypeFlag TypeFlag_Mesh = 1ULL << Type_Mesh;
+			static const TypeFlag TypeFlag_Physics = 1ULL << Type_Physics;
+			static const TypeFlag TypeFlag_Script = 1ULL << Type_Script;
+			static const TypeFlag TypeFlag_Light = 1ULL << Type_Light;
+			static const TypeFlag TypeFlag_Camera= 1ULL << Type_Camera;
+			static const TypeFlag TypeFlag_Skeleton = 1ULL << Type_Skeleton;
+			static const TypeFlag TypeFlag_UserType = 1ULL << Type_UserType;
+
 			typedef uint64 Message;
-			static const uint64 Message_DebugWidgetCreated = 1ULL << 0;
+			static const Message Message_DebugWidgetCreated = 1ULL << 0;
+			static const Message Message_UserMessage = 1ULL << 1;
 
 			class Comparator
 			{
@@ -37,7 +49,7 @@ namespace Maki
 			};
 		
 		public:
-			Component(Type type) : type(type), owner(nullptr) {}
+			Component(Type type, uint64 dependencies) : type(type), dependencies(dependencies), owner(nullptr) {}
 			virtual ~Component() {}
 			virtual bool Init(Core::Document::Node *props) { return true; }
 			virtual void OnAttach() {}
@@ -45,6 +57,7 @@ namespace Maki
 
 		public:
 			Type type;
+			uint64 dependencies;
 			Entity *owner;
 		};
 

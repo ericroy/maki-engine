@@ -10,7 +10,7 @@ namespace Maki
 		{
 			
 			Light::Light()
-				: Component(TYPE),
+				: Component(TYPE, DEPENDENCIES),
 				fov(0.0f),
 				lightType(RenderState::LightType_Directional),
 				depthBuffer(HANDLE_NONE)

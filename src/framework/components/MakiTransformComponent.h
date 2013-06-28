@@ -12,7 +12,8 @@ namespace Maki
 			class Transform : public Component
 			{
 			public:
-				static const Component::Type TYPE = Type_Transform;
+				static const Type TYPE = Type_Transform;
+				static const TypeFlag DEPENDENCIES = 0;
 
 			public:
 				Transform();

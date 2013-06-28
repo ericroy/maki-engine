@@ -13,10 +13,7 @@ namespace Maki
 		{
 
 			SkeletonSystem::SkeletonSystem()
-				: System(
-					(1ULL << Component::Type_Mesh) |
-					(1ULL << Component::Type_Skeleton)
-					)
+				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton)
 			{
 			}
 
