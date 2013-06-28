@@ -27,7 +27,7 @@ namespace Maki
 				SkeletonAnimationManager::AddRef(animId.handle);
 				animation = animId.handle;
 			} else {
-				animation = ResourceProvider::Get()->skeletonAnimationManager->Load(animId.rid);
+				animation = CoreManagers::Get()->skeletonAnimationManager->Load(animId.rid);
 			}
 
 			boneCount = SkeletonAnimationManager::Get(animation)->GetBoneCount();

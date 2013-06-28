@@ -18,12 +18,12 @@ namespace Maki
 		class SkeletonManager;
 		class SkeletonAnimationManager;
 
-		class ResourceProvider : public PseudoSingleton<ResourceProvider>
+		class CoreManagers : public PseudoSingleton<CoreManagers>
 		{
 		public:
-			ResourceProvider();
-			ResourceProvider(const Config *config);
-			virtual ~ResourceProvider();
+			CoreManagers();
+			CoreManagers(const Config *config);
+			virtual ~CoreManagers();
 			void DumpManagerStats();
 			virtual void ReloadAssets();
 			virtual void ReloadAsset(Rid rid);

@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiFont.h"
 #include "core/MakiEngine.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiMesh.h"
@@ -42,7 +43,7 @@ namespace Maki
 
 		bool Font::Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize)
 		{
-			ResourceProvider *res = ResourceProvider::Get();
+			CoreManagers *res = CoreManagers::Get();
 			Engine *eng = Engine::Get();
 
 			char *fontData = eng->assets->AllocRead(fontRid);

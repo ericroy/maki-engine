@@ -17,7 +17,7 @@
 #include "core/MakiConfig.h"
 #include "core/MakiTimeSource.h"
 #include "core/MakiTimer.h"
-#include "core/MakiResourceProvider.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiTextureManager.h"
 #include "core/MakiTextureSetManager.h"
 #include "core/MakiMaterialManager.h"

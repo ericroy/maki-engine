@@ -61,7 +61,7 @@ namespace Maki
 
 			bool Mesh::Init(HandleOrRid meshId, HandleOrRid matId)
 			{
-				ResourceProvider *res = ResourceProvider::Get();
+				CoreManagers *res = CoreManagers::Get();
 
 				if(meshId.isHandle) {
 					assert(meshId.handle != HANDLE_NONE);

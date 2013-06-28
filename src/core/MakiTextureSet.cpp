@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiTextureSet.h"
 #include "core/MakiEngine.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiTextureManager.h"
 
 
@@ -33,7 +34,7 @@ namespace Maki
 
 		bool TextureSet::Load(uint8 count, Rid *textureRids)
 		{
-			ResourceProvider *res = ResourceProvider::Get();
+			CoreManagers *res = CoreManagers::Get();
 
 			textureCount = count;
 			for(uint8 i = 0; i < count; i++) {

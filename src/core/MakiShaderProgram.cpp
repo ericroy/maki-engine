@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiShaderProgram.h"
 #include "core/MakiEngine.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiShaderProgramManager.h"
 
@@ -71,7 +72,7 @@ namespace Maki
 			this->variant = variant;
 			this->rid = rid;
 			if(variant == Variant_Normal) {
-				ResourceProvider *res = ResourceProvider::Get();
+				CoreManagers *res = CoreManagers::Get();
 				for(uint32 i = 0; i < VariantCount-1; i++) {
 					variants[i] = res->shaderProgramManager->Load(rid, (Variant)(i+1));
 				}

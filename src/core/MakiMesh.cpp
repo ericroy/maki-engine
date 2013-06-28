@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiMesh.h"
 #include "core/MakiEngine.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiVertexFormatManager.h"
@@ -187,7 +188,7 @@ namespace Maki
 			const uint32 meshCount = *(uint32 *)data;
 			data += sizeof(uint32);
 
-			ResourceProvider *res = ResourceProvider::Get();
+			CoreManagers *res = CoreManagers::Get();
 			data += LoadMeshData(data, upload);
 			for(uint32 i = 1; i < meshCount; i++) {
 				Mesh nextMesh;
@@ -349,7 +350,7 @@ namespace Maki
 			buffer = Engine::Get()->renderer->UploadBuffer(buffer, &vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic);
 
 			// Get or create vertex format
-			Handle newVertexFormat = ResourceProvider::Get()->vertexFormatManager->FindOrAdd(vf);
+			Handle newVertexFormat = CoreManagers::Get()->vertexFormatManager->FindOrAdd(vf);
 			VertexFormatManager::Free(vertexFormat);
 			vertexFormat = newVertexFormat;
 		}

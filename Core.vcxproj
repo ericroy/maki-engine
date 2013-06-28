@@ -53,7 +53,7 @@
     <ClInclude Include="src\core\MakiRenderState.h" />
     <ClInclude Include="src\core\MakiResource.h" />
     <ClInclude Include="src\core\MakiResourcePool.h" />
-    <ClInclude Include="src\core\MakiResourceProvider.h" />
+    <ClInclude Include="src\core\MakiCoreManagers.h" />
     <ClInclude Include="src\core\MakiSafeQueue.h" />
     <ClInclude Include="src\core\MakiShader.h" />
     <ClInclude Include="src\core\MakiShaderProgram.h" />
@@ -190,7 +190,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\core\MakiResourceProvider.cpp">
+    <ClCompile Include="src\core\MakiCoreManagers.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>

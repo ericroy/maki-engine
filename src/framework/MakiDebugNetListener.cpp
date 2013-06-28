@@ -104,7 +104,7 @@ namespace Maki
 				case 0:
 					Console::Info("Got packet type %u (path='%s')", packetType, p);
 					rid = Engine::Get()->assets->PathToRid(p);
-					ResourceProvider::Get()->ReloadAsset(rid);
+					CoreManagers::Get()->ReloadAsset(rid);
 					FireNotification(rid);
 					break;
 				default:

@@ -17,7 +17,7 @@ namespace Maki
 			lineIndex(0),
 			material(HANDLE_NONE)
 		{
-			ResourceProvider *oldRes = ResourceProvider::SetCurrent(&res);
+			CoreManagers *oldRes = CoreManagers::SetCurrent(&res);
 
 			res.vertexFormatManager = new VertexFormatManager(1);
 			res.shaderProgramManager = new ShaderProgramManager(3);
@@ -41,7 +41,7 @@ namespace Maki
 				lines.push_back(h);
 			}
 
-			ResourceProvider::SetCurrent(oldRes);
+			CoreManagers::SetCurrent(oldRes);
 		}
 
 		DebugPhysicsRenderer::~DebugPhysicsRenderer()

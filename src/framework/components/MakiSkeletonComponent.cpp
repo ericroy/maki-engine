@@ -45,7 +45,7 @@ namespace Maki
 
 			bool Skeleton::Init(HandleOrRid skelId)
 			{
-				ResourceProvider *res = ResourceProvider::Get();
+				CoreManagers *res = CoreManagers::Get();
 
 				if(skelId.isHandle) {
 					SkeletonManager::AddRef(skelId.handle);

@@ -80,7 +80,7 @@ namespace Maki
 				if((uint32)mapProperties.size.x != shadowMapWidth || (uint32)mapProperties.size.y != shadowMapHeight) {
 					TextureManager::Free(depthBuffer);
 					mapProperties.size = Vector2((float)shadowMapWidth, (float)shadowMapHeight);
-					depthBuffer = ResourceProvider::Get()->textureManager->AllocTexture(Texture::TextureType_DepthStencil, (uint32)mapProperties.size.x, (uint32)mapProperties.size.y, 4);
+					depthBuffer = CoreManagers::Get()->textureManager->AllocTexture(Texture::TextureType_DepthStencil, (uint32)mapProperties.size.x, (uint32)mapProperties.size.y, 4);
 				}
 			}
 			

@@ -138,8 +138,6 @@ namespace Maki
 
 		void Renderer::SetLight(uint32 lightIndex, const RenderState::LightProperties *props, const RenderState::ShadowMapProperties *shadProps, const Matrix44 *matrix, float fov, Handle depthBuffer)
 		{
-			ResourceProvider *res = ResourceProvider::Get();
-
 			lightDirtyFlags |= (1<<lightIndex);
 
 			if(props == nullptr || (props->flags & RenderState::LightFlag_On) == 0) {

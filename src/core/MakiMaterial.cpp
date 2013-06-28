@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiMaterial.h"
 #include "core/MakiEngine.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiTextureSet.h"
 #include "core/MakiDocument.h"
 #include "core/MakiAssetLibrary.h"
@@ -59,14 +60,14 @@ namespace Maki
 
 		void Material::SetShaderProgram(Rid shaderRid)
 		{
-			Handle newShaderProgram = ResourceProvider::Get()->shaderProgramManager->Load(shaderRid);
+			Handle newShaderProgram = CoreManagers::Get()->shaderProgramManager->Load(shaderRid);
 			ShaderProgramManager::Free(shaderProgram);
 			shaderProgram = newShaderProgram;
 		}
 	
 		void Material::SetTextures(uint8 count, Rid *textureRids)
 		{
-			Handle newTextureSet = ResourceProvider::Get()->textureSetManager->Load(count, textureRids);
+			Handle newTextureSet = CoreManagers::Get()->textureSetManager->Load(count, textureRids);
 			TextureSetManager::Free(textureSet);
 			textureSet = newTextureSet;
 		}
@@ -104,7 +105,7 @@ namespace Maki
 
 		bool Material::Load(Rid rid)
 		{
-			ResourceProvider *res = ResourceProvider::Get();
+			CoreManagers *res = CoreManagers::Get();
 			Engine *eng = Engine::Get();
 
 			if(rid == RID_NONE) {

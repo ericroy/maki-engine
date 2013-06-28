@@ -8,7 +8,7 @@ namespace Maki
 
 		class RenderState;
 		class DrawCommandList;
-		class ResourceProvider;
+		class CoreManagers;
 
 		class RenderPayload
 		{

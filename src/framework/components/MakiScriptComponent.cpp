@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/MakiFrameworkManagers.h"
 #include "framework/MakiScriptManager.h"
 #include "framework/components/MakiScriptComponent.h"
 
@@ -15,23 +16,6 @@ namespace Maki
 			{
 			}
 
-			Script::Script(HandleOrRid scriptId)
-				: Component(TYPE, DEPENDENCIES),
-				script(HANDLE_NONE)
-			{
-				//ResourceProvider *res = ResourceProvider::Get();
-
-				if(scriptId.isHandle) {
-					ScriptManager::AddRef(scriptId.handle);
-					script = scriptId.handle;
-				} else {
-					//script = Load(scriptId.rid);
-					if(script == HANDLE_NONE) {
-						Console::Error("Script component failed to load script");
-					}
-				}
-			}
-
 			Script::~Script()
 			{
 				ScriptManager::Free(script);
@@ -39,7 +23,29 @@ namespace Maki
 
 			bool Script::Init(Document::Node *props)
 			{
-				
+				const char *scriptPath = props->ResolveValue("script.#0");
+				if(scriptPath == nullptr) {
+					Console::Error("Entity did not specify a script");
+					return false;
+				}
+				Rid scriptRid = Engine::Get()->assets->PathToRid(scriptPath);
+				if(scriptRid == RID_NONE) {
+					Console::Error("No RID for path: %s", scriptRid);
+					return false;
+				}
+
+				return Init(scriptRid);
+			}
+
+			bool Script::Init(HandleOrRid scriptId)
+			{
+				if(scriptId.isHandle) {
+					ScriptManager::AddRef(scriptId.handle);
+					script = scriptId.handle;
+				} else {
+					script = FrameworkManagers::Get()->scriptManager->Load(scriptId.rid);
+					assert(script != HANDLE_NONE);
+				}
 				return true;
 			}
 

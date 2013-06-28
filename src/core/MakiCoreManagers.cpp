@@ -1,5 +1,5 @@
 #include "core/core_stdafx.h"
-#include "core/MakiResourceProvider.h"
+#include "core/MakiCoreManagers.h"
 #include "core/MakiEngine.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiConfig.h"
@@ -19,8 +19,8 @@ namespace Maki
 	namespace Core
 	{
 
-		ResourceProvider::ResourceProvider()
-			: PseudoSingleton<ResourceProvider>(),
+		CoreManagers::CoreManagers()
+			: PseudoSingleton<CoreManagers>(),
 			textureManager(nullptr),
 			textureSetManager(nullptr),
 			materialManager(nullptr),
@@ -33,8 +33,8 @@ namespace Maki
 		{
 		}
 
-		ResourceProvider::ResourceProvider(const Config *config)
-			: PseudoSingleton<ResourceProvider>(),
+		CoreManagers::CoreManagers(const Config *config)
+			: PseudoSingleton<CoreManagers>(),
 			textureManager(nullptr),
 			textureSetManager(nullptr),
 			materialManager(nullptr),
@@ -64,7 +64,7 @@ namespace Maki
 			assert(shaderProgramManager->GetCapacity() <= (1<<DrawCommand::BITS_PER_SHADER_PROGRAM) && "assign more bits to shader program in draw command bitfield");
 		}
 
-		ResourceProvider::~ResourceProvider()
+		CoreManagers::~CoreManagers()
 		{
 			SAFE_DELETE(skeletonAnimationManager);
 			SAFE_DELETE(skeletonManager);
@@ -77,7 +77,7 @@ namespace Maki
 			SAFE_DELETE(textureManager);
 		}
 
-		void ResourceProvider::DumpManagerStats()
+		void CoreManagers::DumpManagerStats()
 		{
 			vertexFormatManager->DumpStats		("Vertex formats  ");
 			shaderProgramManager->DumpStats		("Shader programs ");
@@ -90,7 +90,7 @@ namespace Maki
 			skeletonAnimationManager->DumpStats	("Skeleton anims  ");
 		}
 
-		void ResourceProvider::ReloadAssets()
+		void CoreManagers::ReloadAssets()
 		{
 			Engine *eng = Engine::Get();
 			if(eng != nullptr) {
@@ -108,7 +108,7 @@ namespace Maki
 			DumpManagerStats();
 		}
 
-		void ResourceProvider::ReloadAsset(Rid rid)
+		void CoreManagers::ReloadAsset(Rid rid)
 		{
 			Engine *eng = Engine::Get();
 			if(eng != nullptr) {

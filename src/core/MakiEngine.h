@@ -1,7 +1,6 @@
 #pragma once
 #include "core/core_stdafx.h"
 #include "core/MakiPseudoSingleton.h"
-#include "core/MakiResourceProvider.h"
 #include "core/MakiTimer.h"
 
 namespace Maki

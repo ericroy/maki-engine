@@ -1,7 +1,6 @@
 #pragma once
 #include "core/core_stdafx.h"
 #include "core/MakiShaderProgram.h"
-#include "core/MakiResourceProvider.h"
 #include "core/MakiTextureManager.h"
 
 

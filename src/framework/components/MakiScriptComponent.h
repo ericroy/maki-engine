@@ -17,9 +17,9 @@ namespace Maki
 
 			public:
 				Script();
-				Script(HandleOrRid scriptId);
 				virtual ~Script();
 				bool Init(Document::Node *props);
+				bool Init(HandleOrRid scriptId);
 
 			private:
 				Handle script;

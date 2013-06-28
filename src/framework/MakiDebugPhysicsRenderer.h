@@ -31,7 +31,7 @@ namespace Maki
 			std::vector<Handle> lines;
 			uint32 lineIndex;
 			Handle material;
-			ResourceProvider res;
+			CoreManagers res;
 		};
 
 	} // namespace Framework

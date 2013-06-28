@@ -35,7 +35,6 @@
     <ClInclude Include="src\core\MakiRenderState.h" />
     <ClInclude Include="src\core\MakiResource.h" />
     <ClInclude Include="src\core\MakiResourcePool.h" />
-    <ClInclude Include="src\core\MakiResourceProvider.h" />
     <ClInclude Include="src\core\MakiSafeQueue.h" />
     <ClInclude Include="src\core\MakiShader.h" />
     <ClInclude Include="src\core\MakiShaderProgram.h" />
@@ -86,6 +85,7 @@
     <ClInclude Include="src\core\direct3d\MakiCommon.h">
       <Filter>direct3d</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\MakiCoreManagers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\MakiArchive.cpp" />
@@ -109,7 +109,6 @@
     <ClCompile Include="src\core\MakiRenderCore.cpp" />
     <ClCompile Include="src\core\MakiRenderer.cpp" />
     <ClCompile Include="src\core\MakiResource.cpp" />
-    <ClCompile Include="src\core\MakiResourceProvider.cpp" />
     <ClCompile Include="src\core\MakiShader.cpp" />
     <ClCompile Include="src\core\MakiShaderProgram.cpp" />
     <ClCompile Include="src\core\MakiShaderProgramManager.cpp" />
@@ -152,6 +151,7 @@
     <ClCompile Include="src\core\direct3d\MakiCommon.cpp">
       <Filter>direct3d</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\MakiCoreManagers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
