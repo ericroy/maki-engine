@@ -164,9 +164,6 @@ namespace Maki
 				case WM_ERASEBKGND:
 					return 1;
 				case WM_CLOSE:
-					/*if(OnClose.cb) {
-						OnClose.cb(OnClose.instance);
-					}*/
 					if(hdc != INVALID_HANDLE_VALUE) {
 						ReleaseDC(hwnd, hdc);
 					}

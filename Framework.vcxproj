@@ -32,6 +32,7 @@
     <ClInclude Include="src\framework\framework_stdafx.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
     <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
     <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
     <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
@@ -68,6 +69,7 @@
     </ClCompile>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
     <ClCompile Include="src\framework\MakiSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp" />

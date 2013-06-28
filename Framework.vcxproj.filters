@@ -49,6 +49,9 @@
     <ClInclude Include="src\framework\systems\MakiCameraSystem.h">
       <Filter>systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -93,6 +96,9 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
   </ItemGroup>

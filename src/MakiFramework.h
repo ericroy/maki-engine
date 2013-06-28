@@ -26,3 +26,4 @@
 #include "framework/systems/MakiSkeletonSystem.h"
 #include "framework/systems/MakiLightingSystem.h"
 #include "framework/systems/MakiCameraSystem.h"
+#include "framework/systems/MakiFlyCamSystem.h"
