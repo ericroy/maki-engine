@@ -55,6 +55,13 @@ namespace Maki
 			return 0;
 		}
 
+		static const char *LuaReaderFunc(lua_State *state, void *data, size_t *size)
+		{
+			std::pair<char *, uint32> &chunk = *(std::pair<char *, uint32> *)data;
+			*size = chunk.second;
+			return chunk.first;
+		}
+
 
 
 
@@ -73,13 +80,6 @@ namespace Maki
 			}
 		}
 
-		static const char *readerFunc(lua_State *state, void *data, size_t *size)
-		{
-			std::pair<char *, uint32> &chunk = *(std::pair<char *, uint32> *)data;
-			*size = chunk.second;
-			return chunk.first;
-		}
-
 		bool Script::Load(Rid scriptRid)
 		{
 			uint32 bytesRead;
@@ -95,10 +95,10 @@ namespace Maki
 			char chunkName[64];
 			sprintf_s(chunkName, "Rid<%u>", scriptRid);
 
-			std::pair<char *, uint32> chunk(data, bytesRead);
+			std::pair<char *, uint32> readerArg(data, bytesRead);
 
 			// Load and evaluate the script
-			if(lua_load(state, readerFunc, &chunk, chunkName) != 0 || lua_pcall(state, 0, LUA_MULTRET, 0) != 0) {
+			if(lua_load(state, LuaReaderFunc, &readerArg, chunkName) != 0 || lua_pcall(state, 0, LUA_MULTRET, 0) != 0) {
 				const char *cs = luaL_checklstring(state, 1, nullptr);
 				if(cs != nullptr) {
 					Console::Error("LUA ERROR: %s", cs);
