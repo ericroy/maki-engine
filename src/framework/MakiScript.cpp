@@ -18,13 +18,13 @@ namespace Maki
 		// See http://medek.wordpress.com/2009/02/03/wrapping-lua-errors-and-print-function/
 		static int LuaPrint(lua_State *state)
 		{
-			int argCount = lua_gettop(state);
+			int32 argCount = lua_gettop(state);
 			lua_getglobal(state, "tostring");
 				
 			std::stringstream buffer("LUA: ");
 				
 			// Make sure you start at 1 *NOT* 0
-			for(int i = 1; i <= argCount; i++)
+			for(int32 i = 1; i <= argCount; i++)
 			{
 				lua_pushvalue(state, -1);
 				lua_pushvalue(state, i);
@@ -59,6 +59,7 @@ namespace Maki
 		{
 			std::pair<char *, uint32> &chunk = *(std::pair<char *, uint32> *)data;
 			*size = chunk.second;
+			chunk.second = 0;
 			return chunk.first;
 		}
 
@@ -92,7 +93,7 @@ namespace Maki
 			luaL_openlibs(state);
 			lua_register(state, "print", LuaPrint);
 
-			char chunkName[64];
+			char chunkName[32];
 			sprintf_s(chunkName, "Rid<%u>", scriptRid);
 
 			std::pair<char *, uint32> readerArg(data, bytesRead);
