@@ -15,7 +15,7 @@ namespace Maki
 		{
 		}
 
-		FrameworkManagers::FrameworkManagers(const Core::Config *config)
+		FrameworkManagers::FrameworkManagers(const Config *config)
 			: PseudoSingleton<FrameworkManagers>(),
 			scriptManager(nullptr)
 		{

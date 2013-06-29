@@ -17,7 +17,7 @@ namespace Maki
 		private:
 			Script(const Script &other) {}
 
-		private:
+		public:
 			char *data;
 		};
 

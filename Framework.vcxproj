@@ -41,6 +41,7 @@
     <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
     <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h" />
+    <ClInclude Include="src\framework\systems\MakiScriptingSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSkeletonSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +83,7 @@
     <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiSceneGraphSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiScriptingSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiSkeletonSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

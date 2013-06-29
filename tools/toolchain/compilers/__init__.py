@@ -15,4 +15,5 @@ COMPILERS = {
     'png': shutil.copyfile,
     'jpg': shutil.copyfile,
     'ttf': shutil.copyfile,
+    'lua': shutil.copyfile,
 }

@@ -4,16 +4,20 @@
 
 namespace Maki
 {
-	namespace Framework
+	namespace Core
 	{
 		class Config;
+	}
+
+	namespace Framework
+	{
 		class ScriptManager;
 
 		class FrameworkManagers : public Core::PseudoSingleton<FrameworkManagers>
 		{
 		public:
 			FrameworkManagers();
-			FrameworkManagers(const Core::Config *config);
+			FrameworkManagers(const Config *config);
 			virtual ~FrameworkManagers();
 			void DumpManagerStats();
 			virtual void ReloadAssets();

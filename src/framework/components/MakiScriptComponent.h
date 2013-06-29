@@ -6,11 +6,18 @@ namespace Maki
 {
 	namespace Framework
 	{
+		namespace Systems
+		{
+			class ScriptingSystem;
+		}
+
 		namespace Components
 		{
 
 			class Script : public Component
 			{
+				friend class Systems::ScriptingSystem;
+
 			public:
 				static const Type TYPE = Type_Script;
 				static const TypeFlag DEPENDENCIES = 0;

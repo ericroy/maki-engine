@@ -60,6 +60,9 @@
     <ClInclude Include="src\framework\MakiScriptManager.h" />
     <ClInclude Include="src\framework\MakiScript.h" />
     <ClInclude Include="src\framework\MakiFrameworkManagers.h" />
+    <ClInclude Include="src\framework\systems\MakiScriptingSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -117,6 +120,9 @@
     <ClCompile Include="src\framework\MakiScriptManager.cpp" />
     <ClCompile Include="src\framework\MakiScript.cpp" />
     <ClCompile Include="src\framework\MakiFrameworkManagers.cpp" />
+    <ClCompile Include="src\framework\systems\MakiScriptingSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
