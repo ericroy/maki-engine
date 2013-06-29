@@ -2,6 +2,11 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiComponent.h"
 
+extern "C"
+{
+	#include <luajit.h>
+}
+
 namespace Maki
 {
 	namespace Framework
@@ -30,6 +35,9 @@ namespace Maki
 
 			private:
 				Handle script;
+				int32 lastResult;
+				float sleepTime;
+				lua_State *coroutine;
 			};
 
 

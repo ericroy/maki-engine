@@ -3,11 +3,6 @@
 #include "framework/MakiSystem.h"
 #include "framework/MakiComponent.h"
 
-extern "C"
-{
-	#include <luajit.h>
-}
-
 namespace Maki
 {
 	namespace Framework
@@ -26,8 +21,6 @@ namespace Maki
 				struct Node
 				{
 					Components::Script *scriptComp;
-					bool valid;
-
 					inline bool operator==(const Node &other) const { return scriptComp == other.scriptComp; }
 				};
 
@@ -42,12 +35,7 @@ namespace Maki
 				virtual void Remove(Entity *e);
 
 			private:
-				void LuaPop(int32 n = 1);
-				void LuaLogError();
-
-			private:
 				std::vector<Node> nodes;
-				lua_State *state;
 			};
 
 		} // namespace Systems

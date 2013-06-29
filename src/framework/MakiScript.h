@@ -2,6 +2,11 @@
 #include "framework/framework_stdafx.h"
 #include "core/MakiResource.h"
 
+extern "C"
+{
+	#include <luajit.h>
+}
+
 namespace Maki
 {
 	namespace Framework
@@ -13,12 +18,14 @@ namespace Maki
 			Script();
 			virtual ~Script();
 			bool Load(Rid scriptRid);
+			void PrintLuaError();
 
 		private:
 			Script(const Script &other) {}
 
 		public:
 			char *data;
+			lua_State *state;
 		};
 
 	} // namespace Core

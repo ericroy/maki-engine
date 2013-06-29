@@ -2,6 +2,7 @@ import shutil
 from . import compile_fbx
 from . import compile_doc
 from . import compile_shader
+from . import compile_lua
 from . import doc_toucher
 
 COMPILERS = {
@@ -15,5 +16,5 @@ COMPILERS = {
     'png': shutil.copyfile,
     'jpg': shutil.copyfile,
     'ttf': shutil.copyfile,
-    'lua': shutil.copyfile,
+    'lua': compile_lua.compile,
 }

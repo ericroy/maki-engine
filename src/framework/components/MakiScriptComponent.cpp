@@ -12,7 +12,10 @@ namespace Maki
 		{
 			Script::Script()
 				: Component(TYPE, DEPENDENCIES),
-				script(HANDLE_NONE)
+				script(HANDLE_NONE),
+				lastResult(0),
+				sleepTime(0),
+				coroutine(nullptr)
 			{
 			}
 
