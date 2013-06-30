@@ -21,12 +21,9 @@ namespace Maki
 		namespace Systems
 		{
 
-			
-
-
-
 			ScriptingSystem::ScriptingSystem()
-				: System(Component::TypeFlag_Script)
+				: System(Component::TypeFlag_Script),
+				currentlyProcessingQueue(nullptr)
 			{
 			}
 
@@ -48,8 +45,8 @@ namespace Maki
 
 					if(n.scriptComp->lastResult == 0) {
 						// Start a new coroutine
-						lua_getglobal(n.scriptComp->coroutine, "update");
-						lua_pushlightuserdata(n.scriptComp->coroutine, n.scriptComp->owner);
+						lua_getglobal(n.scriptComp->coroutine, "run");
+						lua_pushlightuserdata(n.scriptComp->coroutine, (void *)&n);
 						n.scriptComp->lastResult = lua_resume(n.scriptComp->coroutine, 1);
 					} else if(n.scriptComp->lastResult == LUA_YIELD) {
 						// Resume a coroutine
@@ -68,11 +65,30 @@ namespace Maki
 						} else {
 							Console::Error("Error, could not get error message from lua stack");
 						}
-						lua_settop(n.scriptComp->coroutine, -2);
+						lua_settop(n.scriptComp->coroutine, lua_gettop(n.scriptComp->coroutine)-1);
 						n.scriptComp->lastResult = 0;
 						n.scriptComp->sleepTime = 0.0f;
 					}
 				}
+			}
+
+			void ScriptingSystem::ProcessMessages(const std::vector<Message> &messages)
+			{
+				currentlyProcessingQueue = &messages;
+
+				const uint32 messageCount = messages.size();
+				const uint32 count = nodes.size();
+				for(uint32 i = 0; i < count; i++) {
+					const Node &n = nodes[i];
+					if(n.scriptComp->handlesMessages) {
+						lua_getfield(n.scriptComp->coroutine, LUA_GLOBALSINDEX, "process_messages");
+						lua_pushlightuserdata(n.scriptComp->coroutine, (void *)&n);
+						lua_pushinteger(n.scriptComp->coroutine, messageCount);
+						lua_call(n.scriptComp->coroutine, 2, 0);
+					}
+				}
+
+				currentlyProcessingQueue = nullptr;
 			}
 
 			void ScriptingSystem::Add(Entity *e)
@@ -80,6 +96,7 @@ namespace Maki
 				Components::Script *scriptComp = e->Get<Components::Script>();
 
 				Node n;
+				n.scriptSys = this;
 				n.scriptComp = scriptComp;
 				nodes.push_back(n);
 				
@@ -91,11 +108,15 @@ namespace Maki
 				}
 
 				// Ensure that the script exposes an init function, taking an entity, returning a coroutine
-				lua_getfield(s->state, LUA_GLOBALSINDEX, "update");
-				if(lua_type(s->state, 1) != LUA_TFUNCTION) {
-					Console::Error("Script must expose a function called 'update' that will be run as a coroutine");
+				lua_getfield(s->state, LUA_GLOBALSINDEX, "run");
+				if(lua_type(s->state, lua_gettop(s->state)) != LUA_TFUNCTION) {
+					Console::Error("Script must expose a function with signature run(entity) that will be executed as a coroutine");
 				}
-				lua_settop(s->state, -2);
+				lua_settop(s->state, lua_gettop(s->state)-1);
+
+				lua_getfield(s->state, LUA_GLOBALSINDEX, "process_messages");
+				scriptComp->handlesMessages = lua_type(s->state, lua_gettop(s->state)) == LUA_TFUNCTION;				
+				lua_settop(s->state, lua_gettop(s->state)-1);
 
 				scriptComp->lastResult = 0;	// LUA_OK
 			}

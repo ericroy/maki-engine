@@ -20,8 +20,6 @@ namespace Maki
 				SceneGraphSystem();
 				virtual ~SceneGraphSystem();
 
-				void ProcessMessages(const std::vector<Message> &messages);
-
 			protected:
 				void Add(Entity *e);
 				virtual void Remove(Entity *e);

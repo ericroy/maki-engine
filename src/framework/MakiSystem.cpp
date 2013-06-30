@@ -41,7 +41,10 @@ namespace Maki
 				// Amalgamate messages from all systems into global queue
 				for(uint32 i = 0; i < count; i++) {
 					if(systems[i]->outgoingMessages.size()) {
-						std::copy(std::begin(systems[i]->outgoingMessages), std::end(systems[i]->outgoingMessages), std::end(messages));
+						//std::copy(systems[i]->outgoingMessages.begin(), systems[i]->outgoingMessages.end(), messages.end());
+						for(auto iter = systems[i]->outgoingMessages.begin(); iter != systems[i]->outgoingMessages.end(); ++iter) {
+							messages.push_back(*iter);
+						}
 						systems[i]->outgoingMessages.clear();
 					}
 				}

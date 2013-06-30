@@ -63,6 +63,7 @@
     <ClInclude Include="src\framework\systems\MakiScriptingSystem.h">
       <Filter>systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\framework\MakiScriptingApi.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -123,6 +124,7 @@
     <ClCompile Include="src\framework\systems\MakiScriptingSystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\framework\MakiScriptingApi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

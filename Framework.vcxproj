@@ -33,6 +33,7 @@
     <ClInclude Include="src\framework\MakiSceneLoader.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
     <ClInclude Include="src\framework\MakiScript.h" />
+    <ClInclude Include="src\framework\MakiScriptingApi.h" />
     <ClInclude Include="src\framework\MakiScriptManager.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
@@ -76,6 +77,7 @@
     </ClCompile>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
     <ClCompile Include="src\framework\MakiScript.cpp" />
+    <ClCompile Include="src\framework\MakiScriptingApi.cpp" />
     <ClCompile Include="src\framework\MakiScriptManager.cpp" />
     <ClCompile Include="src\framework\MakiSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp" />

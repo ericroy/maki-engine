@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Framework
 	{
+		class ScriptingApi;
+
 		namespace Components
 		{
 			class Script;
@@ -17,9 +19,12 @@ namespace Maki
 
 			class ScriptingSystem : public System
 			{
-			private:
+				friend class Framework::ScriptingApi;
+
+			public:
 				struct Node
 				{
+					ScriptingSystem *scriptSys;
 					Components::Script *scriptComp;
 					inline bool operator==(const Node &other) const { return scriptComp == other.scriptComp; }
 				};
@@ -29,6 +34,7 @@ namespace Maki
 				virtual ~ScriptingSystem();
 		
 				void Update(float dt);
+				void ProcessMessages(const std::vector<Message> &messages);
 
 			protected:
 				void Add(Entity *e);
@@ -36,6 +42,7 @@ namespace Maki
 
 			private:
 				std::vector<Node> nodes;
+				const std::vector<Message> *currentlyProcessingQueue;
 			};
 
 		} // namespace Systems

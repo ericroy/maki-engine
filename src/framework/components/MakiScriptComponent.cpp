@@ -15,7 +15,8 @@ namespace Maki
 				script(HANDLE_NONE),
 				lastResult(0),
 				sleepTime(0),
-				coroutine(nullptr)
+				coroutine(nullptr),
+				handlesMessages(false)
 			{
 			}
 

@@ -37,6 +37,7 @@ namespace Maki
 				Handle script;
 				int32 lastResult;
 				float sleepTime;
+				bool handlesMessages;
 				lua_State *coroutine;
 			};
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiScript.h"
+#include "framework/MakiScriptingApi.h"
 #include <sstream>
 
 extern "C"
@@ -111,6 +112,8 @@ namespace Maki
 				SAFE_FREE(data);
 				return false;
 			}
+
+			ScriptingApi::ExposeApiToScript(this);
 
 			SAFE_FREE(data);
 			this->rid = scriptRid;

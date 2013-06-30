@@ -10,7 +10,7 @@ namespace Maki
 
 		class System
 		{
-		protected:
+		public:
 			struct Message
 			{
 			public:
@@ -68,12 +68,11 @@ namespace Maki
 			static std::vector<System *> systems;
 			static std::vector<Message> messages;
 
-
-
 		public:
 			System(uint64 componentMask);
 			virtual ~System();
 			inline bool CompatibleWith(uint64 componentFlags) const { return (componentMask & componentFlags) == componentMask; }
+			inline void PostMessage(const Message &m) { outgoingMessages.push_back(m); }
 
 		protected:
 			virtual void ProcessMessages(const std::vector<Message> &messages) {}
