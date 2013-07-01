@@ -15,6 +15,9 @@ namespace Maki
 		class Script : public Resource
 		{
 		public:
+			static std::map<std::string, Rid> modules;
+
+		public:
 			Script();
 			virtual ~Script();
 			bool Load(Rid scriptRid);

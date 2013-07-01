@@ -55,17 +55,12 @@ namespace Maki
 
 					if(n.scriptComp->lastResult == LUA_YIELD) {
 						// Update function yielded - get the number of seconds to sleep this coroutine before starting it again
-						n.scriptComp->sleepTime = (float)lua_tonumber(n.scriptComp->coroutine, lua_gettop(n.scriptComp->coroutine));
+						n.scriptComp->sleepTime = (float)lua_tonumber(n.scriptComp->coroutine, -1);
 					} else if(n.scriptComp->lastResult == 0) {
 						// Update function returned, we'll start it again on the next update
 					} else {
-						const char *cs = luaL_checklstring(n.scriptComp->coroutine, 1, nullptr);
-						if(cs != nullptr) {
-							Console::Error("LUA ERROR: %s", cs);
-						} else {
-							Console::Error("Error, could not get error message from lua stack");
-						}
-						lua_settop(n.scriptComp->coroutine, lua_gettop(n.scriptComp->coroutine)-1);
+						Console::Error("LUA ERROR: %s", lua_tolstring(n.scriptComp->coroutine, -1, nullptr));
+						lua_pop(n.scriptComp->coroutine, 1);
 						n.scriptComp->lastResult = 0;
 						n.scriptComp->sleepTime = 0.0f;
 					}
@@ -81,10 +76,10 @@ namespace Maki
 				for(uint32 i = 0; i < count; i++) {
 					const Node &n = nodes[i];
 					if(n.scriptComp->handlesMessages) {
-						lua_getfield(n.scriptComp->coroutine, LUA_GLOBALSINDEX, "process_messages");
+						lua_getfield(n.scriptComp->coroutine, LUA_GLOBALSINDEX, "message_handler");
 						lua_pushlightuserdata(n.scriptComp->coroutine, (void *)&n);
 						lua_pushinteger(n.scriptComp->coroutine, messageCount);
-						lua_call(n.scriptComp->coroutine, 2, 0);
+						lua_pcall(n.scriptComp->coroutine, 2, 0, 0);
 					}
 				}
 
@@ -109,14 +104,14 @@ namespace Maki
 
 				// Ensure that the script exposes an init function, taking an entity, returning a coroutine
 				lua_getfield(s->state, LUA_GLOBALSINDEX, "run");
-				if(lua_type(s->state, lua_gettop(s->state)) != LUA_TFUNCTION) {
+				if(lua_type(s->state, -1) != LUA_TFUNCTION) {
 					Console::Error("Script must expose a function with signature run(entity) that will be executed as a coroutine");
 				}
-				lua_settop(s->state, lua_gettop(s->state)-1);
+				lua_pop(s->state, 1);
 
-				lua_getfield(s->state, LUA_GLOBALSINDEX, "process_messages");
-				scriptComp->handlesMessages = lua_type(s->state, lua_gettop(s->state)) == LUA_TFUNCTION;				
-				lua_settop(s->state, lua_gettop(s->state)-1);
+				lua_getfield(s->state, LUA_GLOBALSINDEX, "message_handler");
+				scriptComp->handlesMessages = lua_type(s->state, -1) == LUA_TFUNCTION;				
+				lua_pop(s->state, 1);
 
 				scriptComp->lastResult = 0;	// LUA_OK
 			}

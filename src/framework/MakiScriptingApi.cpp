@@ -18,26 +18,26 @@ namespace Maki
 			{ "get_self", &GetSelf }
 		};
 		
-		void ScriptingApi::ExposeApiToScript(Script *s)
+		void ScriptingApi::ExposeApiToScript(lua_State *state)
 		{
-			lua_newtable(s->state);
+			lua_newtable(state);
 			for(uint32 i = 0; i < sizeof(apiFunctions)/sizeof(ApiFunction); i++) {
-				lua_pushstring(s->state, apiFunctions[i].name);
-				lua_pushcfunction(s->state, apiFunctions[i].func);
-				lua_settable(s->state, lua_gettop(s->state)-2);
+				lua_pushstring(state, apiFunctions[i].name);
+				lua_pushcfunction(state, apiFunctions[i].func);
+				lua_settable(state, lua_gettop(state)-2);
 			}
-			lua_setglobal(s->state, "maki");
+			lua_setglobal(state, "maki");
 		}
 
 
 		int32 ScriptingApi::PostMessage(lua_State *state)
 		{
-			int32 top = lua_gettop(state);
-			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, top-3);
-			Component::Message msg = lua_tointeger(state, top-2);
-			uintptr_t arg1 = (uintptr_t)lua_topointer(state, top-1);
-			uintptr_t arg2 = (uintptr_t)lua_topointer(state, top);
-			lua_settop(state, top-4);
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -4);
+			Component::Message msg = (Component::Message)lua_tointeger(state, -3);
+			uintptr_t arg1 = (uintptr_t)lua_topointer(state, -2);
+			uintptr_t arg2 = (uintptr_t)lua_topointer(state, -1);
+			lua_pop(state, 4);
+			assert(lua_gettop(state) == 0);
 
 			context->scriptSys->PostMessage(System::Message(context->scriptComp, msg, (void *)arg1, (void *)arg2));
 			return 0;
@@ -45,10 +45,10 @@ namespace Maki
 
 		int32 ScriptingApi::GetMessage(lua_State *state)
 		{
-			int32 top = lua_gettop(state);
-			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, top-1);
-			int32 index = lua_tointeger(state, top);
-			lua_settop(state, top-2);
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -2);
+			int32 index = lua_tointeger(state, -1);
+			lua_pop(state, 2);
+			assert(lua_gettop(state) == 0);
 
 			assert(index >= 0 && (uint32)index < context->scriptSys->currentlyProcessingQueue->size());
 			const System::Message &m = (*context->scriptSys->currentlyProcessingQueue)[index];
@@ -62,9 +62,9 @@ namespace Maki
 
 		int32 ScriptingApi::GetSelf(lua_State *state)
 		{
-			int32 top = lua_gettop(state);
-			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, top);
-			lua_settop(state, top-1);
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -1);
+			lua_pop(state, 1);
+			assert(lua_gettop(state) == 0);
 
 			lua_pushlightuserdata(state, context->scriptComp);
 			return 1;

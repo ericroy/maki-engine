@@ -8,6 +8,7 @@
 
 #include "framework/MakiEntity.h"
 #include "framework/MakiScene.h"
+#include "framework/MakiScript.h"
 #include "framework/MakiSceneLoader.h"
 #include "framework/MakiCascadeHelper.h"
 #include "framework/MakiDebugNetListener.h"

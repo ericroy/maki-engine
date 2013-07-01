@@ -38,10 +38,13 @@ namespace Maki
 			static const TypeFlag TypeFlag_Skeleton = 1ULL << Type_Skeleton;
 			static const TypeFlag TypeFlag_UserType = 1ULL << Type_UserType;
 
-			typedef uint64 Message;
-			static const Message Message_DebugWidgetCreated = 1ULL << 0;
-			static const Message Message_UserMessage = 1ULL << 1;
-
+			enum Message
+			{
+				Message_Test1 = 0,
+				Message_Test2,
+				Message_UserMessage,
+			};
+			
 			class Comparator
 			{
 			public:

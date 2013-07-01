@@ -34,17 +34,17 @@ namespace Maki
 		{
 			const uint32 count = systems.size();
 			uint32 iterations = 0;
-			bool done = true;
+			bool done = false;
 
-			do {
+			while(!done) {
+				done = true;
 
 				// Amalgamate messages from all systems into global queue
 				for(uint32 i = 0; i < count; i++) {
-					if(systems[i]->outgoingMessages.size()) {
-						//std::copy(systems[i]->outgoingMessages.begin(), systems[i]->outgoingMessages.end(), messages.end());
-						for(auto iter = systems[i]->outgoingMessages.begin(); iter != systems[i]->outgoingMessages.end(); ++iter) {
-							messages.push_back(*iter);
-						}
+					uint32 outgoingCount = systems[i]->outgoingMessages.size();
+					if(outgoingCount > 0) {
+						messages.reserve(messages.size() + outgoingCount);
+						std::copy(std::begin(systems[i]->outgoingMessages), std::end(systems[i]->outgoingMessages), std::back_inserter(messages));
 						systems[i]->outgoingMessages.clear();
 					}
 				}
@@ -66,7 +66,7 @@ namespace Maki
 				iterations++;
 				assert(iterations < 20 && "Message dispatch iterations getting out of hand - is there a message cycle?");
 
-			} while(!done);
+			}
 		}
 
 	

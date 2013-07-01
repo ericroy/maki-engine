@@ -1,6 +1,5 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-#include "framework/MakiScript.h"
 
 extern "C"
 {
@@ -18,7 +17,7 @@ namespace Maki
 			struct ApiFunction { const char *name; lua_CFunction func; };
 
 		public:
-			static void ExposeApiToScript(Script *s);
+			static void ExposeApiToScript(lua_State *state);
 
 		private:
 			static int32 PostMessage(lua_State *state);
