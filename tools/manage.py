@@ -65,15 +65,15 @@ def _manifest(*args):
             manifest.manifest(src_dir, manifest_name)
 
 def _export_scene(*args):
-    assert len(args) >= 2, 'export_scene command expects src file'
+    assert len(args) >= 2, 'export_scene command expects src and dst files'
     exporters.export_scene(args[0], args[1], *args[2:])
 
 def _export_animation(*args):
-    assert len(args) >= 2, 'export_animation command expects src file'
+    assert len(args) >= 2, 'export_animation command expects src and dst files'
     exporters.export_animation(args[0], args[1], *args[2:])
 
 def _export_skeleton(*args):
-    assert len(args) >= 2, 'export_skeleton command expects src file'
+    assert len(args) >= 2, 'export_skeleton command expects src and dst files'
     exporters.export_skeleton(args[0], args[1], *args[2:])
 
 COMMANDS = {

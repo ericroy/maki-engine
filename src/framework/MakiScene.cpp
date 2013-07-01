@@ -2,6 +2,7 @@
 #include "framework/MakiScene.h"
 #include "framework/MakiSceneLoader.h"
 #include "framework/MakiComponentPool.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 
@@ -11,7 +12,7 @@ namespace Maki
 	{
 
 		Scene::Scene() : root(nullptr), drawListHead(nullptr) {
-			root = new Entity();
+			root = EntityPool::Get()->Create();
 			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_Transform)->Create());
 			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_SceneNode)->Create());
 		}

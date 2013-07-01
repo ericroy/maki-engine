@@ -14,6 +14,7 @@
     <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
+    <ClInclude Include="src\framework\components\MakiNameComponent.h" />
     <ClInclude Include="src\framework\components\MakiPhysicsComponent.h" />
     <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
     <ClInclude Include="src\framework\components\MakiScriptComponent.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="src\framework\MakiComponent.h" />
     <ClInclude Include="src\framework\MakiComponentPool.h" />
     <ClInclude Include="src\framework\MakiComponentPoolBase.h" />
+    <ClInclude Include="src\framework\MakiEntityPool.h" />
     <ClInclude Include="src\framework\MakiFrameworkManagers.h" />
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
@@ -40,6 +42,7 @@
     <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
     <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
     <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
+    <ClInclude Include="src\framework\systems\MakiNameSystem.h" />
     <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h" />
     <ClInclude Include="src\framework\systems\MakiScriptingSystem.h" />
@@ -49,6 +52,7 @@
     <ClCompile Include="src\framework\components\MakiCameraComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiNameComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiPhysicsComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiScriptComponent.cpp" />

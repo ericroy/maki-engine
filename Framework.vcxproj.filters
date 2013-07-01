@@ -64,6 +64,13 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\framework\MakiScriptingApi.h" />
+    <ClInclude Include="src\framework\components\MakiNameComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiNameSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\MakiEntityPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -125,6 +132,9 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\framework\MakiScriptingApi.cpp" />
+    <ClCompile Include="src\framework\components\MakiNameComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

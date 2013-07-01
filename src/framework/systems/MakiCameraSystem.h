@@ -37,7 +37,7 @@ namespace Maki
 
 			protected:
 				void Add(Entity *e);
-				virtual void Remove(Entity *e);
+				void Remove(Entity *e);
 
 			private:
 				std::vector<Node> nodes;

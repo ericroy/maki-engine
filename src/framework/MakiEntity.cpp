@@ -10,9 +10,10 @@ namespace Maki
 	namespace Framework
 	{
 
-		Entity::Entity()
+		Entity::Entity(uint64 uid)
 			: flags(0),
-			componentCount(0)
+			componentCount(0),
+			uid(uid)
 		{	
 		}
 

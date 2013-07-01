@@ -34,7 +34,7 @@ namespace Maki
 
 			protected:
 				void Add(Entity *e);
-				virtual void Remove(Entity *e);
+				void Remove(Entity *e);
 
 			private:
 				void CalculateFrustumPlanes(const Frustum *cullingFrustum, const Matrix44 *view, Vector4 frustumPlanes[6]);

@@ -2,6 +2,7 @@
 #include "framework/MakiSceneLoader.h"
 #include "framework/MakiComponentPoolBase.h"
 #include "framework/MakiComponentPool.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 
 
@@ -46,9 +47,9 @@ namespace Maki
 					Console::Error("Expected an entity, but got node with value: %s", c->value);
 					continue;
 				}
-					
-				Entity *e = new Entity();
-						
+				
+				Entity *e = EntityPool::Get()->Create();
+				
 				// Load and init all components for this entity
 				for(uint32 ci = 0; ci < c->count; ci++) {
 					Document::Node *compNode = c->children[ci];

@@ -26,10 +26,11 @@ namespace Maki
 			static const uint32 MAX_COMPONENTS = 16;
 
 		public:
-			Entity();
+			Entity(uint64 uid);
 			virtual ~Entity();
 
-			inline uint64 GetComponentFlags() const { return flags; }
+			inline const uint64 &GetUid() const { return uid; }
+			inline const uint64 &GetComponentFlags() const { return flags; }
 			inline bool HasComponent(Component::Type type) const { return (flags & (1ULL << type)) != 0; }
 			template<class T> inline T *Get() const;
 
@@ -37,7 +38,11 @@ namespace Maki
 			Component *RemoveComponent(Component::Type type);
 		
 		protected:
-			// Table for storing handles to components
+			// Unique identifier for this entity.
+			// Can be used to efficiently lookup the entity pointer from the EntityPool.
+			uint64 uid;
+
+			// Table for storing handles to components.
 			int32 componentCount;
 			Entry components[MAX_COMPONENTS];
 
