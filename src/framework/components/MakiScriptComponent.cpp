@@ -13,11 +13,11 @@ namespace Maki
 			Script::Script()
 				: Component(TYPE, DEPENDENCIES),
 				script(HANDLE_NONE),
-				lastResult(0),
+				lastResult(-1),
 				sleepTime(0),
 				state(nullptr),
 				coroutine(nullptr),
-				handlesMessages(false)
+				messageHandler(nullptr)
 			{
 			}
 

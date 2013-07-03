@@ -15,7 +15,8 @@ namespace Maki
 		const ScriptingApi::ApiFunction ScriptingApi::apiFunctions[] = {
 			{ "post_message", &PostMessage },
 			{ "get_message", &GetMessage },
-			{ "get_self", &GetSelf }
+			{ "get_self", &GetSelf },
+			{ "set_message_handler", &SetMessageHandler },
 		};
 		
 		void ScriptingApi::ExposeApiToScript(lua_State *state)
@@ -68,6 +69,26 @@ namespace Maki
 
 			lua_pushlightuserdata(state, context->scriptComp);
 			return 1;
+		}
+
+		int32 ScriptingApi::SetMessageHandler(lua_State *state)
+		{
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -2);
+			lua_remove(state, -2);
+
+			// Message map function should be left on stack
+			assert(lua_gettop(state) == 1);
+			assert(lua_type(state, -1) == LUA_TFUNCTION);
+			assert(context->scriptComp->messageHandler == nullptr && "Message handler func already registered");
+			context->scriptComp->messageHandler = const_cast<void *>(lua_topointer(state, -1));
+
+
+			// Store message handler func in registry for retrieval by the scripting system
+			lua_pushlightuserdata(state, context->scriptComp->messageHandler);
+			lua_insert(state, -2);
+			lua_settable(state, LUA_REGISTRYINDEX);
+
+			return 0;
 		}
 
 	} // namespace Core

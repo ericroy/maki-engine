@@ -22,6 +22,7 @@ namespace Maki
 			class Script : public Component
 			{
 				friend class Systems::ScriptingSystem;
+				friend class ScriptingApi;
 
 			public:
 				static const Type TYPE = Type_Script;
@@ -41,7 +42,9 @@ namespace Maki
 
 				int32 lastResult;
 				float sleepTime;
-				bool handlesMessages;
+				
+				// Lua message handling function (or null if one is not registered)
+				void *messageHandler;
 				
 				// The execution context for the coroutine that was launched via run
 				// Shares state with the main context belonging to the script

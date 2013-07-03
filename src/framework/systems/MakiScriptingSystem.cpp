@@ -70,16 +70,23 @@ namespace Maki
 					n.scriptComp->sleepTime = 0.0f;
 
 					int32 ret;
-					if(n.scriptComp->lastResult == 0) {
-						// Start a new coroutine
+					switch(n.scriptComp->lastResult) {
+					case -1:
+						// Script not started yet, kick off a new coroutine
 						lua_getglobal(n.scriptComp->coroutine, "run");
 						lua_pushlightuserdata(n.scriptComp->coroutine, (void *)&n);
 						ret = lua_resume(n.scriptComp->coroutine, 1);
-					} else if(n.scriptComp->lastResult == LUA_YIELD) {
+						break;
+					case LUA_YIELD:
 						// Resume a coroutine
 						ret = lua_resume(n.scriptComp->coroutine, 0);
-					} else {
-						// Script has died, don't resume it
+						break;
+					case 0:
+						// Script finished - do not restart
+						continue;
+					default:
+						// Anything else is an error - script has died.
+						// Do not restart it.
 						continue;
 					}
 
@@ -88,7 +95,7 @@ namespace Maki
 						n.scriptComp->sleepTime = (float)lua_tonumber(n.scriptComp->coroutine, -1);
 						lua_pop(n.scriptComp->coroutine, 1);
 					} else if(ret == 0) {
-						// Update function returned, we'll start it again on the next update
+						// Script finished
 					} else {
 						Console::Error("LUA ERROR: %s", lua_tolstring(n.scriptComp->coroutine, -1, nullptr));
 						LuaDumpStack(n.scriptComp->coroutine);
@@ -109,11 +116,17 @@ namespace Maki
 				for(uint32 i = 0; i < count; i++) {
 					const Node &n = nodes[i];
 
-					if(n.scriptComp->handlesMessages) {
-						lua_getfield(n.scriptComp->state, LUA_GLOBALSINDEX, "message_handler");
-						lua_pushlightuserdata(n.scriptComp->state, (void *)&n);
-						lua_pushinteger(n.scriptComp->state, messageCount);
-						lua_pcall(n.scriptComp->state, 2, 0, 0);
+					lua_State *state = n.scriptComp->state;
+
+					if(n.scriptComp->messageHandler != nullptr) {
+						// Load the message handler func onto the top of the stack
+						lua_pushlightuserdata(state, n.scriptComp->messageHandler);
+						lua_gettable(state, LUA_REGISTRYINDEX);
+
+						// Push the args and call it
+						lua_pushlightuserdata(state, (void *)&n);
+						lua_pushinteger(state, messageCount);
+						lua_pcall(state, 2, 0, 0);
 					}
 				}
 
@@ -130,11 +143,18 @@ namespace Maki
 				nodes.push_back(n);
 				
 				Framework::Script *s = FrameworkManagers::Get()->scriptManager->Get(scriptComp->script);
+				
 				scriptComp->coroutine = lua_newthread(s->state);
 				if(scriptComp->coroutine == nullptr) {
 					Console::Error("Failed to create new lua thread for coroutine");
 					return;
 				}
+
+				// Store the thread in the lua registry so it doesn't get garbage collected
+				lua_pushlightuserdata(s->state, scriptComp->coroutine);
+				lua_insert(s->state, -2);
+				lua_settable(s->state, LUA_REGISTRYINDEX);
+
 
 				// Ensure that the script exposes an init function, taking an entity, returning a coroutine
 				lua_getfield(s->state, LUA_GLOBALSINDEX, "run");
@@ -143,19 +163,31 @@ namespace Maki
 				}
 				lua_pop(s->state, 1);
 
-				lua_getfield(s->state, LUA_GLOBALSINDEX, "message_handler");
-				scriptComp->handlesMessages = lua_type(s->state, -1) == LUA_TFUNCTION;				
-				lua_pop(s->state, 1);
-
-				scriptComp->lastResult = 0;	// LUA_OK
+				// Indicate that script has not been started yet
+				scriptComp->lastResult = -1;
 			}
 
 			void ScriptingSystem::Remove(Entity *e)
 			{
-				// According to the lua_newthread docs, threads are garbage collected and I don't have to explicitly destroy it here
+				Components::Script *scriptComp = e->Get<Components::Script>();
+				Framework::Script *s = FrameworkManagers::Get()->scriptManager->Get(scriptComp->script);
+
+				// Remove the message handler func from the registry (if there is one)
+				if(scriptComp->messageHandler != nullptr) {
+					lua_pushlightuserdata(s->state, scriptComp->messageHandler);
+					lua_pushnil(s->state);
+					lua_settable(s->state, LUA_REGISTRYINDEX);
+					scriptComp->messageHandler = nullptr;
+				}
+
+				// Remove thread from the lua registry so it can get garbage collected
+				lua_pushlightuserdata(s->state, scriptComp->coroutine);
+				lua_pushnil(s->state);
+				lua_settable(s->state, LUA_REGISTRYINDEX);
+				scriptComp->coroutine = nullptr;
 				
 				Node n;
-				n.scriptComp = e->Get<Components::Script>();
+				n.scriptComp = scriptComp;
 				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}
 
