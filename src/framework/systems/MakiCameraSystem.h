@@ -25,7 +25,7 @@ namespace Maki
 					Components::Camera *camComp;
 					Components::Transform *transComp;
 
-					inline bool operator==(const Node &other) const { return camComp == other.camComp && transComp == other.transComp; }
+					inline bool operator==(const Node &other) const { return camComp == other.camComp; }
 				};
 
 			public:

@@ -4,6 +4,7 @@
 
 ### Framework
  * bullet-2.81-rev2613
+ * LuaJIT-2.0.2
 
 ### Tools
  * python 3.1 x64 (Required by FBX SDK python bindings)

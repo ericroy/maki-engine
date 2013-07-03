@@ -25,7 +25,7 @@ namespace Maki
 					Components::Light *lightComp;
 					Components::Transform *transComp;
 
-					inline bool operator==(const Node &other) const { return lightComp == other.lightComp && transComp == other.transComp; }
+					inline bool operator==(const Node &other) const { return lightComp == other.lightComp; }
 				};
 
 			public:

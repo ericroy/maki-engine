@@ -53,7 +53,7 @@ def _export_node(manager, node, doc_container, src, output_dir, uid_to_mesh_path
             print('Exporting %s' % output_file)
             if not compile_fbx.build_node(manager, node, os.path.join(output_dir, output_file), *args):
                 raise RuntimeError('Failed to export mesh')
-            mesh_path = os.path.join(os.path.relpath(output_dir, 'assets'), output_file).replace('\\', '/').lower()
+            mesh_path = os.path.join(os.path.relpath(output_dir, 'assets_bin'), output_file).replace('\\', '/').lower()
             uid_to_mesh_path[mesh.GetUniqueID()] = mesh_path
 
         material_path = None
@@ -66,7 +66,7 @@ def _export_node(manager, node, doc_container, src, output_dir, uid_to_mesh_path
     
         if physics:
             p = ent.add_child('physics')
-            p.add_child('hull').add_child(mesh_path)
+            p.add_child('mesh').add_child(mesh_path)
         else:
             m = ent.add_child('mesh')
             m.add_child('mesh').add_child(mesh_path)

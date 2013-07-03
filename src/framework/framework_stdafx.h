@@ -19,4 +19,3 @@
 #include "framework/MakiMacros.h"
 #include "framework/MakiTween.h"
 #include "framework/MakiEntity.h"
-#include "framework/MakiPhysicsWorld.h"

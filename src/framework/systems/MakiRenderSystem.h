@@ -23,7 +23,7 @@ namespace Maki
 					Components::Mesh *meshComp;
 					Components::Transform *transComp;
 
-					inline bool operator==(const Node &other) const { return meshComp == other.meshComp && transComp == other.transComp; }
+					inline bool operator==(const Node &other) const { return meshComp == other.meshComp; }
 				};
 
 			public:

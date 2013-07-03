@@ -15,6 +15,7 @@ namespace Maki
 				script(HANDLE_NONE),
 				lastResult(0),
 				sleepTime(0),
+				state(nullptr),
 				coroutine(nullptr),
 				handlesMessages(false)
 			{
@@ -22,6 +23,7 @@ namespace Maki
 
 			Script::~Script()
 			{
+				state = nullptr;
 				ScriptManager::Free(script);
 			}
 
@@ -50,6 +52,8 @@ namespace Maki
 					script = FrameworkManagers::Get()->scriptManager->Load(scriptId.rid);
 					assert(script != HANDLE_NONE);
 				}
+
+				state = ScriptManager::Get(script)->state;
 				return true;
 			}
 

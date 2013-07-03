@@ -20,10 +20,10 @@ namespace Maki
 			{
 				struct Node
 				{
-					Components::Mesh *meshComp;
 					Components::Skeleton *skelComp;
+					Components::Mesh *meshComp;
 
-					inline bool operator==(const Node &other) const { return meshComp == other.meshComp && skelComp == other.skelComp; }
+					inline bool operator==(const Node &other) const { return skelComp == other.skelComp; }
 				};
 
 			public:

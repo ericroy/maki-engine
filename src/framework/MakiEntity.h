@@ -42,13 +42,13 @@ namespace Maki
 			// Can be used to efficiently lookup the entity pointer from the EntityPool.
 			uint64 uid;
 
-			// Table for storing handles to components.
-			int32 componentCount;
-			Entry components[MAX_COMPONENTS];
-
 			// Flags indicating which components are present in this entity.
 			// We'll have to do something more clever here once we have more than 64 component types
 			uint64 flags;
+
+			// Table for storing handles to components.
+			int32 componentCount;
+			Entry components[MAX_COMPONENTS];
 		};
 
 

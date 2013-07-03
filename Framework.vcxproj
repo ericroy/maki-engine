@@ -25,12 +25,11 @@
     <ClInclude Include="src\framework\MakiComponent.h" />
     <ClInclude Include="src\framework\MakiComponentPool.h" />
     <ClInclude Include="src\framework\MakiComponentPoolBase.h" />
+    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
     <ClInclude Include="src\framework\MakiEntityPool.h" />
     <ClInclude Include="src\framework\MakiFrameworkManagers.h" />
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
-    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
     <ClInclude Include="src\framework\MakiEntity.h" />
-    <ClInclude Include="src\framework\MakiPhysicsWorld.h" />
     <ClInclude Include="src\framework\MakiScene.h" />
     <ClInclude Include="src\framework\MakiSceneLoader.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
@@ -43,6 +42,7 @@
     <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
     <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
     <ClInclude Include="src\framework\systems\MakiNameSystem.h" />
+    <ClInclude Include="src\framework\systems\MakiPhysicsSystem.h" />
     <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
     <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h" />
     <ClInclude Include="src\framework\systems\MakiScriptingSystem.h" />
@@ -60,17 +60,16 @@
     <ClCompile Include="src\framework\components\MakiTransformComponent.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\MakiComponentPoolBase.cpp" />
+    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
     <ClCompile Include="src\framework\MakiFrameworkManagers.cpp" />
     <ClCompile Include="src\framework\MakiDebugNetListener.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
     <ClCompile Include="src\framework\MakiEntity.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
     <ClCompile Include="src\framework\MakiScene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -87,6 +86,7 @@
     <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp" />
+    <ClCompile Include="src\framework\systems\MakiPhysicsSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiSceneGraphSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiScriptingSystem.cpp" />

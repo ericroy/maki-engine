@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 
@@ -20,7 +21,7 @@ namespace Maki
 			{
 				const int32 childCount = children.size();
 				for(int32 i = 0; i < childCount; i++) {
-					SAFE_DELETE(children[i]);
+					EntityPool::Get()->Destroy(children[i]);
 				}
 			}
 

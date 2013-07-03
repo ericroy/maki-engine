@@ -14,8 +14,15 @@ namespace Maki
 		{
 			class Transform;
 
-			class Physics : public Component, public btMotionState
+			class Physics : public Component
 			{
+			public:
+				enum ObjectType
+				{
+					ObjectType_StaticMesh = 0,
+					ObjectType_RigidBody
+				};
+
 			public:
 				static const Type TYPE = Type_Physics;
 				static const TypeFlag DEPENDENCIES = Type_Transform;
@@ -26,15 +33,14 @@ namespace Maki
 
 				// Component interface
 				bool Init(Document::Node *props);
-				void OnAttach();
-				void OnDetach();
-				
-				// btMotionState interface
-				void getWorldTransform(btTransform &worldTransform) const;
-				void setWorldTransform(const btTransform &worldTransform);
+				bool Init(HandleOrRid meshId);
 
-			private:
-				Transform *transComp;
+			public:
+				ObjectType objectType;
+				union
+				{
+					Handle mesh;
+				};
 			};
 
 

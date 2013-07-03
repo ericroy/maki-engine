@@ -7,8 +7,6 @@
     <ClInclude Include="src\framework\MakiSceneLoader.h" />
     <ClInclude Include="src\framework\MakiCascadeHelper.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
-    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
-    <ClInclude Include="src\framework\MakiPhysicsWorld.h" />
     <ClInclude Include="src\framework\MakiAnimationBlender.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
     <ClInclude Include="src\framework\MakiComponent.h" />
@@ -71,6 +69,10 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\framework\MakiEntityPool.h" />
+    <ClInclude Include="src\framework\systems\MakiPhysicsSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -78,8 +80,6 @@
     <ClCompile Include="src\framework\MakiSceneLoader.cpp" />
     <ClCompile Include="src\framework\MakiDebugNetListener.cpp" />
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
-    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
-    <ClCompile Include="src\framework\MakiPhysicsWorld.cpp" />
     <ClCompile Include="src\framework\MakiAnimationBlender.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp">
       <Filter>components</Filter>
@@ -135,6 +135,10 @@
     <ClCompile Include="src\framework\components\MakiNameComponent.cpp">
       <Filter>components</Filter>
     </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiPhysicsSystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

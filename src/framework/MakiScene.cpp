@@ -18,7 +18,7 @@ namespace Maki
 		}
 
 		Scene::~Scene() {
-			SAFE_DELETE(root);
+			EntityPool::Get()->Destroy(root);
 		}
 
 		bool Scene::Load(Rid rid) {

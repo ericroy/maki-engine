@@ -65,7 +65,6 @@ namespace Maki
 								
 				iterations++;
 				assert(iterations < 20 && "Message dispatch iterations getting out of hand - is there a message cycle?");
-
 			}
 		}
 
