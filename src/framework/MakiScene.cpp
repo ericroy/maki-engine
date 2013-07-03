@@ -26,7 +26,7 @@ namespace Maki
 			return sl.Load(rid, this->root);
 		}
 
-		void Scene::UpdateRecursive(Entity *e, const Matrix44 &current, float dt)
+		void Scene::UpdateRecursive(Entity *e, const Matrix44 &current)
 		{
 			Components::SceneNode *nodeComp = e->Get<Components::SceneNode>();
 			Components::Transform *transComp = e->Get<Components::Transform>();
@@ -36,7 +36,7 @@ namespace Maki
 
 			const int32 size = nodeComp->children.size();
 			for(int32 i = 0; i < size; i++) {
-				UpdateRecursive(nodeComp->children[i], world, dt);
+				UpdateRecursive(nodeComp->children[i], world);
 			}
 		}
 

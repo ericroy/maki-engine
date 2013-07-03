@@ -15,7 +15,7 @@ namespace Maki
 			bool Load(Rid rid, Entity *parentNodeForScene);
 
 		private:
-			void Recurse(Document::Node *n, Entity *container);
+			bool Recurse(Document::Node *n, Entity *container);
 		};
 
 	} // namespace Framework

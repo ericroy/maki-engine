@@ -17,16 +17,14 @@ namespace Maki
 			virtual ~Scene();
 			void Clear();
 			bool Load(Rid rid);
-		
-			void Draw(Renderer *renderer, uint32 requiredFlags = 0, uint32 disallowedFlags = 0, const Frustum *cullingFrustum = nullptr, const Matrix44 *view = nullptr);
-		
-			inline void Update(float dt)
+
+			inline void Update()
 			{
-				UpdateRecursive(root, Matrix44::Identity, dt);
+				UpdateRecursive(root, Matrix44::Identity);
 			}
 
 		private:
-			void UpdateRecursive(Entity *e, const Matrix44 &current, float dt);
+			void UpdateRecursive(Entity *e, const Matrix44 &current);
 
 		public:
 			Entity *root;

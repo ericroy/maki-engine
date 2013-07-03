@@ -210,6 +210,7 @@ namespace Maki
 			uint32 bytes;
 			char *data = Engine::Get()->assets->AllocRead(rid, &bytes);
 			if(data == nullptr) {
+				Console::Error("Failed to AllocRead document bytes");
 				return false;
 			}
 			bool success = Load(data, bytes);
