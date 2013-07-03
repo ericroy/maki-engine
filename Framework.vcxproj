@@ -36,6 +36,7 @@
     <ClInclude Include="src\framework\MakiScript.h" />
     <ClInclude Include="src\framework\MakiScriptingApi.h" />
     <ClInclude Include="src\framework\MakiScriptManager.h" />
+    <ClInclude Include="src\framework\MakiScriptUtils.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
     <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
@@ -82,6 +83,7 @@
     <ClCompile Include="src\framework\MakiScript.cpp" />
     <ClCompile Include="src\framework\MakiScriptingApi.cpp" />
     <ClCompile Include="src\framework\MakiScriptManager.cpp" />
+    <ClCompile Include="src\framework\MakiScriptUtils.cpp" />
     <ClCompile Include="src\framework\MakiSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp" />

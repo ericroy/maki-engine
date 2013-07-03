@@ -12,35 +12,62 @@ namespace Maki
 
 			Physics::Physics()
 				: Component(TYPE, DEPENDENCIES),
-				objectType(ObjectType_StaticMesh),
+				objectType(ObjectType_Static),
+				objectShape(ObjectShape_Mesh),
 				mesh(HANDLE_NONE)
 			{
 			}
 
 			Physics::~Physics()
 			{
-				MeshManager::Free(mesh);
+				if(objectShape == ObjectShape_Mesh) {
+					MeshManager::Free(mesh);
+				}
 			}
 
 			bool Physics::Init(Document::Node *props)
 			{
-				const char *meshPath = props->ResolveValue("mesh.#0");
-				if(meshPath == nullptr) {
-					Console::Error("Entity did not specify a mesh");
-					return false;
-				}
-				Rid meshRid = Engine::Get()->assets->PathToRid(meshPath);
-				if(meshRid == RID_NONE) {
-					Console::Error("No RID for path: %s", meshPath);
-					return false;
-				}
+				Document::Node *typeNode = props->Resolve("type.#0");
 
-				return Init(meshRid);
+				if(typeNode->ValueEquals("box")) {
+					
+					Vector4 minCorner(0.0f), maxCorner(0.0f);
+					if(!props->ResolveAsVectorN("min", 3, minCorner.vals)) {
+						Console::Error("Physics box needs 'min' node");
+						return false;
+					}
+					if(!props->ResolveAsVectorN("max", 3, maxCorner.vals)) {
+						Console::Error("Physics box needs 'max' node");
+						return false;
+					}
+
+					return Init(minCorner, maxCorner);
+
+				} else if(typeNode->ValueEquals("mesh")) {
+
+					const char *meshPath = props->ResolveValue("mesh.#0");
+					if(meshPath == nullptr) {
+						Console::Error("Entity did not specify a mesh");
+						return false;
+					}
+					Rid meshRid = Engine::Get()->assets->PathToRid(meshPath);
+					if(meshRid == RID_NONE) {
+						Console::Error("No RID for path: %s", meshPath);
+						return false;
+					}
+
+					return Init(meshRid);
+
+				} else {
+					Console::Error("Unrecognized physics component type: %s", typeNode->value);
+					return false;
+				}
 			}
 
 			bool Physics::Init(HandleOrRid meshId)
 			{
-				objectType = ObjectType_StaticMesh;
+				objectType = ObjectType_Static;
+				objectShape = ObjectShape_Mesh;
 
 				if(meshId.isHandle) {
 					assert(meshId.handle != HANDLE_NONE);
@@ -50,6 +77,17 @@ namespace Maki
 					mesh = CoreManagers::Get()->meshManager->Load(meshId.rid);
 					assert(mesh != HANDLE_NONE);
 				}
+
+				return true;
+			}
+
+			bool Physics::Init(const Vector4 &minCorner, const Vector4 &maxCorner)
+			{
+				objectType = ObjectType_Dynamic;
+				objectShape = ObjectShape_Box;
+
+				this->minCorner = minCorner;
+				this->maxCorner = maxCorner;
 
 				return true;
 			}

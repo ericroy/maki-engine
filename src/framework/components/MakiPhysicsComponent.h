@@ -17,10 +17,16 @@ namespace Maki
 			class Physics : public Component
 			{
 			public:
+				enum ObjectShape
+				{
+					ObjectShape_Mesh = 0,
+					ObjectShape_Box
+				};
+
 				enum ObjectType
 				{
-					ObjectType_StaticMesh = 0,
-					ObjectType_RigidBody
+					ObjectType_Static = 0,
+					ObjectType_Dynamic
 				};
 
 			public:
@@ -34,12 +40,18 @@ namespace Maki
 				// Component interface
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid meshId);
+				bool Init(const Vector4 &minCorner, const Vector4 &maxCorner);
 
 			public:
 				ObjectType objectType;
+				ObjectShape objectShape;
 				union
 				{
 					Handle mesh;
+					struct {
+						Vector4 minCorner;
+						Vector4 maxCorner;
+					};
 				};
 			};
 

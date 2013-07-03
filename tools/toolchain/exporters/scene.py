@@ -8,7 +8,7 @@ from ..compilers import compile_fbx
 from .. import doc
 from ..fbx.FbxCommon import *
 
-def _parse_user_props(s):
+def _parse_user_props_string(s):
     user_props = {}
     for pair in s.split('\n'):
         pair = pair.strip()
@@ -21,12 +21,60 @@ def _parse_user_props(s):
             user_props[parts[0].strip()] = None
     return user_props
 
-def _export_node(manager, node, doc_container, src, output_dir, uid_to_mesh_path, *args):
+def _get_user_props(node):
+    user_props = {}
+    prop = node.GetFirstProperty()
+    while prop.IsValid():
+        if prop.GetFlag(FbxPropertyAttr.eUser):
+            if prop.GetName() == 'UDP3DSMAX':
+                user_props = _parse_user_props_string(FbxPropertyString(prop).Get().Buffer())
+                break
+        prop = node.GetNextProperty(prop)
+
+def _is_physics(node):
+    physics = False
+    for i in range(node.GetDstObjectCount()):
+        obj = node.GetDstObject(i)
+        if obj.GetTypeName() == 'DisplayLayer':
+            if obj.GetName() == 'physics':
+                physics = True
+    return physics
+
+def _get_material_path(node):
+    material_path = None
+    if node.GetMaterialCount() > 1:
+        print('WARNING: Object has multiple materials' % node.GetName())
+    if node.GetMaterialCount() > 0:
+        mat = node.GetMaterial(0)
+        print('Material name: %s' % mat.GetName())
+        material_path = 'materials/%s.mdoc' % mat.GetName().replace(' ', '_').lower()
+    return material_path
+
+class MeshLibrary(object):
+    def __init__(self, manager, src, output_dir, *args):
+        self._manager = manager
+        self._src = src
+        self._output_dir = output_dir
+        self._args = args
+        self._map = {}
+
+    def build_and_get_path(self, node, mesh, entity_name):
+        try:
+            mesh_path = self._map[mesh.GetUniqueID()]
+        except KeyError:
+            output_file = (os.path.splitext(os.path.basename(self._src))[0] + '_' + entity_name + '.mmesh').lower()
+            print('Exporting %s' % output_file)
+            if not compile_fbx.build_node(self._manager, node, os.path.join(self._output_dir, output_file), *self._args):
+                raise RuntimeError('Failed to export mesh')
+            mesh_path = os.path.join(os.path.relpath(self._output_dir, 'assets'), output_file).replace('\\', '/').lower()
+            self._map[mesh.GetUniqueID()] = mesh_path
+        return mesh_path
+
+def _export_node(manager, node, doc_container, src, mesh_lib, *args):
     ent = doc_container.add_child('entity')
 
     entity_name = node.GetName().strip().replace(' ', '')
     ent.add_child('name').add_child(entity_name)
-
 
     trans = node.LclTranslation.Get()
     angles = node.LclRotation.Get()
@@ -37,50 +85,48 @@ def _export_node(manager, node, doc_container, src, output_dir, uid_to_mesh_path
         if any(angles):
             t.add_child('angles').add_children(angles)
 
-    physics = False
-    for i in range(node.GetDstObjectCount()):
-        obj = node.GetDstObject(i)
-        if obj.GetTypeName() == 'DisplayLayer':
-            if obj.GetName() == 'physics':
-                physics = True
+    physics = _is_physics(node)
+    if physics:
+        mesh = node.GetMesh()
+        assert mesh, 'Physics object had no mesh'
+        
+        phys = ent.add_child('physics')
 
-    mesh = node.GetMesh()
-    if mesh:
-        try:
-            mesh_path = uid_to_mesh_path[mesh.GetUniqueID()]
-        except KeyError:
-            output_file = (os.path.splitext(os.path.basename(src))[0] + '_' + entity_name + '.mmesh').lower()
-            print('Exporting %s' % output_file)
-            if not compile_fbx.build_node(manager, node, os.path.join(output_dir, output_file), *args):
-                raise RuntimeError('Failed to export mesh')
-            mesh_path = os.path.join(os.path.relpath(output_dir, 'assets'), output_file).replace('\\', '/').lower()
-            uid_to_mesh_path[mesh.GetUniqueID()] = mesh_path
+        if mesh.GetControlPointsCount() == 8:
+            mesh.ComputeBBox()
+            min_corner = mesh.BBoxMin.Get()
+            max_corner = mesh.BBoxMax.Get()
+            
+            eps = 0.0000000000001
+            is_rect_prism = True
+            control_points = mesh.GetControlPoints()
+            for i in range(8):
+                cp = control_points[i]
+                for j in range(3):
+                    if abs(cp[j] - min_corner[j]) > eps and abs(cp[j] - max_corner[j]) > eps:
+                        is_rect_prism = False
+                        break
 
-        material_path = None
-        if node.GetMaterialCount() > 1:
-            print('WARNING: Object has multiple materials: %s' % entity_name)
-        if node.GetMaterialCount() > 0:
-            mat = node.GetMaterial(0)
-            print('Material name: %s' % mat.GetName())
-            material_path = 'materials/%s.mdoc' % mat.GetName().replace(' ', '_').lower()
-    
-        if physics:
-            p = ent.add_child('physics')
-            p.add_child('mesh').add_child(mesh_path)
-        else:
+            if is_rect_prism:
+                phys.add_child('type').add_child('box')
+                phys.add_child('min').add_children(min_corner)
+                phys.add_child('max').add_children(max_corner)
+            else:
+                phys.add_child('type').add_child('mesh')
+                mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
+                phys.add_child('mesh').add_child(mesh_path)
+
+    else:
+        mesh = node.GetMesh()
+        if mesh:
+            mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
+            material_path = _get_material_path(node)
             m = ent.add_child('mesh')
             m.add_child('mesh').add_child(mesh_path)
             if material_path:
                 m.add_child('material').add_child(material_path)
 
-    # user_props = {}
-    # prop = node.GetFirstProperty()
-    # while prop.IsValid():
-    #     if prop.GetFlag(FbxPropertyAttr.eUser):
-    #         if prop.GetName() == 'UDP3DSMAX':
-    #             user_props = _parse_user_props(FbxPropertyString(prop).Get().Buffer())
-    #             break
-    #     prop = node.GetNextProperty(prop)
+    user_props = _get_user_props(node)
 
     children = None
     for i in range(node.GetChildCount()):
@@ -90,7 +136,7 @@ def _export_node(manager, node, doc_container, src, output_dir, uid_to_mesh_path
             continue
         if children is None:
             children = ent.add_child('children')
-        _export_node(manager, child_node, children, src, output_dir, uid_to_mesh_path, *args)
+        _export_node(manager, child_node, children, src, mesh_lib, *args)
 
 def export(src, dst, *args):
     manager, scene = InitializeSdkObjects()
@@ -102,7 +148,7 @@ def export(src, dst, *args):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    uid_to_mesh_path = {}
+    mesh_lib = MeshLibrary(manager, src, output_dir, *args)
     root = doc.Node('root')
     children = root.add_child('children')
 
@@ -112,7 +158,7 @@ def export(src, dst, *args):
         node_attr = node.GetNodeAttribute()
         if node_attr is None or node_attr.GetAttributeType() != FbxNodeAttribute.eMesh:
             continue
-        _export_node(manager, node, children, src, output_dir, uid_to_mesh_path, *args)
+        _export_node(manager, node, children, src, mesh_lib, *args)
 
     with open(dst, 'w') as file:
         root.serialize(file)

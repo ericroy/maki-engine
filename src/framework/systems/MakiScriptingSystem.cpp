@@ -1,9 +1,10 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/systems/MakiScriptingSystem.h"
 #include "framework/MakiFrameworkManagers.h"
 #include "framework/MakiScriptManager.h"
+#include "framework/MakiScriptUtils.h"
 #include "framework/MakiScript.h"
-#include "framework/systems/MakiScriptingSystem.h"
 #include "framework/components/MakiScriptComponent.h"
 #include <sstream>
 
@@ -20,32 +21,6 @@ namespace Maki
 	{
 		namespace Systems
 		{
-
-			static void LuaDumpStack(lua_State *state)
-			{
-				int32 top = lua_gettop(state);
-				Console::Info("Lua stack (%d items):", top);
-				for (int32 i = top; i >= 1; i--) {  // repeat for each level
-					int t = lua_type(state, i);
-					switch(t) {
-					case LUA_TSTRING:  // strings
-						Console::Info("[%d] string: '%s'", i, lua_tostring(state, i));
-						break;
-
-					case LUA_TBOOLEAN:  // booleans
-						Console::Info("[%d] bool: %s", i, lua_toboolean(state, i) ? "true" : "false");
-						break;
-
-					case LUA_TNUMBER:  // numbers
-						Console::Info("[%d] number: %g", i, lua_tonumber(state, i));
-						break;
-
-					default:  // other values
-						Console::Info("[%d] %s: ???", i, lua_typename(state, t));
-						break;
-					}
-				}
-			}
 
 			ScriptingSystem::ScriptingSystem()
 				: System(Component::TypeFlag_Script),
@@ -98,7 +73,7 @@ namespace Maki
 						// Script finished
 					} else {
 						Console::Error("LUA ERROR: %s", lua_tolstring(n.scriptComp->coroutine, -1, nullptr));
-						LuaDumpStack(n.scriptComp->coroutine);
+						ScriptUtils::DumpLuaStack(n.scriptComp->coroutine);
 						lua_pop(n.scriptComp->coroutine, 1);
 						n.scriptComp->sleepTime = 0.0f;
 					}
@@ -154,7 +129,6 @@ namespace Maki
 				lua_pushlightuserdata(s->state, scriptComp->coroutine);
 				lua_insert(s->state, -2);
 				lua_settable(s->state, LUA_REGISTRYINDEX);
-
 
 				// Ensure that the script exposes an init function, taking an entity, returning a coroutine
 				lua_getfield(s->state, LUA_GLOBALSINDEX, "run");

@@ -13,7 +13,7 @@ namespace Maki
 		};
 
 		DebugPhysicsRenderer::DebugPhysicsRenderer(Rid matRid)
-			: debugMode(0),
+			: debugMode(btIDebugDraw::DBG_DrawWireframe),
 			lineIndex(0),
 			material(HANDLE_NONE)
 		{

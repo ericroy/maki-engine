@@ -73,6 +73,7 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
+    <ClInclude Include="src\framework\MakiScriptUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -139,6 +140,7 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
+    <ClCompile Include="src\framework\MakiScriptUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

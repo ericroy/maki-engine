@@ -49,15 +49,17 @@ namespace Maki
 				template<> inline btCollisionShape *Track<btCollisionShape *>(btCollisionShape *p) { collisionShapes.push_back(p); return p; }
 				template<> inline btCompoundShape *Track<btCompoundShape *>(btCompoundShape *p) { collisionShapes.push_back(p); return p; }
 				template<> inline btCapsuleShape *Track<btCapsuleShape *>(btCapsuleShape *p) { collisionShapes.push_back(p); return p; }
+				template<> inline btBoxShape *Track<btBoxShape *>(btBoxShape *p) { collisionShapes.push_back(p); return p; }
 				template<> inline btBvhTriangleMeshShape *Track<btBvhTriangleMeshShape *>(btBvhTriangleMeshShape *p) { collisionShapes.push_back(p); return p; }
 				template<> inline btTriangleIndexVertexArray *Track<btTriangleIndexVertexArray *>(btTriangleIndexVertexArray *p) { stridingMeshInterfaces.push_back(p); return p; }
 
 			private:
 				void Add(Entity *e);
 				void Remove(Entity *e);
-				void AddRigidBody(btRigidBody *body);
-				void AddCollisionMesh(Node &n);
-				void AddRigidBody(Node &n);
+				//void AddCollisionMesh(Node &n);
+				//void AddRigidBody(Node &n);
+				void AddStatic(Node &n);
+				void AddDynamic(Node &n);
 				template<class T> inline void DeletePointers(std::vector<T> &pointers);
 
 			public:
