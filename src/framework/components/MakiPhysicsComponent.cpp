@@ -14,12 +14,16 @@ namespace Maki
 				: Component(TYPE, DEPENDENCIES),
 				objectType(ObjectType_Static),
 				objectShape(ObjectShape_Mesh),
-				mesh(HANDLE_NONE)
+				mass(1.0f),
+				inertia(1.0f),
+				mesh(HANDLE_NONE),
+				transComp(nullptr)
 			{
 			}
 
 			Physics::~Physics()
 			{
+				transComp = nullptr;
 				if(objectShape == ObjectShape_Mesh) {
 					MeshManager::Free(mesh);
 				}
@@ -28,9 +32,27 @@ namespace Maki
 			bool Physics::Init(Document::Node *props)
 			{
 				Document::Node *typeNode = props->Resolve("type.#0");
+				if(typeNode == nullptr) {
+					Console::Error("Physics component needs 'type' node");
+					return false;
+				}
 
-				if(typeNode->ValueEquals("box")) {
-					
+				Document::Node *shapeNode = props->Resolve("shape.#0");
+				if(shapeNode == nullptr) {
+					Console::Error("Physics component needs 'shape' node");
+					return false;
+				}
+
+				mass = props->ResolveAsFloat("mass", 1.0f);
+				props->ResolveAsVectorN("inertia", 3, inertia.vals);
+
+				if(typeNode->ValueEquals("static")) {
+					objectType = ObjectType_Static;
+				} else {
+					objectType = ObjectType_Dynamic;
+				}
+
+				if(shapeNode->ValueEquals("box")) {
 					Vector4 minCorner(0.0f), maxCorner(0.0f);
 					if(!props->ResolveAsVectorN("min", 3, minCorner.vals)) {
 						Console::Error("Physics box needs 'min' node");
@@ -41,10 +63,8 @@ namespace Maki
 						return false;
 					}
 
-					return Init(minCorner, maxCorner);
-
-				} else if(typeNode->ValueEquals("mesh")) {
-
+					return InitBoxShape(objectType, minCorner, maxCorner, mass, inertia);
+				} else if(shapeNode->ValueEquals("mesh")) {
 					const char *meshPath = props->ResolveValue("mesh.#0");
 					if(meshPath == nullptr) {
 						Console::Error("Entity did not specify a mesh");
@@ -56,41 +76,80 @@ namespace Maki
 						return false;
 					}
 
-					return Init(meshRid);
-
+					return InitMeshShape(objectType, meshRid, mass, inertia);
 				} else {
 					Console::Error("Unrecognized physics component type: %s", typeNode->value);
 					return false;
 				}
 			}
 
-			bool Physics::Init(HandleOrRid meshId)
+			bool Physics::InitMeshShape(ObjectType type, HandleOrRid meshId, float mass, const Vector3 &inertia)
 			{
-				objectType = ObjectType_Static;
+				objectType = type;
 				objectShape = ObjectShape_Mesh;
+				this->mass = mass;
+				this->inertia = inertia;
 
 				if(meshId.isHandle) {
-					assert(meshId.handle != HANDLE_NONE);
+					if(meshId.handle == HANDLE_NONE) {
+						Console::Error("Mesh handle must not be HANDLE_NONE");
+						return false;
+					}
 					MeshManager::AddRef(meshId.handle);
 					mesh = meshId.handle;
 				} else {
 					mesh = CoreManagers::Get()->meshManager->Load(meshId.rid);
-					assert(mesh != HANDLE_NONE);
+					if(mesh == HANDLE_NONE) {
+						Console::Error("Failed to load mesh: Rid<%u>", meshId.rid);
+						return false;
+					}
 				}
-
 				return true;
 			}
 
-			bool Physics::Init(const Vector4 &minCorner, const Vector4 &maxCorner)
+			bool Physics::InitBoxShape(ObjectType type, const Vector4 &minCorner, const Vector4 &maxCorner, float mass, const Vector3 &inertia)
 			{
-				objectType = ObjectType_Dynamic;
+				objectType = type;
 				objectShape = ObjectShape_Box;
-
+				this->mass = mass;
+				this->inertia = inertia;
 				this->minCorner = minCorner;
 				this->maxCorner = maxCorner;
-
 				return true;
 			}
+
+			void Physics::OnAttach()
+			{
+				transComp = owner->Get<Transform>();
+				assert(transComp != nullptr);
+			}
+			
+			void Physics::OnDetach()
+			{
+				transComp = nullptr;
+			}
+
+
+			void Physics::getWorldTransform(btTransform &worldTransform) const
+			{
+				if(transComp != nullptr) {
+					const Matrix44 &m = transComp->GetMatrix();
+					worldTransform.setFromOpenGLMatrix(m.vals);
+				}
+			}
+
+			void Physics::setWorldTransform(const btTransform &worldTransform)
+			{
+				if(transComp != nullptr) {
+					Matrix44 m;
+					worldTransform.getOpenGLMatrix(m.vals);
+					transComp->SetMatrix(m);
+				}
+			}
+
+
+
+
 
 		} // namspace Components
 

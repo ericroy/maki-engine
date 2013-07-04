@@ -18,19 +18,12 @@ namespace Maki
 			class PhysicsSystem : public System
 			{
 			private:
-				struct Node : public btMotionState
+				struct Node
 				{
-					Node() {}
-					virtual ~Node() {}
-
 					Components::Physics *physicsComp;
 					Components::Transform *transComp;
 
 					inline bool operator==(const Node &other) const { return physicsComp == other.physicsComp; }
-
-					// btMotionState interface
-					void getWorldTransform(btTransform &worldTransform) const;
-					void setWorldTransform(const btTransform &worldTransform);
 				};
 
 			public:
@@ -56,10 +49,7 @@ namespace Maki
 			private:
 				void Add(Entity *e);
 				void Remove(Entity *e);
-				//void AddCollisionMesh(Node &n);
-				//void AddRigidBody(Node &n);
-				void AddStatic(Node &n);
-				void AddDynamic(Node &n);
+				btBvhTriangleMeshShape *MakeMeshShape(Components::Physics *physicsComp);
 				template<class T> inline void DeletePointers(std::vector<T> &pointers);
 
 			public:

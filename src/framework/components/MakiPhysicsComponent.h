@@ -14,7 +14,7 @@ namespace Maki
 		{
 			class Transform;
 
-			class Physics : public Component
+			class Physics : public Component, public btMotionState
 			{
 			public:
 				enum ObjectShape
@@ -39,12 +39,22 @@ namespace Maki
 
 				// Component interface
 				bool Init(Document::Node *props);
-				bool Init(HandleOrRid meshId);
-				bool Init(const Vector4 &minCorner, const Vector4 &maxCorner);
+				bool InitMeshShape(ObjectType type, HandleOrRid meshId, float mass, const Vector3 &inertia);
+				bool InitBoxShape(ObjectType type, const Vector4 &minCorner, const Vector4 &maxCorner, float mass, const Vector3 &inertia);
+
+				void OnAttach();
+				void OnDetach();
+
+				// btMotionState interface
+				void getWorldTransform(btTransform &worldTransform) const;
+				void setWorldTransform(const btTransform &worldTransform);
 
 			public:
 				ObjectType objectType;
 				ObjectShape objectShape;
+				float mass;
+				Vector3 inertia;
+				
 				union
 				{
 					Handle mesh;
@@ -53,6 +63,9 @@ namespace Maki
 						Vector4 maxCorner;
 					};
 				};
+
+				// Used by our motion state to efficiently update position
+				Transform *transComp;
 			};
 
 

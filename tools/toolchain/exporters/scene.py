@@ -30,6 +30,7 @@ def _get_user_props(node):
                 user_props = _parse_user_props_string(FbxPropertyString(prop).Get().Buffer())
                 break
         prop = node.GetNextProperty(prop)
+    return user_props
 
 def _is_physics(node):
     physics = False
@@ -73,6 +74,8 @@ class MeshLibrary(object):
 def _export_node(manager, node, doc_container, src, mesh_lib, *args):
     ent = doc_container.add_child('entity')
 
+    user_props = _get_user_props(node)
+
     entity_name = node.GetName().strip().replace(' ', '')
     ent.add_child('name').add_child(entity_name)
 
@@ -107,12 +110,13 @@ def _export_node(manager, node, doc_container, src, mesh_lib, *args):
                         is_rect_prism = False
                         break
 
+            phys.add_child('type').add_child(user_props.get('type', 'static'))
             if is_rect_prism:
-                phys.add_child('type').add_child('box')
+                phys.add_child('shape').add_child('box')
                 phys.add_child('min').add_children(min_corner)
                 phys.add_child('max').add_children(max_corner)
             else:
-                phys.add_child('type').add_child('mesh')
+                phys.add_child('shape').add_child('mesh')
                 mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
                 phys.add_child('mesh').add_child(mesh_path)
 
@@ -125,8 +129,6 @@ def _export_node(manager, node, doc_container, src, mesh_lib, *args):
             m.add_child('mesh').add_child(mesh_path)
             if material_path:
                 m.add_child('material').add_child(material_path)
-
-    user_props = _get_user_props(node)
 
     children = None
     for i in range(node.GetChildCount()):
