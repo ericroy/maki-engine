@@ -64,6 +64,27 @@ namespace Maki
 					};
 				};
 
+
+				btCollisionShape *shape;
+				union
+				{
+					// For mesh objects
+					btTriangleIndexVertexArray *vertexArray;
+
+					// For shape objects.  This may be null if the original shape did not have to be offset
+					// from the body's origin
+					btCollisionShape *subShape;
+				};				
+
+				union
+				{
+					// For static objects
+					btCollisionObject *collisionObject;
+					
+					// For dynamic objects
+					btRigidBody *body;
+				};
+
 				// Used by our motion state to efficiently update position
 				Transform *transComp;
 			};

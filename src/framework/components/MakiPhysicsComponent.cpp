@@ -17,15 +17,30 @@ namespace Maki
 				mass(1.0f),
 				inertia(1.0f),
 				mesh(HANDLE_NONE),
-				transComp(nullptr)
+				transComp(nullptr),
+				shape(nullptr),
+				subShape(nullptr),
+				collisionObject(nullptr)
 			{
 			}
 
 			Physics::~Physics()
 			{
 				transComp = nullptr;
+				
+				if(objectType == ObjectType_Static) {
+					SAFE_DELETE(collisionObject);
+				} else {
+					SAFE_DELETE(body);
+				}
+
+				SAFE_DELETE(shape);
+
 				if(objectShape == ObjectShape_Mesh) {
+					SAFE_DELETE(vertexArray);
 					MeshManager::Free(mesh);
+				} else {
+					SAFE_DELETE(subShape);
 				}
 			}
 

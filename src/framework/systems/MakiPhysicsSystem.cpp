@@ -29,16 +29,17 @@ namespace Maki
 			PhysicsSystem::~PhysicsSystem()
 			{
 				if(world != nullptr) {
+					int32 collisionObjectCount = world->getNumCollisionObjects();
+					if(collisionObjectCount > 0) {
+						Console::Warning("Warning, %d CollisionObjects were left in the physics world!", collisionObjectCount);
+					}
+
 					btCollisionObjectArray &objArray = world->getCollisionObjectArray();
-					for(int32 i = world->getNumCollisionObjects()-1; i >= 0; i--)
+					for(int32 i = collisionObjectCount-1; i >= 0; i--)
 					{
 						world->removeCollisionObject(objArray[i]);
 					}
 				}
-
-				DeletePointers(collisionObjects);
-				DeletePointers(collisionShapes);
-				DeletePointers(stridingMeshInterfaces);
 
 				SAFE_DELETE(world);
 				SAFE_DELETE(solver);
@@ -62,15 +63,14 @@ namespace Maki
 				n.transComp = transComp;
 				nodes.push_back(n);
 
-				btCollisionShape *shape = nullptr;
 				Vector4 center(0.0f);
 
 				if(physicsComp->objectShape == Components::Physics::ObjectShape_Box) {
 					center = (physicsComp->minCorner + physicsComp->maxCorner) / 2.0f;
 					Vector4 halfExtents = physicsComp->maxCorner - center;
-					shape = Track(new btBoxShape(TO_BTVEC3(halfExtents)));
+					physicsComp->shape = new btBoxShape(TO_BTVEC3(halfExtents));
 				} else if(physicsComp->objectShape == Components::Physics::ObjectShape_Mesh) {
-					shape = MakeMeshShape(physicsComp);
+					MakeMeshShape(physicsComp);
 				} else {
 					assert(false && "Unhandled shape case");
 				}
@@ -79,19 +79,22 @@ namespace Maki
 					// If the collision shape needs to be off-center relative to the body, then we must make the
 					// collision shape a part of a compound shape which IS centered.
 					if(center.LengthSquared() > 0.0000001f) {
-						btCompoundShape *container = Track(new btCompoundShape());
-						container->addChildShape(btTransform(TO_BTQUAT(Vector3(0.0f)), TO_BTVEC3(center)), shape);
-						shape = container;
+						assert(physicsComp->subShape == nullptr);
+						physicsComp->subShape = physicsComp->shape;
+						physicsComp->shape = new btCompoundShape();
+						((btCompoundShape *)physicsComp->shape)->addChildShape(btTransform(TO_BTQUAT(Vector3(0.0f)), TO_BTVEC3(center)), physicsComp->subShape);
 					}
 
-					btRigidBody::btRigidBodyConstructionInfo info(physicsComp->mass, physicsComp, shape, TO_BTVEC3(physicsComp->inertia));
-					btRigidBody *body = Track(new btRigidBody(info));
-					world->addRigidBody(body);
+					btRigidBody::btRigidBodyConstructionInfo info(physicsComp->mass, physicsComp, physicsComp->shape, TO_BTVEC3(physicsComp->inertia));
+					assert(physicsComp->body == nullptr);
+					physicsComp->body = new btRigidBody(info);
+					world->addRigidBody(physicsComp->body);
 				} else {
-					btCollisionObject *obj = Track(new btCollisionObject());
-					obj->setWorldTransform(btTransform(TO_BTQUAT(transComp->GetOrientation()), TO_BTVEC3(transComp->GetPosition())));
-					obj->setCollisionShape(shape);
-					world->addCollisionObject(obj);
+					assert(physicsComp->collisionObject == nullptr);
+					physicsComp->collisionObject = new btCollisionObject();
+					physicsComp->collisionObject->setWorldTransform(btTransform(TO_BTQUAT(transComp->GetOrientation()), TO_BTVEC3(transComp->GetPosition())));
+					physicsComp->collisionObject->setCollisionShape(physicsComp->shape);
+					world->addCollisionObject(physicsComp->collisionObject);
 				}
 			}
 
@@ -99,10 +102,18 @@ namespace Maki
 			{
 				Node n;
 				n.physicsComp = e->Get<Components::Physics>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
+				std::vector<Node>::iterator iter = std::find(std::begin(nodes), std::end(nodes), n);
+				
+				if(n.physicsComp->objectType == Components::Physics::ObjectType_Static) {
+					world->removeCollisionObject(n.physicsComp->collisionObject);
+				} else {
+					world->removeRigidBody(n.physicsComp->body);
+				}
+				
+				nodes.erase(iter);
 			}
 
-			btBvhTriangleMeshShape *PhysicsSystem::MakeMeshShape(Components::Physics *physicsComp)
+			void PhysicsSystem::MakeMeshShape(Components::Physics *physicsComp)
 			{
 				assert(physicsComp->objectShape == Components::Physics::ObjectShape_Mesh && "Object shape must be 'mesh'");
 
@@ -122,9 +133,12 @@ namespace Maki
 				indexedMesh.m_vertexStride = m->GetVertexStride();
 				indexedMesh.m_vertexType = PHY_FLOAT;
 
-				btTriangleIndexVertexArray *vertexArray = Track(new btTriangleIndexVertexArray);
-				vertexArray->addIndexedMesh(indexedMesh, PHY_SHORT);
-				return Track(new btBvhTriangleMeshShape(vertexArray, true));
+				assert(physicsComp->vertexArray == nullptr);
+				physicsComp->vertexArray = new btTriangleIndexVertexArray;
+				physicsComp->vertexArray->addIndexedMesh(indexedMesh, PHY_SHORT);
+				
+				assert(physicsComp->shape == nullptr);
+				physicsComp->shape = new btBvhTriangleMeshShape(physicsComp->vertexArray, true);
 			}
 
 
