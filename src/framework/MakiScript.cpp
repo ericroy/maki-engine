@@ -63,13 +63,13 @@ namespace Maki
 			sprintf_s(chunkName, "Rid<%u>", scriptRid);
 
 			if(luaL_loadbuffer(state, data, bytesRead, chunkName) != 0) {
-				Console::Error("LUA ERROR: %s", luaL_checklstring(state, 1, nullptr));
+				Console::LuaError(luaL_checklstring(state, 1, nullptr));
 				lua_pop(state, 1);
 				goto failed;				
 			}
 
 			if(lua_pcall(state, 0, 0, 0) != 0) {
-				Console::Error("LUA ERROR: %s", luaL_checklstring(state, 1, nullptr));
+				Console::LuaError(luaL_checklstring(state, 1, nullptr));
 				lua_pop(state, 1);
 				goto failed;
 			}
