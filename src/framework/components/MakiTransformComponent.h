@@ -18,7 +18,8 @@ namespace Maki
 			public:
 				Transform();
 				virtual ~Transform();
-				virtual bool Init(Document::Node *node);
+				bool Init(Document::Node *node);
+				bool Init(const Vector4 &pos, const Vector4 &eulerAngles = Vector4(0.0f));
 
 				inline const Matrix44 &GetMatrix() const { return matrix; }
 				inline const Quaternion &GetOrientation() const { return orientation; }

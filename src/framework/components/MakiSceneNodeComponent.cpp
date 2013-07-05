@@ -48,6 +48,15 @@ namespace Maki
 				}
 			}
 
+			Entity *SceneNode::RemoveChild(int32 index)
+			{
+				assert(index >= 0 && index < (int32)children.size());
+				auto iter = children.begin() + index;
+				Entity *e = *iter;
+				children.erase(iter);
+				return e;
+			}
+
 			void SceneNode::SetWorldMatrix(const Matrix44 &world)
 			{
 				Entity *parent = owner->Get<SceneNode>()->parent;

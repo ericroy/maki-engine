@@ -22,6 +22,7 @@ namespace Maki
 
 				void AddChild(Entity *e);
 				void RemoveChild(Entity *e);
+				Entity *RemoveChild(int32 index);
 				void SetWorldMatrix(const Matrix44 &world);
 
 			public:

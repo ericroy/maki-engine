@@ -29,7 +29,7 @@ namespace Maki
 			// Instead, we will give out a pointer directly to the data, and leak the handle.
 			// When the data wants to be deleted, we'll calculate what the handle was, and then free it properly.
 			// I should really just write a memory allocator.
-			Component *Create()
+			T *Create()
 			{
 				Handle h = pool.Alloc();
 				assert(h != HANDLE_NONE);

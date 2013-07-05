@@ -88,6 +88,8 @@ namespace Maki
 					btRigidBody::btRigidBodyConstructionInfo info(physicsComp->mass, physicsComp, physicsComp->shape, TO_BTVEC3(physicsComp->inertia));
 					assert(physicsComp->body == nullptr);
 					physicsComp->body = new btRigidBody(info);
+					physicsComp->body->setDamping(0.2f, 0.2f);
+					physicsComp->body->setSleepingThresholds(0.02f, 0.02f);
 					world->addRigidBody(physicsComp->body);
 				} else {
 					assert(physicsComp->collisionObject == nullptr);

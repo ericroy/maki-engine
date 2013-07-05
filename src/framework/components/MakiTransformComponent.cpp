@@ -39,6 +39,12 @@ namespace Maki
 				return true;
 			}
 
+			bool Transform::Init(const Vector4 &pos, const Vector4 &eulerAngles)
+			{
+				SetMatrix(pos, Quaternion(eulerAngles));
+				return true;
+			}
+
 		} // namespace Components
 
 	} // namespace Framework
