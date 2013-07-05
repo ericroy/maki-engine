@@ -15,6 +15,7 @@
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
     <ClInclude Include="src\framework\components\MakiNameComponent.h" />
+    <ClInclude Include="src\framework\components\MakiNavMeshComponent.h" />
     <ClInclude Include="src\framework\components\MakiPhysicsComponent.h" />
     <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
     <ClInclude Include="src\framework\components\MakiScriptComponent.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiMeshComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiNameComponent.cpp" />
+    <ClCompile Include="src\framework\components\MakiNavMeshComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiPhysicsComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiScriptComponent.cpp" />

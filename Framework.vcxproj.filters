@@ -74,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
     <ClInclude Include="src\framework\MakiScriptUtils.h" />
+    <ClInclude Include="src\framework\components\MakiNavMeshComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -141,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp" />
     <ClCompile Include="src\framework\MakiScriptUtils.cpp" />
+    <ClCompile Include="src\framework\components\MakiNavMeshComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

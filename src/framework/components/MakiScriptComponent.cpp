@@ -46,11 +46,18 @@ namespace Maki
 			bool Script::Init(HandleOrRid scriptId)
 			{
 				if(scriptId.isHandle) {
+					if(scriptId.handle == HANDLE_NONE) {
+						Console::Error("Script component script handle cannot be HANDLE_NONE");
+						return false;
+					}
 					ScriptManager::AddRef(scriptId.handle);
 					script = scriptId.handle;
 				} else {
 					script = FrameworkManagers::Get()->scriptManager->Load(scriptId.rid);
-					assert(script != HANDLE_NONE);
+					if(script == HANDLE_NONE) {
+						Console::Error("Script component failed to load script with Rid<%u>", scriptId.rid);
+						return false;
+					}
 				}
 
 				state = ScriptManager::Get(script)->state;

@@ -36,7 +36,7 @@ namespace Maki
 
 				const char *meshPath = props->ResolveValue("mesh.#0");
 				if(meshPath == nullptr) {
-					Console::Error("Entity did not specify a mesh");
+					Console::Error("Mesh component did not specify a mesh");
 					return false;
 				}
 				Rid meshRid = eng->assets->PathToRid(meshPath);
@@ -47,7 +47,7 @@ namespace Maki
 
 				const char *matPath = props->ResolveValue("material.#0");
 				if(matPath == nullptr) {
-					Console::Error("Entity did not specify a material");
+					Console::Error("Mesh component did not specify a material");
 					return false;
 				}
 				Rid matRid = eng->assets->PathToRid(matPath);

@@ -22,7 +22,6 @@ namespace Maki
 			lua_getglobal(state, "tostring");
 				
 			std::stringstream buffer;
-			buffer << "LUA: ";
 				
 			// Make sure you start at 1 *NOT* 0
 			for(int32 i = 1; i <= argCount; i++)
@@ -40,14 +39,14 @@ namespace Maki
 				buffer << s;
 				lua_pop(state, 1);
 			};
-			Console::Info(buffer.str().c_str());
+			Console::Lua(buffer.str().c_str());
 			return 0;
 		}
 
 		int32 ScriptUtils::LuaPanicHandler(lua_State *state)
 		{
 			const char *cs = luaL_checklstring(state, 1, nullptr);
-			Console::Error("LUA PANIC: %s", cs);
+			Console::LuaError("PANIC: %s", cs);
 			lua_pop(state, 1);
 			return 0;
 		}
@@ -63,20 +62,20 @@ namespace Maki
 			uint32 bytesRead;
 			char *data = Engine::Get()->assets->AllocRead(iter->second, &bytesRead);
 			if(data == nullptr) {
-				Console::Error("Failed to load lua script with Rid<%u>", iter->second);
+				Console::LuaError("Failed to load lua script with Rid<%u>", iter->second);
 				goto failed;
 			}
 
 			int32 ret = luaL_loadbuffer(state, data, bytesRead, moduleName.c_str());
 			if(ret != 0) {
-				Console::Error("LUA ERROR: %s", luaL_checklstring(state, 1, nullptr));
+				Console::LuaError(luaL_checklstring(state, 1, nullptr));
 				lua_pop(state, 1);
 				goto failed;
 			}
 
 			ret = lua_pcall(state, 0, 1, 0);
 			if(ret != 0) {
-				Console::Error("LUA ERROR: %s", luaL_checklstring(state, 1, nullptr));
+				Console::LuaError(luaL_checklstring(state, 1, nullptr));
 				lua_pop(state, 1);
 				goto failed;
 			}
@@ -104,24 +103,24 @@ namespace Maki
 		void ScriptUtils::DumpLuaStack(lua_State *state)
 		{
 			int32 top = lua_gettop(state);
-			Console::Info("Lua stack (%d items):", top);
+			Console::Lua("Lua stack (%d items):", top);
 			for (int32 i = top; i >= 1; i--) {  // repeat for each level
 				int t = lua_type(state, i);
 				switch(t) {
 				case LUA_TSTRING:  // strings
-					Console::Info("[%d] string: '%s'", i, lua_tostring(state, i));
+					Console::Lua("[%d] string: '%s'", i, lua_tostring(state, i));
 					break;
 
 				case LUA_TBOOLEAN:  // booleans
-					Console::Info("[%d] bool: %s", i, lua_toboolean(state, i) ? "true" : "false");
+					Console::Lua("[%d] bool: %s", i, lua_toboolean(state, i) ? "true" : "false");
 					break;
 
 				case LUA_TNUMBER:  // numbers
-					Console::Info("[%d] number: %g", i, lua_tonumber(state, i));
+					Console::Lua("[%d] number: %g", i, lua_tonumber(state, i));
 					break;
 
 				default:  // other values
-					Console::Info("[%d] %s: ???", i, lua_typename(state, t));
+					Console::Lua("[%d] %s: ???", i, lua_typename(state, t));
 					break;
 				}
 			}

@@ -32,14 +32,12 @@ def _get_user_props(node):
         prop = node.GetNextProperty(prop)
     return user_props
 
-def _is_physics(node):
-    physics = False
+def _get_display_layer_name(node):
     for i in range(node.GetDstObjectCount()):
         obj = node.GetDstObject(i)
         if obj.GetTypeName() == 'DisplayLayer':
-            if obj.GetName() == 'physics':
-                physics = True
-    return physics
+            return obj.GetName()
+    return None
 
 def _get_material_path(node):
     material_path = None
@@ -88,21 +86,22 @@ def _export_node(manager, node, doc_container, src, mesh_lib, *args):
         if any(angles):
             t.add_child('angles').add_children(angles)
 
-    physics = _is_physics(node)
-    if physics:
+    layer_name = _get_display_layer_name(node)
+    if layer_name == 'physics':
         mesh = node.GetMesh()
         assert mesh, 'Physics object had no mesh'
         
         phys = ent.add_child('physics')
+        phys.add_child('type').add_child(user_props.get('type', 'static'))
 
+        is_rect_prism = False
         if mesh.GetControlPointsCount() == 8:
             mesh.ComputeBBox()
             min_corner = mesh.BBoxMin.Get()
             max_corner = mesh.BBoxMax.Get()
-            
             eps = 0.0000000000001
-            is_rect_prism = True
             control_points = mesh.GetControlPoints()
+            is_rect_prism = True
             for i in range(8):
                 cp = control_points[i]
                 for j in range(3):
@@ -110,25 +109,31 @@ def _export_node(manager, node, doc_container, src, mesh_lib, *args):
                         is_rect_prism = False
                         break
 
-            phys.add_child('type').add_child(user_props.get('type', 'static'))
-            if is_rect_prism:
-                phys.add_child('shape').add_child('box')
-                phys.add_child('min').add_children(min_corner)
-                phys.add_child('max').add_children(max_corner)
-            else:
-                phys.add_child('shape').add_child('mesh')
-                mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
-                phys.add_child('mesh').add_child(mesh_path)
+        if is_rect_prism:
+            phys.add_child('shape').add_child('box')
+            phys.add_child('min').add_children(min_corner)
+            phys.add_child('max').add_children(max_corner)
+        else:
+            phys.add_child('shape').add_child('mesh')
+            mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
+            phys.add_child('mesh').add_child(mesh_path)
+
+    elif layer_name == 'nav':
+        mesh = node.GetMesh()
+        assert mesh, 'Nav object had no mesh'
+        nav = ent.add_child('nav_mesh')
+        mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
+        nav.add_child('mesh').add_child(mesh_path)
 
     else:
         mesh = node.GetMesh()
         if mesh:
             mesh_path = mesh_lib.build_and_get_path(node, mesh, entity_name)
             material_path = _get_material_path(node)
+            assert material_path, 'Mesh object must have material'
             m = ent.add_child('mesh')
             m.add_child('mesh').add_child(mesh_path)
-            if material_path:
-                m.add_child('material').add_child(material_path)
+            m.add_child('material').add_child(material_path)
 
     children = None
     for i in range(node.GetChildCount()):

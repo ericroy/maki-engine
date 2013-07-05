@@ -108,6 +108,7 @@ namespace Maki
 
 		void DebugPhysicsRenderer::reportErrorWarning(const char  *warningString)
 		{
+			Console::Warning("Bullet Warning: %s", warningString);
 		}
 
 		void DebugPhysicsRenderer::draw3dText(const btVector3 &location, const char *textString)

@@ -72,7 +72,7 @@ namespace Maki
 					} else if(ret == 0) {
 						// Script finished
 					} else {
-						Console::Error("LUA ERROR: %s", lua_tolstring(n.scriptComp->coroutine, -1, nullptr));
+						Console::LuaError(lua_tolstring(n.scriptComp->coroutine, -1, nullptr));
 						ScriptUtils::DumpLuaStack(n.scriptComp->coroutine);
 						lua_pop(n.scriptComp->coroutine, 1);
 						n.scriptComp->sleepTime = 0.0f;

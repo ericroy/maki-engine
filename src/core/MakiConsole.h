@@ -1,12 +1,26 @@
 #pragma once
 #include "core/core_stdafx.h"
+#include "core/MakiPseudoSingleton.h"
+#include <cstdarg>
 
 namespace Maki
 {
 	namespace Core
 	{
 	
-		class Console
+#define _MAKI_DEFINE_CONSOLE_METHOD(_methodName, _level, _prefix, _lineFeed) \
+		static void _methodName(const char *format, ...) { \
+			va_list args; \
+			va_start(args, format); \
+			Console *c = Get(); \
+			if(c != nullptr) { \
+				c->Write(_level, _lineFeed, _prefix, format, args); \
+			} \
+			va_end(args); \
+		}
+
+
+		class Console : public PseudoSingleton<Console>
 		{
 		public:
 			enum Level
@@ -14,27 +28,37 @@ namespace Maki
 				Level_Info = 0,
 				Level_Warning,
 				Level_Error,
-				Level_None,
+				Level_Die,
 			};
 		
-			static std::function<void(Level, char *)> PrintfCallback;
-
-		private:
+		public:
 			static const int32 MAX_BUFFER_SIZE = 8192;
-			static char buffer[MAX_BUFFER_SIZE];
-			static Level verbosity;
 		
 		public:
-			static void SetVerbosity(Level level) { verbosity = level; }
+			_MAKI_DEFINE_CONSOLE_METHOD(Info,		Level_Info,		"INFO  : ", true)
+			_MAKI_DEFINE_CONSOLE_METHOD(Lua,		Level_Info,		"LUA   : ", true)
+			_MAKI_DEFINE_CONSOLE_METHOD(Warning,	Level_Warning,	"WARN  : ", true)
+			_MAKI_DEFINE_CONSOLE_METHOD(LuaError,	Level_Error,	"LUAERR: ", true)
+			_MAKI_DEFINE_CONSOLE_METHOD(Error,		Level_Error,	"ERROR : ", true)			
+			_MAKI_DEFINE_CONSOLE_METHOD(Die,		Level_Die,		"DIE   : ", true)
 
-			static void Info(const char *format, ...);
-			static void Warning(const char *format, ...);
-			static void Error(const char *format, ...);
+		public:
+			Console(Level verbosity = Level_Info);
+			virtual ~Console();
 
-			static void InfoNoLineFeed(const char *format, ...);
-			static void WarningNoLineFeed(const char *format, ...);
-			static void ErrorNoLineFeed(const char *format, ...);
+			inline void SetVerbosity(Level level) { verbosity = level; }
+			inline void SetPrintCallback(std::function<void(char *)> func) { printCallback = func; }
+
+		private:
+			void Write(Level level, bool lineFeed, const char *prefix, const char *format, va_list args);
+
+		private:
+			std::function<void(char *)> printCallback;
+			char buffer[MAX_BUFFER_SIZE];
+			Level verbosity;
 		};
+
+#undef _MAKI_DEFINE_CONSOLE_METHOD
 
 	} // namespace Core
 

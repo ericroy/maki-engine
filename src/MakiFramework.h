@@ -23,6 +23,7 @@
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 #include "framework/components/MakiSkeletonComponent.h"
+#include "framework/components/MakiNavMeshComponent.h"
 #include "framework/components/MakiLightComponent.h"
 #include "framework/components/MakiCameraComponent.h"
 #include "framework/components/MakiScriptComponent.h"

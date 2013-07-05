@@ -70,6 +70,7 @@ namespace Maki
 				Node n;
 				n.camComp = e->Get<Components::Camera>();
 				n.transComp = e->Get<Components::Transform>();
+				assert(n.camComp != nullptr && n.transComp != nullptr);
 				nodes.push_back(n);
 			}
 
@@ -77,7 +78,6 @@ namespace Maki
 			{
 				Node n;
 				n.camComp = e->Get<Components::Camera>();
-				n.transComp = e->Get<Components::Transform>();
 				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}
 
