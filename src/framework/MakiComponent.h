@@ -61,6 +61,7 @@ namespace Maki
 			virtual bool Init(Core::Document::Node *props) { return true; }
 			virtual void OnAttach() {}
 			virtual void OnDetach() {}
+			virtual Component *Clone(bool prototype) = 0;
 
 		public:
 			Type type;

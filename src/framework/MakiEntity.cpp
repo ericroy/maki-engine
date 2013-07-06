@@ -1,5 +1,6 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiEntity.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/MakiComponent.h"
 #include "framework/MakiComponentPool.h"
 #include "framework/MakiSystem.h"
@@ -10,17 +11,20 @@ namespace Maki
 	namespace Framework
 	{
 
-		Entity::Entity(uint64 uid)
+		Entity::Entity(uint64 uid, bool prototype)
 			: flags(0),
 			componentCount(0),
-			uid(uid)
+			uid(uid),
+			prototype(prototype)
 		{	
 		}
 
 		Entity::~Entity() {
 			// Inform systems that all our components are going away (but don't destroy the components yet,
 			// the systems need them to be available during deregistration).
-			System::ComponentMakeupChanged(this, flags, 0);
+			if(!prototype) {
+				System::ComponentMakeupChanged(this, flags, 0);
+			}
 
 			// Now that we are deregistered from the Systems, we can actually destroy our components
 			for(int32 i = componentCount-1; i >= 0; i--) {
@@ -54,7 +58,9 @@ namespace Maki
 			component->owner = this;
 			component->OnAttach();
 
-			System::ComponentMakeupChanged(this, oldFlags, flags);
+			if(!prototype) {
+				System::ComponentMakeupChanged(this, oldFlags, flags);
+			}
 		}
 
 		Component *Entity::RemoveComponent(Component::Type type)
@@ -75,11 +81,25 @@ namespace Maki
 		
 			uint64 oldFlags = flags;
 			flags &= ~(1ULL << type);
-			System::ComponentMakeupChanged(this, oldFlags, flags);
+
+			if(!prototype) {
+				System::ComponentMakeupChanged(this, oldFlags, flags);
+			}
 
 			c->OnDetach();
 			c->owner = nullptr;
 			return c;
+		}
+
+		Entity *Entity::Clone(bool prototype)
+		{
+			Entity *e = EntityPool::Get()->Create(prototype);
+
+			for(uint32 i = 0; i < componentCount; i++) {
+				e->AddComponent(components[i].c->Clone(prototype));
+			}
+
+			return e;
 		}
 
 

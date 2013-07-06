@@ -11,8 +11,8 @@ namespace Maki
 	namespace Framework
 	{
 
-		Scene::Scene() : root(nullptr), drawListHead(nullptr) {
-			root = EntityPool::Get()->Create();
+		Scene::Scene(bool prototype) : root(nullptr), drawListHead(nullptr) {
+			root = EntityPool::Get()->Create(prototype);
 			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_Transform)->Create());
 			root->AddComponent(ComponentPoolBase::PoolForType(Component::Type_SceneNode)->Create());
 		}

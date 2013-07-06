@@ -36,6 +36,7 @@ namespace Maki
 				virtual ~Mesh();
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid meshId, HandleOrRid matId);
+				Mesh *Clone(bool prototype);
 				void SetMeshScale(float scale);
 
 			public:
@@ -43,7 +44,6 @@ namespace Maki
 				Handle mesh;
 				Handle material;
 				Array<DrawCommand> drawCommands;
-				Entity *drawListNext;
 
 			private:
 				float meshScale;

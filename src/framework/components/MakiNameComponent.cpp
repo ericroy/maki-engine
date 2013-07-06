@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiNameComponent.h"
+#include "framework/MakiComponentPool.h"
 
 
 namespace Maki
@@ -33,6 +34,13 @@ namespace Maki
 				assert(strlen(s) < sizeof(name) / sizeof(name[0]));
 				strcpy_s(name, s);
 				return true;
+			}
+
+			Name *Name::Clone(bool prototype)
+			{
+				Name *c = ComponentPool<Name>::Get()->Create();
+				strcpy_s(c->name, name);
+				return c;
 			}
 
 		} // namespace Components

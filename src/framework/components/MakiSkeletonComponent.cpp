@@ -1,8 +1,8 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-//#include "framework/MakiDebugArmature.h"
-#include "framework/MakiSystem.h"
 #include "framework/components/MakiSkeletonComponent.h"
+#include "framework/MakiSystem.h"
+#include "framework/MakiComponentPool.h"
 #include "framework/components/MakiMeshComponent.h"
 
 
@@ -60,6 +60,19 @@ namespace Maki
 				pose.SetSize(skel->bones.count);
 				matrixPose.SetSize(skel->bones.count);
 				return true;
+			}
+
+			Skeleton *Skeleton::Clone(bool prototype)
+			{
+				Skeleton *c = ComponentPool<Skeleton>::Get()->Create();
+
+				SkeletonManager::AddRef(skeleton);
+				c->skeleton = skeleton;
+
+				c->pose.SetSize(pose.count);
+				c->matrixPose.SetSize(matrixPose.count);
+
+				return c;
 			}
 
 			void Skeleton::OnAttach()

@@ -41,7 +41,7 @@ namespace Maki
 				bool Init(Document::Node *props);
 				bool InitMeshShape(ObjectType type, HandleOrRid meshId, float mass, const Vector3 &inertia);
 				bool InitBoxShape(ObjectType type, const Vector4 &minCorner, const Vector4 &maxCorner, float mass, const Vector3 &inertia);
-
+				Physics *Clone(bool prototype);
 				void OnAttach();
 				void OnDetach();
 

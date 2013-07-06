@@ -20,6 +20,7 @@ namespace Maki
 				virtual ~Transform();
 				bool Init(Document::Node *node);
 				bool Init(const Vector4 &pos, const Vector4 &eulerAngles = Vector4(0.0f));
+				Transform *Clone(bool prototype);
 
 				inline const Matrix44 &GetMatrix() const { return matrix; }
 				inline const Quaternion &GetOrientation() const { return orientation; }

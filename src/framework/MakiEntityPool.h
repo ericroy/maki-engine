@@ -25,7 +25,7 @@ namespace Maki
 				SAFE_FREE(generationCount);
 			}
 			
-			Entity *Create() {
+			Entity *Create(bool prototype) {
 				Handle h = resPool.Alloc();
 				Entity *e = resPool.Get(h);
 				uint32 index = e - resPool.GetBaseAddr();
@@ -34,7 +34,7 @@ namespace Maki
 				uint64 uid = (uint32)h;
 				uid |= (uint64)index << 32;
 
-				new(e) Entity(uid);
+				new(e) Entity(uid, prototype);
 				return e;
 			}
 			

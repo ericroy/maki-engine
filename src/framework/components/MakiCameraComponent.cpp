@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiCameraComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -36,6 +37,14 @@ namespace Maki
 				}
 
 				return true;
+			}
+
+			Camera *Camera::Clone(bool prototype)
+			{
+				Camera *c = ComponentPool<Camera>::Get()->Create();
+				c->active = active;
+				c->frustum = frustum;
+				return c;
 			}
 
 

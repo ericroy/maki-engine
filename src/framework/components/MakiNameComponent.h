@@ -20,6 +20,7 @@ namespace Maki
 				virtual ~Name();
 				bool Init(Document::Node *props);
 				bool Init(const char *name);
+				Name *Clone(bool prototype);
 
 			public:
 				char name[16];

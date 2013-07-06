@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiNavMeshComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -58,6 +59,16 @@ namespace Maki
 				}
 
 				return true;
+			}
+
+			NavMesh *NavMesh::Clone(bool prototype)
+			{
+				NavMesh *c = ComponentPool<NavMesh>::Get()->Create();
+				
+				MeshManager::AddRef(mesh);
+				c->mesh = mesh;
+
+				return c;
 			}
 
 		} // namespace Components

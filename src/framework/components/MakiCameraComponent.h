@@ -19,6 +19,7 @@ namespace Maki
 				Camera();
 				virtual ~Camera();
 				bool Init(Document::Node *props);
+				Camera *Clone(bool prototype);
 
 			public:
 				bool active;

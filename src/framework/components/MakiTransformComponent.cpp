@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiTransformComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -43,6 +44,17 @@ namespace Maki
 			{
 				SetMatrix(pos, Quaternion(eulerAngles));
 				return true;
+			}
+
+			Transform *Transform::Clone(bool prototype)
+			{
+				Transform *c = ComponentPool<Transform>::Get()->Create();
+				c->world = world;
+				c->matrix = matrix;
+				c->position = position;
+				c->orientation = orientation;
+				c->relativeMode = relativeMode;
+				return c;
 			}
 
 		} // namespace Components

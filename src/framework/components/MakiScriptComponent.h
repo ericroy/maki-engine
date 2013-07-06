@@ -33,6 +33,7 @@ namespace Maki
 				virtual ~Script();
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid scriptId);
+				Script *Clone(bool prototype);
 
 			private:
 				Handle script;

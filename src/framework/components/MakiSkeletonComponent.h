@@ -27,6 +27,7 @@ namespace Maki
 				virtual ~Skeleton();
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid skeletonRid);
+				Skeleton *Clone(bool prototype);
 				void OnAttach();
 
 				inline void SetPoseDirty(bool dirty) { poseDirty = dirty; }

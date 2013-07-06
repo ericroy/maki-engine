@@ -73,10 +73,10 @@ namespace Maki
 			void SetMesh(Handle mesh);
 			void SetMaterial(Handle material);
 			inline void Clear();
+			inline void Copy(const DrawCommand &other);
 
 		private:
 			DrawCommand(const DrawCommand &other) {}
-			inline void Copy(const DrawCommand &other);
 
 		private:
 			union

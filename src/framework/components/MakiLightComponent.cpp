@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiLightComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -66,6 +67,19 @@ namespace Maki
 				}
 
 				return true;
+			}
+
+			Light *Light::Clone(bool prototype)
+			{
+				Light *c = ComponentPool<Light>::Get()->Create();
+				c->fov = fov;
+				c->lightType = lightType;
+				c->properties = properties;
+				c->mapProperties = mapProperties;
+
+				TextureManager::AddRef(depthBuffer);
+				c->depthBuffer = depthBuffer;
+				return c;
 			}
 
 			void Light::EnableShadows(uint32 shadowMapWidth, uint32 shadowMapHeight, bool splitShadows)

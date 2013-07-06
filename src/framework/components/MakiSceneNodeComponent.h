@@ -19,6 +19,7 @@ namespace Maki
 				SceneNode();
 				virtual ~SceneNode();
 				bool Init(Document::Node *props);
+				SceneNode *Clone(bool prototype);
 
 				void AddChild(Entity *e);
 				void RemoveChild(Entity *e);

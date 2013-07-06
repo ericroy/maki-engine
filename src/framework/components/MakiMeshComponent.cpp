@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiMeshComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -92,6 +93,31 @@ namespace Maki
 
 				bounds.Merge(m->bounds);
 				return true;
+			}
+
+			Mesh *Mesh::Clone(bool prototype)
+			{
+				Mesh *c = ComponentPool<Mesh>::Get()->Create();
+
+				c->flags = flags;
+				
+				MeshManager::AddRef(mesh);
+				c->mesh = mesh;
+
+				MaterialManager::AddRef(material);
+				c->material = material;
+				
+				c->drawCommands.SetSize(drawCommands.count);
+				for(uint32 i = 0; i < drawCommands.count; i++) {
+					DrawCommand *dc = &c->drawCommands[i];
+					new(dc) DrawCommand();
+					dc->Copy(drawCommands[i]);
+				}
+				
+				c->meshScale = meshScale;
+				c->scaleMatrix = scaleMatrix;
+				c->bounds = bounds;
+				return c;
 			}
 
 			void Mesh::SetMeshScale(float scale)

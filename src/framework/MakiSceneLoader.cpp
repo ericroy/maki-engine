@@ -42,7 +42,7 @@ namespace Maki
 
 				if(c->ValueEquals("entity")) {
 
-					Entity *e = EntityPool::Get()->Create();
+					Entity *e = EntityPool::Get()->Create(container->IsPrototype());
 				
 					// Load and init all components for this entity
 					for(uint32 ci = 0; ci < c->count; ci++) {

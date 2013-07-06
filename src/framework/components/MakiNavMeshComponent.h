@@ -20,6 +20,7 @@ namespace Maki
 				virtual ~NavMesh();
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid meshId);
+				NavMesh *Clone(bool prototype);
 
 			public:
 				Handle mesh;

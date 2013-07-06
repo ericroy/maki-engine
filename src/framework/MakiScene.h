@@ -13,7 +13,7 @@ namespace Maki
 		class Scene
 		{
 		public:
-			Scene();
+			Scene(bool prototype = false);
 			virtual ~Scene();
 			void Clear();
 			bool Load(Rid rid);

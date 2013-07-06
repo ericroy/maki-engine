@@ -1,8 +1,9 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-#include "framework/MakiEntityPool.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"
+#include "framework/MakiEntityPool.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -28,6 +29,22 @@ namespace Maki
 			bool SceneNode::Init(Document::Node *props)
 			{
 				return true;
+			}
+
+			SceneNode *SceneNode::Clone(bool prototype)
+			{
+				SceneNode *c = ComponentPool<SceneNode>::Get()->Create();
+
+				// Do not clone the parent pointer, since our clone will start
+				// detached from the scene graph
+
+				const uint32 childCount = children.size();
+				c->children.reserve(childCount);
+				for(uint32 i = 0; i < childCount; i++) {
+					c->AddChild(children[i]->Clone(prototype));
+				}
+
+				return c;
 			}
 
 			void SceneNode::AddChild(Entity *e)

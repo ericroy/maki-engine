@@ -26,9 +26,10 @@ namespace Maki
 			static const uint32 MAX_COMPONENTS = 16;
 
 		public:
-			Entity(uint64 uid);
+			Entity(uint64 uid, bool prototype = false);
 			virtual ~Entity();
 
+			inline bool IsPrototype() const { return prototype; }
 			inline const uint64 &GetUid() const { return uid; }
 			inline const uint64 &GetComponentFlags() const { return flags; }
 			inline bool HasComponent(Component::Type type) const { return (flags & (1ULL << type)) != 0; }
@@ -36,6 +37,8 @@ namespace Maki
 
 			void AddComponent(Component *component);
 			Component *RemoveComponent(Component::Type type);
+
+			Entity *Clone(bool prototype);
 		
 		protected:
 			// Unique identifier for this entity.
@@ -49,6 +52,10 @@ namespace Maki
 			// Table for storing handles to components.
 			int32 componentCount;
 			Entry components[MAX_COMPONENTS];
+
+			// Indicates that this entity is a prototype and will not be registered with
+			// any systems.  The sole purpose of a prototype is to be cloned.
+			bool prototype;
 		};
 
 

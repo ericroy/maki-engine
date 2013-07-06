@@ -1,8 +1,9 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/components/MakiScriptComponent.h"
 #include "framework/MakiFrameworkManagers.h"
 #include "framework/MakiScriptManager.h"
-#include "framework/components/MakiScriptComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -62,6 +63,17 @@ namespace Maki
 
 				state = ScriptManager::Get(script)->state;
 				return true;
+			}
+
+			Script *Script::Clone(bool prototype)
+			{
+				Script *c = ComponentPool<Script>::Get()->Create();
+
+				ScriptManager::AddRef(script);
+				c->script = script;
+				c->state = state;
+
+				return c;
 			}
 
 

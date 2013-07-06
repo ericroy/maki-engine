@@ -2,6 +2,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/components/MakiPhysicsComponent.h"
 #include "framework/components/MakiTransformComponent.h"
+#include "framework/MakiComponentPool.h"
 
 namespace Maki
 {
@@ -131,6 +132,20 @@ namespace Maki
 				this->minCorner = minCorner;
 				this->maxCorner = maxCorner;
 				return true;
+			}
+
+			Physics *Physics::Clone(bool prototype)
+			{
+				Physics *c = ComponentPool<Physics>::Get()->Create();
+
+				bool ok;
+				if(objectShape == ObjectShape_Mesh) {
+					ok = c->InitMeshShape(objectType, mesh, mass, inertia);
+				} else {
+					ok = c->InitBoxShape(objectType, minCorner, maxCorner, mass, inertia);
+				}
+				assert(ok && "Clone failed");
+				return c;
 			}
 
 			void Physics::OnAttach()

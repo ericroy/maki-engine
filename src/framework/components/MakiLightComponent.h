@@ -19,6 +19,7 @@ namespace Maki
 				Light();
 				virtual ~Light();
 				bool Init(Document::Node *props);
+				Light *Clone(bool prototype);
 
 				void EnableShadows(uint32 shadowMapWidth, uint32 shadowMapHeight, bool splitShadows = false);
 				void DisableShadows();
