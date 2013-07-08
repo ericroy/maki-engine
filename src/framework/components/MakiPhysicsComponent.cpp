@@ -152,6 +152,10 @@ namespace Maki
 			{
 				transComp = owner->Get<Transform>();
 				assert(transComp != nullptr);
+
+				btTransform worldTransform;
+				getWorldTransform(worldTransform);
+				setWorldTransform(worldTransform);
 			}
 			
 			void Physics::OnDetach()

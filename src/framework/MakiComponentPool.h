@@ -44,6 +44,11 @@ namespace Maki
 				pool.Free(h);
 			}
 
+			Component::Type GetType()
+			{
+				return T::TYPE;
+			}
+
 		private:
 			ResourcePool<T> pool;
 			std::string typeName;

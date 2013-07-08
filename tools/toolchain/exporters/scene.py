@@ -157,7 +157,6 @@ def export(src, dst, *args):
 
     mesh_lib = MeshLibrary(manager, src, output_dir, *args)
     root = doc.Node('root')
-    children = root.add_child('children')
 
     root_node = scene.GetRootNode()
     for i in range(root_node.GetChildCount()):
@@ -165,10 +164,11 @@ def export(src, dst, *args):
         node_attr = node.GetNodeAttribute()
         if node_attr is None or node_attr.GetAttributeType() != FbxNodeAttribute.eMesh:
             continue
-        _export_node(manager, node, children, src, mesh_lib, *args)
+        _export_node(manager, node, root, src, mesh_lib, *args)
 
     with open(dst, 'w') as file:
-        root.serialize(file)
+        for c in root.children():
+            c.serialize(file)
 
 if __name__ == '__main__':
     assert len(sys.argv) > 2, 'Must provide src and dst as command line arguments'

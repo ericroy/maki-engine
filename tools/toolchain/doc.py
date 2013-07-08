@@ -14,6 +14,9 @@ class Node(object):
 				return True
 		return False
 
+	def children(self):
+		return iter(self._children)
+
 	def index_of(self, item):
 		for i, c in enumerate(self._children):
 			if c._value == item:

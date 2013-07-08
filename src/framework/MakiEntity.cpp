@@ -95,11 +95,26 @@ namespace Maki
 		{
 			Entity *e = EntityPool::Get()->Create(prototype);
 
-			for(uint32 i = 0; i < componentCount; i++) {
+			for(int32 i = 0; i < componentCount; i++) {
 				e->AddComponent(components[i].c->Clone(prototype));
 			}
 
 			return e;
+		}
+
+		Component *Entity::Get(Component::Type t) const
+		{
+			if(((1ULL << t) & flags) == 0) {
+				return nullptr;
+			}
+			for(int32 i = 0; i < componentCount; i++) {
+				const Entry &entry = components[i];
+				if(entry.type == t) {
+					return entry.c;
+				}
+			}
+			assert(false && "expected to find component");
+			return nullptr;
 		}
 
 

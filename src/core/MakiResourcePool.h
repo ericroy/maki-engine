@@ -95,7 +95,7 @@ namespace Maki
 	#ifdef _DEBUG
 				for(uint32 i = 0; i < count; i++) {
 					if(referenceCounts[i] > 0) {
-						Console::Warning("~ResourcePool(): Warning, item at index=%u (%X) still allocated. (refcount=%d)\n", i, data, referenceCounts[i]);
+						Console::Warning("~ResourcePool(): Warning, item at index=%u (%X) still allocated. (refcount=%d)", i, data, referenceCounts[i]);
 					}
 				}
 	#endif

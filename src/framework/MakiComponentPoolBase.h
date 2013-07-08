@@ -14,6 +14,7 @@ namespace Maki
 		public:
 			static ComponentPoolBase *PoolForType(Component::Type type);
 			static ComponentPoolBase *PoolForTypeName(const char *typeName);
+			static bool TypeForTypeName(const char *typeName, Component::Type &type);
 
 		protected:
 			static void Register(const char *typeName, Component::Type type, ComponentPoolBase *pool);
@@ -27,6 +28,7 @@ namespace Maki
 		public:
 			virtual Component *Create() = 0;
 			virtual void Destroy(Component *c) = 0;
+			virtual Component::Type GetType() = 0;
 		};
 
 	} // namespace Framework

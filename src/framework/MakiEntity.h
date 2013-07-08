@@ -8,11 +8,13 @@ namespace Maki
 {
 	namespace Framework
 	{
-
+		class SceneLoader;
 		class Component;
 
 		class Entity : public Aligned<SIMD_ALIGN>
 		{
+			friend class SceneLoader;
+
 		private:
 			struct Entry
 			{
@@ -34,11 +36,12 @@ namespace Maki
 			inline const uint64 &GetComponentFlags() const { return flags; }
 			inline bool HasComponent(Component::Type type) const { return (flags & (1ULL << type)) != 0; }
 			template<class T> inline T *Get() const;
+			Component *Get(Component::Type) const;
 
 			void AddComponent(Component *component);
 			Component *RemoveComponent(Component::Type type);
 
-			Entity *Clone(bool prototype);
+			Entity *Clone(bool prototype = false);
 		
 		protected:
 			// Unique identifier for this entity.

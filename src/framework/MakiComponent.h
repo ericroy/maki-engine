@@ -5,14 +5,10 @@ namespace Maki
 {
 	namespace Framework
 	{
-	
 		class Entity;
-		class Renderer;
 
 		class Component
 		{
-			friend class Entity;
-
 		public:
 			enum Type
 			{
