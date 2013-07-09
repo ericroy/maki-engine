@@ -14,7 +14,7 @@ namespace Maki
 		public:
 			ComponentPool(const char *typeName, uint32 size)
 				: PseudoSingleton< ComponentPool<T> >(),
-				pool(size),
+				pool(size, "ComponentPool"),
 				typeName(typeName)
 			{
 				ComponentPoolBase::Register(typeName, T::TYPE, this);

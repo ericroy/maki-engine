@@ -9,7 +9,7 @@ namespace Maki
 	{
 
 		SkeletonAnimationManager::SkeletonAnimationManager(uint32 size)
-			: Manager<SkeletonAnimation, SkeletonAnimationManager>(size)
+			: Manager<SkeletonAnimation, SkeletonAnimationManager>(size, "SkeletonAnimationManager")
 		{
 		}
 	

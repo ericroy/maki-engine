@@ -10,7 +10,7 @@ namespace Maki
 	{
 
 		TextureManager::TextureManager(uint32 size)
-			: Manager<Texture, TextureManager>(size)
+			: Manager<Texture, TextureManager>(size, "TextureManager")
 		{
 		}
 	

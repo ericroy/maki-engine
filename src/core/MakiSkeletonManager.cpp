@@ -9,7 +9,7 @@ namespace Maki
 	{
 
 		SkeletonManager::SkeletonManager(uint32 size)
-			: Manager<Skeleton, SkeletonManager>(size)
+			: Manager<Skeleton, SkeletonManager>(size, "SkeletonManager")
 		{
 		}
 	

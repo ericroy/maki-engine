@@ -18,9 +18,6 @@ namespace Maki
 		template<class T>
 		class ResourcePool
 		{
-		public:
-			static const uint32 DEFAULT_SIZE = 256;
-
 		private:
 			struct Node
 			{
@@ -55,7 +52,7 @@ namespace Maki
 			inline const Iterator End() const { return Iterator(nodes, data, referenceCounts, end); }
 
 		public:
-			ResourcePool(uint32 maxSize = DEFAULT_SIZE)
+			ResourcePool(uint32 maxSize, const char *debugName)
 				: data(0), count(0)
 			{
 
@@ -88,6 +85,10 @@ namespace Maki
 				assert(data && nodes && referenceCounts);	
 				memset(data, 0, capacity*sizeof(T));
 				memset(referenceCounts, 0, capacity*sizeof(uint16));
+
+#if _DEBUG
+				this->debugName = debugName;
+#endif
 			}
 
 			~ResourcePool()
@@ -95,7 +96,7 @@ namespace Maki
 	#ifdef _DEBUG
 				for(uint32 i = 0; i < count; i++) {
 					if(referenceCounts[i] > 0) {
-						Console::Warning("~ResourcePool(): Warning, item at index=%u (%X) still allocated. (refcount=%d)", i, data, referenceCounts[i]);
+						Console::Warning("~ResourcePool() \"%s\": Warning, item at index=%u still allocated. (refcount=%d)", debugName.c_str(), i, referenceCounts[i]);
 					}
 				}
 	#endif
@@ -277,6 +278,11 @@ namespace Maki
 
 			uint32 count;
 			uint32 capacity;
+
+#if _DEBUG
+		public:
+			std::string debugName;
+#endif
 		};
 
 	} // namespace Core

@@ -11,7 +11,7 @@ namespace Maki
 	{
 
 		MaterialManager::MaterialManager(uint32 size)
-			: Manager<Material, MaterialManager>(size)
+			: Manager<Material, MaterialManager>(size, "MaterialManager")
 		{
 			assert(size <= (1<<DrawCommand::BITS_PER_MATERIAL) && "MaterialManager too large, add more bits in DrawCommand");
 		}

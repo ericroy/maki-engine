@@ -8,7 +8,7 @@ namespace Maki
 	{
 
 		MeshManager::MeshManager(uint32 size)
-			: Manager<Mesh, MeshManager>(size)
+			: Manager<Mesh, MeshManager>(size, "MeshManager")
 		{
 			assert(size <= (1<<DrawCommand::BITS_PER_MESH) && "MeshManager too large, add more bits in DrawCommand");
 		}

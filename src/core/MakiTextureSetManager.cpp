@@ -20,7 +20,7 @@ namespace Maki
 		}
 	
 		TextureSetManager::TextureSetManager(uint32 size)
-			: Manager<TextureSet, TextureSetManager>(size)
+			: Manager<TextureSet, TextureSetManager>(size, "TextureSetManager")
 		{
 		}
 	

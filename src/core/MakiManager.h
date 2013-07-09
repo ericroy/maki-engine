@@ -45,7 +45,6 @@ namespace Maki
 			}
 
 		public:
-			static const int32 DEFAULT_SIZE = 64;
 			static const uint32 BITS_PER_MANAGER_ID = 3;
 		
 			// Must subtract one here, because we can't have a manager id that is all ones.
@@ -60,7 +59,7 @@ namespace Maki
 			static SubClass *managers[MAX_MANAGERS_PER_RESOURCE_TYPE];
 		
 		public:
-			Manager(uint32 size = DEFAULT_SIZE)
+			Manager(uint32 size, const char *debugName)
 			{
 				assert(size <= (1<<MANAGER_ID_SHIFT)-1 && "Cannot create a manager this large");
 
@@ -75,7 +74,7 @@ namespace Maki
 				}
 				assert(managerId != (uint32)-1 && "Too many managers for this resource type");
 
-				resPool = new ResourcePool<T>(size);
+				resPool = new ResourcePool<T>(size, debugName);
 			}
 
 			virtual ~Manager()
@@ -103,8 +102,14 @@ namespace Maki
 			virtual void Reset()
 			{
 				uint32 size = resPool->GetCapacity();
+#if _DEBUG
+				std::string debugName = resPool->debugName;
+				SAFE_DELETE(resPool);
+				resPool = new ResourcePool<T>(size, debugName.c_str());
+#else
 				SAFE_DELETE(resPool);
 				resPool = new ResourcePool<T>(size);
+#endif
 			}
 
 			void DumpStats(const char *label)

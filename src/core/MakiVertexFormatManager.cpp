@@ -9,7 +9,7 @@ namespace Maki
 	{
 
 		VertexFormatManager::VertexFormatManager(uint32 size)
-			: Manager<VertexFormat, VertexFormatManager>(size)
+			: Manager<VertexFormat, VertexFormatManager>(size, "VertexFormatManager")
 		{
 			assert(size <= (1<<DrawCommand::BITS_PER_VERTEX_FORMAT) && "VertexFormatManager too large, add more bits in DrawCommand");
 		}

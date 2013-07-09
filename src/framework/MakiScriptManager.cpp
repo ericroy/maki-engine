@@ -8,7 +8,7 @@ namespace Maki
 	{
 
 		ScriptManager::ScriptManager(uint32 size)
-			: Manager<Script, ScriptManager>(size)
+			: Manager<Script, ScriptManager>(size, "ScriptManager")
 		{
 			
 		}

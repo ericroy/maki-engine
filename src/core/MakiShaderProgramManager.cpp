@@ -9,7 +9,7 @@ namespace Maki
 	{
 
 		ShaderProgramManager::ShaderProgramManager(uint32 size)
-			: Manager<ShaderProgram, ShaderProgramManager>(size)
+			: Manager<ShaderProgram, ShaderProgramManager>(size, "ShaderProgramManager")
 		{
 			assert(size <= (1<<DrawCommand::BITS_PER_SHADER_PROGRAM) && "ShaderProgramManager too large, add more bits in DrawCommand");
 		}

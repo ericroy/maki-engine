@@ -11,6 +11,27 @@ namespace Maki
 	namespace Framework
 	{
 
+		static void DestroyComponents(std::map<Component::Type, Component *> &comps)
+		{
+			std::map<Component::Type, Component *>::iterator end = comps.end();
+			for(std::map<Component::Type, Component *>::iterator iter = comps.begin(); iter != end; ++iter) {
+				ComponentPoolBase::PoolForType(iter->second->type)->Destroy(iter->second);
+			}
+			comps.clear();
+		}
+
+		static Component *RemoveComponent(std::map<Component::Type, Component *> &comps, Component::Type type)
+		{
+			std::map<Component::Type, Component *>::iterator iter = comps.find(type);
+			if(iter != comps.end()) {
+				Component *ret = iter->second;
+				comps.erase(iter);
+				return ret;
+			}
+			return nullptr;
+		}
+
+
 		SceneLoader::SceneLoader() {
 		}
 
@@ -38,14 +59,15 @@ namespace Maki
 
 			// Cleanup any prototypes that were loaded
 			EntityPool *pool = EntityPool::Get();
-			for(auto iter = prototypes.begin(); iter != prototypes.end(); ++iter) {
+			const std::map<std::string, Entity *>::iterator end = prototypes.end();
+			for(std::map<std::string, Entity *>::iterator iter = prototypes.begin(); iter != end; ++iter) {
 				pool->Destroy(iter->second);
 			}
 
 			return ret;
 		}
 
-		bool SceneLoader::Recurse(Document::Node *n, Entity *container, std::map<std::string, Entity *> prototypes) {
+		bool SceneLoader::Recurse(Document::Node *n, Entity *container, std::map<std::string, Entity *> &prototypes) {
 
 			Components::SceneNode *containerSceneNode = container->Get<Components::SceneNode>();
 
@@ -53,9 +75,8 @@ namespace Maki
 
 				Entity *e = nullptr;
 				Document::Node *childrenNode = nullptr;
-
 				Entity *proto = nullptr;
-				int32 protoCompIndex = 0;
+				std::map<Component::Type, Component *> components;
 
 				// Load and init all components for this entity
 				for(uint32 i = 0; i < n->count; i++) {
@@ -66,16 +87,18 @@ namespace Maki
 							
 						if(i != 0) {
 							Console::Error("Prototype node must be the first child of the entity");
+							DestroyComponents(components);
 							return false;
 						}
 							
 						const char *protoPath = compNode->ResolveValue("#0");
 						if(protoPath == nullptr) {
 							Console::Error("Entity must specify prototype path");
+							DestroyComponents(components);
 							return false;
 						}
 
-						auto iter = prototypes.find(protoPath);
+						std::map<std::string, Entity *>::iterator iter = prototypes.find(protoPath);
 						if(iter != prototypes.end()) {
 
 							proto = iter->second;
@@ -86,23 +109,26 @@ namespace Maki
 							Rid protoRid = Engine::Get()->assets->PathToRid(protoPath);
 							if(protoRid == RID_NONE) {
 								Console::Error("Prototype path could not be resolved to RID");
+								DestroyComponents(components);
 								return false;
 							}
 
-							Scene temp;
+							Scene temp(true);
 							SceneLoader loader;
 							if(!loader.Load(protoRid, temp.root)) {
 								Console::Error("Failed to load prototype Rid<%d>", protoRid);
+								DestroyComponents(components);
 								return false;
 							}
 
 							Components::SceneNode *sceneNodeComp = temp.root->Get<Components::SceneNode>();
 							if(sceneNodeComp->children.size() != 1) {
 								Console::Error("Prototype scene must contain exactly one entity at the root of the document Rid<%u>", protoRid);
+								DestroyComponents(components);
 								return false;
 							}
 							proto = sceneNodeComp->RemoveChild(0);
-
+							prototypes[protoPath] = proto;
 						}
 						continue;
 					}
@@ -116,39 +142,47 @@ namespace Maki
 						childrenNode = compNode;
 						continue;
 					}
-						
+					
 					// If we get this far, then we expect the node to specify a component.
 					ComponentPoolBase *pool = ComponentPoolBase::PoolForTypeName(compNode->value);
 					if(pool == nullptr) {
 						Console::Error("There is no pool for components of type: %s", compNode->value);
+						DestroyComponents(components);
 						return false;
-					}
-
-					if(proto != nullptr) {
-						while(protoCompIndex < proto->componentCount && proto->components[protoCompIndex].c->type < pool->GetType()) {
-							e->AddComponent(proto->components[protoCompIndex++].c->Clone(container->IsPrototype()));
-						}
-						if(protoCompIndex < proto->componentCount && proto->components[protoCompIndex].c->type == pool->GetType()) {
-							protoCompIndex++;
-						}
 					}
 
 					Component *comp = pool->Create();
 					if(!comp->Init(compNode)) {
 						Console::Error("Failed to intialize component of type: %s", compNode->value);
 						pool->Destroy(comp);
+						DestroyComponents(components);
 						return false;
 					}
-					if(e->HasComponent(comp->type)) {
-						Console::Info("test");
-					}
-					e->AddComponent(comp);					
+
+					components[comp->type] = comp;
 				}
 
+				
 				if(proto != nullptr) {
+					int32 protoCompIndex = 0;
 					while(protoCompIndex < proto->componentCount) {
-						e->AddComponent(proto->components[protoCompIndex++].c->Clone(container->IsPrototype()));
+						Component *comp = RemoveComponent(components, proto->components[protoCompIndex].c->type);
+						if(comp != nullptr) {
+							// Our entity specifies an override for this component
+							e->AddComponent(comp);
+						} else {
+							// No override specified - use the one from the prototype
+							e->AddComponent(proto->components[protoCompIndex].c->Clone(container->IsPrototype()));
+						}
+						protoCompIndex++;
 					}
+				}
+				
+				// Add the rest of the components.  (These ones are not overrides, but rather additional components that should
+				// be added, above and beyond what is contained in the prototype
+				const std::map<Component::Type, Component *>::iterator end = components.end();
+				for(std::map<Component::Type, Component *>::iterator iter = components.begin(); iter != end; ++iter) {
+					e->AddComponent(iter->second);
 				}
 
 				// Ensure that the entity has at least the components necessary to be a part of a scene graph

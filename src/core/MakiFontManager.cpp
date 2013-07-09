@@ -12,7 +12,7 @@ namespace Maki
 		}
 
 		FontManager::FontManager(uint32 size)
-			: Manager<Font, FontManager>(size)
+			: Manager<Font, FontManager>(size, "FontManager")
 		{
 		}
 	

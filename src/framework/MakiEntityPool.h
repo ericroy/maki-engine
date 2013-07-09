@@ -13,7 +13,7 @@ namespace Maki
 		public:
 			EntityPool(uint32 size)
 				: PseudoSingleton<EntityPool>(),
-				resPool(size),
+				resPool(size, "EntityPool"),
 				generationCount(nullptr)
 			{
 				assert(size < (1ULL<<32));
