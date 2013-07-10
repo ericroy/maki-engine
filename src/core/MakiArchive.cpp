@@ -40,7 +40,7 @@ namespace Maki
 			}
 			
 			fp = nullptr;
-			if(fopen_s(&fp, archivePath, "rb") != 0) {
+			if(fopen_s(&fp, archivePath, "rb") != 0 || fp == nullptr) {
 				return false;
 			}
 
@@ -105,7 +105,7 @@ namespace Maki
 				stream.avail_out = entries[i].uncompressedLength;
 				inflateInit(&stream);
 				
-				int status;
+				int status = Z_OK;
 				uint32 remaining = entries[i].compressedLength;
 				while(remaining > 0) {
 					stream.next_in = (const uint8 *)buffer;

@@ -32,7 +32,7 @@ namespace Maki
 			public:
 				bool loop;
 				SkeletonAnimation::State state;
-				Handle animation;	
+				Handle animation;
 			};
 
 			class Blend : public Node

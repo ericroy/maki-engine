@@ -48,7 +48,7 @@ namespace Maki
 			const char *path = GetPath(rid);
 
 			FILE *fp = nullptr;
-			if(fopen_s(&fp, path, "rb") != 0) {
+			if(fopen_s(&fp, path, "rb") != 0 || fp == nullptr) {
 				Console::Error("Failed to open resource: %s", path);
 				return nullptr;
 			}

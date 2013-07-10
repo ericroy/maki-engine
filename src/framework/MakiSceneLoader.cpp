@@ -73,7 +73,6 @@ namespace Maki
 
 			if(n->ValueEquals("entity")) {
 
-				Entity *e = nullptr;
 				Document::Node *childrenNode = nullptr;
 				Entity *proto = nullptr;
 				std::map<Component::Type, Component *> components;
@@ -133,10 +132,6 @@ namespace Maki
 						continue;
 					}
 
-					if(e == nullptr) {
-						e = EntityPool::Get()->Create(container->IsPrototype());
-					}
-
 					// Skip child node for now, until we have created all components for our current entity.
 					if(compNode->ValueEquals("children")) {
 						childrenNode = compNode;
@@ -162,6 +157,7 @@ namespace Maki
 					components[comp->type] = comp;
 				}
 
+				Entity *e = EntityPool::Get()->Create(container->IsPrototype());
 				
 				if(proto != nullptr) {
 					int32 protoCompIndex = 0;

@@ -27,19 +27,20 @@ namespace Maki
 			material = res.materialManager->Load(matRid);
 			cmd.SetMaterial(material);
 
-			Point verts[2 * MAX_LINES];
-			memset(verts, 0, sizeof(verts));
-
-			uint16 indices[2 * MAX_LINES];
-			for(uint32 i = 0; i < MAX_LINES*2; ++i) {
-				indices[i] = i;
-			}
-
 			Mesh m(true);
 			m.SetVertexAttributes(VertexFormat::AttributeFlag_Color);
 			m.SetIndexAttributes(2, 2);
-			m.PushVertexData(sizeof(verts), (char *)verts);
-			m.PushIndexData(sizeof(indices), (char *)indices);
+
+			Point p[2];
+			memset(p, 0, sizeof(p));
+
+			for(uint32 i = 0; i < MAX_LINES; ++i) {	
+				m.PushVertexData(sizeof(p), (char *)&p);
+
+				uint16 line[2] = { i*2, i*2+1 };
+				m.PushIndexData(sizeof(line), (char *)&line);
+			}
+
 			m.Upload();
 			lines = res.meshManager->Add(Move(m));
 
