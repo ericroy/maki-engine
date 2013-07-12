@@ -62,36 +62,12 @@
     <ClInclude Include="src\core\dependencies\stb_truetype.h">
       <Filter>dependencies</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\direct3d\DDSTextureLoader.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\core_stdafx.h" />
     <ClInclude Include="src\core\MakiUtil.h" />
     <ClInclude Include="src\core\MakiPseudoSingleton.h" />
     <ClInclude Include="src\core\MakiMoveToken.h" />
     <ClInclude Include="src\core\MakiTimeSource.h" />
     <ClInclude Include="src\core\MakiCoreManagers.h" />
-    <ClInclude Include="src\core\opengl\glext.h">
-      <Filter>opengl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiD3DRenderCore.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\opengl\MakiOGLRenderCore.h">
-      <Filter>opengl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiD3DGPUTypes.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\opengl\MakiOGLGPUTypes.h">
-      <Filter>opengl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\opengl\MakiOGLCommon.h">
-      <Filter>opengl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\direct3d\MakiD3DCommon.h">
-      <Filter>direct3d</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\MakiArchive.cpp" />
@@ -138,40 +114,13 @@
     <ClCompile Include="src\core\dependencies\stb_truetype.cpp">
       <Filter>dependencies</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\direct3d\DDSTextureLoader.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
     <ClCompile Include="src\core\MakiCoreManagers.cpp" />
     <ClCompile Include="src\core\MakiTimeSource.cpp" />
-    <ClCompile Include="src\core\direct3d\MakiD3DRenderCore.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\opengl\MakiOGLRenderCore.cpp">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiD3DGPUTypes.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\opengl\MakiOGLGPUTypes.cpp">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\opengl\MakiOGLCommon.cpp">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiD3DCommon.cpp">
-      <Filter>direct3d</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
       <UniqueIdentifier>{2bc94d35-70ad-47dd-876c-b8fd4379d79c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="direct3d">
-      <UniqueIdentifier>{8398cfb1-f6c7-45fc-8d21-cc3109a3f528}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="opengl">
-      <UniqueIdentifier>{a502fa78-fdb0-469a-80df-69ea9cad91b2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

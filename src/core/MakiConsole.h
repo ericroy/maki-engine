@@ -19,8 +19,9 @@ namespace Maki
 			va_end(args); \
 		}
 
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::function<void(char *)>;
 
-		class Console : public PseudoSingleton<Console>
+		class MAKI_CORE_API Console : public PseudoSingleton<Console>
 		{
 		public:
 			enum Level

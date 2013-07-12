@@ -20,7 +20,7 @@ namespace Maki
 			class CameraSystem : public System
 			{
 			private:
-				struct Node
+				struct  Node
 				{
 					Components::Camera *camComp;
 					Components::Transform *transComp;

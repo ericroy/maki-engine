@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class InputState
+		class MAKI_CORE_API InputState
 		{
 		public:
 			static const int32 MAX_PLAYERS = 4;
@@ -173,7 +173,7 @@ namespace Maki
 			};
 
 			// Reports the history of a key since the last tick
-			struct KeyStateReport
+			struct MAKI_CORE_API KeyStateReport
 			{
 				inline void Set(bool on)
 				{
@@ -186,7 +186,7 @@ namespace Maki
 			};
 
 
-			struct Controller
+			struct MAKI_CORE_API Controller
 			{
 			public:
 				inline float GetFloat(Button b) const { return values[mapping[b]]; }
@@ -208,10 +208,10 @@ namespace Maki
 				uint8 mapping[ButtonCount];
 			};
 
-			struct Player
+			struct MAKI_CORE_API Player
 			{
 			private:
-				struct KeyState
+				struct MAKI_CORE_API KeyState
 				{
 					// True if the key is currently depressed
 					uint8 on : 1;

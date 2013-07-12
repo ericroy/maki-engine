@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MeshManager : public Manager<Mesh, MeshManager>
+		class MAKI_CORE_API MeshManager : public Manager<Mesh, MeshManager>
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 64;

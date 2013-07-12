@@ -1,20 +1,6 @@
-#include "core/core_stdafx.h"
-#include "core/opengl/MakiOGLRenderCore.h"
-
-#if MAKI_USE_OGL
-
-#include "core/opengl/MakiOGLGPUTypes.h"
-#include "core/MakiDrawCommand.h"
-#include "core/MakiMesh.h"
-#include "core/MakiTexture.h"
-#include "core/MakiShaderProgram.h"
-#include "core/MakiConfig.h"
-#include "core/MakiDrawCommandList.h"
-#include "core/MakiMeshManager.h"
-#include "core/MakiVertexFormatManager.h"
-#include "core/MakiShaderProgramManager.h"
-#include "core/MakiTextureSetManager.h"
-#include "core/MakiWindow.h"
+#include "oglrendercore/oglrendercore_stdafx.h"
+#include "oglrendercore/MakiOGLRenderCore.h"
+#include "oglrendercore/MakiOGLGPUTypes.h"
 
 
 using namespace Maki::Core;
@@ -973,6 +959,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-
-#endif

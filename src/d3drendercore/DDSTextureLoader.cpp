@@ -1,5 +1,3 @@
-#if MAKI_USE_D3D
-
 //--------------------------------------------------------------------------------------
 // File: DDSTextureLoader.cpp
 //
@@ -1513,6 +1511,3 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
 
     return hr;
 }
-
-
-#endif

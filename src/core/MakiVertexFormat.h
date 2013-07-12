@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class VertexFormat
+		class MAKI_CORE_API VertexFormat
 		{
 		public:
 			enum Attribute
@@ -43,7 +43,7 @@ namespace Maki
 			static const uint8 DataTypeSizes[DataTypeCount];
 
 		private:
-			struct Format
+			struct MAKI_CORE_API Format
 			{
 				uint8 type : 2;			// Holds one of the four possible data types from above
 				uint8 count : 6;		// Up to 64

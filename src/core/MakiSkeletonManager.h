@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class SkeletonManager : public Manager<Skeleton, SkeletonManager>
+		class MAKI_CORE_API SkeletonManager : public Manager<Skeleton, SkeletonManager>
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 8;

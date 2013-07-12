@@ -14,7 +14,7 @@ namespace Maki
 		class ScriptingApi
 		{
 		private:
-			struct ApiFunction { const char *name; lua_CFunction func; };
+			struct  ApiFunction { const char *name; lua_CFunction func; };
 
 		public:
 			static void ExposeApiToScript(lua_State *state);

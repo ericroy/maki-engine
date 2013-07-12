@@ -11,7 +11,7 @@ namespace Maki
 		class System
 		{
 		public:
-			struct Message
+			struct  Message
 			{
 			public:
 				template<class T, class U>
@@ -31,6 +31,11 @@ namespace Maki
 
 				Message(Component *from, Component::Message msg)
 					: from(from), msg(msg), arg1(0), arg2(0)
+				{
+				}
+
+				Message()
+					: from(nullptr), msg((Component::Message)0), arg1(0), arg2(0)
 				{
 				}
 

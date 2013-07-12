@@ -8,7 +8,7 @@ namespace Maki
 	{
 		class Matrix44;
 
-		class Vector2
+		class MAKI_CORE_API Vector2
 		{
 		public:
 			inline Vector2() {}

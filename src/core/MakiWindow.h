@@ -11,7 +11,7 @@ namespace Maki
 		class Config;
 		class Engine;
 
-		class MAKI_API Window
+		class MAKI_CORE_API Window
 		{
 		public:
 			Window(const Config *config);

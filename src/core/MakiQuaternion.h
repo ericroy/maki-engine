@@ -46,7 +46,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class Quaternion
+		class MAKI_CORE_API Quaternion
 		{
 			friend Quaternion operator*(float s, const Quaternion &q);
     

@@ -1,17 +1,19 @@
 #pragma once
+#pragma comment(lib, "MakiCore.lib")
 #pragma comment(lib, "lua51.lib")
 #pragma comment(lib, "SDL2.lib")
 
-#if MAKI_USE_D3D
-#	pragma comment (lib, "d3d11.lib")
-#	pragma comment(lib, "dxgi.lib")
-#else
-#	pragma comment(lib, "opengl32.lib")
-#	pragma comment(lib, "glu32.lib")
-#endif
-
 #if _DEBUG
-#	pragma comment(lib, "ws2_32.lib")
+#	if defined(_WIN32) || defined(_WIN64)
+#		pragma comment(lib, "ws2_32.lib")
+#	endif
+#	pragma comment(lib, "BulletCollision_vs2010_debug")
+#	pragma comment(lib, "BulletDynamics_vs2010_debug")
+#	pragma comment(lib, "LinearMath_vs2010_debug")
+#else
+#	pragma comment(lib, "BulletCollision_vs2010")
+#	pragma comment(lib, "BulletDynamics_vs2010")
+#	pragma comment(lib, "LinearMath_vs2010")
 #endif
 
 #include "framework/MakiEntity.h"
@@ -44,19 +46,3 @@
 #include "framework/systems/MakiCameraSystem.h"
 #include "framework/systems/MakiFlyCamSystem.h"
 #include "framework/systems/MakiScriptingSystem.h"
-
-#if MAKI_USE_D3D
-#include "core/direct3d/MakiD3DRenderCore.h"
-#else
-#include "core/opengl/MakiOGLRenderCore.h"
-#endif
-
-namespace Maki {
-	namespace Core {
-#if MAKI_USE_D3D
-		typedef D3D::D3DRenderCore RenderCoreImpl;
-#else
-		typedef OGL::OGLRenderCore RenderCoreImpl;
-#endif
-	}
-}

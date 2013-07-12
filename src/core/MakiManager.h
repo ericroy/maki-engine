@@ -8,7 +8,7 @@ namespace Maki
 	{
 
 		template<class T, class SubClass>
-		class Manager
+		class MAKI_CORE_API Manager
 		{
 		public:
 			static inline SubClass *GetOwner(Handle handle) { return managers[(handle & MANAGER_ID_MASK)>>MANAGER_ID_SHIFT]; }
@@ -138,10 +138,10 @@ namespace Maki
 
 
 
-	
+#ifdef EXPORT_MAKI_CORE_API
 		template<class T, class SubClass>
 		SubClass *Manager<T, SubClass>::managers[MAX_MANAGERS_PER_RESOURCE_TYPE] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-	
+#endif
 
 	} // namespace Core
 

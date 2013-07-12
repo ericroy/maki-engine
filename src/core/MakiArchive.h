@@ -5,8 +5,10 @@ namespace Maki
 {
 	namespace Core
 	{
-	
-		class Archive
+		
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::basic_string<char, std::char_traits<char>, std::allocator<char> >;
+
+		class MAKI_CORE_API Archive
 		{
 		private:
 			enum Flag
@@ -14,7 +16,7 @@ namespace Maki
 				Flag_ZLibCompressed = 1<<0,
 			};
 
-			struct Entry
+			struct MAKI_CORE_API Entry
 			{
 				uint64 offset;
 				uint32 compressedLength;

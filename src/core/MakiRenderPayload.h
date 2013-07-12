@@ -10,7 +10,7 @@ namespace Maki
 		class DrawCommandList;
 		class CoreManagers;
 
-		class RenderPayload
+		class MAKI_CORE_API RenderPayload
 		{
 		public:
 			enum Command

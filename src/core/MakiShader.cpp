@@ -30,6 +30,11 @@ namespace Maki
 			"uModelViewProjection"
 		};
 
+		Shader::MaterialUniformLocation::MaterialUniformLocation()
+			: location(-1)
+		{
+			name[0] = 0;
+		}
 
 		Shader::MaterialUniformLocation::MaterialUniformLocation(int32 location, char *name)
 			: location(location)

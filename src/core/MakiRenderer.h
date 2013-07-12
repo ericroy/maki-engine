@@ -17,13 +17,15 @@ namespace Maki
 		class PixelShader;
 		class VertexShader;
 		class Texture;
-	
 		class Light;
+
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::vector<RenderState *>;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::vector<DrawCommandList *>;
 
 		// The Renderer is the front-end (main thread) counterpart to the back-end (worker thread) RenderCore.
 		// It accepts render commands and state changes locally, and then sends them to the RenderCore
 		// when you call Submit().
-		class Renderer : public Aligned<SIMD_ALIGN>
+		class MAKI_CORE_API Renderer : public Aligned<SIMD_ALIGN>
 		{
 		public:
 			static const int32 MAX_RENDER_PAYLOADS = 16;

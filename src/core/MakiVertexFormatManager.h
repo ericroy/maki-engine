@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
+		class MAKI_CORE_API VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 8;

@@ -11,12 +11,12 @@ namespace Maki
 		class SceneLoader;
 		class Component;
 
-		class MAKI_API Entity : public Aligned<SIMD_ALIGN>
+		class Entity : public Aligned<SIMD_ALIGN>
 		{
 			friend class SceneLoader;
 
 		private:
-			struct Entry
+			struct  Entry
 			{
 				Component::Type type;
 				Component *c;

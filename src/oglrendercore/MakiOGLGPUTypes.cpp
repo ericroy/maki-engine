@@ -1,7 +1,5 @@
-#include "core/core_stdafx.h"
-#include "core/opengl/MakiOGLGPUTypes.h"
-
-#if MAKI_USE_OGL
+#include "oglrendercore/oglrendercore_stdafx.h"
+#include "oglrendercore/MakiOGLGPUTypes.h"
 
 namespace Maki
 {
@@ -78,5 +76,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-#endif

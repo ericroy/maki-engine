@@ -7,6 +7,8 @@ namespace Maki
 	namespace Core
 	{
 
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::basic_string<char, std::char_traits<char>, std::allocator<char> >;
+
 		/*
 		This class manages an array of objects.  Objects in the array
 		are preallocated but constructors are called as they are requested,
@@ -16,16 +18,16 @@ namespace Maki
 		out, and decreased whenever a handle is freed.
 		*/
 		template<class T>
-		class ResourcePool
+		class MAKI_CORE_API ResourcePool
 		{
 		private:
-			struct Node
+			struct MAKI_CORE_API Node
 			{
 				uint32 next, prev;
 			};
 
 		public:
-			class Iterator
+			class MAKI_CORE_API Iterator
 			{
 				friend class ResourcePool<T>;
 			public:

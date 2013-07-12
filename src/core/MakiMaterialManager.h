@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MaterialManager : public Manager<Material, MaterialManager>
+		class MAKI_CORE_API MaterialManager : public Manager<Material, MaterialManager>
 		{
 		public:
 			static Handle DuplicateIfShared(Handle handle);

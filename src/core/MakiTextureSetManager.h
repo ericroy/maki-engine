@@ -8,10 +8,10 @@ namespace Maki
 	namespace Core
 	{
 
-		class TextureSetManager : public Manager<TextureSet, TextureSetManager>
+		class MAKI_CORE_API TextureSetManager : public Manager<TextureSet, TextureSetManager>
 		{
 		private:
-			struct Predicate : public std::unary_function<const TextureSet *, bool>
+			struct MAKI_CORE_API Predicate : public std::unary_function<const TextureSet *, bool>
 			{
 				inline bool operator()(const TextureSet *ts) const;
 				uint8 count;

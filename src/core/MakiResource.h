@@ -6,11 +6,11 @@ namespace Maki
 	namespace Core
 	{
 
-		class Resource
+		class MAKI_CORE_API Resource
 		{
 		public:
 			template<typename T>
-			struct FindPredicate : public std::unary_function<const T *, bool>
+			struct MAKI_CORE_API FindPredicate : public std::unary_function<const T *, bool>
 			{
 				FindPredicate(Rid rid) : rid(rid) {}
 				inline bool operator()(const T *res) const

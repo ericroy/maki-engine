@@ -1,12 +1,5 @@
 #pragma once
-#include "core/core_stdafx.h"
-
-#if MAKI_USE_D3D
-
-#include "core/MakiRenderCore.h"
-
-#include <windows.h>
-#include <d3d11.h>
+#include "d3drendercore/d3drendercore_stdafx.h"
 
 namespace Maki
 {
@@ -25,7 +18,7 @@ namespace Maki
 		namespace D3D
 		{
 	
-			class D3DRenderCore : public RenderCore
+			class MAKI_D3DRENDERCORE_API D3DRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -106,6 +99,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-
-#endif

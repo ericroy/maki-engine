@@ -1,4 +1,5 @@
 #pragma once
+#include "core/core_stdafx.h"
 
 namespace Maki
 {
@@ -6,7 +7,7 @@ namespace Maki
 	{
 		class Matrix44;
 
-		class Vector4
+		class MAKI_CORE_API Vector4
 		{
 		public:
 			static const Vector4 UnitX;

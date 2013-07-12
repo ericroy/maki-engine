@@ -22,7 +22,7 @@ namespace Maki
 				friend class Framework::ScriptingApi;
 
 			public:
-				struct Node
+				struct  Node
 				{
 					ScriptingSystem *scriptSys;
 					Components::Script *scriptComp;

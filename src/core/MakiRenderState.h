@@ -9,7 +9,7 @@ namespace Maki
 	namespace Core
 	{
 
-		__declspec(align(SIMD_ALIGN)) class RenderState : public Aligned<SIMD_ALIGN>
+		__declspec(align(SIMD_ALIGN)) class MAKI_CORE_API RenderState : public Aligned<SIMD_ALIGN>
 		{
 		public:
 			static const int32 MAX_LIGHTS = 8;
@@ -62,7 +62,7 @@ namespace Maki
 			};
 
 			// Must match the light properties struct defined in shaders
-			struct LightProperties
+			struct MAKI_CORE_API LightProperties
 			{
 				Vector4 ambientColor;
 				Vector4 diffuseColor;
@@ -74,18 +74,18 @@ namespace Maki
 				uint32 flags;
 			};
 
-			struct ShadowMapProperties
+			struct MAKI_CORE_API ShadowMapProperties
 			{
 				Vector2 size;
 				float pad[2];
 			};
 
-			struct CameraSplitDistances
+			struct MAKI_CORE_API CameraSplitDistances
 			{
 				float splits[MAX_CASCADES-1];
 			};
 
-			__declspec(align(SIMD_ALIGN)) struct LightSplitRegion : public Aligned<SIMD_ALIGN>
+			__declspec(align(SIMD_ALIGN)) struct MAKI_CORE_API LightSplitRegion : public Aligned<SIMD_ALIGN>
 			{
 				Matrix44 viewProj;
 				Vector4 widthHeightNearFar;

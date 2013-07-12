@@ -7,7 +7,7 @@ namespace Maki
 	{
 		class TimeSource;
 
-		class Timer
+		class MAKI_CORE_API Timer
 		{
 		public:
 			static const int32 N_FRAME_AVERAGE = 30;

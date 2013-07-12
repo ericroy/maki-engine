@@ -25,7 +25,7 @@ namespace Maki
 		class Mesh;
 		class Material;
 
-		__declspec(align(16)) class DrawCommand : public Aligned<16>
+		__declspec(align(16)) class MAKI_CORE_API DrawCommand : public Aligned<16>
 		{
 		friend class D3D::D3DRenderCore;
 		friend class OGL::OGLRenderCore;
@@ -45,7 +45,7 @@ namespace Maki
 			};
 
 			// Listed from low to high bits (low to high sorting priority)
-			struct KeyFields
+			struct MAKI_CORE_API KeyFields
 			{
 				// These fields contain the actual handle value to a resource.
 				// Make sure there are enough bits to represent every handle up to the maximum size of the manager's pool.

@@ -20,7 +20,7 @@ namespace Maki
 			class LightingSystem : public System
 			{
 			private:
-				struct Node
+				struct  Node
 				{
 					Components::Light *lightComp;
 					Components::Transform *transComp;

@@ -10,7 +10,7 @@ namespace Maki
 		class CascadeHelper
 		{
 		private:
-			struct Cascade
+			struct  Cascade
 			{
 				Vector4 verts[8];
 			};

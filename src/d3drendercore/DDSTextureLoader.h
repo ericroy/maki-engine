@@ -1,5 +1,3 @@
-#if MAKI_USE_D3D
-
 //--------------------------------------------------------------------------------------
 // File: DDSTextureLoader.h
 //
@@ -83,7 +81,3 @@ namespace DirectX
                                         _Out_opt_ ID3D11ShaderResourceView** textureView
                                     );
 }
-
-
-
-#endif

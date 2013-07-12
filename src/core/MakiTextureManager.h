@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class TextureManager : public Manager<Texture, TextureManager>
+		class MAKI_CORE_API TextureManager : public Manager<Texture, TextureManager>
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 64;

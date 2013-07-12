@@ -1,4 +1,5 @@
 #pragma once
+#include "core/core_stdafx.h"
 #include <cstdlib>
 #include <exception>
 #include <new>

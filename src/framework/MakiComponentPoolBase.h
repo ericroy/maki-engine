@@ -6,6 +6,7 @@ namespace Maki
 {
 	namespace Framework
 	{
+		class ComponentPoolBase;
 
 		// The purpose of this base class is to allow the freeing of a Component* without knowing
 		// the type or which pool it came from

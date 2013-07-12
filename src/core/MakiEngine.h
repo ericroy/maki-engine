@@ -17,7 +17,10 @@ namespace Maki
 		class Timer;
 		class TimeSource;
 
-		class Engine : public PseudoSingleton<Engine>
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::function<void(float)>;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API  std::function<void()>;
+
+		class MAKI_CORE_API Engine : public PseudoSingleton<Engine>
 		{
 		public:
 			static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
@@ -46,8 +49,7 @@ namespace Maki
 			int64 nextUpdate;
 			uint32 millisPerUpdate;
 			uint32 maxSkippedFrames;
-	};
-
+		};
 
 	} // namespace Core
 

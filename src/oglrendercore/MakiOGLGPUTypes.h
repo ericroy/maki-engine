@@ -1,9 +1,6 @@
 #pragma once
-#include "core/core_stdafx.h"
-
-#if MAKI_USE_OGL
-
-#include "core/opengl/MakiOGLCommon.h"
+#include "oglrendercore/oglrendercore_stdafx.h"
+#include "oglrendercore/MakiOGLCommon.h"
 
 namespace Maki
 {
@@ -71,6 +68,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-
-#endif

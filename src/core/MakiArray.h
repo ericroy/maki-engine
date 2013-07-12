@@ -7,7 +7,7 @@ namespace Maki
 	{
 
 		template<typename T>
-		class Array
+		class MAKI_CORE_API Array
 		{
 		public:
 			Array()

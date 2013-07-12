@@ -1,0 +1,24 @@
+﻿Build started 7/12/2013 2:42:32 PM.
+     1>Project "C:\Users\Eric\code\game\maki-engine\OGLRenderCore.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Isrc /I"deps/SDL2-2.0.0/include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D EXPORT_MAKI_OGLRENDERCORE_API /D _DEBUG /D _WINDOWS /D _USRDLL /D OGLRENDERCORE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"oglrendercore/oglrendercore_stdafx.h" /Fp"intermediate/Debug_oglrendercore/MakiOGLRenderCore.pch" /Fo"intermediate/Debug_oglrendercore/" /Fd"intermediate/Debug_oglrendercore/vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\oglrendercore\oglrendercore_stdafx.cpp
+         oglrendercore_stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Isrc /I"deps/SDL2-2.0.0/include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D EXPORT_MAKI_OGLRENDERCORE_API /D _DEBUG /D _WINDOWS /D _USRDLL /D OGLRENDERCORE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"oglrendercore/oglrendercore_stdafx.h" /Fp"intermediate/Debug_oglrendercore/MakiOGLRenderCore.pch" /Fo"intermediate/Debug_oglrendercore/" /Fd"intermediate/Debug_oglrendercore/vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\oglrendercore\MakiOGLCommon.cpp src\oglrendercore\MakiOGLGPUTypes.cpp src\oglrendercore\MakiOGLRenderCore.cpp
+         MakiOGLRenderCore.cpp
+         MakiOGLGPUTypes.cpp
+         MakiOGLCommon.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"bin/Debug/MakiOGLRenderCore.dll" /INCREMENTAL /NOLOGO /LIBPATH:bin/Debug /LIBPATH:"deps/SDL2-2.0.0/lib/x86" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"bin/Debug/MakiOGLRenderCore.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"bin/Debug/MakiOGLRenderCore.lib" /MACHINE:X86 /DLL intermediate/Debug_oglrendercore/MakiOGLCommon.obj
+         intermediate/Debug_oglrendercore/MakiOGLGPUTypes.obj
+         intermediate/Debug_oglrendercore/MakiOGLRenderCore.obj
+         intermediate/Debug_oglrendercore/oglrendercore_stdafx.obj
+            Creating library bin/Debug/MakiOGLRenderCore.lib and object bin/Debug/MakiOGLRenderCore.exp
+     1>MakiOGLRenderCore.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: static class Maki::Core::VertexFormat * __cdecl Maki::Core::Manager<class Maki::Core::VertexFormat,class Maki::Core::VertexFormatManager>::Get(unsigned int)" (__imp_?Get@?$Manager@VVertexFormat@Core@Maki@@VVertexFormatManager@23@@Core@Maki@@SAPAVVertexFormat@23@I@Z) referenced in function "protected: virtual void __thiscall Maki::Core::OGL::OGLRenderCore::Draw(class Maki::Core::RenderState const &,class Maki::Core::DrawCommandList const &)" (?Draw@OGLRenderCore@OGL@Core@Maki@@MAEXABVRenderState@34@ABVDrawCommandList@34@@Z)
+     1>MakiOGLRenderCore.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: static class Maki::Core::TextureSet * __cdecl Maki::Core::Manager<class Maki::Core::TextureSet,class Maki::Core::TextureSetManager>::Get(unsigned int)" (__imp_?Get@?$Manager@VTextureSet@Core@Maki@@VTextureSetManager@23@@Core@Maki@@SAPAVTextureSet@23@I@Z) referenced in function "protected: virtual void __thiscall Maki::Core::OGL::OGLRenderCore::Draw(class Maki::Core::RenderState const &,class Maki::Core::DrawCommandList const &)" (?Draw@OGLRenderCore@OGL@Core@Maki@@MAEXABVRenderState@34@ABVDrawCommandList@34@@Z)
+     1>bin/Debug/MakiOGLRenderCore.dll : fatal error LNK1120: 2 unresolved externals
+     1>Done Building Project "C:\Users\Eric\code\game\maki-engine\OGLRenderCore.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.98

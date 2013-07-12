@@ -8,10 +8,10 @@ namespace Maki
 	namespace Core
 	{
 
-		class ShaderProgramManager : public Manager<ShaderProgram, ShaderProgramManager>
+		class MAKI_CORE_API ShaderProgramManager : public Manager<ShaderProgram, ShaderProgramManager>
 		{
 		public:
-			struct FindPredicate : public std::unary_function<const ShaderProgram *, bool>
+			struct MAKI_CORE_API FindPredicate : public std::unary_function<const ShaderProgram *, bool>
 			{
 				FindPredicate(Rid rid, ShaderProgram::Variant variant) : rid(rid), variant(variant) {}
 				inline bool operator()(const ShaderProgram *res) const

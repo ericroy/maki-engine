@@ -9,10 +9,10 @@ namespace Maki
 	{
 		class Skeleton;
 
-		class SkeletonAnimation : public Resource
+		class MAKI_CORE_API SkeletonAnimation : public Resource
 		{
 		public:
-			struct State
+			struct MAKI_CORE_API State
 			{
 			public:
 				State(uint32 size);
@@ -25,7 +25,7 @@ namespace Maki
 			};
 
 		private:
-			struct KeyFrame : public Skeleton::Joint
+			struct MAKI_CORE_API KeyFrame : public Skeleton::Joint
 			{
 				uint32 frame;
 			};

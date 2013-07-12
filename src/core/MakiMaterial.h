@@ -8,12 +8,12 @@ namespace Maki
 	namespace Core
 	{
 
-		class Material : public Resource
+		class MAKI_CORE_API Material : public Resource
 		{
 		public:
 			static const int32 MAX_UNIFORMS = 16;
 
-			struct UniformValue
+			struct MAKI_CORE_API UniformValue
 			{
 				UniformValue()
 					: data(nullptr), bytes(0), vsLocation(-1), psLocation(-1)

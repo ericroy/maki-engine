@@ -10,7 +10,9 @@ namespace Maki
 	namespace Core
 	{
 
-		class Mesh : public Resource
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::vector<Handle>;
+
+		class MAKI_CORE_API Mesh : public Resource
 		{
 		public:
 			enum MeshFlag
@@ -24,8 +26,8 @@ namespace Maki
 				ObjectCount,
 			};
 
-			struct ObjectArgs {};
-			struct RectArgs : public ObjectArgs
+			struct MAKI_CORE_API ObjectArgs {};
+			struct MAKI_CORE_API RectArgs : public ObjectArgs
 			{
 				Vector4 facingAxis;
 				float left;

@@ -1,10 +1,6 @@
 #pragma once
-#include "core/core_stdafx.h"
-
-#if MAKI_USE_OGL
-
-#include "core/MakiRenderCore.h"
-#include "core/opengl/MakiOGLCommon.h"
+#include "oglrendercore/oglrendercore_stdafx.h"
+#include "oglrendercore/MakiOGLCommon.h"
 
 
 namespace Maki
@@ -25,7 +21,7 @@ namespace Maki
 		namespace OGL
 		{
 	
-			class OGLRenderCore : public RenderCore
+			class MAKI_OGLRENDERCORE_API OGLRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -80,5 +76,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-#endif

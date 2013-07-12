@@ -18,7 +18,7 @@ namespace Maki
 			class PhysicsSystem : public System
 			{
 			private:
-				struct Node
+				struct  Node
 				{
 					Components::Physics *physicsComp;
 					Components::Transform *transComp;

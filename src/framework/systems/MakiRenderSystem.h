@@ -18,7 +18,7 @@ namespace Maki
 
 			class RenderSystem : public System
 			{
-				struct Node
+				struct  Node
 				{
 					Components::Mesh *meshComp;
 					Components::Transform *transComp;

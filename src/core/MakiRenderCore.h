@@ -13,7 +13,7 @@ namespace Maki
 	{
 		class VertexFormat;
 
-		class RenderCore : public Thread
+		class MAKI_CORE_API RenderCore : public Thread
 		{
 		public:
 			RenderCore();

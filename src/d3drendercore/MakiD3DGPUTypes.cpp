@@ -1,9 +1,6 @@
-#include "core/core_stdafx.h"
-#include "core/direct3d/MakiD3DGPUTypes.h"
-
-#if MAKI_USE_D3D
-
-#include "core/direct3d/MakiD3DCommon.h"
+#include "d3drendercore/d3drendercore_stdafx.h"
+#include "d3drendercore/MakiD3DGPUTypes.h"
+#include "d3drendercore/MakiD3DCommon.h"
 
 namespace Maki
 {
@@ -129,5 +126,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-#endif

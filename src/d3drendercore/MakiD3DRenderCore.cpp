@@ -1,24 +1,8 @@
-#include "core/core_stdafx.h"
-#include "core/direct3d/MakiD3DRenderCore.h"
-
-#if MAKI_USE_D3D
-
-#include "core/direct3d/MakiD3DCommon.h"
-#include "core/direct3d/MakiD3DGPUTypes.h"
-#include "core/direct3d/DDSTextureLoader.h"
-
-#include "core/MakiDrawCommand.h"
-#include "core/MakiMesh.h"
-#include "core/MakiTexture.h"
-#include "core/MakiShaderProgram.h"
-#include "core/MakiConfig.h"
-#include "core/MakiDrawCommandList.h"
-#include "core/MakiWindow.h"
-#include "core/MakiMeshManager.h"
-#include "core/MakiVertexFormatManager.h"
-#include "core/MakiShaderProgramManager.h"
-#include "core/MakiTextureSetManager.h"
-
+#include "d3drendercore/d3drendercore_stdafx.h"
+#include "d3drendercore/MakiD3DRenderCore.h"
+#include "d3drendercore/MakiD3DCommon.h"
+#include "d3drendercore/MakiD3DGPUTypes.h"
+#include "d3drendercore/DDSTextureLoader.h"
 #include "SDL_syswm.h"
 
 using namespace Maki::Core;
@@ -1287,5 +1271,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-#endif

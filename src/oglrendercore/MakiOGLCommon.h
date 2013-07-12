@@ -1,16 +1,5 @@
 #pragma once
-#include "core/core_stdafx.h"
-
-#if MAKI_USE_OGL
-
-#include "SDL.h"
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#endif
-#include <gl/GL.h>
-#include <gl/GLU.h>
-#include "core/opengl/glext.h"
-
+#include "oglrendercore/oglrendercore_stdafx.h"
 
 namespace Maki
 {
@@ -68,5 +57,3 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
-
-#endif

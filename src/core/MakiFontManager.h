@@ -8,10 +8,10 @@ namespace Maki
 	namespace Core
 	{
 
-		class FontManager : public Manager<Font, FontManager>
+		class MAKI_CORE_API FontManager : public Manager<Font, FontManager>
 		{
 		private:
-			struct Predicate : std::unary_function<const Font *, bool>
+			struct MAKI_CORE_API Predicate : std::unary_function<const Font *, bool>
 			{
 				inline bool operator()(const Font *font) const;
 				Rid shaderProgramRid;

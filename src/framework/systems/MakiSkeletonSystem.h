@@ -18,7 +18,7 @@ namespace Maki
 
 			class SkeletonSystem : public System
 			{
-				struct Node
+				struct  Node
 				{
 					Components::Skeleton *skelComp;
 					Components::Mesh *meshComp;
