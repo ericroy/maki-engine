@@ -150,7 +150,9 @@ namespace Maki
 				Key_MediaNextTrack = 0xb0,
 				Key_MediaPrevTrack = 0xb1,
 				Key_MediaStop = 0xb2,
-				Key_MediaPlayPause = 0xb3
+				Key_MediaPlayPause = 0xb3,
+
+				Key_Unknown = 0xff
 			};
 
 			enum Button

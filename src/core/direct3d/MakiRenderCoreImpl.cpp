@@ -5,16 +5,18 @@
 #include "core/MakiShaderProgram.h"
 #include "core/MakiConfig.h"
 #include "core/MakiDrawCommandList.h"
+#include "core/MakiWindow.h"
 #include "core/direct3d/MakiRenderCoreImpl.h"
 #include "core/direct3d/MakiCommon.h"
 #include "core/direct3d/MakiGPUTypes.h"
 #include "core/direct3d/DDSTextureLoader.h"
-#include "core/windows/MakiWindowImpl.h"
 #include "core/MakiMeshManager.h"
 #include "core/MakiVertexFormatManager.h"
 #include "core/MakiShaderProgramManager.h"
 #include "core/MakiTextureSetManager.h"
 
+#include "SDL.h"
+#include "SDL_syswm.h"
 
 using namespace Maki::Core;
 
@@ -56,16 +58,24 @@ namespace Maki
 				vsync = config->GetBool("engine.vertical_sync", true);
 				maxVertexFormatsPerVertexShader = config->GetUint("engine.max_vertex_formats_per_vertex_shader", 6);
 				
+				// Get hwnd from SDL window
+				SDL_SysWMinfo sdlInfo;
+				SDL_version sdlVer;
+				SDL_VERSION(&sdlVer);
+				sdlInfo.version = sdlVer;
+				SDL_GetWindowWMInfo(window->window, &sdlInfo);
+				HWND hwnd = sdlInfo.info.win.window;
+
 				// create a struct to hold information about the swap chain
 				DXGI_SWAP_CHAIN_DESC scd;
 				ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 				scd.BufferCount = 1;
 				scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 				scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-				scd.OutputWindow = ((Win32::WindowImpl *)window)->hwnd;
+				scd.OutputWindow = hwnd;
 				scd.SampleDesc.Count = 1;
 				scd.SampleDesc.Quality = 0;
-				scd.Windowed = !((Win32::WindowImpl *)window)->fullscreen;
+				scd.Windowed = !window->fullscreen;
 				scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 

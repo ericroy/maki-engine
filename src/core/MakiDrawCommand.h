@@ -16,6 +16,11 @@ namespace Maki
 			class RenderCoreImpl;
 		}
 
+		namespace OGL
+		{
+			class RenderCoreImpl;
+		}
+
 	
 		class Mesh;
 		class Material;
@@ -23,6 +28,7 @@ namespace Maki
 		__declspec(align(16)) class DrawCommand : public Aligned<16>
 		{
 		friend class D3D::RenderCoreImpl;
+		friend class OGL::RenderCoreImpl;
 		friend class DrawCommandList;
 
 		public:

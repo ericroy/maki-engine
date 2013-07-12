@@ -78,8 +78,8 @@
     <ClInclude Include="src\core\MakiVertexFormatManager.h" />
     <ClInclude Include="src\core\MakiWindow.h" />
     <ClInclude Include="src\core\core_stdafx.h" />
+    <ClInclude Include="src\core\opengl\MakiRenderCoreImpl.h" />
     <ClInclude Include="src\core\windows\MakiTimeSourceImpl.h" />
-    <ClInclude Include="src\core\windows\MakiWindowImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\dependencies\miniz.cpp">
@@ -263,11 +263,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
+    <ClCompile Include="src\core\opengl\MakiRenderCoreImpl.cpp" />
     <ClCompile Include="src\core\windows\MakiTimeSourceImpl.cpp" />
-    <ClCompile Include="src\core\windows\MakiWindowImpl.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{14EFC641-2E44-4FF1-A75D-9AB5486BAECD}</ProjectGuid>
@@ -319,7 +316,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>core/core_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -343,7 +340,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>core/core_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>

@@ -70,9 +70,6 @@
     <ClInclude Include="src\core\MakiPseudoSingleton.h" />
     <ClInclude Include="src\core\MakiMoveToken.h" />
     <ClInclude Include="src\core\MakiTimeSource.h" />
-    <ClInclude Include="src\core\windows\MakiWindowImpl.h">
-      <Filter>windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\windows\MakiTimeSourceImpl.h">
       <Filter>windows</Filter>
     </ClInclude>
@@ -86,6 +83,9 @@
       <Filter>direct3d</Filter>
     </ClInclude>
     <ClInclude Include="src\core\MakiCoreManagers.h" />
+    <ClInclude Include="src\core\opengl\MakiRenderCoreImpl.h">
+      <Filter>opengl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\MakiArchive.cpp" />
@@ -136,9 +136,6 @@
       <Filter>direct3d</Filter>
     </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
-    <ClCompile Include="src\core\windows\MakiWindowImpl.cpp">
-      <Filter>windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\windows\MakiTimeSourceImpl.cpp">
       <Filter>windows</Filter>
     </ClCompile>
@@ -152,6 +149,9 @@
       <Filter>direct3d</Filter>
     </ClCompile>
     <ClCompile Include="src\core\MakiCoreManagers.cpp" />
+    <ClCompile Include="src\core\opengl\MakiRenderCoreImpl.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
@@ -162,6 +162,9 @@
     </Filter>
     <Filter Include="windows">
       <UniqueIdentifier>{3270858f-fa45-49a6-bd80-0f7b0fc9a19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="opengl">
+      <UniqueIdentifier>{a502fa78-fdb0-469a-80df-69ea9cad91b2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

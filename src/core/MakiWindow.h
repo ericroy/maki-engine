@@ -1,24 +1,35 @@
 #pragma once
 #include "core/core_stdafx.h"
+#include "core/MakiInputState.h"
+
+#include "SDL.h"
 
 namespace Maki
 {
 	namespace Core
 	{
-		class InputState;
+		class Config;
+		class Engine;
 
 		class Window
 		{
 		public:
-			Window(int32 width, int32 height);
+			Window(const Config *config);
 			virtual ~Window();
-			virtual void PollInput(InputState *state) = 0;
+			int Pump(Engine *engine);
+			void PollInput(InputState *state);
 			inline float GetAspect() { return height == 0 ? (float)width : width / (float)height; };
 
 		public:
 			int32 width;
 			int32 height;
 			bool fullscreen;
+			SDL_Window *window;
+
+		private:
+			InputState::KeyStateReport keyStates[256];
+			uint32 joystickConnectedFlags;
+			SDL_Joystick *joysticks[InputState::MAX_PLAYERS];
 		};
 
 	} // namespace Core
