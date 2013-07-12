@@ -1,6 +1,10 @@
 #pragma once
 #include "core/core_stdafx.h"
+
+#if MAKI_USE_OGL
+
 #include "core/MakiRenderCore.h"
+#include "core/opengl/MakiOGLCommon.h"
 
 
 namespace Maki
@@ -21,14 +25,14 @@ namespace Maki
 		namespace OGL
 		{
 	
-			class RenderCoreImpl : public RenderCore
+			class OGLRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
 
 			public:
-				RenderCoreImpl(Window *window, const Config *config);
-				virtual ~RenderCoreImpl();
+				OGLRenderCore(Window *window, const Config *config);
+				virtual ~OGLRenderCore();
 
 				void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic);
 				void FreeBuffer(void *buffer);
@@ -59,6 +63,8 @@ namespace Maki
 				bool CreateVertexShader(Shader *vs);
 
 			private:
+				Window *window;
+				SDL_GLContext context;
 				uint32 windowWidth;
 				uint32 windowHeight;
 
@@ -74,3 +80,5 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+#endif

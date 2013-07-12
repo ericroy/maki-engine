@@ -1,5 +1,8 @@
 #pragma once
 #include "core/core_stdafx.h"
+
+#if MAKI_USE_D3D
+
 #include "core/MakiRenderCore.h"
 
 #include <windows.h>
@@ -11,7 +14,7 @@ namespace Maki
 	{
 		
 		class Window;
-		class InputLayoutCache;
+		class Config;
 		class VertexFormat;
 		class ShaderProgram;
 		class TextureSet;
@@ -22,14 +25,14 @@ namespace Maki
 		namespace D3D
 		{
 	
-			class RenderCoreImpl : public RenderCore
+			class D3DRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
 
 			public:
-				RenderCoreImpl(Window *window, const Config *config);
-				virtual ~RenderCoreImpl();
+				D3DRenderCore(Window *window, const Config *config);
+				virtual ~D3DRenderCore();
 
 				void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic);
 				void FreeBuffer(void *buffer);
@@ -103,3 +106,6 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+
+#endif

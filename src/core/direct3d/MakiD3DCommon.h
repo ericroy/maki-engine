@@ -1,5 +1,8 @@
 #pragma once
 #include "core/core_stdafx.h"
+
+#if MAKI_USE_D3D
+
 #include "core/MakiVertexFormat.h"
 
 #include <d3d11.h>
@@ -36,3 +39,5 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+#endif

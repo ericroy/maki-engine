@@ -1,4 +1,12 @@
 #include "core/core_stdafx.h"
+#include "core/direct3d/MakiD3DRenderCore.h"
+
+#if MAKI_USE_D3D
+
+#include "core/direct3d/MakiD3DCommon.h"
+#include "core/direct3d/MakiD3DGPUTypes.h"
+#include "core/direct3d/DDSTextureLoader.h"
+
 #include "core/MakiDrawCommand.h"
 #include "core/MakiMesh.h"
 #include "core/MakiTexture.h"
@@ -6,16 +14,11 @@
 #include "core/MakiConfig.h"
 #include "core/MakiDrawCommandList.h"
 #include "core/MakiWindow.h"
-#include "core/direct3d/MakiRenderCoreImpl.h"
-#include "core/direct3d/MakiCommon.h"
-#include "core/direct3d/MakiGPUTypes.h"
-#include "core/direct3d/DDSTextureLoader.h"
 #include "core/MakiMeshManager.h"
 #include "core/MakiVertexFormatManager.h"
 #include "core/MakiShaderProgramManager.h"
 #include "core/MakiTextureSetManager.h"
 
-#include "SDL.h"
 #include "SDL_syswm.h"
 
 using namespace Maki::Core;
@@ -27,7 +30,7 @@ namespace Maki
 		namespace D3D
 		{
 
-			RenderCoreImpl::RenderCoreImpl(Window *window, const Config *config)
+			D3DRenderCore::D3DRenderCore(Window *window, const Config *config)
 				:	RenderCore(),
 					swapChain(nullptr),
 					device(nullptr),
@@ -91,7 +94,7 @@ namespace Maki
 				}
 			}
 
-			RenderCoreImpl::~RenderCoreImpl() {
+			D3DRenderCore::~D3DRenderCore() {
 				if(swapChain != nullptr) {
 					swapChain->SetFullscreenState(false, nullptr);
 				}
@@ -124,7 +127,7 @@ namespace Maki
 				Console::Info("Direct3D renderer destroyed");
 			}
 
-			void RenderCoreImpl::Init()
+			void D3DRenderCore::Init()
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -247,7 +250,7 @@ namespace Maki
 				swapChain->Present(0, 0);
 			}
 
-			void RenderCoreImpl::Resized(uint32 newWidth, uint32 newHeight)
+			void D3DRenderCore::Resized(uint32 newWidth, uint32 newHeight)
 			{
 				context->OMSetRenderTargets(0, nullptr, nullptr);
 				SAFE_RELEASE(defaultRenderTargetView);
@@ -302,13 +305,13 @@ namespace Maki
 				SAFE_RELEASE(depthBuffer);
 			}
 
-			void RenderCoreImpl::Present()
+			void D3DRenderCore::Present()
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 				swapChain->Present(vsync ? 1 : 0, 0);
 			}
 
-			void RenderCoreImpl::Draw(const RenderState &state, const DrawCommandList &commands)
+			void D3DRenderCore::Draw(const RenderState &state, const DrawCommandList &commands)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -381,12 +384,6 @@ namespace Maki
 						shader = ShaderProgramManager::Get(h);
 					}
 
-					const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-					const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
-
-
-					D3D11_MAPPED_SUBRESOURCE mapped;
-
 					if(currentTranslucencyType != dc->fields.translucencyType) {
 						if(dc->fields.translucencyType == DrawCommand::TranslucencyType_Translucent) {
 							// Enable blending, disable depth write
@@ -404,6 +401,11 @@ namespace Maki
 						currentVertexFormat = dc->vertexFormat;
 						setLayout = true;
 					}
+
+					
+					D3D11_MAPPED_SUBRESOURCE mapped;
+					const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+					const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
 
 					if(currentShaderProgram != dc->shaderProgram) {
 				
@@ -530,7 +532,7 @@ namespace Maki
 				context->OMSetRenderTargets(0, nullptr, nullptr);
 			}
 
-			void RenderCoreImpl::SetDepthState(RenderState::DepthTest test, bool write)
+			void D3DRenderCore::SetDepthState(RenderState::DepthTest test, bool write)
 			{
 				switch(test) {
 				case RenderState::DepthTest_Less:
@@ -549,7 +551,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
+			void D3DRenderCore::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
 			{
 				switch(cullMode) {
 				case RenderState::CullMode_Front:
@@ -565,7 +567,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
+			void D3DRenderCore::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
 			{
 				currentRenderTargetView = nullptr;
 				if(renderTargetType == RenderState::RenderTarget_Default) {
@@ -590,7 +592,7 @@ namespace Maki
 				context->OMSetRenderTargets(1, &currentRenderTargetView, currentDepthStencilView);
 			}
 
-			void RenderCoreImpl::SetPerFrameConstants(const RenderState &state, const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
+			void D3DRenderCore::SetPerFrameConstants(const RenderState &state, const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
 			{
 				int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
 				if(location != -1) {
@@ -642,7 +644,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::SetPerObjectConstants(const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Matrix44 &model, const Matrix44 &modelView, const Matrix44 &modelViewProjection)
+			void D3DRenderCore::SetPerObjectConstants(const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Matrix44 &model, const Matrix44 &modelView, const Matrix44 &modelViewProjection)
 			{
 				int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
 				if(location != -1) {
@@ -660,7 +662,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::BindMaterialConstants(const Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Material *mat)
+			void D3DRenderCore::BindMaterialConstants(const Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Material *mat)
 			{
 				for(uint8 i = 0; i < mat->uniformCount; i++) {
 					const Material::UniformValue &val = mat->uniformValues[i];
@@ -671,7 +673,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::BindTextures(const ShaderProgram *shader, const TextureSet *ts)
+			void D3DRenderCore::BindTextures(const ShaderProgram *shader, const TextureSet *ts)
 			{
 				ID3D11ShaderResourceView *views[TextureSet::MAX_TEXTURES_PER_SET];
 				ID3D11SamplerState *samplers[TextureSet::MAX_TEXTURES_PER_SET];
@@ -696,7 +698,7 @@ namespace Maki
 
 			// Resource creation, deletion, modification:
 
-			void *RenderCoreImpl::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
+			void *D3DRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -754,7 +756,7 @@ namespace Maki
 				return buffer;
 			}
 
-			void RenderCoreImpl::FreeBuffer(void *buffer)
+			void D3DRenderCore::FreeBuffer(void *buffer)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -766,7 +768,7 @@ namespace Maki
 				}
 			}
 
-			bool RenderCoreImpl::CreatePixelShader(Shader *ps)
+			bool D3DRenderCore::CreatePixelShader(Shader *ps)
 			{
 				GPUPixelShader *gps = new GPUPixelShader();
 
@@ -812,7 +814,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateVertexShader(Shader *vs)
+			bool D3DRenderCore::CreateVertexShader(Shader *vs)
 			{
 				GPUVertexShader *gvs = new GPUVertexShader(maxVertexFormatsPerVertexShader);
 
@@ -864,7 +866,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateShaderProgram(ShaderProgram *s)
+			bool D3DRenderCore::CreateShaderProgram(ShaderProgram *s)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -881,7 +883,7 @@ namespace Maki
 
 	
 
-			bool RenderCoreImpl::CreateEmptyTexture(Texture *t, uint8 channels)
+			bool D3DRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -953,7 +955,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateRenderTarget(Texture *t)
+			bool D3DRenderCore::CreateRenderTarget(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -1031,7 +1033,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateDepthTexture(Texture *t)
+			bool D3DRenderCore::CreateDepthTexture(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -1112,7 +1114,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateTexture(Texture *t, char *data, uint32 dataLength)
+			bool D3DRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -1159,7 +1161,7 @@ namespace Maki
 				return false;
 			}
 
-			void RenderCoreImpl::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
+			void D3DRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 		
@@ -1181,7 +1183,7 @@ namespace Maki
 				SAFE_RELEASE(res);
 			}
 
-			void RenderCoreImpl::DeleteShaderProgram(ShaderProgram *s)
+			void D3DRenderCore::DeleteShaderProgram(ShaderProgram *s)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -1194,7 +1196,7 @@ namespace Maki
 				s->pixelShader.handle = (intptr_t)nullptr;
 			}
 
-			void RenderCoreImpl::DeleteTexture(Texture *t)
+			void D3DRenderCore::DeleteTexture(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -1210,7 +1212,7 @@ namespace Maki
 
 
 		#if 0
-			void RenderCoreImpl::GetAdapterInfo(uint32 windowWidth, uint32 windowHeight) {
+			void D3DRenderCore::GetAdapterInfo(uint32 windowWidth, uint32 windowHeight) {
 				IDXGIFactory *factory = nullptr;
 				IDXGIAdapter *adapter = nullptr;
 				IDXGIOutput *adapterOutput = nullptr;
@@ -1285,3 +1287,5 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+#endif

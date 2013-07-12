@@ -14,9 +14,9 @@
     <ClInclude Include="src\core\dependencies\miniz.h" />
     <ClInclude Include="src\core\dependencies\stb_truetype.h" />
     <ClInclude Include="src\core\direct3d\DDSTextureLoader.h" />
-    <ClInclude Include="src\core\direct3d\MakiCommon.h" />
-    <ClInclude Include="src\core\direct3d\MakiGPUTypes.h" />
-    <ClInclude Include="src\core\direct3d\MakiRenderCoreImpl.h" />
+    <ClInclude Include="src\core\direct3d\MakiD3DCommon.h" />
+    <ClInclude Include="src\core\direct3d\MakiD3DGPUTypes.h" />
+    <ClInclude Include="src\core\direct3d\MakiD3DRenderCore.h" />
     <ClInclude Include="src\core\MakiAllocator.h" />
     <ClInclude Include="src\core\MakiArchive.h" />
     <ClInclude Include="src\core\MakiArray.h" />
@@ -78,8 +78,10 @@
     <ClInclude Include="src\core\MakiVertexFormatManager.h" />
     <ClInclude Include="src\core\MakiWindow.h" />
     <ClInclude Include="src\core\core_stdafx.h" />
-    <ClInclude Include="src\core\opengl\MakiRenderCoreImpl.h" />
-    <ClInclude Include="src\core\windows\MakiTimeSourceImpl.h" />
+    <ClInclude Include="src\core\opengl\glext.h" />
+    <ClInclude Include="src\core\opengl\MakiOGLCommon.h" />
+    <ClInclude Include="src\core\opengl\MakiOGLGPUTypes.h" />
+    <ClInclude Include="src\core\opengl\MakiOGLRenderCore.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\dependencies\miniz.cpp">
@@ -94,15 +96,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiCommon.cpp">
+    <ClCompile Include="src\core\direct3d\MakiD3DCommon.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiGPUTypes.cpp">
+    <ClCompile Include="src\core\direct3d\MakiD3DGPUTypes.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\core\direct3d\MakiRenderCoreImpl.cpp">
+    <ClCompile Include="src\core\direct3d\MakiD3DRenderCore.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -242,6 +244,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\core\MakiTimeSource.cpp" />
     <ClCompile Include="src\core\MakiVector3.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -263,8 +266,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\core\core_stdafx.cpp" />
-    <ClCompile Include="src\core\opengl\MakiRenderCoreImpl.cpp" />
-    <ClCompile Include="src\core\windows\MakiTimeSourceImpl.cpp" />
+    <ClCompile Include="src\core\opengl\MakiOGLCommon.cpp" />
+    <ClCompile Include="src\core\opengl\MakiOGLGPUTypes.cpp" />
+    <ClCompile Include="src\core\opengl\MakiOGLRenderCore.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{14EFC641-2E44-4FF1-A75D-9AB5486BAECD}</ProjectGuid>

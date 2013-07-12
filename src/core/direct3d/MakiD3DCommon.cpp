@@ -1,5 +1,7 @@
 #include "core/core_stdafx.h"
-#include "core/direct3d/MakiCommon.h"
+#include "core/direct3d/MakiD3DCommon.h"
+
+#if MAKI_USE_D3D
 
 namespace Maki
 {
@@ -68,3 +70,6 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+
+#endif

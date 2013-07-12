@@ -1,9 +1,4 @@
 #pragma once
-#pragma comment(lib, "xinput.lib")
-#pragma comment (lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-
-#define NOMINMAX
 
 #include "core/MakiUtil.h"
 #include "core/MakiAllocator.h"
@@ -27,6 +22,4 @@
 #include "core/MakiFontManager.h"
 #include "core/MakiSkeletonManager.h"
 #include "core/MakiSkeletonAnimationManager.h"
-#include "core/windows/MakiWindowImpl.h"
-#include "core/windows/MakiTimeSourceImpl.h"
-#include "core/direct3d/MakiRenderCoreImpl.h"
+

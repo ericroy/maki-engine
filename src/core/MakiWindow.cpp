@@ -214,16 +214,14 @@ namespace Maki
 			}
 #endif
 
-
-
-			if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+			if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
 				Console::Error("Failed to init SDL video subsystem: %s", SDL_GetError());
 				SDL_ClearError();
 			}			
 			
 			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_SHOWN;
-#if MAKI_USE_OPENGL
-			
+
+#if MAKI_USE_OGL
 			flags |= SDL_WINDOW_OPENGL;
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);

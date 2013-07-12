@@ -9,7 +9,14 @@ namespace Maki
 		class TimeSource
 		{
 		public:
-			virtual int64 GetTimeMillis() = 0;
+			TimeSource();
+			virtual ~TimeSource();
+
+			uint64 GetTimeMillis();
+
+		private:
+			double frequency;
+			uint64 start;
 		};
 
 

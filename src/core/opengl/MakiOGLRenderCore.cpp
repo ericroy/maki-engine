@@ -1,15 +1,20 @@
 #include "core/core_stdafx.h"
+#include "core/opengl/MakiOGLRenderCore.h"
+
+#if MAKI_USE_OGL
+
+#include "core/opengl/MakiOGLGPUTypes.h"
 #include "core/MakiDrawCommand.h"
 #include "core/MakiMesh.h"
 #include "core/MakiTexture.h"
 #include "core/MakiShaderProgram.h"
 #include "core/MakiConfig.h"
 #include "core/MakiDrawCommandList.h"
-#include "core/opengl/MakiRenderCoreImpl.h"
 #include "core/MakiMeshManager.h"
 #include "core/MakiVertexFormatManager.h"
 #include "core/MakiShaderProgramManager.h"
 #include "core/MakiTextureSetManager.h"
+#include "core/MakiWindow.h"
 
 
 using namespace Maki::Core;
@@ -21,24 +26,40 @@ namespace Maki
 		namespace OGL
 		{
 
-			RenderCoreImpl::RenderCoreImpl(Window *window, const Config *config)
-				:	RenderCore()
+			OGLRenderCore::OGLRenderCore(Window *window, const Config *config)
+				:	RenderCore(),
+				window(window),
+				context(nullptr)
 			{
 				memset(nullArray, 0, sizeof(nullArray));
-
 				vsync = config->GetBool("engine.vertical_sync", true);
 				maxVertexFormatsPerVertexShader = config->GetUint("engine.max_vertex_formats_per_vertex_shader", 6);
-				
-				
+
+				if(config->GetBool("engine.vsync", false)) {
+					// -1 allows late swaps to happen immediately
+					SDL_GL_SetSwapInterval(-1);
+				} else {
+					SDL_GL_SetSwapInterval(0);
+				}
 			}
 
-			RenderCoreImpl::~RenderCoreImpl() {
+			OGLRenderCore::~OGLRenderCore() {
+				
+				if(context != nullptr) {
+					SDL_GL_DeleteContext(context);
+				}
+
 				Console::Info("OpenGL renderer destroyed");
 			}
 
-			void RenderCoreImpl::Init()
+			void OGLRenderCore::Init()
 			{
 				std::lock_guard<std::mutex> lock(mutex);
+
+				assert(context == nullptr);
+				context = SDL_GL_CreateContext(window->window);
+
+				DefineGLFunctions();
 
 				// Set initial state:
 				windowWidth = 1;
@@ -47,20 +68,23 @@ namespace Maki
 				Resized(windowWidth, windowHeight);
 
 				// Render a blank frame so we don't see a flash of white on startup
-				
+				glClearColor(0, 0, 0, 1);
+				glClear(GL_COLOR_BUFFER_BIT);
+				SDL_GL_SwapWindow(window->window);
 			}
 
-			void RenderCoreImpl::Resized(uint32 newWidth, uint32 newHeight)
+			void OGLRenderCore::Resized(uint32 newWidth, uint32 newHeight)
 			{
 
 			}
 
-			void RenderCoreImpl::Present()
+			void OGLRenderCore::Present()
 			{
 				std::lock_guard<std::mutex> lock(mutex);
+				SDL_GL_SwapWindow(window->window);
 			}
 
-			void RenderCoreImpl::Draw(const RenderState &state, const DrawCommandList &commands)
+			void OGLRenderCore::Draw(const RenderState &state, const DrawCommandList &commands)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -274,7 +298,7 @@ namespace Maki
 				//context->OMSetRenderTargets(0, nullptr, nullptr);
 			}
 
-			void RenderCoreImpl::SetDepthState(RenderState::DepthTest test, bool write)
+			void OGLRenderCore::SetDepthState(RenderState::DepthTest test, bool write)
 			{
 				switch(test) {
 				case RenderState::DepthTest_Less:
@@ -293,7 +317,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
+			void OGLRenderCore::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
 			{
 				switch(cullMode) {
 				case RenderState::CullMode_Front:
@@ -309,7 +333,7 @@ namespace Maki
 				}
 			}
 
-			void RenderCoreImpl::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
+			void OGLRenderCore::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
 			{
 				//currentRenderTargetView = nullptr;
 				if(renderTargetType == RenderState::RenderTarget_Default) {
@@ -334,7 +358,7 @@ namespace Maki
 				//context->OMSetRenderTargets(1, &currentRenderTargetView, currentDepthStencilView);
 			}
 
-			//void RenderCoreImpl::SetPerFrameConstants(const RenderState &state, const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
+			//void OGLRenderCore::SetPerFrameConstants(const RenderState &state, const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
 			//{
 			//	int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
 			//	if(location != -1) {
@@ -386,7 +410,7 @@ namespace Maki
 			//	}
 			//}
 
-			/*void RenderCoreImpl::SetPerObjectConstants(const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Matrix44 &model, const Matrix44 &modelView, const Matrix44 &modelViewProjection)
+			/*void OGLRenderCore::SetPerObjectConstants(const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Matrix44 &model, const Matrix44 &modelView, const Matrix44 &modelViewProjection)
 			{
 				int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
 				if(location != -1) {
@@ -404,7 +428,7 @@ namespace Maki
 				}
 			}*/
 
-			/*void RenderCoreImpl::BindMaterialConstants(const Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Material *mat)
+			/*void OGLRenderCore::BindMaterialConstants(const Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Material *mat)
 			{
 				for(uint8 i = 0; i < mat->uniformCount; i++) {
 					const Material::UniformValue &val = mat->uniformValues[i];
@@ -415,9 +439,9 @@ namespace Maki
 				}
 			}*/
 
-			/*void RenderCoreImpl::BindTextures(const ShaderProgram *shader, const TextureSet *ts)
+			void OGLRenderCore::BindTextures(const ShaderProgram *shader, const TextureSet *ts)
 			{
-				ID3D11ShaderResourceView *views[TextureSet::MAX_TEXTURES_PER_SET];
+				/*ID3D11ShaderResourceView *views[TextureSet::MAX_TEXTURES_PER_SET];
 				ID3D11SamplerState *samplers[TextureSet::MAX_TEXTURES_PER_SET];
 
 				for(uint8 i = 0; i < ts->textureCount; i++) {
@@ -427,8 +451,8 @@ namespace Maki
 				}
 
 				context->PSSetShaderResources(0, ts->textureCount, views);
-				context->PSSetSamplers(0, ts->textureCount, samplers);
-			}*/
+				context->PSSetSamplers(0, ts->textureCount, samplers);*/
+			}
 
 
 
@@ -440,7 +464,7 @@ namespace Maki
 
 			// Resource creation, deletion, modification:
 
-			void *RenderCoreImpl::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
+			void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -498,7 +522,7 @@ namespace Maki
 				return buffer;
 			}
 
-			void RenderCoreImpl::FreeBuffer(void *buffer)
+			void OGLRenderCore::FreeBuffer(void *buffer)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -510,7 +534,7 @@ namespace Maki
 				}*/
 			}
 
-			bool RenderCoreImpl::CreatePixelShader(Shader *ps)
+			bool OGLRenderCore::CreatePixelShader(Shader *ps)
 			{
 		//		GPUPixelShader *gps = new GPUPixelShader();
 
@@ -556,7 +580,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateVertexShader(Shader *vs)
+			bool OGLRenderCore::CreateVertexShader(Shader *vs)
 			{
 		//		GPUVertexShader *gvs = new GPUVertexShader(maxVertexFormatsPerVertexShader);
 
@@ -608,7 +632,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateShaderProgram(ShaderProgram *s)
+			bool OGLRenderCore::CreateShaderProgram(ShaderProgram *s)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -625,7 +649,7 @@ namespace Maki
 
 	
 
-			bool RenderCoreImpl::CreateEmptyTexture(Texture *t, uint8 channels)
+			bool OGLRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -697,7 +721,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateRenderTarget(Texture *t)
+			bool OGLRenderCore::CreateRenderTarget(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -775,7 +799,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateDepthTexture(Texture *t)
+			bool OGLRenderCore::CreateDepthTexture(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -856,7 +880,7 @@ namespace Maki
 				return false;
 			}
 
-			bool RenderCoreImpl::CreateTexture(Texture *t, char *data, uint32 dataLength)
+			bool OGLRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -903,7 +927,7 @@ namespace Maki
 				return false;
 			}
 
-			void RenderCoreImpl::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
+			void OGLRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 		
@@ -925,7 +949,7 @@ namespace Maki
 				SAFE_RELEASE(res);*/
 			}
 
-			void RenderCoreImpl::DeleteShaderProgram(ShaderProgram *s)
+			void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -938,7 +962,7 @@ namespace Maki
 				s->pixelShader.handle = (intptr_t)nullptr;*/
 			}
 
-			void RenderCoreImpl::DeleteTexture(Texture *t)
+			void OGLRenderCore::DeleteTexture(Texture *t)
 			{
 				std::lock_guard<std::mutex> lock(mutex);
 
@@ -953,3 +977,6 @@ namespace Maki
 	} // namespace Core
 
 } // namespace Maki
+
+
+#endif

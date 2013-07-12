@@ -1,0 +1,72 @@
+#pragma once
+#include "core/core_stdafx.h"
+
+#if MAKI_USE_OGL
+
+#include "SDL.h"
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+#include <gl/GL.h>
+#include <gl/GLU.h>
+#include "core/opengl/glext.h"
+
+
+namespace Maki
+{
+	namespace Core
+	{
+		namespace OGL
+		{
+			
+#define MAKI_EXTERN_GL_FUNC(Type, Name) extern PFNGL##Type##PROC gl##Name;
+			
+			MAKI_EXTERN_GL_FUNC(ACTIVETEXTURE, ActiveTexture);
+			MAKI_EXTERN_GL_FUNC(ATTACHSHADER, AttachShader);
+			MAKI_EXTERN_GL_FUNC(BINDATTRIBLOCATION, BindAttribLocation);
+			MAKI_EXTERN_GL_FUNC(BINDBUFFER, BindBuffer);
+			MAKI_EXTERN_GL_FUNC(BUFFERDATA, BufferData);
+			MAKI_EXTERN_GL_FUNC(COMPILESHADER, CompileShader);
+			MAKI_EXTERN_GL_FUNC(CREATEPROGRAM, CreateProgram);
+			MAKI_EXTERN_GL_FUNC(CREATESHADER, CreateShader);
+			MAKI_EXTERN_GL_FUNC(DELETEBUFFERS, DeleteBuffers);
+			MAKI_EXTERN_GL_FUNC(DELETEPROGRAM, DeleteProgram);
+			MAKI_EXTERN_GL_FUNC(DELETESHADER, DeleteShader);
+			MAKI_EXTERN_GL_FUNC(DISABLEVERTEXATTRIBARRAY, DisableVertexAttribArray);
+			MAKI_EXTERN_GL_FUNC(ENABLEVERTEXATTRIBARRAY, EnableVertexAttribArray);
+			MAKI_EXTERN_GL_FUNC(GENBUFFERS, GenBuffers);
+			MAKI_EXTERN_GL_FUNC(GETPROGRAMINFOLOG, GetProgramInfoLog);
+			MAKI_EXTERN_GL_FUNC(GETPROGRAMIV, GetProgramiv);
+			MAKI_EXTERN_GL_FUNC(GETSHADERINFOLOG, GetShaderInfoLog);
+			MAKI_EXTERN_GL_FUNC(GETSHADERIV, GetShaderiv);
+			MAKI_EXTERN_GL_FUNC(GETUNIFORMLOCATION, GetUniformLocation);
+			MAKI_EXTERN_GL_FUNC(LINKPROGRAM, LinkProgram);
+			MAKI_EXTERN_GL_FUNC(SHADERSOURCE, ShaderSource);
+			MAKI_EXTERN_GL_FUNC(UNIFORM1F, Uniform1f);
+			MAKI_EXTERN_GL_FUNC(UNIFORM1I, Uniform1i);
+			MAKI_EXTERN_GL_FUNC(UNIFORM1UI, Uniform1ui);
+			MAKI_EXTERN_GL_FUNC(UNIFORM2F, Uniform2f);
+			MAKI_EXTERN_GL_FUNC(UNIFORM2I, Uniform2i);
+			MAKI_EXTERN_GL_FUNC(UNIFORM2UI, Uniform2ui);
+			MAKI_EXTERN_GL_FUNC(UNIFORM3F, Uniform3f);
+			MAKI_EXTERN_GL_FUNC(UNIFORM3FV, Uniform3fv);
+			MAKI_EXTERN_GL_FUNC(UNIFORM3I, Uniform3i);
+			MAKI_EXTERN_GL_FUNC(UNIFORM3UI, Uniform3ui);
+			MAKI_EXTERN_GL_FUNC(UNIFORM4F, Uniform4f);
+			MAKI_EXTERN_GL_FUNC(UNIFORM4I, Uniform4i);
+			MAKI_EXTERN_GL_FUNC(UNIFORM4UI, Uniform4ui);
+			MAKI_EXTERN_GL_FUNC(UNIFORMMATRIX3FV, UniformMatrix3fv);
+			MAKI_EXTERN_GL_FUNC(UNIFORMMATRIX4FV, UniformMatrix4fv);
+			MAKI_EXTERN_GL_FUNC(USEPROGRAM, UseProgram);
+			MAKI_EXTERN_GL_FUNC(VERTEXATTRIBPOINTER, VertexAttribPointer);
+
+			void DefineGLFunctions();
+
+
+		} // namespace D3D
+
+	} // namespace Core
+
+} // namespace Maki
+
+#endif

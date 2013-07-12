@@ -13,12 +13,12 @@ namespace Maki
 	{
 		namespace D3D
 		{
-			class RenderCoreImpl;
+			class D3DRenderCore;
 		}
 
 		namespace OGL
 		{
-			class RenderCoreImpl;
+			class OGLRenderCore;
 		}
 
 	
@@ -27,8 +27,8 @@ namespace Maki
 
 		__declspec(align(16)) class DrawCommand : public Aligned<16>
 		{
-		friend class D3D::RenderCoreImpl;
-		friend class OGL::RenderCoreImpl;
+		friend class D3D::D3DRenderCore;
+		friend class OGL::OGLRenderCore;
 		friend class DrawCommandList;
 
 		public:
