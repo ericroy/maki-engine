@@ -35,12 +35,8 @@ namespace Maki
 				vsync = config->GetBool("engine.vertical_sync", true);
 				maxVertexFormatsPerVertexShader = config->GetUint("engine.max_vertex_formats_per_vertex_shader", 6);
 
-				if(config->GetBool("engine.vsync", false)) {
-					// -1 allows late swaps to happen immediately
-					SDL_GL_SetSwapInterval(-1);
-				} else {
-					SDL_GL_SetSwapInterval(0);
-				}
+				// -1 allows late swaps to happen immediately
+				SDL_GL_SetSwapInterval(vsync ? -1 : 0);
 			}
 
 			OGLRenderCore::~OGLRenderCore() {

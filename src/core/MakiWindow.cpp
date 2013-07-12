@@ -223,8 +223,11 @@ namespace Maki
 
 #if MAKI_USE_OGL
 			flags |= SDL_WINDOW_OPENGL;
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+			int32 oglMajorVersion = config->GetInt("engine.ogl_major_version", 2);
+			int32 oglMinorVersion = config->GetInt("engine.ogl_minor_version", 1);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, oglMajorVersion);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, oglMinorVersion);
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 #endif

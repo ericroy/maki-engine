@@ -33,3 +33,4 @@
 #include "core/MakiBoundingSphere.h"
 
 
+#define MAKI_API __declspec(dllexport)

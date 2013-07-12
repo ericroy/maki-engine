@@ -11,7 +11,7 @@ namespace Maki
 		class SceneLoader;
 		class Component;
 
-		class Entity : public Aligned<SIMD_ALIGN>
+		class MAKI_API Entity : public Aligned<SIMD_ALIGN>
 		{
 			friend class SceneLoader;
 
