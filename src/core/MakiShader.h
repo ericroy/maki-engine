@@ -8,12 +8,12 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API Shader
+		class Shader
 		{
 		private:
 			static const uint32 UNIFORM_NAME_MAX_LENGTH = 32;
 
-			struct MAKI_CORE_API MaterialUniformLocation
+			struct MaterialUniformLocation
 			{
 			public:
 				MaterialUniformLocation();
@@ -79,9 +79,9 @@ namespace Maki
 
 			int32 materialUniformBufferLocation;
 			uint32 materialUniformBytes;
-#pragma warning(disable:4251)
+
 			std::vector<MaterialUniformLocation> materialUniformLocations;
-#pragma warning(default:4251)
+
 			
 			char *programData;
 			uint32 programDataBytes;
@@ -89,7 +89,7 @@ namespace Maki
 			intptr_t handle;
 		};
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::vector<Shader::MaterialUniformLocation>;
+		
 
 	} // namespace Core
 

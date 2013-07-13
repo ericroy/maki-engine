@@ -8,7 +8,7 @@ namespace Maki
 	{
 		class Matrix44;
 
-		class MAKI_CORE_API Vector3
+		class Vector3
 		{
 		public:
 			static const Vector3 UnitX;

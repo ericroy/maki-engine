@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 	
-		class MAKI_CORE_API BoundingBox
+		class BoundingBox
 		{
 		private:
 			static const Vector4 cornerCoeffs[8];

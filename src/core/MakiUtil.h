@@ -13,10 +13,6 @@ namespace Maki
 			if(x > high) return high;
 			return x;
 		}
-
-		MAKI_CORE_API void *MakiLoadLibrary(const char *libName);
-		MAKI_CORE_API void MakiFreeLibrary(void *lib);
-		MAKI_CORE_API void *MakiGetProcAddress(void *lib, const char *procName);
 	
 	} // namespace Core
 

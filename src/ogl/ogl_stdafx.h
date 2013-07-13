@@ -19,4 +19,4 @@
 #endif
 #include <gl/GL.h>
 #include <gl/GLU.h>
-#include "oglrendercore/glext.h"
+#include "ogl/glext.h"

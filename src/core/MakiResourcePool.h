@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::basic_string<char, std::char_traits<char>, std::allocator<char> >;
+		
 
 		/*
 		This class manages an array of objects.  Objects in the array

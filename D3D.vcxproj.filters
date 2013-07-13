@@ -18,36 +18,36 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\d3drendercore\DDSTextureLoader.cpp">
+    <ClCompile Include="src\d3d\d3d_stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3drendercore\MakiD3DCommon.cpp">
+    <ClCompile Include="src\d3d\DDSTextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3drendercore\MakiD3DGPUTypes.cpp">
+    <ClCompile Include="src\d3d\MakiD3DCommon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3drendercore\MakiD3DRenderCore.cpp">
+    <ClCompile Include="src\d3d\MakiD3DGPUTypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3drendercore\d3drendercore_stdafx.cpp">
+    <ClCompile Include="src\d3d\MakiD3DRenderCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\d3drendercore\DDSTextureLoader.h">
+    <ClInclude Include="src\d3d\d3d_stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\d3drendercore\MakiD3DCommon.h">
+    <ClInclude Include="src\d3d\DDSTextureLoader.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\d3drendercore\MakiD3DGPUTypes.h">
+    <ClInclude Include="src\d3d\MakiD3DCommon.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\d3drendercore\MakiD3DRenderCore.h">
+    <ClInclude Include="src\d3d\MakiD3DGPUTypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\d3drendercore\d3drendercore_stdafx.h">
+    <ClInclude Include="src\d3d\MakiD3DRenderCore.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,11 +10,19 @@ namespace Maki
 		const uint8 VertexFormat::DataTypeSizes[DataTypeCount] = {4, 4, 2, 1};
 
 		VertexFormat::VertexFormat()
-		:	stride(0),
+			: stride(0),
 			attrCount(0),
 			attrFlags(0)
 		{
 			memset(formats, 0, sizeof(formats));
+		}
+
+		VertexFormat::VertexFormat(const VertexFormat &other)
+			: stride(other.stride),
+			attrCount(other.attrCount),
+			attrFlags(other.attrFlags)
+		{
+			memcpy(formats, other.formats, sizeof(formats));
 		}
 
 		VertexFormat::~VertexFormat() {

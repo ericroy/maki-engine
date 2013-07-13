@@ -18,33 +18,33 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\oglrendercore\glext.h">
+    <ClInclude Include="src\ogl\ogl_stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\oglrendercore\MakiOGLCommon.h">
+    <ClInclude Include="src\ogl\glext.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\oglrendercore\MakiOGLGPUTypes.h">
+    <ClInclude Include="src\ogl\MakiOGLCommon.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\oglrendercore\MakiOGLRenderCore.h">
+    <ClInclude Include="src\ogl\MakiOGLGPUTypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\oglrendercore\oglrendercore_stdafx.h">
+    <ClInclude Include="src\ogl\MakiOGLRenderCore.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\oglrendercore\MakiOGLCommon.cpp">
+    <ClCompile Include="src\ogl\ogl_stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\oglrendercore\MakiOGLGPUTypes.cpp">
+    <ClCompile Include="src\ogl\MakiOGLCommon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\oglrendercore\MakiOGLRenderCore.cpp">
+    <ClCompile Include="src\ogl\MakiOGLGPUTypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\oglrendercore\oglrendercore_stdafx.cpp">
+    <ClCompile Include="src\ogl\MakiOGLRenderCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

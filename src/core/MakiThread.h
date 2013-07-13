@@ -6,9 +6,9 @@ namespace Maki
 {
 	namespace Core
 	{
-		MAKI_CORE_API_EXTERN class MAKI_CORE_API std::thread;
+		
 
-		class MAKI_CORE_API Thread
+		class Thread
 		{
 		private:
 			static void RunDispatch(Thread *instance)

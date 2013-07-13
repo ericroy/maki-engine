@@ -21,5 +21,4 @@
 #include "core/MakiFontManager.h"
 #include "core/MakiSkeletonManager.h"
 #include "core/MakiSkeletonAnimationManager.h"
-#include "core/MakiRenderCoreFactory.h"
 

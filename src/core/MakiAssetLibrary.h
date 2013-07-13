@@ -9,10 +9,10 @@ namespace Maki
 		class AssetManifest;
 		class Archive;
 
-		class MAKI_CORE_API AssetLibrary
+		class AssetLibrary
 		{
 		private:
-			struct MAKI_CORE_API Group
+			struct Group
 			{
 				Group() : manifest(nullptr), archive(nullptr) {}
 				AssetManifest *manifest;
@@ -30,12 +30,12 @@ namespace Maki
 		private:
 			uint32 totalAssetCount;
 
-#pragma warning(disable:4251)
+
 			std::vector<Group> groups;
-#pragma warning(default:4251)
+
 		};
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::vector<AssetLibrary::Group>;
+		
 
 	} // namespace Core
 

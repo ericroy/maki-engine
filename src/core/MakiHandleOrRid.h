@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API HandleOrRid
+		class HandleOrRid
 		{
 		public:
 			inline HandleOrRid() : isHandle(true), handle(HANDLE_NONE) {}

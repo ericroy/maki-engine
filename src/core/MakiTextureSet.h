@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API TextureSet
+		class TextureSet
 		{
 		public:
 			static const int32 MAX_TEXTURES_PER_SET = 4;

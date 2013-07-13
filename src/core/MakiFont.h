@@ -11,7 +11,7 @@ namespace Maki
 
 		class Mesh;
 
-		class MAKI_CORE_API Font : public Resource
+		class Font : public Resource
 		{
 			friend class FontManager;
 	

@@ -13,10 +13,10 @@ namespace Maki
 	{
 		class VertexFormat;
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<RenderPayload>;
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API SafeQueue<RenderPayload>;
+		
+		
 
-		class MAKI_CORE_API RenderCore : public Thread
+		class RenderCore : public Thread
 		{
 		public:
 			enum Type
@@ -24,9 +24,6 @@ namespace Maki
 				Type_D3D = 0,
 				Type_OGL,
 			};
-
-		public:
-			static Type defaultType;
 
 		public:
 			RenderCore();

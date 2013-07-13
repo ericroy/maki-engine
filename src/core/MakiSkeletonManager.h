@@ -9,9 +9,9 @@ namespace Maki
 	{
 
 		class SkeletonManager;
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Skeleton, SkeletonManager>;
+		
 
-		class MAKI_CORE_API SkeletonManager : public Manager<Skeleton, SkeletonManager>
+		class SkeletonManager : public Manager<Skeleton, SkeletonManager>
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 8;

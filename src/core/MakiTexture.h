@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API Texture : public Resource
+		class Texture : public Resource
 		{
 		public:
 			enum TextureType

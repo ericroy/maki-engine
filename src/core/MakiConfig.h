@@ -9,7 +9,7 @@ namespace Maki
 		class AssetLibrary;
 		class Document;
 
-		class MAKI_CORE_API Config
+		class Config
 		{
 		public:
 			Config(AssetLibrary *lib, Rid rid);

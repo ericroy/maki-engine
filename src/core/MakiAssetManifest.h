@@ -6,9 +6,9 @@ namespace Maki
 	namespace Core
 	{
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API std::basic_string<char, std::char_traits<char>, std::allocator<char> >;
+		
 	
-		class MAKI_CORE_API AssetManifest
+		class AssetManifest
 		{
 		public:
 			AssetManifest(uint32 assetCount, Rid *ridArray, const char **pathArray, const char *commonPathPrefix);

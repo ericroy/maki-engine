@@ -7,12 +7,6 @@ namespace Maki
 {
 	namespace Core
 	{
-#if defined(_WIN32) || defined(_WIN64)
-		RenderCore::Type RenderCore::defaultType = RenderCore::Type_D3D;
-#else
-		RenderCore::Type RenderCore::defaultType = RenderCore::Type_OGL;
-#endif
-
 
 		RenderCore::RenderCore()
 			: Thread()

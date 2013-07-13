@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 	
-		class MAKI_CORE_API Frustum
+		class Frustum
 		{
 		public:
 			Frustum() {}

@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API TimeSource
+		class TimeSource
 		{
 		public:
 			TimeSource();

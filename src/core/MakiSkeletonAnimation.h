@@ -9,12 +9,12 @@ namespace Maki
 	{
 		class Skeleton;
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<uint32>;
+		
 
-		class MAKI_CORE_API SkeletonAnimation : public Resource
+		class SkeletonAnimation : public Resource
 		{
 		public:
-			struct MAKI_CORE_API State
+			struct State
 			{
 			public:
 				State(uint32 size);
@@ -27,7 +27,7 @@ namespace Maki
 			};
 
 		private:
-			struct MAKI_CORE_API KeyFrame : public Skeleton::Joint
+			struct KeyFrame : public Skeleton::Joint
 			{
 				uint32 frame;
 			};
@@ -49,9 +49,9 @@ namespace Maki
 			uint32 frameCount;
 
 			// Indexed as data[boneIndex][keyframeIndex]
-#pragma warning(disable:4251)
+
 			Array< Array<KeyFrame> > data;
-#pragma warning(default:4251)
+
 		};
 
 		uint32 SkeletonAnimation::GetBoneCount() const
@@ -59,8 +59,8 @@ namespace Maki
 			return data.count;
 		}
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<SkeletonAnimation::KeyFrame>;
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array< Array<SkeletonAnimation::KeyFrame> >;
+		
+		
 
 	} // namespace Core
 

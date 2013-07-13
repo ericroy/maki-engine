@@ -8,16 +8,16 @@ namespace Maki
 	namespace Core
 	{
 	
-		class MAKI_CORE_API DrawCommandList
+		class DrawCommandList
 		{
 		public:
-			__declspec(align(16)) struct MAKI_CORE_API KeyEntry : public Aligned<16>
+			__declspec(align(16)) struct KeyEntry : public Aligned<16>
 			{
 				uint64 key;
 				uint32 index;
 			};
 
-			struct MAKI_CORE_API ValueEntry
+			struct ValueEntry
 			{
 				Matrix44 m;
 				DrawCommand drawCommand;
@@ -61,15 +61,15 @@ namespace Maki
 			}
 
 		public:
-#pragma warning(disable:4251)
+
 			Array<KeyEntry> keys;
 			Array<ValueEntry> values;
-#pragma warning(default:4251)
+
 			uint32 count;
 		};
 
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<DrawCommandList::KeyEntry>;
-		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<DrawCommandList::ValueEntry>;
+		
+		
 
 
 	} // namespace Core

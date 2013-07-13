@@ -18,7 +18,7 @@ namespace Maki
 		class SkeletonManager;
 		class SkeletonAnimationManager;
 
-		class MAKI_CORE_API CoreManagers : public PseudoSingleton<CoreManagers>
+		class CoreManagers : public PseudoSingleton<CoreManagers>
 		{
 		public:
 			CoreManagers();

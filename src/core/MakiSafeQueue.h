@@ -10,8 +10,8 @@ namespace Maki
 	namespace Core
 	{
 
-		MAKI_CORE_API_EXTERN class MAKI_CORE_API std::mutex;
-		MAKI_CORE_API_EXTERN class MAKI_CORE_API std::condition_variable;
+		
+		
 
 		template<class T>
 		class SafeQueue

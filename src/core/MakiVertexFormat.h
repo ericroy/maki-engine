@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API VertexFormat
+		class VertexFormat
 		{
 		public:
 			enum Attribute
@@ -43,7 +43,7 @@ namespace Maki
 			static const uint8 DataTypeSizes[DataTypeCount];
 
 		private:
-			struct MAKI_CORE_API Format
+			struct Format
 			{
 				uint8 type : 2;			// Holds one of the four possible data types from above
 				uint8 count : 6;		// Up to 64
@@ -55,8 +55,8 @@ namespace Maki
 
 		public:
 			VertexFormat();
+			VertexFormat(const VertexFormat &other);
 			VertexFormat(const MoveToken<VertexFormat> &) { assert(false && "VertexFormat move construction not allowed"); }
-			VertexFormat(const VertexFormat &) { assert(false && "VertexFormat copy construction not allowed"); }
 			~VertexFormat();
 			inline bool operator==(const VertexFormat &other) const;
 			inline bool HasAttribute(Attribute attr) const;

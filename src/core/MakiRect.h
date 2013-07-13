@@ -5,7 +5,7 @@ namespace Maki
 {
 	namespace Core
 	{
-		class MAKI_CORE_API Rect
+		class Rect
 		{
 		public:
 			Rect() {}

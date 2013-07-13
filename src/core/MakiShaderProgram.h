@@ -8,7 +8,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API ShaderProgram : public Resource
+		class ShaderProgram : public Resource
 		{
 		public:
 			enum Variant

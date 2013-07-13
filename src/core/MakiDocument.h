@@ -7,13 +7,13 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API Document
+		class Document
 		{
 			friend class DocumentTextSerializer;
 			friend class DocumentBinarySerializer;
 
 		public:
-			class MAKI_CORE_API Node
+			class Node
 			{
 				friend class Document;
 				friend class DocumentTextSerializer;
@@ -91,7 +91,7 @@ namespace Maki
 		};
 
 
-		class MAKI_CORE_API DocumentTextSerializer
+		class DocumentTextSerializer
 		{
 		private:
 			static const int32 STACK_CHILDREN_COUNT_THRESHOLD = 4;
@@ -113,7 +113,7 @@ namespace Maki
 		};
 
 
-		class MAKI_CORE_API DocumentBinarySerializer
+		class DocumentBinarySerializer
 		{
 		private:
 			static const uint8 BINARY_HEADER[4];

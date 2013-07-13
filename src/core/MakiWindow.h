@@ -12,7 +12,7 @@ namespace Maki
 		class Config;
 		class Engine;
 
-		class MAKI_CORE_API Window
+		class Window
 		{
 		public:
 			Window(RenderCore::Type renderCoreType, const Config *config);

@@ -6,7 +6,7 @@ namespace Maki
 	namespace Core
 	{
 
-		class MAKI_CORE_API BoundingSphere
+		class BoundingSphere
 		{
 		public:
 			BoundingSphere()
