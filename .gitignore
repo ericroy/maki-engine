@@ -34,6 +34,8 @@ desktop.ini
 *.opensdf
 *.vcxproj.user
 *.suo
+bin/
+intermediate/
 Debug/
 Release/
 Debug_core/
