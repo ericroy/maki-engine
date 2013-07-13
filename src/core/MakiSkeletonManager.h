@@ -8,6 +8,9 @@ namespace Maki
 	namespace Core
 	{
 
+		class SkeletonManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Skeleton, SkeletonManager>;
+
 		class MAKI_CORE_API SkeletonManager : public Manager<Skeleton, SkeletonManager>
 		{
 		public:

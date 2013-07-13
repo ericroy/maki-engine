@@ -2,12 +2,6 @@
 #include "core/MakiTimer.h"
 #include "core/MakiTimeSource.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <ctime>
-#endif
-
 namespace Maki
 {
 	namespace Core

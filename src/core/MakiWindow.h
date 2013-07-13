@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core_stdafx.h"
 #include "core/MakiInputState.h"
+#include "core/MakiRenderCore.h"
 
 #include "SDL.h"
 
@@ -14,7 +15,7 @@ namespace Maki
 		class MAKI_CORE_API Window
 		{
 		public:
-			Window(const Config *config);
+			Window(RenderCore::Type renderCoreType, const Config *config);
 			virtual ~Window();
 			int Pump(Engine *engine);
 			void PollInput(InputState *state);

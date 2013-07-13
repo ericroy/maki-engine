@@ -9,6 +9,8 @@ namespace Maki
 	{
 		class Skeleton;
 
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<uint32>;
+
 		class MAKI_CORE_API SkeletonAnimation : public Resource
 		{
 		public:
@@ -35,6 +37,8 @@ namespace Maki
 
 		public:
 			SkeletonAnimation();
+			SkeletonAnimation(const MoveToken<SkeletonAnimation> &) { assert(false && "SkeletonAnimation move construction not allowed"); }
+			SkeletonAnimation(const SkeletonAnimation &) { assert(false && "SkeletonAnimation copy construction not allowed"); }
 			~SkeletonAnimation();
 			bool Load(Rid rid);
 			void AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose);
@@ -45,15 +49,18 @@ namespace Maki
 			uint32 frameCount;
 
 			// Indexed as data[boneIndex][keyframeIndex]
+#pragma warning(disable:4251)
 			Array< Array<KeyFrame> > data;
+#pragma warning(default:4251)
 		};
-
-
 
 		uint32 SkeletonAnimation::GetBoneCount() const
 		{
 			return data.count;
 		}
+
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<SkeletonAnimation::KeyFrame>;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array< Array<SkeletonAnimation::KeyFrame> >;
 
 	} // namespace Core
 

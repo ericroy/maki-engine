@@ -55,6 +55,8 @@ namespace Maki
 
 		public:
 			VertexFormat();
+			VertexFormat(const MoveToken<VertexFormat> &) { assert(false && "VertexFormat move construction not allowed"); }
+			VertexFormat(const VertexFormat &) { assert(false && "VertexFormat copy construction not allowed"); }
 			~VertexFormat();
 			inline bool operator==(const VertexFormat &other) const;
 			inline bool HasAttribute(Attribute attr) const;
@@ -63,7 +65,7 @@ namespace Maki
 			inline int32 GetStride() const;
 			inline int32 GetAttributeCount() const;
 			void PushAttribute(Attribute attr, DataType type, uint8 count);
-
+			
 		public:
 			uint16 stride;
 			uint8 attrCount;

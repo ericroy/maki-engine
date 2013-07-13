@@ -8,6 +8,9 @@ namespace Maki
 	namespace Core
 	{
 
+		class SkeletonAnimationManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<SkeletonAnimation, SkeletonAnimationManager>;
+
 		class MAKI_CORE_API SkeletonAnimationManager : public Manager<SkeletonAnimation, SkeletonAnimationManager>
 		{
 		public:

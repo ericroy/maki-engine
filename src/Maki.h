@@ -1,5 +1,4 @@
 #pragma once
-
 #include "core/MakiUtil.h"
 #include "core/MakiAllocator.h"
 #include "core/MakiAssetLibrary.h"
@@ -22,4 +21,5 @@
 #include "core/MakiFontManager.h"
 #include "core/MakiSkeletonManager.h"
 #include "core/MakiSkeletonAnimationManager.h"
+#include "core/MakiRenderCoreFactory.h"
 

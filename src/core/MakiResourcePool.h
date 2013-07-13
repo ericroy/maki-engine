@@ -18,16 +18,16 @@ namespace Maki
 		out, and decreased whenever a handle is freed.
 		*/
 		template<class T>
-		class MAKI_CORE_API ResourcePool
+		class ResourcePool
 		{
 		private:
-			struct MAKI_CORE_API Node
+			struct Node
 			{
 				uint32 next, prev;
 			};
 
 		public:
-			class MAKI_CORE_API Iterator
+			class Iterator
 			{
 				friend class ResourcePool<T>;
 			public:

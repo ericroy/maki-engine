@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class MaterialManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Material, MaterialManager>;
 
 		class MAKI_CORE_API MaterialManager : public Manager<Material, MaterialManager>
 		{

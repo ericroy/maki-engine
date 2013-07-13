@@ -8,6 +8,9 @@ namespace Maki
 	namespace Core
 	{
 
+		class ShaderProgramManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<ShaderProgram, ShaderProgramManager>;
+
 		class MAKI_CORE_API ShaderProgramManager : public Manager<ShaderProgram, ShaderProgramManager>
 		{
 		public:

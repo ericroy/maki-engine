@@ -7,6 +7,12 @@ namespace Maki
 {
 	namespace Core
 	{
+#if defined(_WIN32) || defined(_WIN64)
+		RenderCore::Type RenderCore::defaultType = RenderCore::Type_D3D;
+#else
+		RenderCore::Type RenderCore::defaultType = RenderCore::Type_OGL;
+#endif
+
 
 		RenderCore::RenderCore()
 			: Thread()
@@ -32,9 +38,9 @@ namespace Maki
 					output.Put(payload);
 					break;
 				} else if(payload.cmd == RenderPayload::Command_Draw) {
-	#if MAKI_SORT_DRAW_COMMANDS_IN_RENDER_THREAD
+#if MAKI_SORT_DRAW_COMMANDS_IN_RENDER_THREAD
 					payload.commands->Sort();
-	#endif
+#endif
 					Draw(*payload.state, *payload.commands);
 					output.Put(payload);
 				} else if(payload.cmd == RenderPayload::Command_Present) {

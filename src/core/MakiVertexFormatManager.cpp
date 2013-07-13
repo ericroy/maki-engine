@@ -8,6 +8,8 @@ namespace Maki
 	namespace Core
 	{
 
+		template Manager<VertexFormat, VertexFormatManager>;
+
 		VertexFormatManager::VertexFormatManager(uint32 size)
 			: Manager<VertexFormat, VertexFormatManager>(size, "VertexFormatManager")
 		{

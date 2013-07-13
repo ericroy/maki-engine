@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class TextureSetManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<TextureSet, TextureSetManager>;
 
 		class MAKI_CORE_API TextureSetManager : public Manager<TextureSet, TextureSetManager>
 		{
@@ -26,6 +28,20 @@ namespace Maki
 			virtual ~TextureSetManager();	
 			Handle Load(uint8 count, Rid *textureRids);
 		};
+
+
+		inline bool TextureSetManager::Predicate::operator()(const TextureSet *ts) const
+		{
+			if(count != ts->textureCount) {
+				return false;
+			}
+			for(uint8 i = 0; i < count; i++) {
+				if(textureRids[i] != ts->textureRids[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
 
 	} // namespace Core
 

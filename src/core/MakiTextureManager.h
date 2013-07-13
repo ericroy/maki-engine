@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class TextureManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Texture, TextureManager>;
 
 		class MAKI_CORE_API TextureManager : public Manager<Texture, TextureManager>
 		{

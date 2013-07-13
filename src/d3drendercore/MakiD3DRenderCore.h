@@ -18,7 +18,7 @@ namespace Maki
 		namespace D3D
 		{
 	
-			class MAKI_D3DRENDERCORE_API D3DRenderCore : public RenderCore
+			class D3DRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -59,9 +59,9 @@ namespace Maki
 				uint32 windowWidth;
 				uint32 windowHeight;
 
-				IDXGISwapChain *swapChain;		// the pointer to the swap chain interface
-				ID3D11Device *device;			// the pointer to our Direct3D device interface
-				ID3D11DeviceContext *context;	// the pointer to our Direct3D device context
+				IDXGISwapChain *swapChain;
+				ID3D11Device *device;
+				ID3D11DeviceContext *context;
 		
 				ID3D11RenderTargetView *defaultRenderTargetView;
 				ID3D11DepthStencilView *defaultDepthStencilView;
@@ -93,6 +93,20 @@ namespace Maki
 
 				void *nullArray[SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_LIGHTS];
 			};
+
+			extern "C" {
+				// For ease of instantiation from outside dll
+				MAKI_D3DRENDERCORE_API RenderCore *CreateCore(Window *window, const Config *config)
+				{
+					return new D3DRenderCore(window, config);
+				}
+
+				MAKI_D3DRENDERCORE_API void DestroyCore(RenderCore *core)
+				{
+					SAFE_DELETE(core);
+				}
+			}
+
 
 		} // namespace D3D
 	

@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class MeshManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Mesh, MeshManager>;
 
 		class MAKI_CORE_API MeshManager : public Manager<Mesh, MeshManager>
 		{

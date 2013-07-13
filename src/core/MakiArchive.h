@@ -47,8 +47,12 @@ namespace Maki
 			FILE *fp;
 			uint32 ridStart;
 			uint32 bodyOffset;
+#pragma warning(disable:4251)
 			Array<Entry> entries;
+#pragma warning(default:4251)
 		};
+
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<Archive::Entry>;
 
 	} // namespace Core
 

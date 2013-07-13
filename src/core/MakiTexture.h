@@ -19,10 +19,9 @@ namespace Maki
 
 		public:
 			Texture();
+			Texture(const MoveToken<Texture> &) { assert(false && "Texture move construction not allowed"); }
+			Texture(const Texture &) { assert(false && "Texture copy construction not allowed"); }
 			~Texture();
-
-		private:
-			Texture(const Texture &) {}
 
 		public:
 			TextureType type;

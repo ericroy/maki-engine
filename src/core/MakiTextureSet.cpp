@@ -12,8 +12,10 @@ namespace Maki
 
 		TextureSet::TextureSet() : textureCount(0)
 		{
-			memset(textures, (uint32)HANDLE_NONE, sizeof(textures));
-			memset(textureRids, (uint32)RID_NONE, sizeof(textureRids));
+			for(uint8 i = 0; i < MAX_TEXTURES_PER_SET; i++) {
+				textures[i] = HANDLE_NONE;
+				textureRids[i] = RID_NONE;
+			}
 		}
 	
 		TextureSet::TextureSet(const MoveToken<TextureSet> &other)
@@ -22,8 +24,10 @@ namespace Maki
 			memcpy(textures, other.obj->textures, sizeof(textures));
 			memcpy(textureRids, other.obj->textureRids, sizeof(textureRids));
 
-			memset(other.obj->textures, (uint32)HANDLE_NONE, sizeof(textures));
-			memset(other.obj->textureRids, (uint32)RID_NONE, sizeof(textureRids));
+			for(uint8 i = 0; i < MAX_TEXTURES_PER_SET; i++) {
+				other.obj->textures[i] = HANDLE_NONE;
+				other.obj->textureRids[i] = RID_NONE;
+			}
 			other.obj->textureCount = 0;
 		}
 

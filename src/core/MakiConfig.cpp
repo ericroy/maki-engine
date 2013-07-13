@@ -35,7 +35,7 @@ namespace Maki
 			SAFE_DELETE(doc);
 		}
 
-		const std::string Config::GetString(const char *keyPath, const char *defaultValue) const
+		const char *Config::GetString(const char *keyPath, const char *defaultValue) const
 		{
 			Document::Node *n = doc->root->Resolve(keyPath);
 			if(n == nullptr) { return defaultValue; }

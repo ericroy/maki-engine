@@ -7,6 +7,9 @@ namespace Maki
 	namespace Core
 	{
 
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<Matrix44>;
+
+
 		class MAKI_CORE_API Skeleton : public Resource
 		{
 		public:
@@ -27,6 +30,8 @@ namespace Maki
 	
 		public:
 			Skeleton();
+			Skeleton(const MoveToken<Skeleton> &) { assert(false && "Skeleton move construction not allowed"); }
+			Skeleton(const Skeleton &) { assert(false && "Skeleton copy construction not allowed"); }
 			~Skeleton();
 			bool Load(Rid rid);
 			void CalculateWorldPose(Joint *jointStates, Matrix44 *out);
@@ -37,8 +42,13 @@ namespace Maki
 
 		public:
 			Array<Matrix44> inverseBindPose;
+#pragma warning(disable:4251)
 			Array<Bone> bones;
+#pragma warning(default:4251)
 		};
+
+
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Array<Skeleton::Bone>;
 
 
 	} // namespace Core

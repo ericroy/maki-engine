@@ -21,7 +21,7 @@ namespace Maki
 		namespace OGL
 		{
 	
-			class MAKI_OGLRENDERCORE_API OGLRenderCore : public RenderCore
+			class OGLRenderCore : public RenderCore
 			{
 			private:
 				static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -70,6 +70,21 @@ namespace Maki
 
 				void *nullArray[SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_LIGHTS];
 			};
+
+
+			extern "C" {
+				// For ease of instantiation from outside dll
+				MAKI_OGLRENDERCORE_API RenderCore *CreateCore(Window *window, const Config *config)
+				{
+					return new OGLRenderCore(window, config);
+				}
+
+				MAKI_OGLRENDERCORE_API void DestroyCore(RenderCore *core)
+				{
+					SAFE_DELETE(core);
+				}
+			}
+
 
 		} // namespace OGL
 	

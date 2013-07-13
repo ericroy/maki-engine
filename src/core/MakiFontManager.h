@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class FontManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<Font, FontManager>;
 
 		class MAKI_CORE_API FontManager : public Manager<Font, FontManager>
 		{

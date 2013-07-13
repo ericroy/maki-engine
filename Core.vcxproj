@@ -44,6 +44,7 @@
     <ClInclude Include="src\core\MakiQuaternion.h" />
     <ClInclude Include="src\core\MakiRect.h" />
     <ClInclude Include="src\core\MakiRenderCore.h" />
+    <ClInclude Include="src\core\MakiRenderCoreFactory.h" />
     <ClInclude Include="src\core\MakiRenderer.h" />
     <ClInclude Include="src\core\MakiRenderPayload.h" />
     <ClInclude Include="src\core\MakiRenderState.h" />
@@ -160,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\core\MakiRenderCoreFactory.cpp" />
     <ClCompile Include="src\core\MakiRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -221,6 +223,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\core\MakiTimeSource.cpp" />
+    <ClCompile Include="src\core\MakiUtil.cpp" />
     <ClCompile Include="src\core\MakiVector3.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

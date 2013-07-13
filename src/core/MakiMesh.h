@@ -40,6 +40,7 @@ namespace Maki
 			Mesh(bool dynamic = false);
 			Mesh(Object type, const ObjectArgs &args);
 			Mesh(const MoveToken<Mesh> &other);
+			Mesh(const Mesh &) { assert(false && "Mesh copy construction not allowed"); }
 			~Mesh();
 
 			// Initialize object from mesh file
@@ -75,7 +76,6 @@ namespace Maki
 			void CalculateBounds();
 
 		private:
-			Mesh(const Mesh &) {}
 			uint32 LoadMeshData(char *data, bool upload);
 			void MakeRect(const RectArgs &args);
 

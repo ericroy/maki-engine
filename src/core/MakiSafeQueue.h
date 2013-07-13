@@ -14,7 +14,7 @@ namespace Maki
 		MAKI_CORE_API_EXTERN class MAKI_CORE_API std::condition_variable;
 
 		template<class T>
-		class MAKI_CORE_API SafeQueue
+		class SafeQueue
 		{
 		public:
 			static const int32 DEFAULT_SIZE = 64;

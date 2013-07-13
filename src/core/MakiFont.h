@@ -22,6 +22,8 @@ namespace Maki
 
 		public:
 			Font();
+			Font(const MoveToken<Font> &) { assert(false && "Font move construction not allowed"); }
+			Font(const Font &) { assert(false && "Font copy construction not allowed"); }
 			virtual ~Font();
 			bool operator==(const Font &other) const;
 			bool Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);

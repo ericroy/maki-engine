@@ -5,20 +5,7 @@ namespace Maki
 {
 	namespace Core
 	{
-		
-		inline bool TextureSetManager::Predicate::operator()(const TextureSet *ts) const
-		{
-			if(count != ts->textureCount) {
-				return false;
-			}
-			for(uint8 i = 0; i < count; i++) {
-				if(textureRids[i] != ts->textureRids[i]) {
-					return false;
-				}
-			}
-			return true;
-		}
-	
+
 		TextureSetManager::TextureSetManager(uint32 size)
 			: Manager<TextureSet, TextureSetManager>(size, "TextureSetManager")
 		{

@@ -24,6 +24,9 @@ namespace Maki
 
 		bool AssetLibrary::Mount(AssetManifest *manifest, const char *archivePath)
 		{
+#if _DEBUG
+			archivePath = nullptr;
+#endif
 			Group group;
 			group.manifest = manifest;
 			group.manifest->SetRidStart(totalAssetCount);

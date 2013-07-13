@@ -25,6 +25,8 @@ namespace Maki
 
 		public:
 			ShaderProgram();
+			ShaderProgram(const MoveToken<ShaderProgram> &) { assert(false && "ShaderProgram move construction not allowed"); }
+			ShaderProgram(const ShaderProgram &) { assert(false && "ShaderProgram copy construction not allowed"); }
 			~ShaderProgram();
 
 			bool Load(Rid rid, Variant variant);
@@ -33,9 +35,6 @@ namespace Maki
 			{
 				return rid == other.rid && variant == other.variant;
 			}
-
-		private:
-			ShaderProgram(const ShaderProgram &) {}
 
 		public:
 			Shader vertexShader;

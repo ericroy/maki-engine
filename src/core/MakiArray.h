@@ -7,7 +7,7 @@ namespace Maki
 	{
 
 		template<typename T>
-		class MAKI_CORE_API Array
+		class Array
 		{
 		public:
 			Array()
@@ -70,6 +70,7 @@ namespace Maki
 			T *data;
 			uint32 count;
 		};
+
 
 	} // namespace Core
 

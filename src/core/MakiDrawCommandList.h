@@ -61,8 +61,10 @@ namespace Maki
 			}
 
 		public:
+#pragma warning(disable:4251)
 			Array<KeyEntry> keys;
 			Array<ValueEntry> values;
+#pragma warning(default:4251)
 			uint32 count;
 		};
 

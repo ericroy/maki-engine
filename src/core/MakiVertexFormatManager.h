@@ -7,6 +7,8 @@ namespace Maki
 {
 	namespace Core
 	{
+		class VertexFormatManager;
+		MAKI_CORE_API_EXTERN template class MAKI_CORE_API Manager<VertexFormat, VertexFormatManager>;
 
 		class MAKI_CORE_API VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
 		{

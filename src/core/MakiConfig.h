@@ -15,7 +15,7 @@ namespace Maki
 			Config(AssetLibrary *lib, Rid rid);
 			virtual ~Config();
 
-			const std::string GetString(const char *keyPath, const char *defaultValue) const;
+			const char *GetString(const char *keyPath, const char *defaultValue) const;
 			int32 GetInt(const char *keyPath, int32 defaultValue) const;
 			uint32 GetUint(const char *keyPath, uint32 defaultValue) const;
 			bool GetBool(const char *keyPath, bool defaultValue) const;
