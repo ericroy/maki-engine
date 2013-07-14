@@ -41,6 +41,7 @@ namespace Maki
 			Shader pixelShader;
 			Variant variant;
 			Handle variants[VariantCount-1];
+			intptr_t handle;
 		};
 
 	} // namespace Core

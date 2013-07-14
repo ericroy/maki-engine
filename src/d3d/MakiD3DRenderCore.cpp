@@ -421,9 +421,9 @@ namespace Maki
 					ID3D11SamplerState *shadowSamplers[RenderState::MAX_SHADOW_LIGHTS];
 					for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
 						if(state.shadowMaps[i] != HANDLE_NONE) {
-							GPUTexture *tex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
-							shadowViews[i] = tex->shaderResourceView;
-							shadowSamplers[i] = tex->samplerState;
+							GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
+							shadowViews[i] = gtex->shaderResourceView;
+							shadowSamplers[i] = gtex->samplerState;
 						} else {
 							shadowViews[i] = nullptr;
 							shadowSamplers[i] = nullptr;
@@ -949,6 +949,9 @@ namespace Maki
 
 			D3D11_SAMPLER_DESC samplerDesc;
 			ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+
+			// TODO:
+			// Should this really be using linear filtering?  Perhaps nearest would be better?
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;

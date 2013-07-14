@@ -5,10 +5,25 @@ namespace Maki
 {
 	namespace OGL
 	{
-			
+		
+		bool _Failed();
+
+#if _DEBUG
+#		define MAKI_OGL_FAILED() _Failed()
+#else
+#		define MAKI_OGL_FAILED FAILED
+#endif
+
+
+		extern const GLenum indicesPerFaceToGeometryType[4];
+		extern const GLenum bytesPerIndexToFormat[5];
+		extern const GLenum channelsToFormat[5];
+
+
 #define MAKI_EXTERN_GL_FUNC(Type, Name) extern PFNGL##Type##PROC gl##Name;
 			
 		MAKI_EXTERN_GL_FUNC(ACTIVETEXTURE, ActiveTexture);
+		MAKI_EXTERN_GL_FUNC(COMPRESSEDTEXIMAGE2D, CompressedTexImage2D);
 		MAKI_EXTERN_GL_FUNC(ATTACHSHADER, AttachShader);
 		MAKI_EXTERN_GL_FUNC(BINDATTRIBLOCATION, BindAttribLocation);
 		MAKI_EXTERN_GL_FUNC(BINDBUFFER, BindBuffer);

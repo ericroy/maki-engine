@@ -7,7 +7,42 @@ namespace Maki
 {
 	namespace OGL
 	{
-			
+		
+		bool _Failed()
+		{
+			GLenum error = glGetError();
+			if(error != GL_NONE) {
+				Console::Error("OGL error: %s", (const char *)gluErrorString(error));
+				return false;
+			}
+			return true;
+		}
+
+		const GLenum indicesPerFaceToGeometryType[4] = {
+			GL_INVALID_ENUM,
+			GL_POINTS,
+			GL_LINES,
+			GL_TRIANGLES,
+		};
+	
+		const GLenum bytesPerIndexToFormat[5] = {
+			GL_INVALID_ENUM,
+			GL_INVALID_ENUM,
+			GL_UNSIGNED_SHORT,
+			GL_INVALID_ENUM,
+			GL_UNSIGNED_INT,
+		};
+
+		const GLenum channelsToFormat[5] = {
+			GL_INVALID_ENUM,
+			GL_ALPHA,
+			GL_RG,
+			GL_INVALID_ENUM,			// 3 channels texture not supported
+			GL_RGBA
+		};
+
+
+
 #define MAKI_DECLARE_GL_FUNC(Type, Name) PFNGL##Type##PROC gl##Name;
 #define MAKI_DEFINE_GL_FUNC(Name) gl##Name = get_func(gl##Name, "gl"#Name);
 
@@ -19,6 +54,7 @@ namespace Maki
 		}
 			
 		MAKI_DECLARE_GL_FUNC(ACTIVETEXTURE, ActiveTexture);
+		MAKI_DECLARE_GL_FUNC(COMPRESSEDTEXIMAGE2D, CompressedTexImage2D);
 		MAKI_DECLARE_GL_FUNC(ATTACHSHADER, AttachShader);
 		MAKI_DECLARE_GL_FUNC(BINDATTRIBLOCATION, BindAttribLocation);
 		MAKI_DECLARE_GL_FUNC(BINDBUFFER, BindBuffer);

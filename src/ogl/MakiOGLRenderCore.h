@@ -65,10 +65,7 @@ namespace Maki
 			uint32 windowWidth;
 			uint32 windowHeight;
 
-
 			bool vsync;
-			uint32 maxVertexFormatsPerVertexShader;
-
 			void *nullArray[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
 		};
 

@@ -24,7 +24,7 @@ namespace Maki
 
 
 		ShaderProgram::ShaderProgram()
-			: vertexShader(), pixelShader(), variant(Variant_Normal)
+			: vertexShader(), pixelShader(), variant(Variant_Normal), handle(0)
 		{
 			for(uint32 i = 0; i < VariantCount-1; i++) {
 				variants[i] = HANDLE_NONE;

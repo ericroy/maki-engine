@@ -22,20 +22,17 @@ namespace Maki
 			uint32 bytesPerIndex;
 			GLenum indexDataType;
 			GLenum geometryType;
+
+			void DeleteBuffers();
 		};
 
 		struct GPUVertexShader
 		{
 		public:
-			GPUVertexShader(uint32 vertexFormatsPerVertexShader);
+			GPUVertexShader();
 			~GPUVertexShader();
 
 			GLuint vs;
-			/*ID3D11Buffer *perFrameConstants;
-			ID3D11Buffer *perObjectConstants;
-			ID3D11Buffer *materialConstants;*/
-			char *blob;
-			uint32 blobSize;
 		};
 
 		struct GPUPixelShader
@@ -44,9 +41,6 @@ namespace Maki
 			~GPUPixelShader();
 			
 			GLuint ps;
-			/*ID3D11Buffer *perFrameConstants;
-			ID3D11Buffer *perObjectConstants;
-			ID3D11Buffer *materialConstants;*/
 		};
 
 		struct GPUTexture
@@ -54,14 +48,7 @@ namespace Maki
 			GPUTexture();
 			~GPUTexture();
 
-			//ID3D11ShaderResourceView *shaderResourceView;
-			//ID3D11SamplerState *samplerState;
-
-			// Only set if this was created as a depth target
-			//ID3D11DepthStencilView *depthStencilView;
-
-			// Only set if this was created as a render target
-			//ID3D11RenderTargetView *renderTargetView;
+			GLuint tex;
 		};
 
 	} // namespace OGL

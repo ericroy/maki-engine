@@ -6,13 +6,21 @@ namespace Maki
 	namespace OGL
 	{
 
-		GPUVertexShader::GPUVertexShader(uint32 vertexFormatsPerVertexShader)
-			: blob(nullptr),
-			blobSize(0),
-			vs(0)
-			//perFrameConstants(nullptr),
-			//perObjectConstants(nullptr),
-			//materialConstants(nullptr)
+		void Buffer::DeleteBuffers()
+		{
+			if(vbos[0] != 0) {
+				glDeleteBuffers(1, &vbos[0]);
+			}
+			if(vbos[1] != 0) {
+				glDeleteBuffers(1, &vbos[1]);
+			}
+		}
+
+
+
+
+		GPUVertexShader::GPUVertexShader()
+			: vs(0)
 		{
 		}
 
@@ -21,10 +29,6 @@ namespace Maki
 			if(vs != 0) {
 				glDeleteShader(vs);
 			}
-			SAFE_FREE(blob);
-			//SAFE_RELEASE(perFrameConstants);
-			//SAFE_RELEASE(perObjectConstants);
-			//SAFE_RELEASE(materialConstants);
 		}
 
 
@@ -33,9 +37,6 @@ namespace Maki
 
 		GPUPixelShader::GPUPixelShader()
 			: ps(0)
-			//perFrameConstants(nullptr),
-			//perObjectConstants(nullptr),
-			//materialConstants(nullptr)
 		{
 		}
 
@@ -44,9 +45,6 @@ namespace Maki
 			if(ps != 0) {
 				glDeleteShader(ps);
 			}
-			//SAFE_RELEASE(perFrameConstants);
-			//SAFE_RELEASE(perObjectConstants);
-			//SAFE_RELEASE(materialConstants);
 		}
 			
 
@@ -54,19 +52,15 @@ namespace Maki
 
 
 		GPUTexture::GPUTexture()
-			//: shaderResourceView(nullptr),
-			//samplerState(nullptr),
-			//depthStencilView(nullptr),
-			//renderTargetView(nullptr)
+			: tex(0)
 		{
 		}
 
 		GPUTexture::~GPUTexture()
 		{
-			//SAFE_RELEASE(shaderResourceView);
-			//SAFE_RELEASE(samplerState);
-			//SAFE_RELEASE(depthStencilView);
-			//SAFE_RELEASE(renderTargetView);
+			if(tex != 0) {
+				glDeleteTextures(1, &tex);
+			}
 		}
 
 	} // namespace OGL

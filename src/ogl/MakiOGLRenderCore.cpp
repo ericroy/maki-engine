@@ -17,7 +17,6 @@ namespace Maki
 		{
 			memset(nullArray, 0, sizeof(nullArray));
 			vsync = config->GetBool("engine.vertical_sync", true);
-			maxVertexFormatsPerVertexShader = config->GetUint("engine.max_vertex_formats_per_vertex_shader", 6);
 
 			// -1 allows late swaps to happen immediately
 			SDL_GL_SetSwapInterval(vsync ? -1 : 0);
@@ -49,7 +48,7 @@ namespace Maki
 
 			// Render a blank frame so we don't see a flash of white on startup
 			glClearColor(0, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			SDL_GL_SwapWindow(window->window);
 		}
 
@@ -96,7 +95,7 @@ namespace Maki
 			// Cull mode / wire frame mode
 			SetRasterizerState(state.cullMode, state.wireFrame);
 
-			//const Buffer *currentBuffer = nullptr;
+			const Buffer *currentBuffer = nullptr;
 			uint32 currentLayer = 0;
 		
 			uint32 currentTranslucencyType = DrawCommand::TranslucencyType_Opaque;
@@ -129,8 +128,8 @@ namespace Maki
 					shader = ShaderProgramManager::Get(h);
 				}
 
-				//const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-				//const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+				const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+				const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
 
 
 				//D3D11_MAPPED_SUBRESOURCE mapped;
@@ -185,9 +184,9 @@ namespace Maki
 					//ID3D11SamplerState *shadowSamplers[RenderState::MAX_SHADOW_LIGHTS];
 					for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
 						if(state.shadowMaps[i] != HANDLE_NONE) {
-							//GPUTexture *tex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
-							//shadowViews[i] = tex->shaderResourceView;
-							//shadowSamplers[i] = tex->samplerState;
+							GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
+							//shadowViews[i] = gtex->shaderResourceView;
+							//shadowSamplers[i] = gtex->samplerState;
 						} else {
 							//shadowViews[i] = nullptr;
 							//shadowSamplers[i] = nullptr;
@@ -198,7 +197,7 @@ namespace Maki
 
 					currentMaterial = HANDLE_NONE;
 					currentTextureSet = HANDLE_NONE;
-					//currentBuffer = nullptr;
+					currentBuffer = nullptr;
 					setLayout = true;
 				}
 
@@ -255,14 +254,14 @@ namespace Maki
 				}
 
 				// Bind buffers again if they have changed
-				//const Buffer *b = (Buffer *)MeshManager::Get(dc->mesh)->GetBuffer();
-				//if(currentBuffer != b) {
-					//uint32 stride = vf->GetStride();
-					//uint32 offset = 0;
+				const Buffer *b = (Buffer *)MeshManager::Get(dc->mesh)->GetBuffer();
+				if(currentBuffer != b) {
+					uint32 stride = vf->GetStride();
+					uint32 offset = 0;
 					//context->IASetVertexBuffers(0, 1, &b->vbos[0], &stride, &offset);
 					//context->IASetIndexBuffer(b->vbos[1], (DXGI_FORMAT)b->indexDataType, 0);
-					//currentBuffer = b;
-				//}
+					currentBuffer = b;
+				}
 
 				//context->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)b->geometryType);
 				//context->DrawIndexed(b->indicesPerFace*b->faceCount, 0, 0);
@@ -282,35 +281,42 @@ namespace Maki
 		{
 			switch(test) {
 			case RenderState::DepthTest_Less:
-				//context->OMSetDepthStencilState(write ? depthStateLessWrite : depthStateLess, 1);
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LESS);
 				break;
 			case RenderState::DepthTest_Equal:
-				//context->OMSetDepthStencilState(write ? depthStateEqualWrite : depthStateEqual, 1);
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_EQUAL);
 				break;
 			case RenderState::DepthTest_LessEqual:
-				//context->OMSetDepthStencilState(write ? depthStateLessEqualWrite : depthStateLessEqual, 1);
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LEQUAL);
 				break;
 			case RenderState::DepthTest_Disabled:
 			default:
-				//context->OMSetDepthStencilState(write ? depthStateWrite : depthState, 1);
+				glDisable(GL_DEPTH_TEST);
 				break;
 			}
+			MAKI_OGL_FAILED();
 		}
 
 		void OGLRenderCore::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
 		{
 			switch(cullMode) {
 			case RenderState::CullMode_Front:
-				//context->RSSetState(wireFrame ? rasterizerStateWireFrameCullFront : rasterizerStateCullFront);
+				glEnable(GL_CULL_FACE);
+				glCullFace(GL_CCW);
 				break;
 			case RenderState::CullMode_Back:
-				//context->RSSetState(wireFrame ? rasterizerStateWireFrameCullBack : rasterizerStateCullBack);
+				glEnable(GL_CULL_FACE);
+				glCullFace(GL_CW);
 				break;
 			case RenderState::CullMode_None:
 			default:
-				//context->RSSetState(wireFrame ? rasterizerStateWireFrame : rasterizerState);
+				glDisable(GL_CULL_FACE);
 				break;
 			}
+			MAKI_OGL_FAILED();
 		}
 
 		void OGLRenderCore::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
@@ -448,167 +454,126 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			//Buffer *b = (Buffer *)buffer;
-			//if(b == nullptr) {
-			//	b = new Buffer();
-			//	memset(b, 0, sizeof(Buffer));
-			//	buffer = b;
-			//} else {
-			//	SAFE_RELEASE(b->vbos[0]);
-			//	SAFE_RELEASE(b->vbos[1]);
-			//}
+			Buffer *b = (Buffer *)buffer;
+			if(b == nullptr) {
+				b = new Buffer();
+				memset(b, 0, sizeof(Buffer));
+				buffer = b;
+				glGenBuffers(2, b->vbos);
+				if(MAKI_OGL_FAILED()) {
+					goto failed;
+				}
+			} else {
+				b->DeleteBuffers();
+			}
 
-			//b->vertexCount = vertexCount;
-			//b->faceCount = faceCount;
-			//b->indicesPerFace = indicesPerFace;
-			//b->bytesPerIndex = bytesPerIndex;
+			b->vertexCount = vertexCount;
+			b->faceCount = faceCount;
+			b->indicesPerFace = indicesPerFace;
+			b->bytesPerIndex = bytesPerIndex;
 
-			//assert(indicesPerFace > 0 && indicesPerFace <= 3);
-			//b->geometryType = indicesPerFaceToGeometryType[indicesPerFace];
+			assert(indicesPerFace > 0 && indicesPerFace <= 3);
+			b->geometryType = indicesPerFaceToGeometryType[indicesPerFace];
 		
-			//assert(bytesPerIndex > 0 && bytesPerIndex <= 4 && bytesPerIndex != 3);
-			//b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
+			assert(bytesPerIndex > 0 && bytesPerIndex <= 4 && bytesPerIndex != 3);
+			b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
 
-			//// Create vertex buffer
-			//D3D11_SUBRESOURCE_DATA srd;
-			//D3D11_BUFFER_DESC bd;
-			//ZeroMemory(&bd, sizeof(bd));
-			//ZeroMemory(&srd, sizeof(srd));
-			//bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-			//bd.ByteWidth = vf->GetStride()*vertexCount;
-			//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			//if(dynamic) {
-			//	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			//}
-			//srd.pSysMem = vertexData;
-			//if(MAKI_D3D_FAILED(device->CreateBuffer(&bd, &srd, &b->vbos[0]))) {
-			//	Console::Error("Failed to create d3d vertex buffer");
-			//}
-		
-			//// Create index buffer
-			//ZeroMemory(&bd, sizeof(bd));
-			//ZeroMemory(&srd, sizeof(srd));
-			//bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-			//bd.ByteWidth = bytesPerIndex*indicesPerFace*faceCount;
-			//bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			//if(dynamic) {
-			//	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			//}
-			//srd.pSysMem = indexData;
-			//if(MAKI_D3D_FAILED(device->CreateBuffer(&bd, &srd, &b->vbos[1]))) {
-			//	Console::Error("Failed to create d3d index buffer");
-			//}
+			int32 stride = vf->GetStride();
+
+			// Create vertex buffer
+			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
+			glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
+
+			// Create index buffer
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
 
 			return buffer;
+
+failed:
+			if(b != nullptr) {
+				b->DeleteBuffers();
+				delete b;
+			}
+			return nullptr;
 		}
 
 		void OGLRenderCore::FreeBuffer(void *buffer)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*if(buffer != nullptr) {
+			if(buffer != nullptr) {
 				Buffer *b = (Buffer *)buffer;
-				SAFE_RELEASE(b->vbos[0]);
-				SAFE_RELEASE(b->vbos[1]);
+				b->DeleteBuffers();
 				delete b;
-			}*/
+			}
 		}
 
 		bool OGLRenderCore::CreatePixelShader(Shader *ps)
 		{
-	//		GPUPixelShader *gps = new GPUPixelShader();
+			GPUPixelShader *gps = new GPUPixelShader();
 
-	//		if(MAKI_D3D_FAILED(device->CreatePixelShader(ps->programData, ps->programDataBytes, nullptr, &gps->ps))) {
-	//			goto failed;
-	//		}
+			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
 
-	//		// Allocate buffers for constants
-	//		D3D11_BUFFER_DESC bufferDesc;
-	//		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	//		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	//		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//		bufferDesc.MiscFlags = 0;
-	//		bufferDesc.StructureByteStride = 0;
+			int32 length = (int32)ps->programDataBytes;
+			glShaderSource(gps->ps, 1, (const GLchar **)&ps->programData, &length);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
+			
+			glCompileShader(gps->ps);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
 
-	//#		define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
-	//		if(ps->frameUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->engineFrameUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->perFrameConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//		if(ps->objectUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->engineObjectUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->perObjectConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//		if(ps->materialUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->materialUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->materialConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//#		undef ROUND_SIXTEEN
+			ps->handle = (intptr_t)gps;
+			return true;
 
-	//		ps->handle = (intptr_t)gps;
-	//		return true;
-
-	//failed:
-	//		SAFE_DELETE(gps);
+failed:
+			if(gps != nullptr && gps->ps != 0) {
+				glDeleteShader(gps->ps);
+			}
+			SAFE_DELETE(gps);
 			return false;
 		}
 
 		bool OGLRenderCore::CreateVertexShader(Shader *vs)
 		{
-	//		GPUVertexShader *gvs = new GPUVertexShader(maxVertexFormatsPerVertexShader);
+			GPUVertexShader *gvs = new GPUVertexShader();
 
-	//		// Since vertex shader keeps a pointer to this data, we will not delete the buffer as we exit the function
-	//		char *blob = (char *)Allocator::Malloc(vs->programDataBytes);
-	//		memcpy(blob, vs->programData, vs->programDataBytes);
-	//		gvs->blob = blob;
-	//		gvs->blobSize = vs->programDataBytes;
-	//
-	//		if(MAKI_D3D_FAILED(device->CreateVertexShader(gvs->blob, gvs->blobSize, nullptr, &gvs->vs))) {
-	//			goto failed;
-	//		}
+			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
 
-	//		// Allocate buffers for constants
-	//		D3D11_BUFFER_DESC bufferDesc;
-	//		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	//		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	//		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//		bufferDesc.MiscFlags = 0;
-	//		bufferDesc.StructureByteStride = 0;
+			int32 length = (int32)vs->programDataBytes;
+			glShaderSource(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
+			
+			glCompileShader(gvs->vs);
+			if(MAKI_OGL_FAILED()) {
+				goto failed;
+			}
 
-	//#		define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
-	//		if(vs->frameUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->engineFrameUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->perFrameConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//		if(vs->objectUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->engineObjectUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->perObjectConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//		if(vs->materialUniformBufferLocation != -1) {
-	//			bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->materialUniformBytes);
-	//			if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->materialConstants))) {
-	//				goto failed;
-	//			}
-	//		}
-	//#		undef ROUND_SIXTEEN
+			vs->handle = (intptr_t)gvs;
+			return true;
 
-	//		vs->handle = (intptr_t)gvs;
-	//		return true;
-
-	//failed:
-	//		SAFE_DELETE(gvs);
+failed:
+			if(gvs != nullptr && gvs->vs != 0) {
+				glDeleteShader(gvs->vs);
+			}
+			SAFE_DELETE(gvs);
 			return false;
 		}
 
@@ -624,7 +589,27 @@ namespace Maki
 				return false;
 			}
 
+			GLuint program = glCreateProgram();
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			glAttachShader(program, (GLuint)s->vertexShader.handle);
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			glAttachShader(program, (GLuint)s->pixelShader.handle);
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			glLinkProgram(program);
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			s->handle = (intptr_t)program;
+
 			return true;
+
+failed:
+			if(program != 0) {
+				glDeleteProgram(program);
+			}
+			return false;
 		}
 
 	
@@ -633,71 +618,32 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*ID3D11Texture2D *tex = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
-			ID3D11SamplerState *samplerState = nullptr;
-
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
 				goto failed;
 			}
 
-			D3D11_SAMPLER_DESC samplerDesc;
-			ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
-				goto failed;
-			}
+			GLuint tex = 0;
+			glGenTextures(1, &tex);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			D3D11_TEXTURE2D_DESC textureDesc;
-			ZeroMemory(&textureDesc, sizeof(textureDesc));
-			textureDesc.Width = t->width;
-			textureDesc.Height = t->height;
-			textureDesc.Format = channelsToFormat[channels];
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 1;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-			textureDesc.CPUAccessFlags = 0;
-			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
-				goto failed;
-			}
-
-			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResViewDesc;
-			ZeroMemory(&shaderResViewDesc, sizeof(shaderResViewDesc));
-			shaderResViewDesc.Format = textureDesc.Format;
-			shaderResViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			shaderResViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
-				goto failed;
-			}
-		
-		
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, channels, t->width, t->height, 0, channelsToFormat[channels], GL_UNSIGNED_BYTE, nullptr);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
+			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
-
-			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
-			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);*/
+failed:
+			if(tex != 0) {
+				glDeleteTextures(1, &tex);
+			}
 			return false;
 		}
 
@@ -705,77 +651,27 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*ID3D11SamplerState *samplerState = nullptr;
-			ID3D11Texture2D *tex = nullptr;
-			ID3D11RenderTargetView *renderTargetView = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
+			GLuint tex = 0;
+			glGenTextures(1, &tex);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->width, t->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			D3D11_SAMPLER_DESC samplerDesc;
-			ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
-				goto failed;
-			}
-
-			D3D11_TEXTURE2D_DESC textureDesc;
-			ZeroMemory(&textureDesc, sizeof(textureDesc));
-			textureDesc.Width = t->width;
-			textureDesc.Height = t->height;
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 1;
-			textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
-			textureDesc.CPUAccessFlags = 0;
-			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
-				goto failed;
-			}
-
-			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-			ZeroMemory(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
-			renderTargetViewDesc.Format = textureDesc.Format;
-			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(tex, &renderTargetViewDesc, &renderTargetView))) {
-				Console::Error("CreateRenderTargetView failed");
-				goto failed;
-			}
-
-			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-			ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
-			shaderResourceViewDesc.Format = textureDesc.Format;
-			shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
-				goto failed;
-			}
-		
 			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			gtex->renderTargetView = renderTargetView;
+			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
-
-			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
-			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
-			SAFE_RELEASE(renderTargetView);*/
+failed:
+			if(tex != 0) {
+				glDeleteTextures(1, &tex);
+			}
 			return false;
 		}
 
@@ -783,80 +679,27 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*ID3D11SamplerState *samplerState = nullptr;
-			ID3D11Texture2D *tex = nullptr;
-			ID3D11DepthStencilView *depthStencilView = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
+			GLuint tex = 0;
+			glGenTextures(1, &tex);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_TEXTURE_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_TEXTURE_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, t->width, t->height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			D3D11_SAMPLER_DESC samplerDesc;
-			ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			samplerDesc.BorderColor[0] = 1.0f;
-			samplerDesc.BorderColor[1] = 1.0f;
-			samplerDesc.BorderColor[2] = 1.0f;
-			samplerDesc.BorderColor[3] = 1.0f;
-
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
-				goto failed;
-			}
-
-			D3D11_TEXTURE2D_DESC textureDesc;
-			ZeroMemory(&textureDesc, sizeof(textureDesc));
-			textureDesc.Width = t->width;
-			textureDesc.Height = t->height;
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 1;
-			textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE;
-			textureDesc.CPUAccessFlags = 0;
-			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
-				goto failed;
-			}
-
-			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-			ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(tex, &depthStencilViewDesc, &depthStencilView))) {
-				Console::Error("CreateDepthStencilView failed");
-				goto failed;
-			}
-
-			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-			ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
-			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-			shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			shaderResourceViewDesc.Texture2D.MipLevels = 1;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
-				goto failed;
-			}
-		
 			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			gtex->depthStencilView = depthStencilView;
+			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
-
-			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
-			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
-			SAFE_RELEASE(depthStencilView);*/
+failed:
+			if(tex != 0) {
+				glDeleteTextures(1, &tex);
+			}
 			return false;
 		}
 
@@ -864,46 +707,38 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*ID3D11Texture2D *tex = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
-			ID3D11SamplerState *samplerState = nullptr;
-		
-			if(MAKI_D3D_FAILED(DirectX::CreateDDSTextureFromMemory(device, (uint8 *)data, dataLength, (ID3D11Resource **)&tex, &shaderResourceView))) {
-				Console::Error("Failed to create texture from memory");
+			// TODO:
+			// Need to determine num channels here - probably need to borrow code from directx dds loader
+			uint32 channels = 4;
+			if(channels == 0 || channels > 4 || channels == 3) {
+				Console::Error("Unsupported number of channels in image: %d", channels);
 				goto failed;
 			}
 
-			D3D11_TEXTURE2D_DESC desc;
-			tex->GetDesc(&desc);
-			t->width = desc.Width;
-			t->height = desc.Height;
+			GLuint tex = 0;
+			glGenTextures(1, &tex);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			D3D11_SAMPLER_DESC samplerDesc;
-			ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
-				goto failed;
-			}
-		
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// TODO:
+			// Need to determine internal format here - probably need to borrow code from directx dds loader
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, t->width, t->height, 0, dataLength, data);
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
 			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
+			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
-
-			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
-			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);*/
+failed:
+			if(tex != 0) {
+				glDeleteTextures(1, &tex);
+			}
 			return false;
 		}
 
@@ -911,44 +746,48 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 		
-			/*GPUTexture *tex = (GPUTexture *)t->handle;
+			GPUTexture *gtex = (GPUTexture *)t->handle;
+			glBindTexture(GL_TEXTURE_2D, gtex->tex);
+			MAKI_OGL_FAILED();
 
-			D3D11_BOX box;
-			box.left = dstX;
-			box.right = dstX+srcWidth;
-			box.top = dstY;
-			box.bottom = dstY+srcHeight;
-			box.front = 0;
-			box.back = 1;
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			MAKI_OGL_FAILED();
 
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, srcPitch/channels);
+			MAKI_OGL_FAILED();
+
+			GLenum format = channelsToFormat[channels];
+
+			// Find the data at point (srcX, srcY) in the source image
 			char *p = srcData + (srcY*srcPitch) + (srcX*channels);
 
-			ID3D11Resource *res = nullptr;
-			tex->shaderResourceView->GetResource(&res);
-			context->UpdateSubresource(res, 0, &box, p, srcPitch, srcPitch);
-			SAFE_RELEASE(res);*/
+			glTexSubImage2D(GL_TEXTURE_2D, 0, dstX, dstY, (GLsizei)srcWidth, (GLsizei)srcHeight, format, GL_UNSIGNED_BYTE, p);
+			MAKI_OGL_FAILED();
+
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+			MAKI_OGL_FAILED();
 		}
 
 		void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
+			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
 			SAFE_DELETE(gvs);
 			s->vertexShader.handle = (intptr_t)nullptr;
 
 			GPUPixelShader *gps = (GPUPixelShader *)s->pixelShader.handle;
 			SAFE_DELETE(gps);
-			s->pixelShader.handle = (intptr_t)nullptr;*/
+			s->pixelShader.handle = (intptr_t)nullptr;
 		}
 
 		void OGLRenderCore::DeleteTexture(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			/*GPUTexture *gtex = (GPUTexture *)t->handle;
+			GPUTexture *gtex = (GPUTexture *)t->handle;
 			SAFE_DELETE(gtex);
-			t->handle = (intptr_t)nullptr;*/
+			t->handle = (intptr_t)nullptr;
 		}
 
 
