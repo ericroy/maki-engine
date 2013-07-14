@@ -21,9 +21,6 @@
     <ClInclude Include="src\ogl\ogl_stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ogl\glext.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ogl\MakiOGLCommon.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -31,6 +28,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ogl\MakiOGLRenderCore.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ogl\glext.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

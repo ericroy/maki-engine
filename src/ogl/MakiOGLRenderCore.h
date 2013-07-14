@@ -1,6 +1,10 @@
 #pragma once
 #include "ogl/ogl_stdafx.h"
-#include "ogl/MakiOGLCommon.h"
+
+#pragma comment(lib, "MakiCore.lib")
+#pragma comment(lib, "SDL2.lib")
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glu32.lib")
 
 namespace Maki
 {
@@ -21,7 +25,7 @@ namespace Maki
 
 	namespace OGL
 	{
-	
+
 		class OGLRenderCore : public Core::RenderCore
 		{
 		private:
@@ -59,14 +63,25 @@ namespace Maki
 			bool CreatePixelShader(Core::Shader *ps);
 			bool CreateVertexShader(Core::Shader *vs);
 
+			void AcquireContextInRenderThread();
+			void AcquireContextInMainThread();
+
 		private:
 			Core::Window *window;
 			SDL_GLContext context;
 			uint32 windowWidth;
 			uint32 windowHeight;
 
+			GLuint frameBuffer;
+
+			GLuint defaultRenderTarget;
+			GLuint defaultDepthStencil;
+
+			GLuint currentRenderTarget;
+			GLuint currentDepthStencil;
+
 			bool vsync;
-			void *nullArray[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
+			bool contextCurrentInRenderThread;
 		};
 
 

@@ -1,6 +1,11 @@
 #pragma once
 #include "d3d/d3d_stdafx.h"
 
+#pragma comment(lib, "MakiCore.lib")
+#pragma comment(lib, "SDL2.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+
 namespace Maki
 {
 	namespace Core

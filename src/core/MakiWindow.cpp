@@ -219,16 +219,10 @@ namespace Maki
 				SDL_ClearError();
 			}			
 			
-			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_SHOWN;
+			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_RESIZABLE|SDL_WINDOW_SHOWN;
 
 			if(renderCoreType == RenderCore::Type_OGL) {
 				flags |= SDL_WINDOW_OPENGL;
-				int32 oglMajorVersion = config->GetInt("engine.ogl_major_version", 2);
-				int32 oglMinorVersion = config->GetInt("engine.ogl_minor_version", 1);
-				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, oglMajorVersion);
-				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, oglMinorVersion);
-				SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-				SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 			}
 
 			fullscreen = config->GetBool("engine.full_screen", false);
