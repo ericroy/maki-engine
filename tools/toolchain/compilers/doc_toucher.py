@@ -1,10 +1,10 @@
+import os
 import time
 
-def touch(in_path, out_path, *args):
+def touch(src, dst, *args):
     now = time.time()
+    touch_path = os.path.splitext(src)[0]+'.mshad'
     try:
-        os.utime(os.path.splitext(in_path)[0]+'.hsh', (now, now))
+        os.utime(touch_path, (now, now))
     except:
         pass
-    # Didn't produce output file
-    return False

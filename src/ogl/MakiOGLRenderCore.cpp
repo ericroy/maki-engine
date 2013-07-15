@@ -10,20 +10,24 @@ namespace Maki
 	namespace OGL
 	{
 
+		GLvoid APIENTRY OGLDebugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
+		{
+			Console::Info("GL DEBUG: %s", message);
+		}
 
 		OGLRenderCore::OGLRenderCore(Window *window, const Config *config)
 			:	RenderCore(),
 			window(window),
-			context(nullptr),
+			mainThreadContext(nullptr),
+			renderThreadContext(nullptr),
 			frameBuffer(0),
 			defaultRenderTarget(0),
 			defaultDepthStencil(0),
 			currentRenderTarget(0),
-			currentDepthStencil(0),
-			contextCurrentInRenderThread(false)
+			currentDepthStencil(0)
 		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 2));
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 1));
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 3));
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 0));
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -34,23 +38,28 @@ namespace Maki
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
 
-
 			vsync = config->GetBool("engine.vertical_sync", true);
 			// -1 allows late swaps to happen immediately
 			SDL_GL_SetSwapInterval(vsync ? -1 : 0);
+
+			mainThreadContext = SDL_GL_CreateContext(window->window);
+
+			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+			renderThreadContext = SDL_GL_CreateContext(window->window);
+
+			SDL_GL_MakeCurrent(window->window, mainThreadContext);
 		}
 
 		OGLRenderCore::~OGLRenderCore() {
-			if(context != nullptr) {
-				SDL_GL_MakeCurrent(window->window, context);
-
+			if(mainThreadContext != nullptr) {
 				if(frameBuffer != 0) {
 					glDeleteFramebuffers(1, &frameBuffer);
-				}
-
-				SDL_GL_DeleteContext(context);
+				}			
+				SDL_GL_DeleteContext(mainThreadContext);
 			}
-
+			if(renderThreadContext != nullptr) {
+				SDL_GL_DeleteContext(renderThreadContext);
+			}			
 			Console::Info("OpenGL renderer destroyed");
 		}
 
@@ -58,15 +67,14 @@ namespace Maki
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			assert(context == nullptr);
-			context = SDL_GL_CreateContext(window->window);
-			contextCurrentInRenderThread = true;
+			SDL_GL_MakeCurrent(window->window, renderThreadContext);
+
 			DefineGLFunctions();
-			MAKI_OGL_FAILED();		
+			MAKI_OGL_FAILED();
 
 #if _DEBUG
-			//glDebugMessageCallbackARB(OGLDebugCallback, nullptr);
-			//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			glDebugMessageCallbackARB(OGLDebugMessageHandler, nullptr);
 #endif
 
 			Console::Info("GL Version: %s", (const char *)glGetString(GL_VERSION));
@@ -94,6 +102,7 @@ namespace Maki
 			MAKI_OGL_FAILED();
 
 			SDL_GL_SwapWindow(window->window);
+			MAKI_OGL_FAILED();
 		}
 
 		void OGLRenderCore::Resized(uint32 newWidth, uint32 newHeight)
@@ -135,11 +144,6 @@ namespace Maki
 		void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			Buffer *b = (Buffer *)buffer;
 			if(b == nullptr) {
@@ -151,9 +155,7 @@ namespace Maki
 			}
 
 			glGenBuffersARB(2, b->vbos);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			b->vertexCount = vertexCount;
 			b->faceCount = faceCount;
@@ -171,19 +173,14 @@ namespace Maki
 			// Create vertex buffer
 			glBindBufferARB(GL_ARRAY_BUFFER, b->vbos[0]);
 			glBufferDataARB(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			// Create index buffer
 			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 			glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			return buffer;
-
 failed:
 			if(b != nullptr) {
 				b->DeleteBuffers();
@@ -195,11 +192,6 @@ failed:
 		void OGLRenderCore::FreeBuffer(void *buffer)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			if(buffer != nullptr) {
 				Buffer *b = (Buffer *)buffer;
@@ -212,10 +204,10 @@ failed:
 		{
 			GPUPixelShader *gps = new GPUPixelShader();
 
-			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse("glsl", (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
 			if(parseData->error_count > 0) {
 				for(int32 i = 0; i < parseData->error_count; i++) {
-					Console::Error("MOJOSHADER error: %s", parseData->errors[i].error);
+					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
 				}
 				goto failed;
 			}
@@ -251,10 +243,10 @@ failed:
 		{
 			GPUVertexShader *gvs = new GPUVertexShader();
 
-			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse("glsl", (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
 			if(parseData->error_count > 0) {
 				for(int32 i = 0; i < parseData->error_count; i++) {
-					Console::Error("MOJOSHADER error: %s", parseData->errors[i].error);
+					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
 				}
 				goto failed;
 			}
@@ -288,11 +280,6 @@ failed:
 		bool OGLRenderCore::CreateShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			if(!CreateVertexShader(&s->vertexShader)) {
 				return false;
@@ -329,11 +316,6 @@ failed:
 		bool OGLRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
@@ -367,11 +349,6 @@ failed:
 		bool OGLRenderCore::CreateRenderTarget(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -389,7 +366,6 @@ failed:
 			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
 			return true;
-
 failed:
 			if(tex != 0) {
 				glDeleteTextures(1, &tex);
@@ -400,11 +376,6 @@ failed:
 		bool OGLRenderCore::CreateDepthTexture(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -433,11 +404,6 @@ failed:
 		bool OGLRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			// TODO:
 			// Need to determine num channels here - probably need to borrow code from directx dds loader
@@ -478,12 +444,7 @@ failed:
 		void OGLRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
-		
+
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			glBindTexture(GL_TEXTURE_2D, gtex->tex);
 			MAKI_OGL_FAILED();
@@ -509,11 +470,6 @@ failed:
 		void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
 			SAFE_DELETE(gvs);
@@ -527,11 +483,6 @@ failed:
 		void OGLRenderCore::DeleteTexture(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			if(contextCurrentInRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = false;
-			}
-			assert(!MAKI_OGL_FAILED());
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			SAFE_DELETE(gtex);

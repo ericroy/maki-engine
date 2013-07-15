@@ -53,7 +53,6 @@ namespace Maki
 			SafeQueue<RenderPayload> output;
 
 		protected:
-			std::mutex mutex;
 			uint32 windowWidth;
 			uint32 windowHeight;
 		};
@@ -63,9 +62,7 @@ namespace Maki
 		void RenderCore::GenericDraw(const RenderState &state, const DrawCommandList &commands)
 		{
 			Derived *derived = static_cast<Derived *>(this);
-			
-			std::lock_guard<std::mutex> lock(mutex);
-			derived->MakeContextCurrent(true);
+			derived->AcquireContext();
 
 			// Resize screen buffers if necessary
 			if(windowWidth != state.windowWidth || windowHeight != state.windowHeight) {
@@ -206,6 +203,7 @@ namespace Maki
 			}
 
 			derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
+			derived->ReleaseContext();
 		}
 
 	} // namespace Core

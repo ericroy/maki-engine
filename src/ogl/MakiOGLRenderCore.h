@@ -38,7 +38,9 @@ namespace Maki
 			OGLRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~OGLRenderCore();
 			void Init();
-			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) { GenericDraw<OGLRenderCore>(state, commands); }
+			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) {
+				GenericDraw<OGLRenderCore>(state, commands);
+			}
 			void Present();
 			void Resized(uint32 width, uint32 height);
 
@@ -55,7 +57,8 @@ namespace Maki
 			void DeleteTexture(Core::Texture *t);
 
 			// Non-virtual interface
-			inline void MakeContextCurrent(bool isRenderThread);
+			inline void AcquireContext();
+			inline void ReleaseContext();
 			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
 			inline void SetViewport(const Core::Rect &viewPortRect);
 			inline void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
@@ -85,7 +88,9 @@ namespace Maki
 
 		private:
 			Core::Window *window;
-			SDL_GLContext context;
+			SDL_GLContext renderThreadContext;
+			SDL_GLContext mainThreadContext;
+
 			uint32 windowWidth;
 			uint32 windowHeight;
 
@@ -98,7 +103,7 @@ namespace Maki
 			GLuint currentDepthStencil;
 
 			bool vsync;
-			bool contextCurrentInRenderThread;
+			std::mutex mutex;
 		};
 
 
@@ -107,13 +112,14 @@ namespace Maki
 
 
 
-		inline void OGLRenderCore::MakeContextCurrent(bool isRenderThread)
+		inline void OGLRenderCore::AcquireContext()
 		{
-			if(contextCurrentInRenderThread != isRenderThread) {
-				SDL_GL_MakeCurrent(window->window, context);
-				contextCurrentInRenderThread = isRenderThread;
-			}
-			MAKI_OGL_FAILED();
+			mutex.lock();
+		}
+
+		inline void OGLRenderCore::ReleaseContext()
+		{
+			mutex.unlock();
 		}
 
 		inline void OGLRenderCore::SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil)

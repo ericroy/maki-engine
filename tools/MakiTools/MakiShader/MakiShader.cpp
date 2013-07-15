@@ -13,6 +13,7 @@
 
 using namespace std;
 using namespace Maki;
+using namespace Maki::Core;
 
 bool Compile(Document::Node *shaderNode, const char *filePath, const char *compTarget, const char *entryPoint, const vector< pair<string, string> > &defines, const char *variantName) {
 	

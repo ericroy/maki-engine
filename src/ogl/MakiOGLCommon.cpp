@@ -74,7 +74,7 @@ namespace Maki
 		{
 			GLenum error = glGetError();
 			if(error != GL_NONE) {
-				Console::Error("OGL error: %s", (const char *)gluErrorString(error));
+				Console::Error("OGL: %s", (const char *)gluErrorString(error));
 				return true;
 			}
 			return false;

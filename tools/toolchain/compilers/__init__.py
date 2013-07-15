@@ -17,4 +17,6 @@ COMPILERS = {
     'jpg': shutil.copyfile,
     'ttf': shutil.copyfile,
     'lua': compile_lua.compile,
+    'ps': doc_toucher.touch,
+    'vs': doc_toucher.touch,
 }

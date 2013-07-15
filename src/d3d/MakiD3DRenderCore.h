@@ -53,7 +53,8 @@ namespace Maki
 			void DeleteTexture(Core::Texture *t);
 
 			// Non-virtual interface
-			inline void MakeContextCurrent(bool isRenderThread);
+			inline void AcquireContext();
+			inline void ReleaseContext();
 			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
 			inline void SetViewport(const Core::Rect &viewPortRect);
 			inline void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
@@ -114,6 +115,7 @@ namespace Maki
 			bool vsync;
 			uint32 maxVertexFormatsPerVertexShader;
 			void *nullArray[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
+			std::mutex mutex;
 		};
 
 
@@ -121,9 +123,14 @@ namespace Maki
 
 
 
-		inline void D3DRenderCore::MakeContextCurrent(bool isRenderThread)
+		inline void D3DRenderCore::AcquireContext()
 		{
-			// Do nothing, access to the context is already synchronized with a mutex.  That's all we require.  This is more for OGL
+			mutex.lock();
+		}
+
+		inline void D3DRenderCore::ReleaseContext()
+		{
+			mutex.unlock();
 		}
 
 		inline void D3DRenderCore::SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil)

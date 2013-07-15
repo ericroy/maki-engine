@@ -14,7 +14,7 @@ namespace Maki
 				FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_IGNORE_INSERTS,
 					nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&errorText, 0, nullptr);
 				if(errorText != nullptr) {
-					Console::Error("D3D error: %s", errorText);
+					Console::Error("D3D: %s", errorText);
 					LocalFree((HLOCAL)errorText);
 					errorText = nullptr;
 				} else {
