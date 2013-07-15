@@ -186,20 +186,15 @@ namespace Maki
 						derived->UnbindAllTextures();
 					}
 
+					// Bind the new shader and set per-frame constants
 					derived->BindShaders(shader);
 					currentShaderProgram = dc->shaderProgram;
-
-					// Set per-frame vertex constants
 					if(shader->vertexShader.frameUniformBufferLocation != -1) {
 						derived->SetPerFrameVertexShaderConstants(state, shader);
 					}
-
-					// Set per-frame pixel constants
 					if(shader->pixelShader.frameUniformBufferLocation != -1) {
 						derived->SetPerFramePixelShaderConstants(state, shader);
 					}
-
-					// Bind shadow map resources
 					derived->BindShadowMaps(state);
 
 					currentMaterial = HANDLE_NONE;
@@ -233,12 +228,9 @@ namespace Maki
 					Matrix44 mv = state.view * matrix;
 					Matrix44 mvp = state.projection * mv;
 
-					// Set per-object vertex constants
 					if(shader->vertexShader.objectUniformBufferLocation != -1) {
 						derived->SetPerObjectVertexShaderConstants(state, shader, matrix, mv, mvp);
 					}
-
-					// Set per-object pixel constants
 					if(shader->pixelShader.objectUniformBufferLocation != -1) {
 						derived->SetPerObjectPixelShaderConstants(state, shader, matrix, mv, mvp);
 					}
@@ -251,10 +243,11 @@ namespace Maki
 					currentBuffer = b;
 				}
 
+				// Actually submit the vertex/index data
 				derived->DrawBuffer(b);
 			}
 
-			// Unbind all textures from current shader
+
 			if(currentShaderProgram != HANDLE_NONE) {
 				derived->UnbindAllTextures();
 			}
