@@ -13,17 +13,18 @@ namespace Maki
 	{
 		class VertexFormat;
 
-		enum RenderCoreType
-		{
-			RenderCoreType_D3D = 0,
-			RenderCoreType_OGL,
-		};
-
-		class RenderCoreBase : public Thread
+		class RenderCore : public Thread
 		{
 		public:
-			RenderCoreBase();
-			virtual ~RenderCoreBase();
+			enum Type
+			{
+				Type_D3D = 0,
+				Type_OGL,
+			};
+
+		public:
+			RenderCore(Type type);
+			virtual ~RenderCore();
 			void Run();
 
 			// GPU resource creation, updates, destruction
@@ -41,73 +42,28 @@ namespace Maki
 
 		protected:
 			virtual void Init() = 0;
-			virtual void Draw(const RenderState &state, const DrawCommandList &commands) = 0;
 			virtual void Present() = 0;
+			virtual void Draw(const RenderState &state, const DrawCommandList &commands) = 0;
+
+			template<class Derived>
+			void GenericDraw(const RenderState &state, const DrawCommandList &commands);
 
 		public:
 			SafeQueue<RenderPayload> input;
 			SafeQueue<RenderPayload> output;
-		};
-
-
-		template<class Derived>
-		class RenderCore : public RenderCoreBase
-		{
-		public:
-			RenderCore();
-			virtual ~RenderCore();
-
-		protected:
-			void Draw(const RenderState &state, const DrawCommandList &commands);
-
-			// Static polymorphic interface:
-			/*
-			void Init();
-			void Present();
-			void Resized(uint32 width, uint32 height);
-			void MakeContextCurrent(bool isRenderThread);
-			void SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil);
-			void SetViewport(const Rect &viewPortRect);
-			void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
-			void SetDepthState(RenderState::DepthTest depthTest, bool depthWrite);
-			void SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame);
-			void SetBlendState(bool blendingEnabled);
-			void UnbindAllTextures();
-			void BindShaders(const ShaderProgram *shader);
-			void SetPerFrameVertexShaderConstants(const RenderState &state, const ShaderProgram *shader);
-			void SetPerFramePixelShaderConstants(const RenderState &state, const ShaderProgram *shader);
-			void BindShadowMaps(const RenderState &state);
-			void SetInputLayout(const ShaderProgram *shader, const VertexFormat *vf);
-			void SetMaterialVertexShaderConstants(const ShaderProgram *shader, const Material *mat);
-			void SetMaterialPixelShaderConstants(const ShaderProgram *shader, const Material *mat);
-			void BindTextures(const TextureSet *ts);
-			void SetPerObjectVertexShaderConstants(const RenderState &state, const ShaderProgram *shader, const Matrix44 &matrix, const Matrix44 &mv, const Matrix44 &mvp);
-			void SetPerObjectPixelShaderConstants(const RenderState &state, const ShaderProgram *shader, const Matrix44 &matrix, const Matrix44 &mv, const Matrix44 &mvp);
-			void BindBuffer(void *buffer, const VertexFormat *vf);
-			void DrawBuffer(void *buffer);
-			*/
 
 		protected:
 			std::mutex mutex;
 			uint32 windowWidth;
 			uint32 windowHeight;
+
+		private:
+			Type type;
 		};
 
 
-
 		template<class Derived>
-		RenderCore<Derived>::RenderCore()
-			: RenderCoreBase()
-		{
-		}
-
-		template<class Derived>
-		RenderCore<Derived>::~RenderCore()
-		{
-		}
-
-		template<class Derived>
-		void RenderCore<Derived>::Draw(const RenderState &state, const DrawCommandList &commands)
+		void RenderCore::GenericDraw(const RenderState &state, const DrawCommandList &commands)
 		{
 			Derived *derived = static_cast<Derived *>(this);
 			

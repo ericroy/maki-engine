@@ -13,7 +13,7 @@ namespace Maki
 	{
 
 		D3DRenderCore::D3DRenderCore(Window *window, const Config *config)
-			:	RenderCore<D3DRenderCore>(),
+			:	RenderCore(Type_D3D),
 				swapChain(nullptr),
 				device(nullptr),
 				context(nullptr),

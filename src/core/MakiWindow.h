@@ -15,7 +15,7 @@ namespace Maki
 		class Window
 		{
 		public:
-			Window(RenderCoreType renderCoreType, const Config *config);
+			Window(RenderCore::Type renderCoreType, const Config *config);
 			virtual ~Window();
 			int Pump(Engine *engine);
 			void PollInput(InputState *state);

@@ -27,7 +27,7 @@ namespace Maki
 	namespace D3D
 	{
 	
-		class D3DRenderCore : public Core::RenderCore<D3DRenderCore>
+		class D3DRenderCore : public Core::RenderCore
 		{
 		private:
 			static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -36,6 +36,7 @@ namespace Maki
 			D3DRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~D3DRenderCore();
 			void Init();
+			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) { GenericDraw<D3DRenderCore>(state, commands); }
 			void Present();
 			void Resized(uint32 width, uint32 height);
 

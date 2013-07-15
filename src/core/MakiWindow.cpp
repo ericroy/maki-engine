@@ -198,7 +198,7 @@ namespace Maki
 		
 
 
-		Window::Window(RenderCoreType renderCoreType, const Config *config)
+		Window::Window(RenderCore::Type renderCoreType, const Config *config)
 			: window(nullptr),
 			width(0),
 			height(0),
@@ -221,7 +221,7 @@ namespace Maki
 			
 			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_RESIZABLE|SDL_WINDOW_SHOWN;
 
-			if(renderCoreType == RenderCoreType_OGL) {
+			if(renderCoreType == RenderCore::Type_OGL) {
 				flags |= SDL_WINDOW_OPENGL;
 			}
 

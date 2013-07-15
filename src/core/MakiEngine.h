@@ -11,7 +11,7 @@ namespace Maki
 		class Config;
 		class AssetLibrary;
 		class Renderer;
-		class RenderCoreBase;
+		class RenderCore;
 		class Window;
 		class InputState;
 		class Timer;
@@ -27,7 +27,7 @@ namespace Maki
 			static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
 
 		public:
-			Engine(Window *window, TimeSource *timeSource, RenderCoreBase *core, const AssetLibrary *assets, const Config *config);
+			Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config);
 			virtual ~Engine();
 			void Tick();
 

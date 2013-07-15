@@ -9,18 +9,17 @@ namespace Maki
 	{
 
 		
-		RenderCoreBase::RenderCoreBase()
-			: Thread()
+		RenderCore::RenderCore(Type type)
+			: Thread(),
+			type(type)
 		{
-
 		}
 
-		RenderCoreBase::~RenderCoreBase()
+		RenderCore::~RenderCore()
 		{
-
 		}
 
-		void RenderCoreBase::Run()
+		void RenderCore::Run()
 		{
 			Console::Info("Render core started");
 
