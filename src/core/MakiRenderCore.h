@@ -59,9 +59,7 @@ namespace Maki
 
 		protected:
 			void Draw(const RenderState &state, const DrawCommandList &commands);
-			void Init() { static_cast<Derived *>(this)->Init(); }
-			void Present() { static_cast<Derived *>(this)->Present(); }
-			
+
 			// Static polymorphic interface:
 			/*
 			void Init();

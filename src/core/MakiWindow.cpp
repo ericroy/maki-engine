@@ -287,12 +287,14 @@ namespace Maki
 					case SDL_KEYUP:
 						keyStates[SDLKeyToMakiKey(e.key.keysym.sym)].Set(false);
 						break;
-					case SDL_WINDOWEVENT_RESIZED:
-						width = e.window.data1;
-						height = e.window.data2;
-						if(width <= 0 || height <= 0) {
-							width = 1;
-							height = 1;
+					case SDL_WINDOWEVENT:
+						if(e.window.event == SDL_WINDOWEVENT_RESIZED) {
+							width = e.window.data1;
+							height = e.window.data2;
+							if(width <= 0 || height <= 0) {
+								width = 1;
+								height = 1;
+							}
 						}
 						break;
 					}

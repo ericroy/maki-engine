@@ -35,7 +35,11 @@ namespace Maki
 		public:
 			D3DRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~D3DRenderCore();
+			void Init();
+			void Present();
+			void Resized(uint32 width, uint32 height);
 
+			// GPU resource creation / destruction
 			void *UploadBuffer(void *buffer, Core::VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic);
 			void FreeBuffer(void *buffer);
 			bool CreateShaderProgram(Core::ShaderProgram *s);
@@ -48,9 +52,6 @@ namespace Maki
 			void DeleteTexture(Core::Texture *t);
 
 			// Static polymorphic interface:
-			inline void Init();
-			inline void Present();
-			inline void Resized(uint32 width, uint32 height);
 			inline void MakeContextCurrent(bool isRenderThread);
 			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
 			inline void SetViewport(const Core::Rect &viewPortRect);
@@ -80,9 +81,6 @@ namespace Maki
 			bool CreateVertexShader(Core::Shader *vs);
 
 		private:
-			uint32 windowWidth;
-			uint32 windowHeight;
-
 			IDXGISwapChain *swapChain;
 			ID3D11Device *device;
 			ID3D11DeviceContext *context;
@@ -121,62 +119,6 @@ namespace Maki
 
 
 
-		inline void D3DRenderCore::Resized(uint32 width, uint32 height)
-		{
-			using namespace Core;
-
-			context->OMSetRenderTargets(0, nullptr, nullptr);
-			SAFE_RELEASE(defaultRenderTargetView);
-			SAFE_RELEASE(defaultDepthStencilView);
-
-			// ResizeBuffers breaks the graphics diagnostics, so don't call it while using the graphics profiler
-	#if !MAKI_PROFILING
-			if(MAKI_D3D_FAILED(swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0))) {
-				Console::Error("Failed to resize swap chain buffers");
-			}
-	#endif
-		
-			// Setup render target
-			ID3D11Texture2D *renderBuffer = nullptr;
-			if(MAKI_D3D_FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderBuffer))) {
-				Console::Error("Failed to get buffer from swap chain for render target view");
-			}
-			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(renderBuffer, nullptr, &defaultRenderTargetView))) {
-				Console::Error("Failed to create render target view");
-			}
-			SAFE_RELEASE(renderBuffer);
-		
-
-			// Setup depth buffer
-			D3D11_TEXTURE2D_DESC depthDesc;
-			ZeroMemory(&depthDesc, sizeof(depthDesc));
-			depthDesc.Width = width;
-			depthDesc.Height = height;
-			depthDesc.MipLevels = 1;
-			depthDesc.ArraySize = 1;
-			depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			depthDesc.SampleDesc.Count = 1;
-			depthDesc.SampleDesc.Quality = 0;
-			depthDesc.Usage = D3D11_USAGE_DEFAULT;
-			depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-			depthDesc.CPUAccessFlags = 0;
-			depthDesc.MiscFlags = 0;
-		
-			D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
-			ZeroMemory(&depthViewDesc, sizeof(depthViewDesc));
-			depthViewDesc.Format = depthDesc.Format;
-			depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-			depthViewDesc.Texture2D.MipSlice = 0;
-
-			ID3D11Texture2D *depthBuffer = nullptr;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&depthDesc, nullptr, &depthBuffer))) {
-				Console::Error("Failed to create texture for depth buffer");
-			}
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(depthBuffer, &depthViewDesc, &defaultDepthStencilView))) {
-				Console::Error("Failed to create depth stencil view");
-			}
-			SAFE_RELEASE(depthBuffer);
-		}
 
 		inline void D3DRenderCore::MakeContextCurrent(bool isRenderThread)
 		{
