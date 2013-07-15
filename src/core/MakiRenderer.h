@@ -32,7 +32,7 @@ namespace Maki
 			static const int32 DEFAULT_MAX_DRAW_COMMANDS_PER_PASS = 1024;
 
 		public:
-			Renderer(Window *window, RenderCore *core, const Config *config);
+			Renderer(Window *window, RenderCoreBase *core, const Config *config);
 			virtual ~Renderer();
 
 			// Basic frame lifecycle
@@ -105,7 +105,7 @@ namespace Maki
 			DrawCommandList *commands;
 			std::vector<RenderState *> renderStates;
 			std::vector<DrawCommandList *> commandLists;
-			RenderCore *core;
+			RenderCoreBase *core;
 
 		private:
 			// Memebers that are used to provide convenience functions but are not part of the renderstate

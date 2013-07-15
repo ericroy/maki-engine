@@ -26,6 +26,7 @@ namespace Maki
 	namespace OGL
 	{
 
+
 		class OGLRenderCore : public Core::RenderCore
 		{
 		private:

@@ -28,6 +28,8 @@ namespace Maki
 		{
 		friend class D3D::D3DRenderCore;
 		friend class OGL::OGLRenderCore;
+		template<class T> friend class RenderCore;
+		
 		friend class DrawCommandList;
 
 		public:

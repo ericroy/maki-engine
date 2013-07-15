@@ -1,5 +1,7 @@
 #pragma once
 #include "d3d/d3d_stdafx.h"
+#include "d3d/MakiD3DCommon.h"
+#include "d3d/MakiD3DGPUTypes.h"
 
 #pragma comment(lib, "MakiCore.lib")
 #pragma comment(lib, "SDL2.lib")
@@ -25,7 +27,7 @@ namespace Maki
 	namespace D3D
 	{
 	
-		class D3DRenderCore : public Core::RenderCore
+		class D3DRenderCore : public Core::RenderCore<D3DRenderCore>
 		{
 		private:
 			static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
@@ -45,20 +47,35 @@ namespace Maki
 			void WriteToTexture(Core::Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData);
 			void DeleteTexture(Core::Texture *t);
 
-		protected:
-			void Init();
-			void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands);
-			void Present();
+			// Static polymorphic interface:
+			inline void Init();
+			inline void Present();
+			inline void Resized(uint32 width, uint32 height);
+			inline void MakeContextCurrent(bool isRenderThread);
+			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
+			inline void SetViewport(const Core::Rect &viewPortRect);
+			inline void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
+			inline void SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite);
+			inline void SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame);
+			inline void SetBlendState(bool blendingEnabled);
+			inline void UnbindAllTextures();
+			inline void BindShaders(const Core::ShaderProgram *shader);
+			inline void SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
+			inline void SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
+			inline void BindShadowMaps(const Core::RenderState &state);
+			inline void SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf);
+			inline void SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
+			inline void SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
+			inline void BindTextures(const Core::TextureSet *ts);
+			inline void SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
+			inline void SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
+			inline void BindBuffer(void *buffer, const Core::VertexFormat *vf);
+			inline void DrawBuffer(void *buffer);
 
 		private:
-			void Resized(uint32 newWidth, uint32 newHeight);
-			void SetDepthState(Core::RenderState::DepthTest test, bool write);
-			void SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame);
-			void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
-			void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped);
-			void SetPerObjectConstants(const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
-			void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Material *mat);
-			void BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts);
+			inline void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped);
+			inline void SetPerObjectConstants(const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
+			inline void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Material *mat);
 			bool CreatePixelShader(Core::Shader *ps);
 			bool CreateVertexShader(Core::Shader *vs);
 
@@ -97,9 +114,394 @@ namespace Maki
 
 			bool vsync;
 			uint32 maxVertexFormatsPerVertexShader;
-
 			void *nullArray[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
 		};
+
+
+
+
+
+		inline void D3DRenderCore::Resized(uint32 width, uint32 height)
+		{
+			using namespace Core;
+
+			context->OMSetRenderTargets(0, nullptr, nullptr);
+			SAFE_RELEASE(defaultRenderTargetView);
+			SAFE_RELEASE(defaultDepthStencilView);
+
+			// ResizeBuffers breaks the graphics diagnostics, so don't call it while using the graphics profiler
+	#if !MAKI_PROFILING
+			if(MAKI_D3D_FAILED(swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0))) {
+				Console::Error("Failed to resize swap chain buffers");
+			}
+	#endif
+		
+			// Setup render target
+			ID3D11Texture2D *renderBuffer = nullptr;
+			if(MAKI_D3D_FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderBuffer))) {
+				Console::Error("Failed to get buffer from swap chain for render target view");
+			}
+			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(renderBuffer, nullptr, &defaultRenderTargetView))) {
+				Console::Error("Failed to create render target view");
+			}
+			SAFE_RELEASE(renderBuffer);
+		
+
+			// Setup depth buffer
+			D3D11_TEXTURE2D_DESC depthDesc;
+			ZeroMemory(&depthDesc, sizeof(depthDesc));
+			depthDesc.Width = width;
+			depthDesc.Height = height;
+			depthDesc.MipLevels = 1;
+			depthDesc.ArraySize = 1;
+			depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			depthDesc.SampleDesc.Count = 1;
+			depthDesc.SampleDesc.Quality = 0;
+			depthDesc.Usage = D3D11_USAGE_DEFAULT;
+			depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+			depthDesc.CPUAccessFlags = 0;
+			depthDesc.MiscFlags = 0;
+		
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
+			ZeroMemory(&depthViewDesc, sizeof(depthViewDesc));
+			depthViewDesc.Format = depthDesc.Format;
+			depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			depthViewDesc.Texture2D.MipSlice = 0;
+
+			ID3D11Texture2D *depthBuffer = nullptr;
+			if(MAKI_D3D_FAILED(device->CreateTexture2D(&depthDesc, nullptr, &depthBuffer))) {
+				Console::Error("Failed to create texture for depth buffer");
+			}
+			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(depthBuffer, &depthViewDesc, &defaultDepthStencilView))) {
+				Console::Error("Failed to create depth stencil view");
+			}
+			SAFE_RELEASE(depthBuffer);
+		}
+
+		inline void D3DRenderCore::MakeContextCurrent(bool isRenderThread)
+		{
+			// Do nothing, access to the context is already synchronized with a mutex.  That's all we require.  This is more for OGL
+		}
+
+		inline void D3DRenderCore::SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil)
+		{
+			using namespace Core;
+
+			currentRenderTargetView = nullptr;
+			if(renderTargetType == RenderState::RenderTarget_Default) {
+				currentRenderTargetView = defaultRenderTargetView;
+			} else if(renderTargetType == RenderState::RenderTarget_Custom) {
+				currentRenderTargetView = ((GPUTexture *)TextureManager::Get(renderTarget)->handle)->renderTargetView;
+				if(currentRenderTargetView == nullptr) {
+					Console::Error("Tried to set render target to an invalid texture");
+				}
+			}
+
+			currentDepthStencilView = nullptr;
+			if(depthStencilType == RenderState::DepthStencil_Default) {
+				currentDepthStencilView = defaultDepthStencilView;
+			} else if(depthStencilType == RenderState::DepthStencil_Custom) {
+				currentDepthStencilView = ((GPUTexture *)TextureManager::Get(depthStencil)->handle)->depthStencilView;
+				if(currentDepthStencilView == nullptr) {
+					Console::Error("Tried to set depth stencil to an invalid texture");
+				}
+			}
+
+			context->OMSetRenderTargets(1, &currentRenderTargetView, currentDepthStencilView);
+		}
+
+		inline void D3DRenderCore::SetViewport(const Core::Rect &viewPortRect)
+		{
+			D3D11_VIEWPORT viewport;
+			ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+			viewport.TopLeftX = viewPortRect.left;
+			viewport.TopLeftY = viewPortRect.top;
+			viewport.Width = viewPortRect.GetWidth();
+			viewport.Height = viewPortRect.GetHeight();
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
+			context->RSSetViewports(1, &viewport);
+		}
+
+		inline void D3DRenderCore::Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil, float clearDepthValue)
+		{
+			if(clearRenderTarget && currentRenderTargetView != nullptr) {
+				context->ClearRenderTargetView(currentRenderTargetView, clearColorValues);
+			}
+			if(clearDepthStencil && currentDepthStencilView != nullptr) {
+				context->ClearDepthStencilView(currentDepthStencilView, D3D11_CLEAR_DEPTH, clearDepthValue, 0);
+			}
+		}
+
+		inline void D3DRenderCore::SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite)
+		{
+			using namespace Core;
+
+			switch(depthTest) {
+			case RenderState::DepthTest_Less:
+				context->OMSetDepthStencilState(depthWrite ? depthStateLessWrite : depthStateLess, 1);
+				break;
+			case RenderState::DepthTest_Equal:
+				context->OMSetDepthStencilState(depthWrite ? depthStateEqualWrite : depthStateEqual, 1);
+				break;
+			case RenderState::DepthTest_LessEqual:
+				context->OMSetDepthStencilState(depthWrite ? depthStateLessEqualWrite : depthStateLessEqual, 1);
+				break;
+			case RenderState::DepthTest_Disabled:
+			default:
+				context->OMSetDepthStencilState(depthWrite ? depthStateWrite : depthState, 1);
+				break;
+			}
+		}
+
+		inline void D3DRenderCore::SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame)
+		{
+			using namespace Core;
+
+			switch(cullMode) {
+			case RenderState::CullMode_Front:
+				context->RSSetState(wireFrame ? rasterizerStateWireFrameCullFront : rasterizerStateCullFront);
+				break;
+			case RenderState::CullMode_Back:
+				context->RSSetState(wireFrame ? rasterizerStateWireFrameCullBack : rasterizerStateCullBack);
+				break;
+			case RenderState::CullMode_None:
+			default:
+				context->RSSetState(wireFrame ? rasterizerStateWireFrame : rasterizerState);
+				break;
+			}
+		}
+
+		inline void D3DRenderCore::SetBlendState(bool enabled)
+		{
+			context->OMSetBlendState(enabled ? blendEnabled : blendDisabled, nullptr, 0xffffffff);
+		}
+
+		inline void D3DRenderCore::UnbindAllTextures()
+		{
+			using namespace Core;
+			context->PSSetShaderResources(0, SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_SHADOW_LIGHTS, (ID3D11ShaderResourceView **)nullArray);
+		}
+
+		inline void D3DRenderCore::BindShaders(const Core::ShaderProgram *shader)
+		{
+			context->VSSetShader(((GPUVertexShader *)shader->vertexShader.handle)->vs, nullptr, 0);
+			context->PSSetShader(((GPUPixelShader *)shader->pixelShader.handle)->ps, nullptr, 0);
+		}
+
+		inline void D3DRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			context->Map(gvs->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			SetPerFrameConstants(state, &shader->vertexShader, mapped);
+			context->Unmap(gvs->perFrameConstants, 0);
+			context->VSSetConstantBuffers(shader->vertexShader.frameUniformBufferLocation, 1, &gvs->perFrameConstants);
+		}
+
+		inline void D3DRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			context->Map(gps->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			SetPerFrameConstants(state, &shader->pixelShader, mapped);
+			context->Unmap(gps->perFrameConstants, 0);
+			context->PSSetConstantBuffers(shader->pixelShader.frameUniformBufferLocation, 1, &gps->perFrameConstants);
+		}
+
+		inline void D3DRenderCore::BindShadowMaps(const Core::RenderState &state)
+		{
+			using namespace Core;
+
+			ID3D11ShaderResourceView *shadowViews[RenderState::MAX_SHADOW_LIGHTS];
+			ID3D11SamplerState *shadowSamplers[RenderState::MAX_SHADOW_LIGHTS];
+			for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
+				if(state.shadowMaps[i] != HANDLE_NONE) {
+					GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
+					shadowViews[i] = gtex->shaderResourceView;
+					shadowSamplers[i] = gtex->samplerState;
+				} else {
+					shadowViews[i] = nullptr;
+					shadowSamplers[i] = nullptr;
+				}
+			}
+			context->PSSetShaderResources(SHADOW_MAP_SLOT_INDEX_START, RenderState::MAX_SHADOW_LIGHTS, shadowViews);
+			context->PSSetSamplers(SHADOW_MAP_SLOT_INDEX_START, RenderState::MAX_SHADOW_LIGHTS, shadowSamplers);
+		}
+
+		inline void D3DRenderCore::SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf)
+		{
+			ID3D11InputLayout *layout = ((GPUVertexShader *)shader->vertexShader.handle)->GetOrCreateInputLayout(device, vf);
+			context->IASetInputLayout(layout);
+		}
+
+		inline void D3DRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			context->Map(gvs->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			BindMaterialConstants(&shader->vertexShader, true, mapped, mat);
+			context->Unmap(gvs->materialConstants, 0);
+			context->VSSetConstantBuffers(shader->vertexShader.materialUniformBufferLocation, 1, &gvs->materialConstants);
+		}
+
+		inline void D3DRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			context->Map(gps->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			BindMaterialConstants(&shader->pixelShader, false, mapped, mat);
+			context->Unmap(gps->materialConstants, 0);
+			context->PSSetConstantBuffers(shader->pixelShader.materialUniformBufferLocation, 1, &gps->materialConstants);
+		}
+
+		inline void D3DRenderCore::BindTextures(const Core::TextureSet *ts)
+		{
+			using namespace Core;
+
+			ID3D11ShaderResourceView *views[TextureSet::MAX_TEXTURES_PER_SET];
+			ID3D11SamplerState *samplers[TextureSet::MAX_TEXTURES_PER_SET];
+
+			for(uint8 i = 0; i < ts->textureCount; i++) {
+				const GPUTexture *tex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
+				views[i] = tex->shaderResourceView;
+				samplers[i] = tex->samplerState;
+			}
+
+			context->PSSetShaderResources(0, ts->textureCount, views);
+			context->PSSetSamplers(0, ts->textureCount, samplers);
+		}
+
+		inline void D3DRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			context->Map(gvs->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			SetPerObjectConstants(&shader->vertexShader, mapped, matrix, mv, mvp);
+			context->Unmap(gvs->perObjectConstants, 0);
+			context->VSSetConstantBuffers(shader->vertexShader.objectUniformBufferLocation, 1, &gvs->perObjectConstants);
+		}
+
+		inline void D3DRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
+		{
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			context->Map(gps->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			SetPerObjectConstants(&shader->pixelShader, mapped, matrix, mv, mvp);
+			context->Unmap(gps->perObjectConstants, 0);
+			context->PSSetConstantBuffers(shader->pixelShader.objectUniformBufferLocation, 1, &gps->perObjectConstants);
+		}
+
+		inline void D3DRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
+		{
+			const Buffer *b = (Buffer *)buffer;
+			uint32 stride = vf->GetStride();
+			uint32 offset = 0;
+			context->IASetVertexBuffers(0, 1, &b->vbos[0], &stride, &offset);
+			context->IASetIndexBuffer(b->vbos[1], (DXGI_FORMAT)b->indexDataType, 0);
+		}
+
+		inline void D3DRenderCore::DrawBuffer(void *buffer)
+		{
+			const Buffer *b = (Buffer *)buffer;
+			context->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)b->geometryType);
+			context->DrawIndexed(b->indicesPerFace*b->faceCount, 0, 0);
+		}
+
+		// End of static polymorphic interface
+
+
+
+
+
+		// Start of private utility methods:
+
+		inline void D3DRenderCore::SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
+		{
+			using namespace Core;
+
+			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.view.vals, 16*sizeof(float));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.projection.vals, sizeof(state.projection));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, &state.cameraWidthHeightNearFar, sizeof(state.cameraWidthHeightNearFar));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, &state.cameraSplitDistances, sizeof(state.cameraSplitDistances));
+			}
+
+
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.lightViewProj, sizeof(state.lightViewProj));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.lightPositions, sizeof(state.lightPositions));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.lightDirections, sizeof(state.lightDirections));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
+			if(location != -1) {
+				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
+				memcpy(((char *)mapped.pData) + location, state.lightProperties, sizeof(state.lightProperties));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.shadowMapProperties, state.shadowLightCount*sizeof(RenderState::ShadowMapProperties));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
+			}
+		
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));
+			}
+		}
+
+		inline void D3DRenderCore::SetPerObjectConstants(const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection)
+		{
+			using namespace Core;
+
+			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, model.vals, sizeof(model));
+			}
+
+			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, modelView.vals, sizeof(modelView));
+			}
+
+			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
+			if(location != -1) {
+				memcpy(((char *)mapped.pData) + location, modelViewProjection.vals, sizeof(modelViewProjection));
+			}
+		}
+
+		inline void D3DRenderCore::BindMaterialConstants(const Core::Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Material *mat)
+		{
+			using namespace Core;
+
+			for(uint8 i = 0; i < mat->uniformCount; i++) {
+				const Material::UniformValue &val = mat->uniformValues[i];
+				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
+				if(location != -1) {
+					memcpy(((char *)mapped.pData) + location, val.data, val.bytes);
+				}
+			}
+		}
 
 
 	} // namespace D3D

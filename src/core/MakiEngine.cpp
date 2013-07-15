@@ -12,7 +12,7 @@ namespace Maki
 	namespace Core
 	{
 
-		Engine::Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config)
+		Engine::Engine(Window *window, TimeSource *timeSource, RenderCoreBase *core, const AssetLibrary *assets, const Config *config)
 			: PseudoSingleton<Engine>(),
 			window(window),
 			config(config),

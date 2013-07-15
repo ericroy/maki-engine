@@ -9,7 +9,7 @@ namespace Maki
 	namespace Core
 	{
 
-		Renderer::Renderer(Window *window, RenderCore *core, const Config *config)
+		Renderer::Renderer(Window *window, RenderCoreBase *core, const Config *config)
 		:	window(window),
 			core(core),
 			lightDirtyFlags(0),

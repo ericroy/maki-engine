@@ -8,16 +8,19 @@ namespace Maki
 	namespace Core
 	{
 
-		RenderCore::RenderCore()
+		
+		RenderCoreBase::RenderCoreBase()
 			: Thread()
 		{
+
 		}
 
-		RenderCore::~RenderCore()
+		RenderCoreBase::~RenderCoreBase()
 		{
+
 		}
 
-		void RenderCore::Run()
+		void RenderCoreBase::Run()
 		{
 			Console::Info("Render core started");
 
@@ -45,6 +48,7 @@ namespace Maki
 
 			Console::Info("Render core stopping");
 		}
+
 
 
 	} // namespace Core

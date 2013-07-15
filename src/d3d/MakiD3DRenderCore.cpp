@@ -13,7 +13,7 @@ namespace Maki
 	{
 
 		D3DRenderCore::D3DRenderCore(Window *window, const Config *config)
-			:	RenderCore(),
+			:	RenderCore<D3DRenderCore>(),
 				swapChain(nullptr),
 				device(nullptr),
 				context(nullptr),
@@ -232,450 +232,11 @@ namespace Maki
 			swapChain->Present(0, 0);
 		}
 
-		void D3DRenderCore::Resized(uint32 newWidth, uint32 newHeight)
-		{
-			context->OMSetRenderTargets(0, nullptr, nullptr);
-			SAFE_RELEASE(defaultRenderTargetView);
-			SAFE_RELEASE(defaultDepthStencilView);
-
-			// ResizeBuffers breaks the graphics diagnostics, so don't call it while using the graphics profiler
-	#if !MAKI_PROFILING
-			if(MAKI_D3D_FAILED(swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0))) {
-				Console::Error("Failed to resize swap chain buffers");
-			}
-	#endif
-		
-			// Setup render target
-			ID3D11Texture2D *renderBuffer = nullptr;
-			if(MAKI_D3D_FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderBuffer))) {
-				Console::Error("Failed to get buffer from swap chain for render target view");
-			}
-			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(renderBuffer, nullptr, &defaultRenderTargetView))) {
-				Console::Error("Failed to create render target view");
-			}
-			SAFE_RELEASE(renderBuffer);
-		
-
-			// Setup depth buffer
-			D3D11_TEXTURE2D_DESC depthDesc;
-			ZeroMemory(&depthDesc, sizeof(depthDesc));
-			depthDesc.Width = newWidth;
-			depthDesc.Height = newHeight;
-			depthDesc.MipLevels = 1;
-			depthDesc.ArraySize = 1;
-			depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			depthDesc.SampleDesc.Count = 1;
-			depthDesc.SampleDesc.Quality = 0;
-			depthDesc.Usage = D3D11_USAGE_DEFAULT;
-			depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-			depthDesc.CPUAccessFlags = 0;
-			depthDesc.MiscFlags = 0;
-		
-			D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
-			ZeroMemory(&depthViewDesc, sizeof(depthViewDesc));
-			depthViewDesc.Format = depthDesc.Format;
-			depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-			depthViewDesc.Texture2D.MipSlice = 0;
-
-			ID3D11Texture2D *depthBuffer = nullptr;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&depthDesc, nullptr, &depthBuffer))) {
-				Console::Error("Failed to create texture for depth buffer");
-			}
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(depthBuffer, &depthViewDesc, &defaultDepthStencilView))) {
-				Console::Error("Failed to create depth stencil view");
-			}
-			SAFE_RELEASE(depthBuffer);
-		}
-
 		void D3DRenderCore::Present()
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			swapChain->Present(vsync ? 1 : 0, 0);
 		}
-
-		void D3DRenderCore::Draw(const RenderState &state, const DrawCommandList &commands)
-		{
-			std::lock_guard<std::mutex> lock(mutex);
-
-			// Resize screen buffers if necessary
-			if(windowWidth != state.windowWidth || windowHeight != state.windowHeight) {
-				Resized(state.windowWidth, state.windowHeight);
-				windowWidth = state.windowWidth;
-				windowHeight = state.windowHeight;
-			}
-
-			SetRenderTargetAndDepthStencil(state.renderTargetType, state.renderTarget, state.depthStencilType, state.depthStencil);
-
-			// Set viewport
-			D3D11_VIEWPORT viewport;
-			ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-			viewport.TopLeftX = state.viewPortRect.left;
-			viewport.TopLeftY = state.viewPortRect.top;
-			viewport.Width = state.viewPortRect.GetWidth();
-			viewport.Height = state.viewPortRect.GetHeight();
-			viewport.MinDepth = 0.0f;
-			viewport.MaxDepth = 1.0f;
-			context->RSSetViewports(1, &viewport);
-
-			// Clear depth if necessary
-			if(state.clearDepthStencil && currentDepthStencilView != nullptr) {
-				context->ClearDepthStencilView(currentDepthStencilView, D3D11_CLEAR_DEPTH, state.depthClearValue, 0);
-			}
-
-			// Clear render target if necessary
-			if(state.clearRenderTarget && currentRenderTargetView != nullptr) {
-				context->ClearRenderTargetView(currentRenderTargetView, state.renderTargetClearValue.vals);
-			}
-
-			// Depth test / depth write
-			SetDepthState(state.depthTest, state.depthWrite);
-
-			// Cull mode / wire frame mode
-			SetRasterizerState(state.cullMode, state.wireFrame);
-
-			const Buffer *currentBuffer = nullptr;
-			uint32 currentLayer = 0;
-		
-			uint32 currentTranslucencyType = DrawCommand::TranslucencyType_Opaque;
-			context->OMSetBlendState(blendDisabled, nullptr, 0xffffffff);
-
-			Handle currentVertexFormat = HANDLE_NONE;
-			Handle currentShaderProgram = HANDLE_NONE;		
-			Handle currentTextureSet = HANDLE_NONE;
-			Handle currentMesh = HANDLE_NONE;
-			Handle currentMaterial = HANDLE_NONE;
-
-			bool setLayout = false;
-
-			for(uint32 i = 0; i < commands.count; ++i) {
-				const DrawCommandList::ValueEntry &ve = commands.values[commands.keys[i].index];
-				const DrawCommand *dc = &ve.drawCommand;
-				const Matrix44 &matrix = ve.m;
-
-				const VertexFormat *vf = VertexFormatManager::Get(dc->vertexFormat);
-				const ShaderProgram *baseShader = ShaderProgramManager::Get(dc->shaderProgram);
-			
-				assert(baseShader->variant == ShaderProgram::Variant_Normal && "can only get variants from a normal shader program");
-				const ShaderProgram *shader = baseShader;
-				if(state.shaderVariant != ShaderProgram::Variant_Normal) {
-					Handle h = baseShader->variants[state.shaderVariant-1];
-					if(h == HANDLE_NONE) {
-						// No such variant for this shader, skip
-						continue;
-					}
-					shader = ShaderProgramManager::Get(h);
-				}
-
-				if(currentTranslucencyType != dc->fields.translucencyType) {
-					if(dc->fields.translucencyType == DrawCommand::TranslucencyType_Translucent) {
-						// Enable blending, disable depth write
-						SetDepthState(state.depthTest, false);
-						context->OMSetBlendState(blendEnabled, nullptr, 0xffffffff);
-					} else {
-						// Disable blending, restore depth write
-						SetDepthState(state.depthTest, state.depthWrite);
-						context->OMSetBlendState(blendDisabled, nullptr, 0xffffffff);
-					}
-					currentTranslucencyType = dc->fields.translucencyType;
-				}
-
-				if(currentVertexFormat != dc->vertexFormat) {
-					currentVertexFormat = dc->vertexFormat;
-					setLayout = true;
-				}
-
-					
-				D3D11_MAPPED_SUBRESOURCE mapped;
-				const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-				const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
-
-				if(currentShaderProgram != dc->shaderProgram) {
-				
-					// Unbind all textures from current shader
-					if(currentShaderProgram != HANDLE_NONE) {
-						context->PSSetShaderResources(0, SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_SHADOW_LIGHTS, (ID3D11ShaderResourceView **)nullArray);
-					}
-
-					context->VSSetShader(gvs->vs, nullptr, 0);
-					context->PSSetShader(gps->ps, nullptr, 0);
-					currentShaderProgram = dc->shaderProgram;
-
-					// Set per-frame vertex constants
-					if(shader->vertexShader.frameUniformBufferLocation != -1) {
-						context->Map(gvs->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						SetPerFrameConstants(state, &shader->vertexShader, mapped);
-						context->Unmap(gvs->perFrameConstants, 0);
-						context->VSSetConstantBuffers(shader->vertexShader.frameUniformBufferLocation, 1, &gvs->perFrameConstants);
-					}
-
-					// Set per-frame pixel constants
-					if(shader->pixelShader.frameUniformBufferLocation != -1) {
-						context->Map(gps->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						SetPerFrameConstants(state, &shader->pixelShader, mapped);
-						context->Unmap(gps->perFrameConstants, 0);
-						context->PSSetConstantBuffers(shader->pixelShader.frameUniformBufferLocation, 1, &gps->perFrameConstants);
-					}
-
-					// Bind shadow map resources
-					ID3D11ShaderResourceView *shadowViews[RenderState::MAX_SHADOW_LIGHTS];
-					ID3D11SamplerState *shadowSamplers[RenderState::MAX_SHADOW_LIGHTS];
-					for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
-						if(state.shadowMaps[i] != HANDLE_NONE) {
-							GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
-							shadowViews[i] = gtex->shaderResourceView;
-							shadowSamplers[i] = gtex->samplerState;
-						} else {
-							shadowViews[i] = nullptr;
-							shadowSamplers[i] = nullptr;
-						}
-					}
-					context->PSSetShaderResources(SHADOW_MAP_SLOT_INDEX_START, RenderState::MAX_SHADOW_LIGHTS, shadowViews);
-					context->PSSetSamplers(SHADOW_MAP_SLOT_INDEX_START, RenderState::MAX_SHADOW_LIGHTS, shadowSamplers);
-
-					currentMaterial = HANDLE_NONE;
-					currentTextureSet = HANDLE_NONE;
-					currentBuffer = nullptr;
-					setLayout = true;
-				}
-
-				// Get or create the input layout for this vertexformat+vertexshader combination
-				if(setLayout) {
-					ID3D11InputLayout *layout = ((GPUVertexShader *)shader->vertexShader.handle)->GetOrCreateInputLayout(device, vf);
-					context->IASetInputLayout(layout);
-					setLayout = false;
-				}
-
-				if(currentMaterial != dc->material) {
-					Material *mat = MaterialManager::Get(dc->material);
-
-					if(shader->vertexShader.materialUniformBufferLocation != -1) {
-						context->Map(gvs->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						BindMaterialConstants(&shader->vertexShader, true, mapped, mat);
-						context->Unmap(gvs->materialConstants, 0);
-						context->VSSetConstantBuffers(shader->vertexShader.materialUniformBufferLocation, 1, &gvs->materialConstants);
-					}
-					if(shader->pixelShader.materialUniformBufferLocation != -1) {
-						context->Map(gps->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						BindMaterialConstants(&shader->pixelShader, false, mapped, mat);
-						context->Unmap(gps->materialConstants, 0);
-						context->PSSetConstantBuffers(shader->pixelShader.materialUniformBufferLocation, 1, &gps->materialConstants);
-					}
-
-					currentMaterial = dc->material;
-
-					if(currentTextureSet != dc->textureSet) {
-						BindTextures(shader, TextureSetManager::Get(dc->textureSet));
-						currentTextureSet = dc->textureSet;
-					}
-				}
-			
-				if(shader->vertexShader.objectUniformBufferLocation != -1 || shader->pixelShader.objectUniformBufferLocation != -1) {
-					Matrix44 mv = state.view * matrix;
-					Matrix44 mvp = state.projection * mv;
-
-					// Set per-object vertex constants
-					if(shader->vertexShader.objectUniformBufferLocation != -1) {
-						context->Map(gvs->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						SetPerObjectConstants(&shader->vertexShader, mapped, matrix, mv, mvp);
-						context->Unmap(gvs->perObjectConstants, 0);
-						context->VSSetConstantBuffers(shader->vertexShader.objectUniformBufferLocation, 1, &gvs->perObjectConstants);
-					}
-
-					// Set per-object pixel constants
-					if(shader->pixelShader.objectUniformBufferLocation != -1) {
-						context->Map(gps->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-						SetPerObjectConstants(&shader->pixelShader, mapped, matrix, mv, mvp);
-						context->Unmap(gps->perObjectConstants, 0);
-						context->PSSetConstantBuffers(shader->pixelShader.objectUniformBufferLocation, 1, &gps->perObjectConstants);
-					}
-				}
-
-				// Bind buffers again if they have changed
-				const Buffer *b = (Buffer *)MeshManager::Get(dc->mesh)->GetBuffer();
-				if(currentBuffer != b) {
-					uint32 stride = vf->GetStride();
-					uint32 offset = 0;
-					context->IASetVertexBuffers(0, 1, &b->vbos[0], &stride, &offset);
-					context->IASetIndexBuffer(b->vbos[1], (DXGI_FORMAT)b->indexDataType, 0);
-					currentBuffer = b;
-				}
-
-				context->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)b->geometryType);
-				context->DrawIndexed(b->indicesPerFace*b->faceCount, 0, 0);
-			}
-
-			// Unbind all textures from current shader
-			if(currentShaderProgram != HANDLE_NONE) {
-				context->PSSetShaderResources(0, SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_SHADOW_LIGHTS, (ID3D11ShaderResourceView **)nullArray);
-			}
-
-			currentRenderTargetView = nullptr;
-			currentDepthStencilView = nullptr;
-			context->OMSetRenderTargets(0, nullptr, nullptr);
-		}
-
-		void D3DRenderCore::SetDepthState(RenderState::DepthTest test, bool write)
-		{
-			switch(test) {
-			case RenderState::DepthTest_Less:
-				context->OMSetDepthStencilState(write ? depthStateLessWrite : depthStateLess, 1);
-				break;
-			case RenderState::DepthTest_Equal:
-				context->OMSetDepthStencilState(write ? depthStateEqualWrite : depthStateEqual, 1);
-				break;
-			case RenderState::DepthTest_LessEqual:
-				context->OMSetDepthStencilState(write ? depthStateLessEqualWrite : depthStateLessEqual, 1);
-				break;
-			case RenderState::DepthTest_Disabled:
-			default:
-				context->OMSetDepthStencilState(write ? depthStateWrite : depthState, 1);
-				break;
-			}
-		}
-
-		void D3DRenderCore::SetRasterizerState(RenderState::CullMode cullMode, bool wireFrame)
-		{
-			switch(cullMode) {
-			case RenderState::CullMode_Front:
-				context->RSSetState(wireFrame ? rasterizerStateWireFrameCullFront : rasterizerStateCullFront);
-				break;
-			case RenderState::CullMode_Back:
-				context->RSSetState(wireFrame ? rasterizerStateWireFrameCullBack : rasterizerStateCullBack);
-				break;
-			case RenderState::CullMode_None:
-			default:
-				context->RSSetState(wireFrame ? rasterizerStateWireFrame : rasterizerState);
-				break;
-			}
-		}
-
-		void D3DRenderCore::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
-		{
-			currentRenderTargetView = nullptr;
-			if(renderTargetType == RenderState::RenderTarget_Default) {
-				currentRenderTargetView = defaultRenderTargetView;
-			} else if(renderTargetType == RenderState::RenderTarget_Custom) {
-				currentRenderTargetView = ((GPUTexture *)TextureManager::Get(renderTarget)->handle)->renderTargetView;
-				if(currentRenderTargetView == nullptr) {
-					Console::Error("Tried to set render target to an invalid texture");
-				}
-			}
-
-			currentDepthStencilView = nullptr;
-			if(depthStencilType == RenderState::DepthStencil_Default) {
-				currentDepthStencilView = defaultDepthStencilView;
-			} else if(depthStencilType == RenderState::DepthStencil_Custom) {
-				currentDepthStencilView = ((GPUTexture *)TextureManager::Get(depthStencil)->handle)->depthStencilView;
-				if(currentDepthStencilView == nullptr) {
-					Console::Error("Tried to set depth stencil to an invalid texture");
-				}
-			}
-
-			context->OMSetRenderTargets(1, &currentRenderTargetView, currentDepthStencilView);
-		}
-
-		void D3DRenderCore::SetPerFrameConstants(const RenderState &state, const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
-		{
-			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.view.vals, 16*sizeof(float));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.projection.vals, sizeof(state.projection));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.cameraWidthHeightNearFar, sizeof(state.cameraWidthHeightNearFar));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.cameraSplitDistances, sizeof(state.cameraSplitDistances));
-			}
-
-
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightViewProj, sizeof(state.lightViewProj));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightPositions, sizeof(state.lightPositions));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightDirections, sizeof(state.lightDirections));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
-			if(location != -1) {
-				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
-				memcpy(((char *)mapped.pData) + location, state.lightProperties, sizeof(state.lightProperties));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.shadowMapProperties, state.shadowLightCount*sizeof(RenderState::ShadowMapProperties));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
-			}
-		
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));
-			}
-		}
-
-		void D3DRenderCore::SetPerObjectConstants(const Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Matrix44 &model, const Matrix44 &modelView, const Matrix44 &modelViewProjection)
-		{
-			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, model.vals, sizeof(model));
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, modelView.vals, sizeof(modelView));
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, modelViewProjection.vals, sizeof(modelViewProjection));
-			}
-		}
-
-		void D3DRenderCore::BindMaterialConstants(const Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Material *mat)
-		{
-			for(uint8 i = 0; i < mat->uniformCount; i++) {
-				const Material::UniformValue &val = mat->uniformValues[i];
-				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
-				if(location != -1) {
-					memcpy(((char *)mapped.pData) + location, val.data, val.bytes);
-				}
-			}
-		}
-
-		void D3DRenderCore::BindTextures(const ShaderProgram *shader, const TextureSet *ts)
-		{
-			ID3D11ShaderResourceView *views[TextureSet::MAX_TEXTURES_PER_SET];
-			ID3D11SamplerState *samplers[TextureSet::MAX_TEXTURES_PER_SET];
-
-			for(uint8 i = 0; i < ts->textureCount; i++) {
-				const GPUTexture *tex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
-				views[i] = tex->shaderResourceView;
-				samplers[i] = tex->samplerState;
-			}
-
-			context->PSSetShaderResources(0, ts->textureCount, views);
-			context->PSSetSamplers(0, ts->textureCount, samplers);
-		}
-
-
-
-
-
-
-
 
 
 		// Resource creation, deletion, modification:
@@ -767,7 +328,7 @@ namespace Maki
 			bufferDesc.MiscFlags = 0;
 			bufferDesc.StructureByteStride = 0;
 
-	#		define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
+#define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
 			if(ps->frameUniformBufferLocation != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->engineFrameUniformBytes);
 				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->perFrameConstants))) {
@@ -786,12 +347,12 @@ namespace Maki
 					goto failed;
 				}
 			}
-	#		undef ROUND_SIXTEEN
+#undef ROUND_SIXTEEN
 
 			ps->handle = (intptr_t)gps;
 			return true;
 
-	failed:
+failed:
 			SAFE_DELETE(gps);
 			return false;
 		}
@@ -819,7 +380,7 @@ namespace Maki
 			bufferDesc.MiscFlags = 0;
 			bufferDesc.StructureByteStride = 0;
 
-	#		define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
+#define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
 			if(vs->frameUniformBufferLocation != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->engineFrameUniformBytes);
 				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->perFrameConstants))) {
@@ -838,12 +399,12 @@ namespace Maki
 					goto failed;
 				}
 			}
-	#		undef ROUND_SIXTEEN
+#undef ROUND_SIXTEEN
 
 			vs->handle = (intptr_t)gvs;
 			return true;
 
-	failed:
+failed:
 			SAFE_DELETE(gvs);
 			return false;
 		}
@@ -930,7 +491,7 @@ namespace Maki
 			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
+failed:		
 			SAFE_RELEASE(tex);
 			SAFE_RELEASE(shaderResourceView);
 			SAFE_RELEASE(samplerState);
@@ -1010,7 +571,7 @@ namespace Maki
 			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
+failed:		
 			SAFE_RELEASE(tex);
 			SAFE_RELEASE(shaderResourceView);
 			SAFE_RELEASE(samplerState);
@@ -1091,7 +652,7 @@ namespace Maki
 			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
+failed:		
 			SAFE_RELEASE(tex);
 			SAFE_RELEASE(shaderResourceView);
 			SAFE_RELEASE(samplerState);
@@ -1139,7 +700,7 @@ namespace Maki
 			SAFE_RELEASE(tex);
 			return true;
 
-	failed:		
+failed:		
 			SAFE_RELEASE(tex);
 			SAFE_RELEASE(shaderResourceView);
 			SAFE_RELEASE(samplerState);
