@@ -89,6 +89,7 @@ namespace Maki
 			currentDepthStencil = defaultDepthStencil;
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentRenderTarget, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, currentDepthStencil);
+			MAKI_OGL_FAILED();
 
 			glViewport(0, 0, window->width, window->height);
 			MAKI_OGL_FAILED();
@@ -96,6 +97,8 @@ namespace Maki
 			// Render a blank frame so we don't see a flash of white on startup
 			glClearColor(1, 0, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+			MAKI_OGL_FAILED();
+
 			SDL_GL_SwapWindow(window->window);
 		}
 
@@ -537,10 +540,12 @@ namespace Maki
 		void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 			if(contextCurrentInRenderThread) {
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			Buffer *b = (Buffer *)buffer;
 			if(b == nullptr) {
@@ -600,6 +605,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			if(buffer != nullptr) {
 				Buffer *b = (Buffer *)buffer;
@@ -644,20 +650,14 @@ failed:
 			GPUVertexShader *gvs = new GPUVertexShader();
 
 			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			int32 length = (int32)vs->programDataBytes;
 			glShaderSourceARB(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 			
 			glCompileShaderARB(gvs->vs);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			vs->handle = (intptr_t)gvs;
 			return true;
@@ -677,6 +677,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			if(!CreateVertexShader(&s->vertexShader)) {
 				return false;
@@ -699,7 +700,6 @@ failed:
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			s->handle = (intptr_t)program;
-
 			return true;
 
 failed:
@@ -718,6 +718,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
@@ -755,6 +756,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -787,6 +789,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -819,6 +822,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			// TODO:
 			// Need to determine num channels here - probably need to borrow code from directx dds loader
@@ -863,6 +867,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 		
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			glBindTexture(GL_TEXTURE_2D, gtex->tex);
@@ -893,6 +898,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
 			SAFE_DELETE(gvs);
@@ -910,6 +916,7 @@ failed:
 				SDL_GL_MakeCurrent(window->window, context);
 				contextCurrentInRenderThread = false;
 			}
+			assert(!MAKI_OGL_FAILED());
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			SAFE_DELETE(gtex);
