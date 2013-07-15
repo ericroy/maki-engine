@@ -9,9 +9,8 @@ namespace Maki
 	{
 
 		
-		RenderCore::RenderCore(Type type)
-			: Thread(),
-			type(type)
+		RenderCore::RenderCore()
+			: Thread()
 		{
 		}
 

@@ -23,7 +23,7 @@ namespace Maki
 			};
 
 		public:
-			RenderCore(Type type);
+			RenderCore();
 			virtual ~RenderCore();
 			void Run();
 
@@ -56,9 +56,6 @@ namespace Maki
 			std::mutex mutex;
 			uint32 windowWidth;
 			uint32 windowHeight;
-
-		private:
-			Type type;
 		};
 
 

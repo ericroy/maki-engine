@@ -52,14 +52,14 @@ namespace Maki
 			void WriteToTexture(Core::Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData);
 			void DeleteTexture(Core::Texture *t);
 
-			// Static polymorphic interface:
+			// Non-virtual interface
 			inline void MakeContextCurrent(bool isRenderThread);
 			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
 			inline void SetViewport(const Core::Rect &viewPortRect);
 			inline void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
 			inline void SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite);
 			inline void SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame);
-			inline void SetBlendState(bool blendingEnabled);
+			inline void SetBlendState(bool enabled);
 			inline void UnbindAllTextures();
 			inline void BindShaders(const Core::ShaderProgram *shader);
 			inline void SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
@@ -351,7 +351,7 @@ namespace Maki
 			context->DrawIndexed(b->indicesPerFace*b->faceCount, 0, 0);
 		}
 
-		// End of static polymorphic interface
+		// End of non-virtual interface
 
 
 
