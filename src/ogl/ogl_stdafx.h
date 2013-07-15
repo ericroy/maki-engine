@@ -8,4 +8,5 @@
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
-#include "ogl/glext.h"
+#include <gl/glext.h>
+#include "ogl/mojo/mojoshader.h"

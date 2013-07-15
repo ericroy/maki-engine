@@ -212,26 +212,34 @@ failed:
 		{
 			GPUPixelShader *gps = new GPUPixelShader();
 
-			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
-			if(MAKI_OGL_FAILED()) {
+			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse("glsl", (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			if(parseData->error_count > 0) {
+				for(int32 i = 0; i < parseData->error_count; i++) {
+					Console::Error("MOJOSHADER error: %s", parseData->errors[i].error);
+				}
 				goto failed;
 			}
 
-			int32 length = (int32)ps->programDataBytes;
-			glShaderSourceARB(gps->ps, 1, (const GLchar **)&ps->programData, &length);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
+			if(MAKI_OGL_FAILED()) { goto failed;}
+
+			int32 length = (int32)parseData->output_count;
+			glShaderSourceARB(gps->ps, 1, (const GLchar **)&parseData->output, &length);
+			MOJOSHADER_freeParseData(parseData);
+			parseData = nullptr;
+			if(MAKI_OGL_FAILED()) { goto failed; }			
 			
 			glCompileShaderARB(gps->ps);
-			if(MAKI_OGL_FAILED()) {
-				goto failed;
-			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			ps->handle = (intptr_t)gps;
 			return true;
 
 failed:
+			
+			if(parseData != nullptr) {
+				MOJOSHADER_freeParseData(parseData);
+			}
 			if(gps != nullptr && gps->ps != 0) {
 				glDeleteShader(gps->ps);
 			}
@@ -243,11 +251,21 @@ failed:
 		{
 			GPUVertexShader *gvs = new GPUVertexShader();
 
+			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse("glsl", (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			if(parseData->error_count > 0) {
+				for(int32 i = 0; i < parseData->error_count; i++) {
+					Console::Error("MOJOSHADER error: %s", parseData->errors[i].error);
+				}
+				goto failed;
+			}
+
 			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			int32 length = (int32)vs->programDataBytes;
 			glShaderSourceARB(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
+			MOJOSHADER_freeParseData(parseData);
+			parseData = nullptr;
 			if(MAKI_OGL_FAILED()) { goto failed; }
 			
 			glCompileShaderARB(gvs->vs);
@@ -257,6 +275,9 @@ failed:
 			return true;
 
 failed:
+			if(parseData != nullptr) {
+				MOJOSHADER_freeParseData(parseData);
+			}
 			if(gvs != nullptr && gvs->vs != 0) {
 				glDeleteShader(gvs->vs);
 			}

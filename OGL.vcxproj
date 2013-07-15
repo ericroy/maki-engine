@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;OGLRENDERCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>oglrendercore/oglrendercore_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -75,7 +75,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;OGLRENDERCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>oglrendercore/oglrendercore_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -94,6 +94,10 @@
     <ClInclude Include="src\ogl\MakiOGLCommon.h" />
     <ClInclude Include="src\ogl\MakiOGLGPUTypes.h" />
     <ClInclude Include="src\ogl\MakiOGLRenderCore.h" />
+    <ClInclude Include="src\ogl\mojo\mojoshader.h" />
+    <ClInclude Include="src\ogl\mojo\mojoshader_internal.h" />
+    <ClInclude Include="src\ogl\mojo\mojoshader_parser_hlsl.h" />
+    <ClInclude Include="src\ogl\mojo\mojoshader_version.h" />
     <ClInclude Include="src\ogl\ogl_stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +112,38 @@
     <ClCompile Include="src\ogl\MakiOGLRenderCore.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ogl/ogl_stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ogl/ogl_stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_assembler.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_common.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_compiler.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_effects.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_lexer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_opengl.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojo\mojoshader_preprocessor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ogl\ogl_stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
