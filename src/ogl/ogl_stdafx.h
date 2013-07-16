@@ -10,3 +10,4 @@
 #include <gl/GLU.h>
 #include <gl/glext.h>
 #include "ogl/mojo/mojoshader.h"
+#include "ogl/mojodds/mojodds.h"

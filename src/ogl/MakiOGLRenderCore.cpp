@@ -26,8 +26,8 @@ namespace Maki
 			currentRenderTarget(0),
 			currentDepthStencil(0)
 		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 3));
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 0));
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 2));
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 1));
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -405,11 +405,13 @@ failed:
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			// TODO:
-			// Need to determine num channels here - probably need to borrow code from directx dds loader
-			uint32 channels = 4;
-			if(channels == 0 || channels > 4 || channels == 3) {
-				Console::Error("Unsupported number of channels in image: %d", channels);
+			const void *dataOut;
+			unsigned long dataLengthOut;
+            uint32 format;
+			uint32 mipLevels;
+			int32 ret = MOJODDS_getTexture(data, dataLength, &dataOut, &dataLengthOut, &format, &t->width, &t->height, &mipLevels);
+			if(ret == 0) {
+				Console::Error("Failed to mojo-load dds file");
 				goto failed;
 			}
 
@@ -426,7 +428,7 @@ failed:
 
 			// TODO:
 			// Need to determine internal format here - probably need to borrow code from directx dds loader
-			glCompressedTexImage2DARB(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, t->width, t->height, 0, dataLength, data);
+			glCompressedTexImage2DARB(GL_TEXTURE_2D, 0, format, t->width, t->height, 0, dataLengthOut, dataOut);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();

@@ -16,6 +16,9 @@
     <Filter Include="Source Files\mojo">
       <UniqueIdentifier>{4a0cd930-4526-4aec-95d4-a66c81959765}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mojodds">
+      <UniqueIdentifier>{9515a0af-774e-4aa7-9760-262659ed032d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -47,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="src\ogl\mojo\mojoshader_version.h">
       <Filter>Source Files\mojo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ogl\mojodds\mojodds.h">
+      <Filter>mojodds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="src\ogl\mojo\mojoshader_preprocessor.cpp">
       <Filter>Source Files\mojo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ogl\mojodds\mojodds.cpp">
+      <Filter>mojodds</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

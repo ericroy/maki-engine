@@ -65,10 +65,10 @@ namespace Maki
 
 
 			UINT flags = 0;
-	#if _DEBUG
+#if _DEBUG
 			flags |= D3D11_CREATE_DEVICE_DEBUG;
-	#endif
-			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
+#endif
+			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_10_0;
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevels, 1,
 				D3D11_SDK_VERSION, &scd, &swapChain, &device, nullptr, &context);
 			if(MAKI_D3D_FAILED(ret)) {
