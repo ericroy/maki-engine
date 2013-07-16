@@ -3,6 +3,7 @@
 
 using namespace std;
 using namespace Maki;
+using namespace Maki::Core;
 
 bool compile(char *src, char *dst, bool binary) {
 	ifstream in(src, ios::in | ios::binary);

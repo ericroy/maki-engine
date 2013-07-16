@@ -29,6 +29,8 @@ int RunProcess(char *exe, const char *args)
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
 
+	printf("%s\n", commandLine);
+
 	// Start the child process. 
 	if(!CreateProcessA(NULL,   // No module name (use command line)
 		commandLine,        // Command line
@@ -72,8 +74,7 @@ bool GenerateShader(bool d3d, const char *filePath, const char *profile, const c
 	for(auto iter = defines.begin(); iter != defines.end(); ++iter) {
 		ss << " -D" << iter->first << "=" << iter->second;
 	}
-	ss << " -o " << filePath << (d3d ? ".d3d" : ".ogl");
-
+	ss << " -o assets/" << filePath << (d3d ? ".d3d" : ".ogl") << " assets/" << filePath;
 	return RunProcess("%MAKI_DIR%\\tools\\cgc.exe", ss.str().c_str()) == 0;
 }
 
@@ -253,20 +254,20 @@ bool Compile(bool d3d, Document::Node *shaderNode, const char *filePath, const c
 }
 
 bool CompileAllVariants(bool d3d, Document::Node *shaderNode) {
-	Document::Node *fileName = shaderNode->Resolve("file_name");
-	if(fileName == nullptr || fileName->count != 1) {
+	const char *fileName = shaderNode->ResolveValue("file_name.#0");
+	if(fileName == nullptr) {
 		printf("shader filename must be provided\n");
 		return false;
 	}
 
-	Document::Node *entry = shaderNode->Resolve("entry_point");
-	if(entry == nullptr || entry->count < 1) {
+	const char *entry = shaderNode->ResolveValue("entry_point.#0");
+	if(entry == nullptr) {
 		printf("shader entry point must be provided\n");
 		return false;
 	}
 
-	Document::Node *target = shaderNode->Resolve("target");
-	if(target == nullptr || target->count < 1) {
+	const char *profile = shaderNode->ResolveValue("target.#0");
+	if(profile == nullptr) {
 		printf("compilation target must be provided\n");
 		return false;
 	}
@@ -284,9 +285,8 @@ bool CompileAllVariants(bool d3d, Document::Node *shaderNode) {
 		}
 	}
 
-
 	// Regular shader
-	if(!Compile(d3d, shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, defines, "")) {
+	if(!Compile(d3d, shaderNode, fileName, profile, entry, defines, "")) {
 		return false;
 	}
 	
@@ -314,7 +314,7 @@ bool CompileAllVariants(bool d3d, Document::Node *shaderNode) {
 		}
 
 		// Shadow variant shader
-		if(!Compile(d3d, shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, variantDefines, variantName)) {
+		if(!Compile(d3d, shaderNode, fileName, profile, entry, variantDefines, variantName)) {
 			return false;
 		}
 	}
