@@ -15,7 +15,69 @@ using namespace std;
 using namespace Maki;
 using namespace Maki::Core;
 
-bool Compile(Document::Node *shaderNode, const char *filePath, const char *compTarget, const char *entryPoint, const vector< pair<string, string> > &defines, const char *variantName) {
+int RunProcess(char *exe, const char *args)
+{
+	STARTUPINFOA si;
+	PROCESS_INFORMATION pi;
+
+	char commandLine[4096] = "";
+	strcat_s(commandLine, exe);
+	strcat_s(commandLine, " ");
+	strcat_s(commandLine, args);
+
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+
+	// Start the child process. 
+	if(!CreateProcessA(NULL,   // No module name (use command line)
+		commandLine,        // Command line
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		FALSE,          // Set handle inheritance to FALSE
+		0,              // No creation flags
+		NULL,           // Use parent's environment block
+		NULL,           // Use parent's starting directory 
+		&si,            // Pointer to STARTUPINFO structure
+		&pi )           // Pointer to PROCESS_INFORMATION structure
+	) {
+		printf("CreateProcess failed (%d)\n", GetLastError());
+		return 1;
+	}
+
+	WaitForSingleObject( pi.hProcess, INFINITE );
+    
+	DWORD exitCode;
+	if(!GetExitCodeProcess(pi.hProcess, &exitCode)) {
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+
+		printf("GetExitCodeProcess failed (%d)\n", GetLastError());
+		return 1;
+	}
+
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+
+	return exitCode;
+}
+
+bool GenerateShader(bool d3d, const char *filePath, const char *profile, const char *entryPoint, const vector< pair<string, string> > &defines)
+{
+	std::stringstream ss;
+	ss << "-entry " << entryPoint << " -profile " << profile;
+	if(d3d) {
+		ss << " -d3d";
+	}
+	for(auto iter = defines.begin(); iter != defines.end(); ++iter) {
+		ss << " -D" << iter->first << "=" << iter->second;
+	}
+	ss << " -o " << filePath << (d3d ? ".d3d" : ".ogl");
+
+	return RunProcess("%MAKI_DIR%\\tools\\cgc.exe", ss.str().c_str()) == 0;
+}
+
+bool Compile(bool d3d, Document::Node *shaderNode, const char *filePath, const char *profile, const char *entryPoint, const vector< pair<string, string> > &defines, const char *variantName) {
 	
 	string variantPrefix = variantName;
 	if(variantPrefix.length() > 0) {
@@ -36,19 +98,23 @@ bool Compile(Document::Node *shaderNode, const char *filePath, const char *compT
 		dataNode = nullptr;
 	}
 	
+	if(!GenerateShader(d3d, filePath, profile, entryPoint, defines)) {
+		printf("Failed to generate shader with CG compiler (d3d=%d)\n", d3d);
+		return false;
+	}
+
 	D3D_SHADER_MACRO *macros = new D3D_SHADER_MACRO[defines.size()+1];
 	ZeroMemory(macros, (defines.size()+1)*sizeof(D3D_SHADER_MACRO));
 	for(uint32 i = 0; i < defines.size(); i++) {
 		macros[i].Name = defines[i].first.c_str();
 		macros[i].Definition = defines[i].second.c_str();
 	}
-	
-	
+		
 	ID3D10Blob *codeBlob = nullptr;
 	ID3D10Blob *errorMessages = nullptr;
 	wstringstream inputFile;
-	inputFile << "assets/" << filePath;
-	if(FAILED(D3DCompileFromFile(inputFile.str().c_str(), macros, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint, compTarget, 0, 0, &codeBlob, &errorMessages))) {
+	inputFile << "assets/" << filePath << ".d3d";
+	if(FAILED(D3DCompileFromFile(inputFile.str().c_str(), macros, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint, profile, 0, 0, &codeBlob, &errorMessages))) {
 		SAFE_DELETE(macros);
 		assert(errorMessages != nullptr);
 		cout << string((char *)errorMessages->GetBufferPointer(), errorMessages->GetBufferSize()) << endl;
@@ -58,15 +124,43 @@ bool Compile(Document::Node *shaderNode, const char *filePath, const char *compT
 	SAFE_DELETE(macros);
 	assert(codeBlob != nullptr);
 
-	// Base64 encode the blob
-	string byteCode((char *)codeBlob->GetBufferPointer(), codeBlob->GetBufferSize());
-	stringstream in(byteCode, ios::in | ios::binary);
-	stringstream out(ios::out | ios::binary);
-	if(!Base64::Encode(in, out, 80)) {
-		printf("Failed to base64 encode shader data\n");
-		return false;
+
+	string encodedData;
+	if(d3d) {
+
+		// Base64 encode the blob
+		string byteCode((char *)codeBlob->GetBufferPointer(), codeBlob->GetBufferSize());
+		stringstream in(byteCode, ios::in | ios::binary);
+		stringstream out(ios::out | ios::binary);
+		if(!Base64::Encode(in, out, 80)) {
+			SAFE_RELEASE(codeBlob);
+			printf("Failed to base64 encode shader data\n");
+			return false;
+		}
+		encodedData = out.str();
+
+	} else {
+
+		stringstream inputFile;
+		inputFile << "assets/" << filePath << ".ogl";
+		ifstream sourceFile(inputFile.str());
+		if(!sourceFile.good()) {
+			SAFE_RELEASE(codeBlob);
+			printf("Failed to load file from disk: %s\n", inputFile.str().c_str());
+			return false;
+		}
+
+		// Base64 encode the source code
+		stringstream out(ios::out | ios::binary);
+		if(!Base64::Encode(sourceFile, out, 80)) {
+			SAFE_RELEASE(codeBlob);
+			printf("Failed to base64 encode shader data\n");
+			sourceFile.close();
+			return false;
+		}
+		encodedData = out.str();
+		sourceFile.close();
 	}
-	string encodedData = out.str();
 
 	string dataNodeName = variantPrefix + "data";	
 	dataNode = new Document::Node(const_cast<char *>(dataNodeName.c_str()), dataNodeName.length(), true);
@@ -158,7 +252,7 @@ bool Compile(Document::Node *shaderNode, const char *filePath, const char *compT
 	return true;
 }
 
-bool CompileAllVariants(Document::Node *shaderNode) {
+bool CompileAllVariants(bool d3d, Document::Node *shaderNode) {
 	Document::Node *fileName = shaderNode->Resolve("file_name");
 	if(fileName == nullptr || fileName->count != 1) {
 		printf("shader filename must be provided\n");
@@ -192,7 +286,7 @@ bool CompileAllVariants(Document::Node *shaderNode) {
 
 
 	// Regular shader
-	if(!Compile(shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, defines, "")) {
+	if(!Compile(d3d, shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, defines, "")) {
 		return false;
 	}
 	
@@ -220,7 +314,7 @@ bool CompileAllVariants(Document::Node *shaderNode) {
 		}
 
 		// Shadow variant shader
-		if(!Compile(shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, variantDefines, variantName)) {
+		if(!Compile(d3d, shaderNode, fileName->children[0]->value, target->children[0]->value, entry->children[0]->value, variantDefines, variantName)) {
 			return false;
 		}
 	}
@@ -228,7 +322,7 @@ bool CompileAllVariants(Document::Node *shaderNode) {
 	return true;
 }
 
-bool CompileAll(char *src, char *dst, bool binary) {
+bool CompileAll(char *src, char *dst, bool d3d, bool binary) {
 	ifstream in(src, ios::in | ios::binary);
 	if(!in.good()) {
 		in.close();
@@ -257,12 +351,12 @@ bool CompileAll(char *src, char *dst, bool binary) {
 
 	// Compile the hlsl file that the maki shader refers to, and embed its data into the maki shader doc (base64 encoded)
 	Document::Node *vs = doc.root->Resolve("vertex_shader");
-	if(vs == nullptr || !CompileAllVariants(vs)) {
+	if(vs == nullptr || !CompileAllVariants(d3d, vs)) {
 		return false;
 	}
 
 	Document::Node *ps = doc.root->Resolve("pixel_shader");
-	if(ps == nullptr || !CompileAllVariants(ps)) {
+	if(ps == nullptr || !CompileAllVariants(d3d, ps)) {
 		return false;
 	}
 
@@ -283,14 +377,15 @@ bool CompileAll(char *src, char *dst, bool binary) {
 }
 
 int main(int argc, char **argv) {
-	if(argc < 4) {
-		printf("Requires three command line params; src, dst, binary (where binary is 1 or 0)\n");
+	if(argc < 5) {
+		printf("Requires three command line params; src, dst, api, binary (where api is d3d|ogl and binary is 1 or 0)\n");
 		return 1;
 	}
 	
-	bool binary = argv[3][0] == '1' ? true : false;
+	bool d3d = string(argv[3]) == "d3d";
+	bool binary = argv[4][0] == '1' ? true : false;
 	//printf("binary=%d\n", binary);
 	
-	bool ret = CompileAll(argv[1], argv[2], binary);
+	bool ret = CompileAll(argv[1], argv[2], d3d, binary);
 	return ret ? 0 : 1;
 }
