@@ -201,8 +201,8 @@ bool Compile(bool d3d, Document::Node *shaderNode, const char *filePath, const c
 			}
 			
 			// See if it's one of the buffers that we care about
-			uint32 nameIndex = -1;
-			for(uint32 j = 0; j < 3; j++) {
+			int32 nameIndex = -1;
+			for(int32 j = 0; j < 3; j++) {
 				if(strcmp(bufferNames[j], sbDesc.Name) == 0) {
 					nameIndex = j;
 					break;
