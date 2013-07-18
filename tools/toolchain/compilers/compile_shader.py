@@ -85,23 +85,27 @@ def _cg_compile(api, shader_type, variant, shader):
     context = CG.cgCreateContext()
     if context == 0:
         raise CGError(context)
-
     try:
         profile = PROFILES[shader_type][api]
         args = []
         if api == 'd3d':
             args.append('-d3d')
-        defs = shader['variants'][variant]
-        assert len(defs) % 2 == 0
-        for i in range(0, len(defs), 2):
-            args.append('-D%s=%s' % (defs[i], defs[i+1]))
-        # Array of strings should be null-terminated
+        
+        defs = []
+        try:
+            defs += shader['variants'][variant]
+        except KeyError:
+            pass
+        defs += shader.get('defines', [])
+        
+        for k, v in defs:
+            args.append('-D%s=%s' % (k, v))
         args.append(None)
+        print(args)
 
         program = CG.cgCreateProgramFromFile(context, CG_SOURCE, c_char_p(filename), profile, c_char_p(shader['entry_point'][0]), (c_char_p * len(args))(*args))
         if program == 0:
             raise CGError(context)
-
         try:
             meta_nodes = _build_meta_data(context, program)
             compiled_program = c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value
@@ -132,9 +136,7 @@ def _leading_spaces(line):
 
 def _read_shader_defs(filename):
     ps_lines = {}
-    ps_variants = {'': []}
     vs_lines = {}
-    vs_variants = {'': []}
     
     with open(filename) as file:
         lines = list(file)
@@ -145,25 +147,33 @@ def _read_shader_defs(filename):
     while i < len(lines):
         line = lines[i]
         if line.startswith('vertex_shader'):
-            line_buffer, variant_buffer = vs_lines, vs_variants
+            line_buffer = vs_lines
         elif line.startswith('pixel_shader'):
-            line_buffer, variant_buffer = ps_lines, ps_variants
+            line_buffer = ps_lines
         assert line_buffer != None, "invalid mshad file"
         key, vals = _parse_line(line)
         i += 1
         if not key:
             continue
-        line_buffer[key] = vals
         if key == 'variants':
+            line_buffer[key] = {'': []}
             leading_spaces = _leading_spaces(line)
             while i < len(lines) and _leading_spaces(lines[i]) > leading_spaces:
-                # This is a variant
-                key, vals = _parse_line(lines[i])
-                variant_buffer[key] = vals
+                key2, vals = _parse_line(lines[i])
+                assert len(vals) == 2
+                line_buffer[key].setdefault(key2, []).append(vals)
                 i += 1
+        elif key == 'defines':
+            line_buffer[key] = []
+            leading_spaces = _leading_spaces(line)
+            while i < len(lines) and _leading_spaces(lines[i]) > leading_spaces:
+                key2, vals = _parse_line(lines[i])
+                assert len(vals) == 1
+                line_buffer[key].append([key2, vals[0]])
+                i += 1
+        else:
+            line_buffer[key] = vals
 
-    ps_lines['variants'] = ps_variants
-    vs_lines['variants'] = vs_variants
     shaders = {'pixel_shader': ps_lines, 'vertex_shader': vs_lines}
     return shaders
 
