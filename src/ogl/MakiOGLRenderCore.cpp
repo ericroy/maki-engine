@@ -26,14 +26,18 @@ namespace Maki
 			currentRenderTarget(0),
 			currentDepthStencil(0)
 		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 2));
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 3));
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 1));
+
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 
+			if(config->GetInt("engine.ogl_forward_compatible", true)) {
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+			}
 #if _DEBUG
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
@@ -73,8 +77,8 @@ namespace Maki
 			MAKI_OGL_FAILED();
 
 #if _DEBUG
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-			glDebugMessageCallbackARB(OGLDebugMessageHandler, nullptr);
+			//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_);
+			//glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
 #endif
 
 			Console::Info("GL Version: %s", (const char *)glGetString(GL_VERSION));
@@ -154,7 +158,7 @@ namespace Maki
 				b->DeleteBuffers();
 			}
 
-			glGenBuffersARB(2, b->vbos);
+			glGenBuffers(2, b->vbos);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			b->vertexCount = vertexCount;
@@ -171,13 +175,13 @@ namespace Maki
 			int32 stride = vf->GetStride();
 
 			// Create vertex buffer
-			glBindBufferARB(GL_ARRAY_BUFFER, b->vbos[0]);
-			glBufferDataARB(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
+			glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			// Create index buffer
-			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
-			glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			return buffer;
@@ -204,24 +208,24 @@ failed:
 		{
 			GPUPixelShader *gps = new GPUPixelShader();
 
-			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			/*const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
 			if(parseData->error_count > 0) {
 				for(int32 i = 0; i < parseData->error_count; i++) {
 					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
 				}
 				goto failed;
-			}
+			}*/
 
 			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
 			if(MAKI_OGL_FAILED()) { goto failed;}
 
-			int32 length = (int32)parseData->output_count;
-			glShaderSourceARB(gps->ps, 1, (const GLchar **)&parseData->output, &length);
-			MOJOSHADER_freeParseData(parseData);
-			parseData = nullptr;
+			int32 length = (int32)ps->programDataBytes;
+			glShaderSource(gps->ps, 1, (const GLchar **)&ps->programData, &length);
+			//MOJOSHADER_freeParseData(parseData);
+			//parseData = nullptr;
 			if(MAKI_OGL_FAILED()) { goto failed; }			
 			
-			glCompileShaderARB(gps->ps);
+			glCompileShader(gps->ps);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			ps->handle = (intptr_t)gps;
@@ -229,9 +233,9 @@ failed:
 
 failed:
 			
-			if(parseData != nullptr) {
+			/*if(parseData != nullptr) {
 				MOJOSHADER_freeParseData(parseData);
-			}
+			}*/
 			if(gps != nullptr && gps->ps != 0) {
 				glDeleteShader(gps->ps);
 			}
@@ -243,33 +247,33 @@ failed:
 		{
 			GPUVertexShader *gvs = new GPUVertexShader();
 
-			const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
+			/*const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
 			if(parseData->error_count > 0) {
 				for(int32 i = 0; i < parseData->error_count; i++) {
 					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
 				}
 				goto failed;
-			}
+			}*/
 
 			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			int32 length = (int32)vs->programDataBytes;
-			glShaderSourceARB(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
-			MOJOSHADER_freeParseData(parseData);
-			parseData = nullptr;
+			glShaderSource(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
+			//MOJOSHADER_freeParseData(parseData);
+			//parseData = nullptr;
 			if(MAKI_OGL_FAILED()) { goto failed; }
 			
-			glCompileShaderARB(gvs->vs);
+			glCompileShader(gvs->vs);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			vs->handle = (intptr_t)gvs;
 			return true;
 
 failed:
-			if(parseData != nullptr) {
+			/*if(parseData != nullptr) {
 				MOJOSHADER_freeParseData(parseData);
-			}
+			}*/
 			if(gvs != nullptr && gvs->vs != 0) {
 				glDeleteShader(gvs->vs);
 			}
@@ -298,7 +302,7 @@ failed:
 			glAttachShader(program, (GLuint)s->pixelShader.handle);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			glLinkProgramARB(program);
+			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			s->handle = (intptr_t)program;
@@ -428,7 +432,7 @@ failed:
 
 			// TODO:
 			// Need to determine internal format here - probably need to borrow code from directx dds loader
-			glCompressedTexImage2DARB(GL_TEXTURE_2D, 0, format, t->width, t->height, 0, dataLengthOut, dataOut);
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, t->width, t->height, 0, dataLengthOut, dataOut);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();

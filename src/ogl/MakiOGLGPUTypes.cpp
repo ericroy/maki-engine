@@ -9,10 +9,10 @@ namespace Maki
 		void Buffer::DeleteBuffers()
 		{
 			if(vbos[0] != 0) {
-				glDeleteBuffersARB(1, &vbos[0]);
+				glDeleteBuffers(1, &vbos[0]);
 			}
 			if(vbos[1] != 0) {
-				glDeleteBuffersARB(1, &vbos[1]);
+				glDeleteBuffers(1, &vbos[1]);
 			}
 		}
 

@@ -14,15 +14,6 @@ from .. import doc
 CG_SOURCE = 4112
 CG_COMPILED_PROGRAM = 4106
 
-CG_PROFILE_VS_4_0 = 6167
-CG_PROFILE_PS_4_0 = 6168
-CG_PROFILE_GLSLV = 7007
-CG_PROFILE_GLSLF = 7008
-
-CG_PROFILE_UNKNOWN = 6145
-CG_PROFILE_VS_2_0 = 6154
-CG_PROFILE_VS_1_1 = 6153
-
 CG_NO_ERROR = 0
 CG_COMPILER_ERROR = 1
 CG_INVALID_PARAM_HANDLE_ERROR = 18
@@ -33,20 +24,79 @@ CG_BEHAVIOR_3100 = 3000
 CG_GLOBAL = 4108
 CG_PROGRAM = 4109
 
-CG_BUFFER = 1319,
-CG_UNIFORMBUFFER = 1320,
+CG_BUFFER = 1319
+CG_UNIFORMBUFFER = 1320
+
+
+CG_PROFILE_UNKNOWN = 6145
+CG_PROFILE_VP20    = 6146
+CG_PROFILE_FP20    = 6147
+CG_PROFILE_VP30    = 6148
+CG_PROFILE_FP30    = 6149
+CG_PROFILE_ARBVP1  = 6150
+CG_PROFILE_FP40    = 6151
+CG_PROFILE_ARBFP1  = 7000
+CG_PROFILE_VP40    = 7001
+CG_PROFILE_GLSLV   = 7007 # GLSL vertex shader
+CG_PROFILE_GLSLF   = 7008 # GLSL fragment shader
+CG_PROFILE_GLSLG   = 7016 # GLSL geometry shader
+CG_PROFILE_GLSLC   = 7009 # Combined GLSL program
+CG_PROFILE_GPU_FP  = 7010 # Deprecated alias for CG_PROFILE_GP4FP
+CG_PROFILE_GPU_VP  = 7011 # Deprecated alias for CG_PROFILE_GP4VP
+CG_PROFILE_GPU_GP  = 7012 # Deprecated alias for CG_PROFILE_GP4GP
+CG_PROFILE_GP4FP   = 7010 # NV_gpu_program4 fragment program
+CG_PROFILE_GP4VP   = 7011 # NV_gpu_program4 vertex program
+CG_PROFILE_GP4GP   = 7012 # NV_gpu_program4 geometry program
+CG_PROFILE_GP5FP   = 7017 # NV_gpu_program5 fragment program
+CG_PROFILE_GP5VP   = 7018 # NV_gpu_program5 vertex program
+CG_PROFILE_GP5GP   = 7019 # NV_gpu_program5 geometry program
+CG_PROFILE_GP5TCP  = 7020 # NV_tessellation_program5 tessellation control program
+CG_PROFILE_GP5TEP  = 7021 # NV_tessellation_program5 tessellation evaluation prog
+CG_PROFILE_VS_1_1  = 6153
+CG_PROFILE_VS_2_0  = 6154
+CG_PROFILE_VS_2_X  = 6155
+CG_PROFILE_VS_2_SW = 6156
+CG_PROFILE_PS_1_1  = 6159
+CG_PROFILE_PS_1_2  = 6160
+CG_PROFILE_PS_1_3  = 6161
+CG_PROFILE_PS_2_0  = 6162
+CG_PROFILE_PS_2_X  = 6163
+CG_PROFILE_PS_2_SW = 6164
+CG_PROFILE_VS_3_0  = 6157 # DX9 vertex shader
+CG_PROFILE_PS_3_0  = 6165 # DX9 pixel shader
+CG_PROFILE_HLSLV   = 6158 # DX9 HLSL vertex shader
+CG_PROFILE_HLSLF   = 6166 # DX9 HLSL fragment shader
+CG_PROFILE_VS_4_0  = 6167 # DX10 vertex shader
+CG_PROFILE_PS_4_0  = 6168 # DX10 pixel shader
+CG_PROFILE_GS_4_0  = 6169 # DX10 geometry shader
+CG_PROFILE_VS_5_0  = 6170 # DX11 vertex shader
+CG_PROFILE_PS_5_0  = 6171 # DX11 pixel shader
+CG_PROFILE_GS_5_0  = 6172 # DX11 geometry shader
+CG_PROFILE_HS_5_0  = 6173 # DX11 hull shader (tessellation control
+CG_PROFILE_DS_5_0  = 6174 # DX11 domain shader (tessellation evaluation
+CG_PROFILE_GENERIC = 7002
+
+
+
+CG_GL_GLSL_DEFAULT = 0
+CG_GL_GLSL_100     = 1
+CG_GL_GLSL_110     = 2
+CG_GL_GLSL_120     = 3
+
+
+
 
 
 API = 'ogl'
 ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
 PROFILES = {
-    'pixel_shader': {
-        'd3d': CG_PROFILE_PS_4_0,
-        'ogl': CG_PROFILE_GLSLF
-    },
     'vertex_shader': {
         'd3d': CG_PROFILE_VS_4_0,
         'ogl': CG_PROFILE_GLSLV
+    },
+    'pixel_shader': {
+        'd3d': CG_PROFILE_PS_4_0,
+        'ogl': CG_PROFILE_GLSLF
     },
 }
 
@@ -59,38 +109,62 @@ class CGError(Exception):
         if err is None:
             err = CG.cgGetError()
         if err == CG_COMPILER_ERROR:
-            s = c_char_p(CG.cgGetLastListing(context)).value
+            msg = c_char_p(CG.cgGetLastListing(context)).value
         else:
-            e = c_int()
-            s = c_char_p(CG.cgGetLastErrorString(byref(e))).value
-        Exception.__init__(self, s)
+            msg = c_char_p(CG.cgGetErrorString(err)).value
+        Exception.__init__(self, msg)
+
+def _check_error(context):
+    err = CG.cgGetError()
+    if err != CG_NO_ERROR:
+        raise CGError(context, err)
 
 def _build_meta_data(context, program):
     #print('Building meta')
     meta_nodes = []
     for name in ('enginePerFrame', 'enginePerObject', 'material'):
-        buff = CG.cgGetNamedParameter(program, c_char_p(name))
-        if buff == 0:
+        buff_param = CG.cgGetNamedProgramUniformBuffer(program, c_char_p(name))
+        if buff_param == 0:
+            CG.cgGetError()
             continue
-        #print('Found param named:', name)
-        #buff_type = CG.cgGetParameterType(buff)
-        #if buff_type != CG_UNIFORMBUFFER:
-        #    raise RuntimeError('%s must be a uniform buffer (actual type was %d)' % (name, buff_type))
-        slot = CG.cgGetParameterBufferIndex(buff)
-        #print('Found buffer %s at slot %d' % (name, slot))
+
+        print('Found param named:', name)
+        buff_type = CG.cgGetParameterType(buff_param)
+        if buff_type != CG_UNIFORMBUFFER:
+            raise RuntimeError('%s must be a uniform buffer (actual type was %d)' % (name, buff_type))
+        _check_error(context)
+
+        slot = 0
+        #slot = CG.cgGetParameterResourceIndex(buff_param)
+        #_check_error(context)
+
+        print('Found buffer %s at slot %d' % (name, slot))
 
         n = doc.Node(name)
         n.add_child('slot').add_child('%d' % slot)
         unis = n.add_child('uniforms')
 
-        param = CG.cgGetFirstUniformBufferParameter(buff)
+        param = CG.cgGetFirstUniformBufferParameter(buff_param)
+        _check_error(context)
+
         while param != 0:
             name = c_char_p(CG.cgGetParameterName(param)).value
-            name = name.split('.')[1]
+            _check_error(context)
+
+            print('Found param within buffer: %s' % name)
+
+            #name = name.split('.')[1]
             var = unis.add_child(name)
             var.add_child('%d' % CG.cgGetParameterBufferOffset(param))
+            _check_error(context)
+
             var.add_child('%d' % CG.cgGetParameterResourceSize(param))
+            _check_error(context)
+
             param = CG.cgGetNextParameter(param)
+            _check_error(context)
+        
+        #if len(unis):
         meta_nodes.append(n)
 
     #print('Done building meta')
@@ -104,10 +178,12 @@ def _cg_compile(api, shader_type, variant, shader):
     #print('Creating context')
     context = CG.cgCreateContext()
     if context == 0:
-        raise CGError(context)
-    CG.cgSetContextBehavior(CG_BEHAVIOR_3100)
+        raise RuntimeError('Could not create CG context')
 
     try:
+        CG.cgSetContextBehavior(context, CG_BEHAVIOR_3100)
+        _check_error(context)
+
         profile = PROFILES[shader_type][api]
         args = []
         if api == 'd3d':
@@ -127,13 +203,13 @@ def _cg_compile(api, shader_type, variant, shader):
         args.append(None)
         
         program = CG.cgCreateProgramFromFile(context, CG_SOURCE, c_char_p(filename), profile, c_char_p(shader['entry_point'][0]), (c_char_p * len(args))(*args))
-        if program == 0:
-            raise CGError(context)
+        _check_error(context)
+
         try:
             meta_nodes = _build_meta_data(context, program)
             compiled_program = bytes(c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value, 'utf-8')
-            if len(compiled_program) == 0:
-                raise CGError(context)
+            _check_error(context)
+        
         finally:
             CG.cgDestroyProgram(program)
     finally:

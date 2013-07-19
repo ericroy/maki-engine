@@ -234,7 +234,7 @@ namespace Maki
 			using namespace Core;
 
 			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS; i++) {
-				glActiveTextureARB(GL_TEXTURE0+i);
+				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 			MAKI_OGL_FAILED();
@@ -287,7 +287,7 @@ namespace Maki
 
 			for(uint32 i = 0; i < ts->textureCount; i++) {
 				const GPUTexture *gtex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
-				glActiveTextureARB(GL_TEXTURE0+i);
+				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
 			}
 			MAKI_OGL_FAILED();
@@ -310,8 +310,8 @@ namespace Maki
 			const Buffer *b = (Buffer *)buffer;
 			uint32 stride = vf->GetStride();
 			uint32 offset = 0;
-			glBindBufferARB(GL_ARRAY_BUFFER, b->vbos[0]);
-			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
+			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 			MAKI_OGL_FAILED();
 		}
 
@@ -344,55 +344,55 @@ namespace Maki
 
 			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, 1, GL_FALSE, state.view.vals);
+				glUniformMatrix4fv(location, 1, GL_FALSE, state.view.vals);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, 1, GL_FALSE, state.projection.vals);
+				glUniformMatrix4fv(location, 1, GL_FALSE, state.projection.vals);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
 			if(location != -1) {
-				glUniform4fvARB(location, 1, state.cameraWidthHeightNearFar.vals);
+				glUniform4fv(location, 1, state.cameraWidthHeightNearFar.vals);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
 			if(location != -1) {
 				static const int32 cameraSplitDistancesSizeInRegisters = (int32)ceil(sizeof(state.cameraSplitDistances) / (4.0f * sizeof(float)));
-				glUniform4fvARB(location, cameraSplitDistancesSizeInRegisters, (GLfloat *)&state.cameraSplitDistances);
+				glUniform4fv(location, cameraSplitDistancesSizeInRegisters, (GLfloat *)&state.cameraSplitDistances);
 			}
 
 
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, sizeof(state.lightViewProj) / sizeof(Matrix44), GL_FALSE, (GLfloat *)state.lightViewProj);
+				glUniformMatrix4fv(location, sizeof(state.lightViewProj) / sizeof(Matrix44), GL_FALSE, (GLfloat *)state.lightViewProj);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
 			if(location != -1) {
-				glUniform4fvARB(location, sizeof(state.lightPositions) / sizeof(Vector4), (GLfloat *)state.lightPositions);
+				glUniform4fv(location, sizeof(state.lightPositions) / sizeof(Vector4), (GLfloat *)state.lightPositions);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
 			if(location != -1) {
-				glUniform4fvARB(location, sizeof(state.lightDirections) / sizeof(Vector4), (GLfloat *)state.lightDirections);
+				glUniform4fv(location, sizeof(state.lightDirections) / sizeof(Vector4), (GLfloat *)state.lightDirections);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
 			if(location != -1) {
 				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
 				static const int32 lightPropertiesSizeInRegisters = (int32)ceil(sizeof(state.lightProperties) / (4.0f * sizeof(float)));
-				glUniform4fvARB(location, lightPropertiesSizeInRegisters, (GLfloat *)state.lightProperties);
+				glUniform4fv(location, lightPropertiesSizeInRegisters, (GLfloat *)state.lightProperties);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
 			if(location != -1) {
 				static const int32 shadowMapPropertiesSizeInRegisters = (int32)ceil(sizeof(state.shadowMapProperties) / (4.0f * sizeof(float)));
-				glUniform4fvARB(location, shadowMapPropertiesSizeInRegisters, (GLfloat *)state.shadowMapProperties);
+				glUniform4fv(location, shadowMapPropertiesSizeInRegisters, (GLfloat *)state.shadowMapProperties);
 			}
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
 			if(location != -1) {
 				static const int32 lightSplitRegionsSizeInRegisters = (int32)ceil(sizeof(state.lightSplitRegions) / (4.0f * sizeof(float)));
-				glUniform4fvARB(location, lightSplitRegionsSizeInRegisters, (GLfloat *)state.lightSplitRegions);
+				glUniform4fv(location, lightSplitRegionsSizeInRegisters, (GLfloat *)state.lightSplitRegions);
 			}
 		
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
 			if(location != -1) {
-				glUniform4fvARB(location, 1, state.globalAmbientColor.vals);
+				glUniform4fv(location, 1, state.globalAmbientColor.vals);
 			}
 		}
 
@@ -402,17 +402,17 @@ namespace Maki
 
 			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, 1, GL_FALSE, model.vals);
+				glUniformMatrix4fv(location, 1, GL_FALSE, model.vals);
 			}
 
 			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, 1, GL_FALSE, modelView.vals);
+				glUniformMatrix4fv(location, 1, GL_FALSE, modelView.vals);
 			}
 
 			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
 			if(location != -1) {
-				glUniformMatrix4fvARB(location, 1, GL_FALSE, modelViewProjection.vals);
+				glUniformMatrix4fv(location, 1, GL_FALSE, modelViewProjection.vals);
 			}
 		}
 
@@ -425,7 +425,7 @@ namespace Maki
 				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
 				if(location != -1) {
 					const int32 valSizeInRegisters = (int32)ceil(val.bytes / (4.0f * sizeof(float)));
-					glUniform4fvARB(location, valSizeInRegisters, (GLfloat *)val.data);
+					glUniform4fv(location, valSizeInRegisters, (GLfloat *)val.data);
 				}
 			}
 		}
