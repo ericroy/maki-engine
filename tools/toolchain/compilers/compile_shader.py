@@ -30,8 +30,14 @@ CG_BUFFER_INDEX_OUT_OF_RANGE_ERROR = 58
 
 CG_BEHAVIOR_3100 = 3000
 
+CG_GLOBAL = 4108
+CG_PROGRAM = 4109
 
-API = 'd3d'
+CG_BUFFER = 1319,
+CG_UNIFORMBUFFER = 1320,
+
+
+API = 'ogl'
 ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
 PROFILES = {
     'pixel_shader': {
@@ -55,32 +61,39 @@ class CGError(Exception):
         if err == CG_COMPILER_ERROR:
             s = c_char_p(CG.cgGetLastListing(context)).value
         else:
-            s = c_char_p(CG.cgGetLastErrorString(byref(err))).value
+            e = c_int()
+            s = c_char_p(CG.cgGetLastErrorString(byref(e))).value
         Exception.__init__(self, s)
 
 def _build_meta_data(context, program):
-    print('Building meta')
+    #print('Building meta')
     meta_nodes = []
     for name in ('enginePerFrame', 'enginePerObject', 'material'):
-        buff = CG.cgGetNamedProgramUniformBuffer(program, c_char_p(name))
+        buff = CG.cgGetNamedParameter(program, c_char_p(name))
         if buff == 0:
             continue
-        print('Found buffer')
+        #print('Found param named:', name)
+        #buff_type = CG.cgGetParameterType(buff)
+        #if buff_type != CG_UNIFORMBUFFER:
+        #    raise RuntimeError('%s must be a uniform buffer (actual type was %d)' % (name, buff_type))
+        slot = CG.cgGetParameterBufferIndex(buff)
+        #print('Found buffer %s at slot %d' % (name, slot))
 
-        n = doc.Node(buffer_name)
-        n.add_child('slot').add_child('%d' % i)
+        n = doc.Node(name)
+        n.add_child('slot').add_child('%d' % slot)
         unis = n.add_child('uniforms')
 
         param = CG.cgGetFirstUniformBufferParameter(buff)
         while param != 0:
-            var = unis.add_child(c_char_p(CG.cgGetParameterName(param)).value)
+            name = c_char_p(CG.cgGetParameterName(param)).value
+            name = name.split('.')[1]
+            var = unis.add_child(name)
             var.add_child('%d' % CG.cgGetParameterBufferOffset(param))
             var.add_child('%d' % CG.cgGetParameterResourceSize(param))
             param = CG.cgGetNextParameter(param)
         meta_nodes.append(n)
-        i += 1
 
-    print('Done building meta')
+    #print('Done building meta')
     return meta_nodes
 
 
@@ -88,7 +101,7 @@ def _cg_compile(api, shader_type, variant, shader):
     filename = os.path.abspath(os.path.join(ASSETS_PATH, shader['file_name'][0]))
     print('Compiling file: %s' % filename)
 
-    print('Creating context')
+    #print('Creating context')
     context = CG.cgCreateContext()
     if context == 0:
         raise CGError(context)
@@ -126,7 +139,7 @@ def _cg_compile(api, shader_type, variant, shader):
     finally:
         CG.cgDestroyContext(context)
 
-    print(compiled_program)
+    #print(compiled_program)
     return compiled_program, meta_nodes
 
 def _parse_line(line):
