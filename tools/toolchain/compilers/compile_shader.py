@@ -19,10 +19,16 @@ CG_PROFILE_PS_4_0 = 6168
 CG_PROFILE_GLSLV = 7007
 CG_PROFILE_GLSLF = 7008
 
+CG_PROFILE_UNKNOWN = 6145
+CG_PROFILE_VS_2_0 = 6154
+CG_PROFILE_VS_1_1 = 6153
+
 CG_NO_ERROR = 0
 CG_COMPILER_ERROR = 1
 CG_INVALID_PARAM_HANDLE_ERROR = 18
 CG_BUFFER_INDEX_OUT_OF_RANGE_ERROR = 58
+
+CG_BEHAVIOR_3100 = 3000
 
 
 API = 'd3d'
@@ -59,6 +65,7 @@ def _build_meta_data(context, program):
         buff = CG.cgGetNamedProgramUniformBuffer(program, c_char_p(name))
         if buff == 0:
             continue
+        print('Found buffer')
 
         n = doc.Node(buffer_name)
         n.add_child('slot').add_child('%d' % i)
@@ -85,12 +92,16 @@ def _cg_compile(api, shader_type, variant, shader):
     context = CG.cgCreateContext()
     if context == 0:
         raise CGError(context)
+    CG.cgSetContextBehavior(CG_BEHAVIOR_3100)
+
     try:
         profile = PROFILES[shader_type][api]
         args = []
         if api == 'd3d':
-            args.append('-d3d')
-        
+            args += ['-d3d', '-po', 'pad16']
+        else:
+            args += ['-po', 'version=140']
+
         defs = []
         try:
             defs += shader['variants'][variant]
@@ -101,14 +112,13 @@ def _cg_compile(api, shader_type, variant, shader):
         for k, v in defs:
             args.append('-D%s=%s' % (k, v))
         args.append(None)
-        print(args)
-
+        
         program = CG.cgCreateProgramFromFile(context, CG_SOURCE, c_char_p(filename), profile, c_char_p(shader['entry_point'][0]), (c_char_p * len(args))(*args))
         if program == 0:
             raise CGError(context)
         try:
             meta_nodes = _build_meta_data(context, program)
-            compiled_program = c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value
+            compiled_program = bytes(c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value, 'utf-8')
             if len(compiled_program) == 0:
                 raise CGError(context)
         finally:
@@ -116,6 +126,7 @@ def _cg_compile(api, shader_type, variant, shader):
     finally:
         CG.cgDestroyContext(context)
 
+    print(compiled_program)
     return compiled_program, meta_nodes
 
 def _parse_line(line):
