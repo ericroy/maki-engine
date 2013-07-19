@@ -20,15 +20,25 @@ namespace Maki
 
 
 		GPUVertexShader::GPUVertexShader()
-			: vs(0)
+			: vs(0), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
 		{
 		}
 
 		GPUVertexShader::~GPUVertexShader()
 		{
+			if(uboPerFrame != 0) {
+				glDeleteBuffers(1, &uboPerFrame);
+			}
+			if(uboPerObject != 0) {
+				glDeleteBuffers(1, &uboPerObject);
+			}
+			if(uboMaterial != 0) {
+				glDeleteBuffers(1, &uboMaterial);
+			}
 			if(vs != 0) {
 				glDeleteShader(vs);
 			}
+			SAFE_FREE(scratchBuffer);
 		}
 
 
@@ -36,15 +46,25 @@ namespace Maki
 
 
 		GPUPixelShader::GPUPixelShader()
-			: ps(0)
+			: ps(0), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
 		{
 		}
 
 		GPUPixelShader::~GPUPixelShader()
 		{
+			if(uboPerFrame != 0) {
+				glDeleteBuffers(1, &uboPerFrame);
+			}
+			if(uboPerObject != 0) {
+				glDeleteBuffers(1, &uboPerObject);
+			}
+			if(uboMaterial != 0) {
+				glDeleteBuffers(1, &uboMaterial);
+			}
 			if(ps != 0) {
 				glDeleteShader(ps);
 			}
+			SAFE_FREE(scratchBuffer);
 		}
 			
 

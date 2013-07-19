@@ -3,6 +3,7 @@
 #include "SDL.h"
 
 #if defined(_WIN32) || defined(_WIN64)
+#define NOMINMAX 1
 #	include <windows.h>
 #endif
 

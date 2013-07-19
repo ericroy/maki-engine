@@ -76,9 +76,6 @@ namespace Maki
 			inline void DrawBuffer(void *buffer);
 
 		private:
-			inline void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped);
-			inline void SetPerObjectConstants(const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
-			inline void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Material *mat);
 			bool CreatePixelShader(Core::Shader *ps);
 			bool CreateVertexShader(Core::Shader *vs);
 
@@ -244,7 +241,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
 			context->Map(gvs->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			SetPerFrameConstants(state, &shader->vertexShader, mapped);
+			SetPerFrameConstants(state, &shader->vertexShader, (char *)mapped.pData);
 			context->Unmap(gvs->perFrameConstants, 0);
 			context->VSSetConstantBuffers(shader->vertexShader.frameUniformBufferLocation, 1, &gvs->perFrameConstants);
 		}
@@ -254,7 +251,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
 			context->Map(gps->perFrameConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			SetPerFrameConstants(state, &shader->pixelShader, mapped);
+			SetPerFrameConstants(state, &shader->pixelShader, (char *)mapped.pData);
 			context->Unmap(gps->perFrameConstants, 0);
 			context->PSSetConstantBuffers(shader->pixelShader.frameUniformBufferLocation, 1, &gps->perFrameConstants);
 		}
@@ -290,7 +287,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
 			context->Map(gvs->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			BindMaterialConstants(&shader->vertexShader, true, mapped, mat);
+			BindMaterialConstants(&shader->vertexShader, true, (char *)mapped.pData, mat);
 			context->Unmap(gvs->materialConstants, 0);
 			context->VSSetConstantBuffers(shader->vertexShader.materialUniformBufferLocation, 1, &gvs->materialConstants);
 		}
@@ -300,7 +297,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
 			context->Map(gps->materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			BindMaterialConstants(&shader->pixelShader, false, mapped, mat);
+			BindMaterialConstants(&shader->pixelShader, false, (char *)mapped.pData, mat);
 			context->Unmap(gps->materialConstants, 0);
 			context->PSSetConstantBuffers(shader->pixelShader.materialUniformBufferLocation, 1, &gps->materialConstants);
 		}
@@ -327,7 +324,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
 			context->Map(gvs->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			SetPerObjectConstants(&shader->vertexShader, mapped, matrix, mv, mvp);
+			SetPerObjectConstants(&shader->vertexShader, (char *)mapped.pData, matrix, mv, mvp);
 			context->Unmap(gvs->perObjectConstants, 0);
 			context->VSSetConstantBuffers(shader->vertexShader.objectUniformBufferLocation, 1, &gvs->perObjectConstants);
 		}
@@ -337,7 +334,7 @@ namespace Maki
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
 			context->Map(gps->perObjectConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-			SetPerObjectConstants(&shader->pixelShader, mapped, matrix, mv, mvp);
+			SetPerObjectConstants(&shader->pixelShader, (char *)mapped.pData, matrix, mv, mvp);
 			context->Unmap(gps->perObjectConstants, 0);
 			context->PSSetConstantBuffers(shader->pixelShader.objectUniformBufferLocation, 1, &gps->perObjectConstants);
 		}
@@ -359,99 +356,6 @@ namespace Maki
 		}
 
 		// End of non-virtual interface
-
-
-
-
-
-		// Start of private utility methods:
-
-		inline void D3DRenderCore::SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped)
-		{
-			using namespace Core;
-
-			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.view.vals, 16*sizeof(float));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.projection.vals, sizeof(state.projection));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.cameraWidthHeightNearFar, sizeof(state.cameraWidthHeightNearFar));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.cameraSplitDistances, sizeof(state.cameraSplitDistances));
-			}
-
-
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightViewProj, sizeof(state.lightViewProj));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightPositions, sizeof(state.lightPositions));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightDirections, sizeof(state.lightDirections));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
-			if(location != -1) {
-				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
-				memcpy(((char *)mapped.pData) + location, state.lightProperties, sizeof(state.lightProperties));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.shadowMapProperties, state.shadowLightCount*sizeof(RenderState::ShadowMapProperties));
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
-			}
-		
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));
-			}
-		}
-
-		inline void D3DRenderCore::SetPerObjectConstants(const Core::Shader *s, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection)
-		{
-			using namespace Core;
-
-			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, model.vals, sizeof(model));
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, modelView.vals, sizeof(modelView));
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
-			if(location != -1) {
-				memcpy(((char *)mapped.pData) + location, modelViewProjection.vals, sizeof(modelViewProjection));
-			}
-		}
-
-		inline void D3DRenderCore::BindMaterialConstants(const Core::Shader *s, bool isVertexShader, D3D11_MAPPED_SUBRESOURCE &mapped, const Core::Material *mat)
-		{
-			using namespace Core;
-
-			for(uint8 i = 0; i < mat->uniformCount; i++) {
-				const Material::UniformValue &val = mat->uniformValues[i];
-				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
-				if(location != -1) {
-					memcpy(((char *)mapped.pData) + location, val.data, val.bytes);
-				}
-			}
-		}
 
 
 	} // namespace D3D

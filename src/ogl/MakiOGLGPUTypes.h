@@ -33,6 +33,10 @@ namespace Maki
 			~GPUVertexShader();
 
 			GLuint vs;
+			GLuint uboPerFrame;
+			GLuint uboPerObject;
+			GLuint uboMaterial;
+			char *scratchBuffer;
 		};
 
 		struct GPUPixelShader
@@ -41,6 +45,10 @@ namespace Maki
 			~GPUPixelShader();
 			
 			GLuint ps;
+			GLuint uboPerFrame;
+			GLuint uboPerObject;
+			GLuint uboMaterial;
+			char *scratchBuffer;
 		};
 
 		struct GPUTexture

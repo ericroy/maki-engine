@@ -48,6 +48,94 @@ namespace Maki
 		}
 
 
+		void RenderCore::SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, char *buffer)
+		{
+			using namespace Core;
+
+			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
+			if(location != -1) {
+				memcpy(buffer + location, state.view.vals, 16*sizeof(float));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
+			if(location != -1) {
+				memcpy(buffer + location, state.projection.vals, sizeof(state.projection));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
+			if(location != -1) {
+				memcpy(buffer + location, &state.cameraWidthHeightNearFar, sizeof(state.cameraWidthHeightNearFar));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
+			if(location != -1) {
+				memcpy(buffer + location, &state.cameraSplitDistances, sizeof(state.cameraSplitDistances));
+			}
+
+
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
+			if(location != -1) {
+				memcpy(buffer + location, state.lightViewProj, sizeof(state.lightViewProj));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
+			if(location != -1) {
+				memcpy(buffer + location, state.lightPositions, sizeof(state.lightPositions));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
+			if(location != -1) {
+				memcpy(buffer + location, state.lightDirections, sizeof(state.lightDirections));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
+			if(location != -1) {
+				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
+				memcpy(buffer + location, state.lightProperties, sizeof(state.lightProperties));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
+			if(location != -1) {
+				memcpy(buffer + location, state.shadowMapProperties, state.shadowLightCount*sizeof(RenderState::ShadowMapProperties));
+			}
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
+			if(location != -1) {
+				memcpy(buffer + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
+			}
+		
+			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
+			if(location != -1) {
+				memcpy(buffer + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));
+			}
+		}
+
+
+		void RenderCore::SetPerObjectConstants(const Core::Shader *s, char *buffer, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection)
+		{
+			using namespace Core;
+
+			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
+			if(location != -1) {
+				memcpy(buffer + location, model.vals, sizeof(model));
+			}
+
+			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
+			if(location != -1) {
+				memcpy(buffer + location, modelView.vals, sizeof(modelView));
+			}
+
+			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
+			if(location != -1) {
+				memcpy(buffer + location, modelViewProjection.vals, sizeof(modelViewProjection));
+			}
+		}
+
+		void RenderCore::BindMaterialConstants(const Core::Shader *s, bool isVertexShader, char *buffer, const Core::Material *mat)
+		{
+			using namespace Core;
+
+			for(uint8 i = 0; i < mat->uniformCount; i++) {
+				const Material::UniformValue &val = mat->uniformValues[i];
+				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
+				if(location != -1) {
+					memcpy(buffer + location, val.data, val.bytes);
+				}
+			}
+		}
+
 
 	} // namespace Core
 

@@ -12,6 +12,7 @@ namespace Maki
 	namespace Core
 	{
 		class VertexFormat;
+		class Material;
 
 		class RenderCore : public Thread
 		{
@@ -47,6 +48,10 @@ namespace Maki
 
 			template<class Derived>
 			void GenericDraw(const RenderState &state, const DrawCommandList &commands);
+
+			void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, char *buffer);
+			void SetPerObjectConstants(const Core::Shader *s, char *buffer, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
+			void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, char *buffer, const Core::Material *mat);
 
 		public:
 			SafeQueue<RenderPayload> input;
@@ -205,6 +210,7 @@ namespace Maki
 			derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
 			derived->ReleaseContext();
 		}
+
 
 	} // namespace Core
 

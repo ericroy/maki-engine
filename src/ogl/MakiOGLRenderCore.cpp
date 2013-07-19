@@ -208,37 +208,42 @@ failed:
 		{
 			GPUPixelShader *gps = new GPUPixelShader();
 
-			/*const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)ps->programData, ps->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
-			if(parseData->error_count > 0) {
-				for(int32 i = 0; i < parseData->error_count; i++) {
-					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
-				}
-				goto failed;
-			}*/
-
 			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
 			if(MAKI_OGL_FAILED()) { goto failed;}
 
 			int32 length = (int32)ps->programDataBytes;
 			glShaderSource(gps->ps, 1, (const GLchar **)&ps->programData, &length);
-			//MOJOSHADER_freeParseData(parseData);
-			//parseData = nullptr;
 			if(MAKI_OGL_FAILED()) { goto failed; }			
 			
 			glCompileShader(gps->ps);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			uint32 largestBuffer = 0;
+			if(ps->frameUniformBufferLocation != -1) {
+				glGenBuffers(1, &gps->uboPerFrame);
+				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerFrame);
+				glBufferData(GL_UNIFORM_BUFFER, ps->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, ps->engineFrameUniformBytes);
+			}
+			if(ps->objectUniformBufferLocation != -1) {
+				glGenBuffers(1, &gps->uboPerObject);
+				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerObject);
+				glBufferData(GL_UNIFORM_BUFFER, ps->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, ps->engineObjectUniformBytes);
+			}
+			if(ps->materialUniformBufferLocation != -1) {
+				glGenBuffers(1, &gps->uboMaterial);
+				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboMaterial);
+				glBufferData(GL_UNIFORM_BUFFER, ps->materialUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, ps->materialUniformBytes);
+			}
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			gps->scratchBuffer = (char *)Allocator::Malloc(largestBuffer);
+
 			ps->handle = (intptr_t)gps;
 			return true;
-
-failed:
-			
-			/*if(parseData != nullptr) {
-				MOJOSHADER_freeParseData(parseData);
-			}*/
-			if(gps != nullptr && gps->ps != 0) {
-				glDeleteShader(gps->ps);
-			}
+failed:			
 			SAFE_DELETE(gps);
 			return false;
 		}
@@ -247,36 +252,42 @@ failed:
 		{
 			GPUVertexShader *gvs = new GPUVertexShader();
 
-			/*const MOJOSHADER_parseData *parseData = MOJOSHADER_parse(MOJOSHADER_PROFILE_GLSL120, (unsigned char *)vs->programData, vs->programDataBytes, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr);
-			if(parseData->error_count > 0) {
-				for(int32 i = 0; i < parseData->error_count; i++) {
-					Console::Error("MOJOSHADER: %s", parseData->errors[i].error);
-				}
-				goto failed;
-			}*/
-
 			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			int32 length = (int32)vs->programDataBytes;
 			glShaderSource(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
-			//MOJOSHADER_freeParseData(parseData);
-			//parseData = nullptr;
 			if(MAKI_OGL_FAILED()) { goto failed; }
 			
 			glCompileShader(gvs->vs);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			uint32 largestBuffer = 0;
+			if(vs->frameUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboPerFrame);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
+				glBufferData(GL_UNIFORM_BUFFER, vs->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, vs->engineFrameUniformBytes);
+			}
+			if(vs->objectUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboPerObject);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
+				glBufferData(GL_UNIFORM_BUFFER, vs->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, vs->engineObjectUniformBytes);
+			}
+			if(vs->materialUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboMaterial);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
+				glBufferData(GL_UNIFORM_BUFFER, vs->materialUniformBytes, 0, GL_STREAM_DRAW);
+				largestBuffer = std::max(largestBuffer, vs->materialUniformBytes);
+			}
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			gvs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer);
+
 			vs->handle = (intptr_t)gvs;
 			return true;
-
 failed:
-			/*if(parseData != nullptr) {
-				MOJOSHADER_freeParseData(parseData);
-			}*/
-			if(gvs != nullptr && gvs->vs != 0) {
-				glDeleteShader(gvs->vs);
-			}
 			SAFE_DELETE(gvs);
 			return false;
 		}
@@ -296,10 +307,10 @@ failed:
 			GLuint program = glCreateProgram();
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			glAttachShader(program, (GLuint)s->vertexShader.handle);
+			glAttachShader(program, (GLuint)((GPUVertexShader *)s->vertexShader.handle)->vs);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			glAttachShader(program, (GLuint)s->pixelShader.handle);
+			glAttachShader(program, (GLuint)((GPUPixelShader *)s->pixelShader.handle)->ps);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			glLinkProgram(program);

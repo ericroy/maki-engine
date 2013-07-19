@@ -10,6 +10,7 @@ extern PFNGLATTACHSHADERPROC glAttachShader;
 extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
 extern PFNGLBINDBUFFERPROC glBindBuffer;
 extern PFNGLBUFFERDATAPROC glBufferData;
+extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLCREATEPROGRAMPROC glCreateProgram;
 extern PFNGLCREATESHADERPROC glCreateShader;

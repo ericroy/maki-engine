@@ -80,9 +80,6 @@ namespace Maki
 			inline void DrawBuffer(void *buffer);
 
 		private:
-			inline void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s);
-			inline void SetPerObjectConstants(const Core::Shader *s, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
-			inline void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, const Core::Material *mat);
 			bool CreatePixelShader(Core::Shader *ps);
 			bool CreateVertexShader(Core::Shader *vs);
 
@@ -248,14 +245,28 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			SetPerFrameConstants(state, &shader->vertexShader);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
 			MAKI_OGL_FAILED();
+
+			SetPerFrameConstants(state, &shader->vertexShader, gvs->scratchBuffer);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			SetPerFrameConstants(state, &shader->pixelShader);
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerFrame);
 			MAKI_OGL_FAILED();
+
+			SetPerFrameConstants(state, &shader->pixelShader, gps->scratchBuffer);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gps->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::BindShadowMaps(const Core::RenderState &state)
@@ -271,14 +282,28 @@ namespace Maki
 
 		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			BindMaterialConstants(&shader->vertexShader, true, mat);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
 			MAKI_OGL_FAILED();
+
+			BindMaterialConstants(&shader->vertexShader, true, gvs->scratchBuffer, mat);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			BindMaterialConstants(&shader->vertexShader, false, mat);
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboMaterial);
 			MAKI_OGL_FAILED();
+
+			BindMaterialConstants(&shader->pixelShader, false, gps->scratchBuffer, mat);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gps->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::BindTextures(const Core::TextureSet *ts)
@@ -295,14 +320,28 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			SetPerObjectConstants(&shader->vertexShader, matrix, mv, mvp);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
 			MAKI_OGL_FAILED();
+
+			SetPerObjectConstants(&shader->vertexShader, gvs->scratchBuffer, matrix, mv, mvp);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			SetPerObjectConstants(&shader->vertexShader, matrix, mv, mvp);
+			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerObject);
 			MAKI_OGL_FAILED();
+
+			SetPerObjectConstants(&shader->vertexShader, gps->scratchBuffer, matrix, mv, mvp);
+			MAKI_OGL_FAILED();
+
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gps->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
@@ -330,109 +369,6 @@ namespace Maki
 
 
 		// End of non-virtual interface
-
-
-
-
-
-		// Start of private utility methods:
-
-
-		inline void OGLRenderCore::SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s)
-		{
-			using namespace Core;
-
-			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
-			if(location != -1) {
-				glUniformMatrix4fv(location, 1, GL_FALSE, state.view.vals);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
-			if(location != -1) {
-				glUniformMatrix4fv(location, 1, GL_FALSE, state.projection.vals);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
-			if(location != -1) {
-				glUniform4fv(location, 1, state.cameraWidthHeightNearFar.vals);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
-			if(location != -1) {
-				static const int32 cameraSplitDistancesSizeInRegisters = (int32)ceil(sizeof(state.cameraSplitDistances) / (4.0f * sizeof(float)));
-				glUniform4fv(location, cameraSplitDistancesSizeInRegisters, (GLfloat *)&state.cameraSplitDistances);
-			}
-
-
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
-			if(location != -1) {
-				glUniformMatrix4fv(location, sizeof(state.lightViewProj) / sizeof(Matrix44), GL_FALSE, (GLfloat *)state.lightViewProj);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
-			if(location != -1) {
-				glUniform4fv(location, sizeof(state.lightPositions) / sizeof(Vector4), (GLfloat *)state.lightPositions);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
-			if(location != -1) {
-				glUniform4fv(location, sizeof(state.lightDirections) / sizeof(Vector4), (GLfloat *)state.lightDirections);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
-			if(location != -1) {
-				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
-				static const int32 lightPropertiesSizeInRegisters = (int32)ceil(sizeof(state.lightProperties) / (4.0f * sizeof(float)));
-				glUniform4fv(location, lightPropertiesSizeInRegisters, (GLfloat *)state.lightProperties);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
-			if(location != -1) {
-				static const int32 shadowMapPropertiesSizeInRegisters = (int32)ceil(sizeof(state.shadowMapProperties) / (4.0f * sizeof(float)));
-				glUniform4fv(location, shadowMapPropertiesSizeInRegisters, (GLfloat *)state.shadowMapProperties);
-			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
-			if(location != -1) {
-				static const int32 lightSplitRegionsSizeInRegisters = (int32)ceil(sizeof(state.lightSplitRegions) / (4.0f * sizeof(float)));
-				glUniform4fv(location, lightSplitRegionsSizeInRegisters, (GLfloat *)state.lightSplitRegions);
-			}
-		
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
-			if(location != -1) {
-				glUniform4fv(location, 1, state.globalAmbientColor.vals);
-			}
-		}
-
-		inline void OGLRenderCore::SetPerObjectConstants(const Core::Shader *s, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection)
-		{
-			using namespace Core;
-
-			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
-			if(location != -1) {
-				glUniformMatrix4fv(location, 1, GL_FALSE, model.vals);
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
-			if(location != -1) {
-				glUniformMatrix4fv(location, 1, GL_FALSE, modelView.vals);
-			}
-
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
-			if(location != -1) {
-				glUniformMatrix4fv(location, 1, GL_FALSE, modelViewProjection.vals);
-			}
-		}
-
-		inline void OGLRenderCore::BindMaterialConstants(const Core::Shader *s, bool isVertexShader, const Core::Material *mat)
-		{
-			using namespace Core;
-
-			for(uint8 i = 0; i < mat->uniformCount; i++) {
-				const Material::UniformValue &val = mat->uniformValues[i];
-				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
-				if(location != -1) {
-					const int32 valSizeInRegisters = (int32)ceil(val.bytes / (4.0f * sizeof(float)));
-					glUniform4fv(location, valSizeInRegisters, (GLfloat *)val.data);
-				}
-			}
-		}
-
-
-
-
 
 	} // namespace OGL
 

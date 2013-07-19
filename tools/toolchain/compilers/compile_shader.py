@@ -125,6 +125,7 @@ def _build_meta_data(context, program):
     for name in ('enginePerFrame', 'enginePerObject', 'material'):
         buff_param = CG.cgGetNamedProgramUniformBuffer(program, c_char_p(name))
         if buff_param == 0:
+            # Consume the error
             CG.cgGetError()
             continue
 
@@ -134,26 +135,23 @@ def _build_meta_data(context, program):
             raise RuntimeError('%s must be a uniform buffer (actual type was %d)' % (name, buff_type))
         _check_error(context)
 
-        slot = 0
-        #slot = CG.cgGetParameterResourceIndex(buff_param)
-        #_check_error(context)
-
-        print('Found buffer %s at slot %d' % (name, slot))
+        print('Found buffer %s' % name)
 
         n = doc.Node(name)
-        n.add_child('slot').add_child('%d' % slot)
-        unis = n.add_child('uniforms')
+        unis = doc.Node('uniforms')
+        slot = -1
 
         param = CG.cgGetFirstUniformBufferParameter(buff_param)
         _check_error(context)
-
+        if param == 0:
+            raise RuntimeError('Failed to get first param of buffer')
         while param != 0:
             name = c_char_p(CG.cgGetParameterName(param)).value
             _check_error(context)
 
-            print('Found param within buffer: %s' % name)
+            slot = CG.cgGetParameterBufferIndex(param)
 
-            #name = name.split('.')[1]
+            name = name.split('.')[1]
             var = unis.add_child(name)
             var.add_child('%d' % CG.cgGetParameterBufferOffset(param))
             _check_error(context)
@@ -164,8 +162,10 @@ def _build_meta_data(context, program):
             param = CG.cgGetNextParameter(param)
             _check_error(context)
         
-        #if len(unis):
-        meta_nodes.append(n)
+        if slot >= 0:
+            n.add_child('slot').add_child('%d' % slot)
+            n.add_child(unis)
+            meta_nodes.append(n)
 
     #print('Done building meta')
     return meta_nodes
