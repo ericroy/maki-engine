@@ -20,12 +20,13 @@ namespace Maki
 
 		void RenderCore::Run()
 		{
-			Console::Info("Render core started");
+			Console::Info("Render core thread started");
 
 			RenderPayload payload;
 			while(true) {
 				input.Get(payload);
 				if(payload.cmd == RenderPayload::Command_Init) {
+					Console::Info("Initializing render core");
 					Init();
 					Console::Info("Render core initialized");
 					output.Put(payload);
@@ -44,7 +45,7 @@ namespace Maki
 				}
 			}
 
-			Console::Info("Render core stopping");
+			Console::Info("Render core thread stopped");
 		}
 
 
@@ -96,6 +97,7 @@ namespace Maki
 				memcpy(buffer + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
 			}
 		
+
 			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
 			if(location != -1) {
 				memcpy(buffer + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));

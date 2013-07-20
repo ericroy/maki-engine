@@ -26,25 +26,13 @@ namespace Maki
 			void DeleteBuffers();
 		};
 
-		struct GPUVertexShader
+		struct GPUShader
 		{
 		public:
-			GPUVertexShader();
-			~GPUVertexShader();
+			GPUShader();
+			~GPUShader();
 
-			GLuint vs;
-			GLuint uboPerFrame;
-			GLuint uboPerObject;
-			GLuint uboMaterial;
-			char *scratchBuffer;
-		};
-
-		struct GPUPixelShader
-		{
-			GPUPixelShader();
-			~GPUPixelShader();
-			
-			GLuint ps;
+			GLuint sh;
 			GLuint uboPerFrame;
 			GLuint uboPerObject;
 			GLuint uboMaterial;

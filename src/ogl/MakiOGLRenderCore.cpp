@@ -26,8 +26,10 @@ namespace Maki
 			currentRenderTarget(0),
 			currentDepthStencil(0)
 		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, config->GetInt("engine.ogl_major_version", 3));
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, config->GetInt("engine.ogl_minor_version", 1));
+			int32 major = config->GetInt("engine.ogl_major_version", 3);
+			int32 minor = config->GetInt("engine.ogl_minor_version", 1);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
 
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -46,6 +48,8 @@ namespace Maki
 			// -1 allows late swaps to happen immediately
 			SDL_GL_SetSwapInterval(vsync ? -1 : 0);
 
+
+			Console::Info("Creating OpenGL %d.%d context", major, minor);
 			mainThreadContext = SDL_GL_CreateContext(window->window);
 
 			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
@@ -70,9 +74,9 @@ namespace Maki
 		void OGLRenderCore::Init()
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-
+			
 			SDL_GL_MakeCurrent(window->window, renderThreadContext);
-
+			
 			DefineGLFunctions();
 			MAKI_OGL_FAILED();
 
@@ -204,119 +208,88 @@ failed:
 			}
 		}
 
-		bool OGLRenderCore::CreatePixelShader(Shader *ps)
+
+		bool OGLRenderCore::CreateShader(GLenum shaderType, Shader *s)
 		{
-			GPUPixelShader *gps = new GPUPixelShader();
+			GPUShader *gs = new GPUShader();
 
-			gps->ps = glCreateShader(GL_FRAGMENT_SHADER);
-			if(MAKI_OGL_FAILED()) { goto failed;}
-
-			int32 length = (int32)ps->programDataBytes;
-			glShaderSource(gps->ps, 1, (const GLchar **)&ps->programData, &length);
-			if(MAKI_OGL_FAILED()) { goto failed; }			
-			
-			glCompileShader(gps->ps);
+			gs->sh = glCreateShader(shaderType);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			uint32 largestBuffer = 0;
-			if(ps->frameUniformBufferLocation != -1) {
-				glGenBuffers(1, &gps->uboPerFrame);
-				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerFrame);
-				glBufferData(GL_UNIFORM_BUFFER, ps->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, ps->engineFrameUniformBytes);
-			}
-			if(ps->objectUniformBufferLocation != -1) {
-				glGenBuffers(1, &gps->uboPerObject);
-				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerObject);
-				glBufferData(GL_UNIFORM_BUFFER, ps->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, ps->engineObjectUniformBytes);
-			}
-			if(ps->materialUniformBufferLocation != -1) {
-				glGenBuffers(1, &gps->uboMaterial);
-				glBindBuffer(GL_UNIFORM_BUFFER, gps->uboMaterial);
-				glBufferData(GL_UNIFORM_BUFFER, ps->materialUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, ps->materialUniformBytes);
-			}
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-			gps->scratchBuffer = (char *)Allocator::Malloc(largestBuffer);
-
-			ps->handle = (intptr_t)gps;
-			return true;
-failed:			
-			SAFE_DELETE(gps);
-			return false;
-		}
-
-		bool OGLRenderCore::CreateVertexShader(Shader *vs)
-		{
-			GPUVertexShader *gvs = new GPUVertexShader();
-
-			gvs->vs = glCreateShader(GL_VERTEX_SHADER);
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
-			int32 length = (int32)vs->programDataBytes;
-			glShaderSource(gvs->vs, 1, (const GLchar **)&vs->programData, &length);
+			int32 length = (int32)s->programDataBytes;
+			glShaderSource(gs->sh, 1, (const GLchar **)&s->programData, &length);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 			
-			glCompileShader(gvs->vs);
+			glCompileShader(gs->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			uint32 largestBuffer = 0;
-			if(vs->frameUniformBufferLocation != -1) {
-				glGenBuffers(1, &gvs->uboPerFrame);
-				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
-				glBufferData(GL_UNIFORM_BUFFER, vs->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, vs->engineFrameUniformBytes);
+			GLint compileStatus;
+			glGetShaderiv(gs->sh, GL_COMPILE_STATUS, &compileStatus);
+			if(compileStatus == GL_FALSE) {
+				Console::Error("Failed to compile glsl shader");
+				goto failed;
 			}
-			if(vs->objectUniformBufferLocation != -1) {
-				glGenBuffers(1, &gvs->uboPerObject);
-				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
-				glBufferData(GL_UNIFORM_BUFFER, vs->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, vs->engineObjectUniformBytes);
+
+			if(s->frameUniformBufferLocation != -1) {
+				glGenBuffers(1, &gs->uboPerFrame);
+				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
+				glBufferData(GL_UNIFORM_BUFFER, s->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
 			}
-			if(vs->materialUniformBufferLocation != -1) {
-				glGenBuffers(1, &gvs->uboMaterial);
-				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
-				glBufferData(GL_UNIFORM_BUFFER, vs->materialUniformBytes, 0, GL_STREAM_DRAW);
-				largestBuffer = std::max(largestBuffer, vs->materialUniformBytes);
+			if(s->objectUniformBufferLocation != -1) {
+				glGenBuffers(1, &gs->uboPerObject);
+				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
+				glBufferData(GL_UNIFORM_BUFFER, s->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
 			}
+			if(s->materialUniformBufferLocation != -1) {
+				glGenBuffers(1, &gs->uboMaterial);
+				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
+				glBufferData(GL_UNIFORM_BUFFER, s->materialUniformBytes, 0, GL_STREAM_DRAW);
+			}
+			
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-			gvs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer);
+			int32 largestBuffer = std::max(std::max(s->materialUniformBytes, s->engineObjectUniformBytes), s->engineFrameUniformBytes);
+			gs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer, 16);
 
-			vs->handle = (intptr_t)gvs;
+			s->handle = (intptr_t)gs;
 			return true;
 failed:
-			SAFE_DELETE(gvs);
+			SAFE_DELETE(gs);
 			return false;
 		}
 
 		bool OGLRenderCore::CreateShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
-			if(!CreateVertexShader(&s->vertexShader)) {
+			if(!CreateShader(GL_VERTEX_SHADER, &s->vertexShader)) {
 				return false;
 			}
-
-			if(!CreatePixelShader(&s->pixelShader)) {
+			if(!CreateShader(GL_FRAGMENT_SHADER, &s->pixelShader)) {
 				return false;
 			}
 
 			GLuint program = glCreateProgram();
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			glAttachShader(program, (GLuint)((GPUVertexShader *)s->vertexShader.handle)->vs);
+			glAttachShader(program, (GLuint)((GPUShader *)s->vertexShader.handle)->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			glAttachShader(program, (GLuint)((GPUPixelShader *)s->pixelShader.handle)->ps);
+			glAttachShader(program, (GLuint)((GPUShader *)s->pixelShader.handle)->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			s->handle = (intptr_t)program;
+			GLint linkStatus;
+			glGetShaderiv(program, GL_COMPILE_STATUS, &linkStatus);
+			if(linkStatus == GL_FALSE) {
+				Console::Error("Failed to link glsl program");
+				goto failed;
+			}
+
+			s->handle = (intptr_t)program;			
 			return true;
 
 failed:
@@ -331,6 +304,7 @@ failed:
 		bool OGLRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
@@ -364,6 +338,7 @@ failed:
 		bool OGLRenderCore::CreateRenderTarget(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -391,6 +366,7 @@ failed:
 		bool OGLRenderCore::CreateDepthTexture(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -419,6 +395,7 @@ failed:
 		bool OGLRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			const void *dataOut;
 			unsigned long dataLengthOut;
@@ -461,6 +438,7 @@ failed:
 		void OGLRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			glBindTexture(GL_TEXTURE_2D, gtex->tex);
@@ -487,12 +465,13 @@ failed:
 		void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
-			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
+			GPUShader *gvs = (GPUShader *)s->vertexShader.handle;
 			SAFE_DELETE(gvs);
 			s->vertexShader.handle = (intptr_t)nullptr;
 
-			GPUPixelShader *gps = (GPUPixelShader *)s->pixelShader.handle;
+			GPUShader *gps = (GPUShader *)s->pixelShader.handle;
 			SAFE_DELETE(gps);
 			s->pixelShader.handle = (intptr_t)nullptr;
 		}
@@ -500,6 +479,7 @@ failed:
 		void OGLRenderCore::DeleteTexture(Texture *t)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+			assert(!MAKI_OGL_FAILED());
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			SAFE_DELETE(gtex);

@@ -80,8 +80,7 @@ namespace Maki
 			inline void DrawBuffer(void *buffer);
 
 		private:
-			bool CreatePixelShader(Core::Shader *ps);
-			bool CreateVertexShader(Core::Shader *vs);
+			bool CreateShader(GLenum shaderType, Core::Shader *ps);
 
 		private:
 			Core::Window *window;
@@ -245,27 +244,27 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
+			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			MAKI_OGL_FAILED();
 
-			SetPerFrameConstants(state, &shader->vertexShader, gvs->scratchBuffer);
+			SetPerFrameConstants(state, &shader->vertexShader, gs->scratchBuffer);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gvs->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerFrame);
+			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			MAKI_OGL_FAILED();
 
-			SetPerFrameConstants(state, &shader->pixelShader, gps->scratchBuffer);
+			SetPerFrameConstants(state, &shader->pixelShader, gs->scratchBuffer);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gps->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
@@ -282,27 +281,27 @@ namespace Maki
 
 		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
+			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 			MAKI_OGL_FAILED();
 
-			BindMaterialConstants(&shader->vertexShader, true, gvs->scratchBuffer, mat);
+			BindMaterialConstants(&shader->vertexShader, true, gs->scratchBuffer, mat);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gvs->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboMaterial);
+			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 			MAKI_OGL_FAILED();
 
-			BindMaterialConstants(&shader->pixelShader, false, gps->scratchBuffer, mat);
+			BindMaterialConstants(&shader->pixelShader, false, gs->scratchBuffer, mat);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gps->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
@@ -320,27 +319,27 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
+			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
 			MAKI_OGL_FAILED();
 
-			SetPerObjectConstants(&shader->vertexShader, gvs->scratchBuffer, matrix, mv, mvp);
+			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gvs->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			const GPUPixelShader *gps = (GPUPixelShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gps->uboPerObject);
+			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
+			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
 			MAKI_OGL_FAILED();
 
-			SetPerObjectConstants(&shader->vertexShader, gps->scratchBuffer, matrix, mv, mvp);
+			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
 			MAKI_OGL_FAILED();
 
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gps->scratchBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 

@@ -68,6 +68,9 @@ namespace Maki
 #if _DEBUG
 			flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+
+			Console::Info("Creating D3D 10.0 context");
+
 			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_10_0;
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevels, 1,
 				D3D11_SDK_VERSION, &scd, &swapChain, &device, nullptr, &context);
