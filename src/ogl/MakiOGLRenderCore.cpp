@@ -225,8 +225,9 @@ failed:
 
 			GLint compileStatus;
 			glGetShaderiv(gs->sh, GL_COMPILE_STATUS, &compileStatus);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 			if(compileStatus == GL_FALSE) {
-				Console::Error("Failed to compile glsl shader");
+				Console::Error("Failed to compile glsl %s shader", shaderType == GL_FRAGMENT_SHADER ? "pixel" : "vertex");
 				goto failed;
 			}
 
@@ -283,7 +284,8 @@ failed:
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GLint linkStatus;
-			glGetShaderiv(program, GL_COMPILE_STATUS, &linkStatus);
+			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 			if(linkStatus == GL_FALSE) {
 				Console::Error("Failed to link glsl program");
 				goto failed;
