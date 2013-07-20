@@ -76,8 +76,7 @@ namespace Maki
 				return nullptr;
 			}
 			inputLayouts[inputLayoutCount].vertexFormatKey = vf->equalityKey;
-			inputLayoutCount++;
-			return inputLayouts[inputLayoutCount].inputLayout;
+			return inputLayouts[inputLayoutCount++].inputLayout;
 		}
 		
 			

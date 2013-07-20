@@ -3,6 +3,7 @@ import sys
 import shutil
 import subprocess
 import tempfile
+import platform
 from ctypes import *
 from base64 import b64encode
 from io import BytesIO
@@ -86,9 +87,12 @@ CG_GL_GLSL_120     = 3
 
 
 
+API = 'd3d' if platform.system() == 'Windows' else 'ogl'
 
-API = 'ogl'
+
 ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
+D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
+
 PROFILES = {
     'vertex_shader': {
         'd3d': CG_PROFILE_VS_4_0,
@@ -101,8 +105,6 @@ PROFILES = {
 }
 
 CG = CDLL(os.path.expandvars('$MAKI_DIR/tools/cg.dll'))
-#CGD3D = windll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/cgD3D10.dll'))
-#CGGL = windll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/cgGL.dll'))
 
 class CGError(Exception):
     def __init__(self, context, err=None):
@@ -170,6 +172,24 @@ def _build_meta_data(context, program):
     #print('Done building meta')
     return meta_nodes
 
+def _d3d_compile(source_code, profile_string, entry_point):
+    in_file = tempfile.NamedTemporaryFile(delete=False)
+    out_file = tempfile.NamedTemporaryFile(delete=False)
+    out_file.close()
+
+    try:
+        in_file.write(source_code)
+        in_file.close()
+
+        cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:'+profile_string, '/E:'+entry_point, '/Fo:'+os.path.normpath(out_file.name), os.path.normpath(in_file.name)]
+        subprocess.check_call(cmd)
+                
+        with open(out_file.name, 'rb') as f:
+            return f.read()
+
+    finally:
+        os.remove(in_file.name)
+        os.remove(out_file.name)
 
 def _cg_compile(api, shader_type, variant, shader):
     filename = os.path.abspath(os.path.join(ASSETS_PATH, shader['file_name'][0]))
@@ -209,11 +229,13 @@ def _cg_compile(api, shader_type, variant, shader):
             meta_nodes = _build_meta_data(context, program)
             compiled_program = bytes(c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value, 'utf-8')
             _check_error(context)
-        
         finally:
             CG.cgDestroyProgram(program)
     finally:
         CG.cgDestroyContext(context)
+
+    if api == 'd3d':
+        compiled_program = _d3d_compile(compiled_program, 'vs_4_0' if shader_type == 'vertex_shader' else 'ps_4_0', shader['entry_point'][0])
 
     #print(compiled_program)
     return compiled_program, meta_nodes

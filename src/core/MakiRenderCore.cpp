@@ -127,11 +127,19 @@ namespace Maki
 		{
 			using namespace Core;
 
-			for(uint8 i = 0; i < mat->uniformCount; i++) {
-				const Material::UniformValue &val = mat->uniformValues[i];
-				int32 location = isVertexShader ? val.vsLocation : val.psLocation;
-				if(location != -1) {
-					memcpy(buffer + location, val.data, val.bytes);
+			if(isVertexShader) {
+				for(uint8 i = 0; i < mat->uniformCount; i++) {
+					const Material::UniformValue &val = mat->uniformValues[i];
+					if(val.vsLocation != -1) {
+						memcpy(buffer + val.vsLocation, val.data, val.bytes);
+					}
+				}
+			} else {
+				for(uint8 i = 0; i < mat->uniformCount; i++) {
+					const Material::UniformValue &val = mat->uniformValues[i];
+					if(val.psLocation != -1) {
+						memcpy(buffer + val.psLocation, val.data, val.bytes);
+					}
 				}
 			}
 		}

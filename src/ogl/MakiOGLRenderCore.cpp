@@ -77,8 +77,8 @@ namespace Maki
 			MAKI_OGL_FAILED();
 
 #if _DEBUG
-			//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_);
-			//glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
 #endif
 
 			Console::Info("GL Version: %s", (const char *)glGetString(GL_VERSION));

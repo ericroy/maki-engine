@@ -356,14 +356,8 @@ namespace Maki
 
 		inline void OGLRenderCore::DrawBuffer(void *buffer)
 		{
-			const Buffer *b = (Buffer *)buffer;
-			glBegin(b->geometryType);
-			MAKI_OGL_FAILED();
-			
+			const Buffer *b = (Buffer *)buffer;			
 			glDrawElements(b->geometryType, b->faceCount*b->indicesPerFace, b->indexDataType, nullptr);
-			MAKI_OGL_FAILED();
-			
-			glEnd();
 			MAKI_OGL_FAILED();
 		}
 
