@@ -226,8 +226,7 @@ namespace Maki
 
 		inline void D3DRenderCore::UnbindAllTextures()
 		{
-			using namespace Core;
-			context->PSSetShaderResources(0, SHADOW_MAP_SLOT_INDEX_START+RenderState::MAX_SHADOW_LIGHTS, (ID3D11ShaderResourceView **)nullArray);
+			context->PSSetShaderResources(0, SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_SHADOW_LIGHTS, (ID3D11ShaderResourceView **)nullArray);
 		}
 
 		inline void D3DRenderCore::BindShaders(const Core::ShaderProgram *shader)

@@ -8,12 +8,7 @@ namespace Maki
 
 		void Buffer::DeleteBuffers()
 		{
-			if(vbos[0] != 0) {
-				glDeleteBuffers(1, &vbos[0]);
-			}
-			if(vbos[1] != 0) {
-				glDeleteBuffers(1, &vbos[1]);
-			}
+			glDeleteBuffers(2, vbos);
 		}
 
 
@@ -26,18 +21,10 @@ namespace Maki
 
 		GPUShader::~GPUShader()
 		{
-			if(uboPerFrame != 0) {
-				glDeleteBuffers(1, &uboPerFrame);
-			}
-			if(uboPerObject != 0) {
-				glDeleteBuffers(1, &uboPerObject);
-			}
-			if(uboMaterial != 0) {
-				glDeleteBuffers(1, &uboMaterial);
-			}
-			if(sh != 0) {
-				glDeleteShader(sh);
-			}
+			glDeleteBuffers(1, &uboPerFrame);
+			glDeleteBuffers(1, &uboPerObject);
+			glDeleteBuffers(1, &uboMaterial);
+			glDeleteShader(sh);
 			SAFE_FREE(scratchBuffer);
 		}
 
@@ -51,9 +38,7 @@ namespace Maki
 
 		GPUTexture::~GPUTexture()
 		{
-			if(tex != 0) {
-				glDeleteTextures(1, &tex);
-			}
+			glDeleteTextures(1, &tex);
 		}
 
 	} // namespace OGL

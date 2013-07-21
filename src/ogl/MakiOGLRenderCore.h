@@ -96,7 +96,10 @@ namespace Maki
 			GLuint defaultDepthStencil;
 
 			GLuint currentRenderTarget;
+			Core::RenderState::RenderTarget currentRenderTargetType;
+
 			GLuint currentDepthStencil;
+			Core::RenderState::DepthStencil currentDepthStencilType;
 
 			bool vsync;
 			std::mutex mutex;
@@ -122,50 +125,65 @@ namespace Maki
 		{
 			using namespace Core;
 
+			// Default framebuffer
+			GLuint fbo = 0;
+
 			currentRenderTarget = 0;
+			currentRenderTargetType = renderTargetType;
 			if(renderTargetType == RenderState::RenderTarget_Default) {
+				assert(depthStencilType == RenderState::DepthStencil_Default && "If one of render target or depth stencil is 'default', then the other must be too");
 				currentRenderTarget = defaultRenderTarget;
 			} else if(renderTargetType == RenderState::RenderTarget_Custom) {
+				fbo = frameBuffer;
 				currentRenderTarget = ((GPUTexture *)TextureManager::Get(renderTarget)->handle)->tex;
 				if(currentRenderTarget == 0) {
 					Console::Error("Tried to set render target to an invalid texture");
 				}
+			} else {
+				fbo = frameBuffer;
 			}
-
+			
 			currentDepthStencil = 0;
+			currentDepthStencilType = depthStencilType;
 			if(depthStencilType == RenderState::DepthStencil_Default) {
+				assert(renderTargetType == RenderState::RenderTarget_Default && "If one of render target or depth stencil is 'default', then the other must be too");
 				currentDepthStencil = defaultDepthStencil;
 			} else if(depthStencilType == RenderState::DepthStencil_Custom) {
+				fbo = frameBuffer;
 				currentDepthStencil = ((GPUTexture *)TextureManager::Get(depthStencil)->handle)->tex;
 				if(currentDepthStencil == 0) {
 					Console::Error("Tried to set depth stencil to an invalid texture");
 				}
+			} else {
+				fbo = frameBuffer;
+			}			
+			
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			if(fbo != 0) {
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentRenderTarget, 0);
+				glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, currentDepthStencil);
 			}
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentRenderTarget, 0);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, currentDepthStencil);
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetViewport(const Core::Rect &viewPortRect)
 		{
 			glViewport(0, 0, (GLsizei)viewPortRect.GetWidth(), (GLsizei)viewPortRect.GetHeight());
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil, float clearDepthValue)
 		{
+			using namespace Core;
+
 			GLuint clearFlags = 0;
-			if(clearRenderTarget && currentRenderTarget != 0) {
+			if(clearRenderTarget && currentRenderTargetType != RenderState::RenderTarget_Null) {
 				glClearColor(clearColorValues[0], clearColorValues[1], clearColorValues[2], clearColorValues[3]);
 				clearFlags |= GL_COLOR_BUFFER_BIT;
 			}
-			if(clearDepthStencil && currentDepthStencil != 0) {
+			if(clearDepthStencil && currentDepthStencilType != RenderState::DepthStencil_Null) {
 				glClearDepth(clearDepthValue);
 				clearFlags |= GL_DEPTH_BUFFER_BIT;
 			}
 			glClear(clearFlags);
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite)
@@ -190,7 +208,6 @@ namespace Maki
 				glDisable(GL_DEPTH_TEST);
 				break;
 			}
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame)
@@ -211,7 +228,6 @@ namespace Maki
 				glDisable(GL_CULL_FACE);
 				break;
 			}
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetBlendState(bool enabled)
@@ -222,35 +238,26 @@ namespace Maki
 			} else {
 				glDisable(GL_BLEND);
 			}
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::UnbindAllTextures()
 		{
-			using namespace Core;
-
 			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS; i++) {
 				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::BindShaders(const Core::ShaderProgram *shader)
 		{
 			glUseProgram((GLuint)shader->handle);
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
-			MAKI_OGL_FAILED();
-
 			SetPerFrameConstants(state, &shader->vertexShader, gs->scratchBuffer);
-			MAKI_OGL_FAILED();
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
@@ -259,34 +266,47 @@ namespace Maki
 		{
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
-			MAKI_OGL_FAILED();
-
 			SetPerFrameConstants(state, &shader->pixelShader, gs->scratchBuffer);
-			MAKI_OGL_FAILED();
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		inline void OGLRenderCore::BindShadowMaps(const Core::RenderState &state)
 		{
+			using namespace Core;
 
-			MAKI_OGL_FAILED();
+			for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
+				glActiveTexture(GL_TEXTURE0+SHADOW_MAP_SLOT_INDEX_START+i);
+
+				if(state.shadowMaps[i] != HANDLE_NONE) {
+					GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
+					glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+				} else {
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+			}
 		}
 
 		inline void OGLRenderCore::SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf)
 		{
-			// Do nothing, this only applies to d3d
+			using namespace Core;
+
+			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
+				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
+				if(vf->HasAttribute(attr)) {
+					glEnableVertexAttribArray((GLuint)attr);
+				} else {
+					glDisableVertexAttribArray((GLuint)attr);
+				}
+			}
 		}
 
 		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-			MAKI_OGL_FAILED();
 
 			BindMaterialConstants(&shader->vertexShader, true, gs->scratchBuffer, mat);
-			MAKI_OGL_FAILED();
 
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -296,10 +316,8 @@ namespace Maki
 		{
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-			MAKI_OGL_FAILED();
 
 			BindMaterialConstants(&shader->pixelShader, false, gs->scratchBuffer, mat);
-			MAKI_OGL_FAILED();
 
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -314,17 +332,14 @@ namespace Maki
 				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
 			}
-			MAKI_OGL_FAILED();
 		}
 
 		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-			MAKI_OGL_FAILED();
 
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-			MAKI_OGL_FAILED();
 
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -334,10 +349,8 @@ namespace Maki
 		{
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-			MAKI_OGL_FAILED();
 
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-			MAKI_OGL_FAILED();
 
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gs->scratchBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -345,19 +358,31 @@ namespace Maki
 
 		inline void OGLRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
 		{
+			using namespace Core;
+
 			const Buffer *b = (Buffer *)buffer;
-			uint32 stride = vf->GetStride();
-			uint32 offset = 0;
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
-			MAKI_OGL_FAILED();
+
+			uint32 stride = vf->GetStride();
+			uint32 offset = 0;
+
+			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
+				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
+				if(vf->HasAttribute(attr)) {
+					GLint count = vf->GetDataCount(attr);
+					VertexFormat::DataType type = vf->GetDataType(attr);
+					glVertexAttribPointer((GLuint)attr, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);
+					offset += count * VertexFormat::DataTypeSizes[type];
+				}
+			}
+
 		}
 
 		inline void OGLRenderCore::DrawBuffer(void *buffer)
 		{
 			const Buffer *b = (Buffer *)buffer;			
 			glDrawElements(b->geometryType, b->faceCount*b->indicesPerFace, b->indexDataType, nullptr);
-			MAKI_OGL_FAILED();
 		}
 
 

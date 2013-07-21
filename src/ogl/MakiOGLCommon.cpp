@@ -53,13 +53,16 @@ PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 // GL__framebuffer_object
 PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
 PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
 PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
 PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
 
 #if _DEBUG
@@ -106,6 +109,9 @@ namespace Maki
 			GL_RGBA
 		};
 
+		const GLenum typeToGLType[VertexFormat::DataTypeCount] = {
+			GL_FLOAT, GL_UNSIGNED_INT, GL_UNSIGNED_SHORT, GL_UNSIGNED_BYTE
+		};
 
 		void DefineGLFunctions()
 		{
@@ -114,13 +120,10 @@ namespace Maki
 				return;
 			}
 
-			MAKI_DEFINE_GL_FUNC(glActiveTexture);
-			MAKI_DEFINE_GL_FUNC(glAttachShader);
-			MAKI_DEFINE_GL_FUNC(glBindAttribLocation);
-			MAKI_DEFINE_GL_FUNC(glBindBuffer);
 			MAKI_DEFINE_GL_FUNC(glBufferData);
 			MAKI_DEFINE_GL_FUNC(glBufferSubData);
 			MAKI_DEFINE_GL_FUNC(glCompileShader);
+			MAKI_DEFINE_GL_FUNC(glAttachShader);
 			MAKI_DEFINE_GL_FUNC(glCreateProgram);
 			MAKI_DEFINE_GL_FUNC(glCreateShader);
 			MAKI_DEFINE_GL_FUNC(glDeleteBuffers);
@@ -136,6 +139,10 @@ namespace Maki
 			MAKI_DEFINE_GL_FUNC(glGetUniformLocation);
 			MAKI_DEFINE_GL_FUNC(glLinkProgram);
 			MAKI_DEFINE_GL_FUNC(glShaderSource);
+
+			MAKI_DEFINE_GL_FUNC(glBindBuffer);
+			MAKI_DEFINE_GL_FUNC(glActiveTexture);
+			MAKI_DEFINE_GL_FUNC(glBindAttribLocation);			
 			MAKI_DEFINE_GL_FUNC(glUniform1f);
 			MAKI_DEFINE_GL_FUNC(glUniform1fv);
 			MAKI_DEFINE_GL_FUNC(glUniform1i);
@@ -154,18 +161,20 @@ namespace Maki
 
 			// GL__framebuffer_object
 			MAKI_DEFINE_GL_FUNC(glGenFramebuffers);
+			MAKI_DEFINE_GL_FUNC(glGetFramebufferAttachmentParameteriv);
 			MAKI_DEFINE_GL_FUNC(glDeleteFramebuffers);
 			MAKI_DEFINE_GL_FUNC(glBindFramebuffer);
 			MAKI_DEFINE_GL_FUNC(glFramebufferTexture2D);
 			MAKI_DEFINE_GL_FUNC(glGenRenderbuffers);
+			MAKI_DEFINE_GL_FUNC(glDeleteRenderbuffers);
 			MAKI_DEFINE_GL_FUNC(glBindRenderbuffer);
 			MAKI_DEFINE_GL_FUNC(glRenderbufferStorage);
 			MAKI_DEFINE_GL_FUNC(glFramebufferRenderbuffer);
+			MAKI_DEFINE_GL_FUNC(glCheckFramebufferStatus);
 
 #if _DEBUG
 			MAKI_DEFINE_GL_FUNC(glDebugMessageCallback);
 #endif
-
 			loaded = true;
 		}
 

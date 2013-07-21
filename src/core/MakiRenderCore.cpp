@@ -109,19 +109,39 @@ namespace Maki
 		{
 			using namespace Core;
 
+#define MAKI_TRANSPOSE_MATRICES 0
+
 			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
 			if(location != -1) {
+#if MAKI_TRANSPOSE_MATRICES
+				Matrix44 m;
+				Matrix44::Transpose(model, m);
+				memcpy(buffer + location, m.vals, sizeof(model));
+#else
 				memcpy(buffer + location, model.vals, sizeof(model));
+#endif
 			}
 
 			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
 			if(location != -1) {
+#if MAKI_TRANSPOSE_MATRICES
+				Matrix44 m;
+				Matrix44::Transpose(modelView, m);
+				memcpy(buffer + location, m.vals, sizeof(modelView));
+#else
 				memcpy(buffer + location, modelView.vals, sizeof(modelView));
+#endif
 			}
 
 			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
 			if(location != -1) {
+#if MAKI_TRANSPOSE_MATRICES
+				Matrix44 m;
+				Matrix44::Transpose(modelViewProjection, m);
+				memcpy(buffer + location, m.vals, sizeof(modelViewProjection));
+#else
 				memcpy(buffer + location, modelViewProjection.vals, sizeof(modelViewProjection));
+#endif
 			}
 		}
 

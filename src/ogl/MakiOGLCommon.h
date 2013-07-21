@@ -45,13 +45,16 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 // GL__framebuffer_object
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
 extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 extern PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
 extern PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 extern PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
 extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
 #if _DEBUG
 extern PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;
@@ -74,6 +77,7 @@ namespace Maki
 		extern const GLenum indicesPerFaceToGeometryType[4];
 		extern const GLenum bytesPerIndexToFormat[5];
 		extern const GLenum channelsToFormat[5];
+		extern const GLenum typeToGLType[Core::VertexFormat::DataTypeCount];
 
 		void DefineGLFunctions();
 
