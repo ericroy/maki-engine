@@ -105,6 +105,9 @@ namespace Maki
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			SDL_GL_SwapWindow(window->window);
 
+			glEnableClientState(GL_INDEX_ARRAY);
+			glEnableClientState(GL_VERTEX_ARRAY);
+
 			glGenFramebuffers(1, &frameBuffer);
 		}
 

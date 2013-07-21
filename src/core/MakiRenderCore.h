@@ -202,6 +202,7 @@ namespace Maki
 				derived->DrawBuffer(b);
 			}
 
+			derived->BindBuffer(nullptr, nullptr);
 
 			if(currentShaderProgram != HANDLE_NONE) {
 				derived->UnbindAllTextures();

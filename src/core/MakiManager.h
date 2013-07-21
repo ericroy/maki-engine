@@ -108,7 +108,7 @@ namespace Maki
 				resPool = new ResourcePool<T>(size, debugName.c_str());
 #else
 				SAFE_DELETE(resPool);
-				resPool = new ResourcePool<T>(size);
+				resPool = new ResourcePool<T>(size, nullptr);
 #endif
 			}
 

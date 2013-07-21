@@ -290,7 +290,8 @@ namespace Maki
 		inline void OGLRenderCore::SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf)
 		{
 			using namespace Core;
-
+			
+			GLuint index = 0;
 			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
@@ -360,23 +361,30 @@ namespace Maki
 		{
 			using namespace Core;
 
+			if(buffer == nullptr) {
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+				return;
+			}
+
 			const Buffer *b = (Buffer *)buffer;
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 
 			uint32 stride = vf->GetStride();
-			uint32 offset = 0;
+			GLuint offset = 0;
+			GLuint index = 0;
 
 			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 					GLint count = vf->GetDataCount(attr);
 					VertexFormat::DataType type = vf->GetDataType(attr);
-					glVertexAttribPointer((GLuint)attr, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);
+					glVertexAttribPointer(index, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);
 					offset += count * VertexFormat::DataTypeSizes[type];
+					index++;
 				}
 			}
-
 		}
 
 		inline void OGLRenderCore::DrawBuffer(void *buffer)
