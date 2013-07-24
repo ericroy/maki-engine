@@ -51,6 +51,12 @@ PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 PFNGLUSEPROGRAMPROC glUseProgram;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
+
+PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
+PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
+PFNGLBINDBUFFERBASEPROC glBindBufferBase;
+
+
 // GL__framebuffer_object
 PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
@@ -158,6 +164,11 @@ namespace Maki
 			MAKI_DEFINE_GL_FUNC(glUniformMatrix4fv);
 			MAKI_DEFINE_GL_FUNC(glUseProgram);
 			MAKI_DEFINE_GL_FUNC(glVertexAttribPointer);
+
+
+			MAKI_DEFINE_GL_FUNC(glGetUniformBlockIndex);
+			MAKI_DEFINE_GL_FUNC(glUniformBlockBinding);
+			MAKI_DEFINE_GL_FUNC(glBindBufferBase);
 
 			// GL__framebuffer_object
 			MAKI_DEFINE_GL_FUNC(glGenFramebuffers);

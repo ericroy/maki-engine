@@ -38,9 +38,7 @@ namespace Maki
 			OGLRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~OGLRenderCore();
 			void Init();
-			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) {
-				GenericDraw<OGLRenderCore>(state, commands);
-			}
+			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) { GenericDraw<OGLRenderCore>(state, commands); }
 			void Present();
 			void Resized(uint32 width, uint32 height);
 
@@ -259,7 +257,7 @@ namespace Maki
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			SetPerFrameConstants(state, &shader->vertexShader, gs->scratchBuffer);
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.frameUniformBufferLocation, gs->uboPerFrame);
 		}
 
 		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
@@ -268,7 +266,7 @@ namespace Maki
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			SetPerFrameConstants(state, &shader->pixelShader, gs->scratchBuffer);
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.frameUniformBufferLocation, gs->uboPerFrame);
 		}
 
 		inline void OGLRenderCore::BindShadowMaps(const Core::RenderState &state)
@@ -290,15 +288,16 @@ namespace Maki
 		inline void OGLRenderCore::SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf)
 		{
 			using namespace Core;
-			
-			GLuint index = 0;
-			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
+
+			uint32 index = 0;
+			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
-					glEnableVertexAttribArray((GLuint)attr);
-				} else {
-					glDisableVertexAttribArray((GLuint)attr);
+					glEnableVertexAttribArray(index++);
 				}
+			}
+			for(uint32 i = index; i < VertexFormat::AttributeCount; i++) {
+				glDisableVertexAttribArray(i);
 			}
 		}
 
@@ -306,22 +305,18 @@ namespace Maki
 		{
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-
 			BindMaterialConstants(&shader->vertexShader, true, gs->scratchBuffer, mat);
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.materialUniformBufferLocation, gs->uboMaterial);
 		}
 
 		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-
 			BindMaterialConstants(&shader->pixelShader, false, gs->scratchBuffer, mat);
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.materialUniformBufferLocation, gs->uboMaterial);
 		}
 
 		inline void OGLRenderCore::BindTextures(const Core::TextureSet *ts)
@@ -339,22 +334,18 @@ namespace Maki
 		{
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.objectUniformBufferLocation, gs->uboPerObject);
 		}
 
 		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gs->scratchBuffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.objectUniformBufferLocation, gs->uboPerObject);
 		}
 
 		inline void OGLRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
@@ -371,11 +362,10 @@ namespace Maki
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 
-			uint32 stride = vf->GetStride();
-			GLuint offset = 0;
-			GLuint index = 0;
-
-			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
+			const int32 stride = vf->GetStride();
+			uint32 offset = 0;
+			uint32 index = 0;
+			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 					GLint count = vf->GetDataCount(attr);
@@ -389,7 +379,7 @@ namespace Maki
 
 		inline void OGLRenderCore::DrawBuffer(void *buffer)
 		{
-			const Buffer *b = (Buffer *)buffer;			
+			const Buffer *b = (Buffer *)buffer;
 			glDrawElements(b->geometryType, b->faceCount*b->indicesPerFace, b->indexDataType, nullptr);
 		}
 

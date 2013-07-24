@@ -341,9 +341,7 @@ namespace Maki
 		inline void D3DRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
 		{
 			if(buffer == nullptr) {
-				ID3D11Buffer *none = nullptr;
-				context->IASetVertexBuffers(0, 1, &none, nullptr, nullptr);
-				context->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+				return;
 			}
 
 			const Buffer *b = (Buffer *)buffer;

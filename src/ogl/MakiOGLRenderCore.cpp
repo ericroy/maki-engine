@@ -154,12 +154,12 @@ namespace Maki
 
 			int32 stride = vf->GetStride();
 
-			// Create vertex buffer
+			// Setup the vertex buffer
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
 			glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			// Create index buffer
+			// Setup the index buffer
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			if(MAKI_OGL_FAILED()) { goto failed; }
@@ -255,6 +255,12 @@ failed:
 
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
+
+
+			/*GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
+			GLuint enginePerObject = glGetUniformBlockIndex(program, "enginePerObject");
+			GLuint material = glGetUniformBlockIndex(program, "material");
+			MAKI_OGL_FAILED();*/
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
