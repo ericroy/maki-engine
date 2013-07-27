@@ -43,9 +43,16 @@ namespace Maki
 				Console::Error("Failed to parse shader as hdoc");
 				return false;
 			}
+
+			Document::Node *inputAttributeCountNode = doc.root->Resolve("input_attribute_count.#0");
+			if(inputAttributeCountNode == nullptr) {
+				Console::Error("Failed to parse shader. Shader doc requires an input_attribute_count node.  <rid %d>", rid);
+				return false;
+			}
+			inputAttributeCount = inputAttributeCountNode->ValueAsUInt(0U);
 		
 			Document::Node *vertexShaderNode = doc.root->Resolve("vertex_shader");
-			if(!vertexShaderNode) {
+			if(vertexShaderNode == nullptr) {
 				Console::Error("Failed to parse shader. Shader doc requires a vertex_shader node.  <rid %d>", rid);
 				return false;
 			}
@@ -57,7 +64,7 @@ namespace Maki
 			}
 
 			Document::Node *pixelShaderNode = doc.root->Resolve("pixel_shader");
-			if(!pixelShaderNode) {
+			if(pixelShaderNode == nullptr) {
 				Console::Error("Failed to parse shader. Shader doc requires a pixel_shader node.  <rid %d>", rid);
 				return false;
 			}

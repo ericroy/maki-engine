@@ -27,6 +27,7 @@ CG_PROGRAM = 4109
 
 CG_BUFFER = 1319
 CG_UNIFORMBUFFER = 1320
+CG_STRUCT = 1
 
 
 CG_PROFILE_UNKNOWN = 6145
@@ -172,6 +173,38 @@ def _build_meta_data(context, program):
     #print('Done building meta')
     return meta_nodes
 
+def _count_input_params(context, program):
+    count = 0
+
+    param = CG.cgGetFirstParameter(program, CG_PROGRAM)
+    _check_error(context)
+    while param != 0:
+
+        name = c_char_p(CG.cgGetParameterName(param)).value
+        _check_error(context)
+        print('Program param name: %s' % name)
+
+        param_type = CG.cgGetParameterType(param)
+        _check_error(context)
+        if param_type == CG_STRUCT:
+            p = CG.cgGetFirstStructParameter(param)
+            _check_error(context)
+            while p != 0:
+                count += 1
+                name = c_char_p(CG.cgGetParameterName(p)).value
+                _check_error(context)
+                print('Program input struct param name: %s' % name)
+
+                p = CG.cgGetNextParameter(p)
+                _check_error(context)
+        else:
+            assert False, "Haven't handled case where main funtion takes loose parameters (must take a single struct arg atm).  Type of arg was: %s" % param_type
+
+        param = CG.cgGetNextParameter(param)
+        _check_error(context)
+
+    return count
+
 def _d3d_compile(source_code, profile_string, entry_point):
     in_file = tempfile.NamedTemporaryFile(delete=False)
     out_file = tempfile.NamedTemporaryFile(delete=False)
@@ -192,6 +225,8 @@ def _d3d_compile(source_code, profile_string, entry_point):
         os.remove(out_file.name)
 
 def _cg_compile(api, shader_type, variant, shader):
+    num_inputs = 0
+
     filename = os.path.abspath(os.path.join(ASSETS_PATH, shader['file_name'][0]))
     print('Compiling file: %s' % filename)
 
@@ -209,7 +244,7 @@ def _cg_compile(api, shader_type, variant, shader):
         if api == 'd3d':
             args += ['-d3d', '-po', 'pad16']
         else:
-            args += ['-po', 'version=140']
+            args += ['-po', 'version=330']
 
         defs = []
         try:
@@ -229,6 +264,11 @@ def _cg_compile(api, shader_type, variant, shader):
             meta_nodes = _build_meta_data(context, program)
             compiled_program = bytes(c_char_p(CG.cgGetProgramString(program, CG_COMPILED_PROGRAM)).value, 'utf-8')
             _check_error(context)
+
+            if shader_type == 'vertex_shader':
+                num_inputs = _count_input_params(context, program)
+                _check_error(context)
+
         finally:
             CG.cgDestroyProgram(program)
     finally:
@@ -238,7 +278,7 @@ def _cg_compile(api, shader_type, variant, shader):
         compiled_program = _d3d_compile(compiled_program, 'vs_4_0' if shader_type == 'vertex_shader' else 'ps_4_0', shader['entry_point'][0])
 
     #print(compiled_program)
-    return compiled_program, meta_nodes
+    return compiled_program, meta_nodes, num_inputs
 
 def _parse_line(line):
     line = line.strip()
@@ -303,14 +343,23 @@ def compile(src, dst, *args):
     shaders = _read_shader_defs(src)
     compiled_shaders = {'pixel_shader': {}, 'vertex_shader': {}}
     meta_nodes = {'pixel_shader': {}, 'vertex_shader': {}}
+    input_attribute_count = None
 
     for shader_type, shader in shaders.items():
         for variant in shader['variants']:
-            data, meta = _cg_compile(API, shader_type, variant, shader)
+            data, meta, num_inputs = _cg_compile(API, shader_type, variant, shader)
             compiled_shaders[shader_type][variant] = data
             meta_nodes[shader_type][variant] = meta
+            if shader_type == 'vertex_shader':
+                if input_attribute_count is not None:
+                    assert input_attribute_count == num_inputs, "Different variants of the shader disagreed on the number of input attributes"
+                input_attribute_count = num_inputs
+
 
     with open(dst, 'w') as out:
+        attr_count = doc.Node('input_attribute_count')
+        attr_count.add_child(input_attribute_count)
+        attr_count.serialize(out)
         for shader_type, variants in compiled_shaders.items():
             shader_root = doc.Node(shader_type)
             for variant, data in variants.items():

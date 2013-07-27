@@ -196,6 +196,11 @@ namespace Maki
 				siblings.push_back(res->meshManager->Add(Move(nextMesh)));
 			}
 
+			if((uint32)(data - start) > bytesRead) {
+				Console::Error("Read past the end of the mesh data!");
+			} else if((uint32)(data - start) < bytesRead) {
+				Console::Error("Still more bytes to be read in the mesh data!");
+			}
 			assert(data == start + bytesRead);
 			SAFE_FREE(start);
 

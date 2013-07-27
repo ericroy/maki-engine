@@ -95,7 +95,7 @@ def _pad(out_file, write_location, byte_multiple):
 
 def _make_list(obj, field_count):
     if type(obj) == FbxColor:
-        assert(field_count == 4)
+        assert field_count == 4
         return [int(obj.mRed*255), int(obj.mGreen*255), int(obj.mBlue*255), int(obj.mAlpha*255)]
     else:
         return [obj[i] for i in range(field_count)]
@@ -161,12 +161,16 @@ def _write_mesh(manager, node, out):
 
     # Generate tangents if necessary
     if normals and not tangents:
+        print("Generating tangents")
         if mesh.GenerateTangentsDataForAllUVSets():
-            #print("Generating tangents")
             tangents = mesh.GetLayer(0).GetTangents()
-            flags |= FLAG_HAS_TANGENTS
+            if tangents:
+                flags |= FLAG_HAS_TANGENTS
         else:
             raise RuntimeError('Failed to generate tangets')
+
+    print('Vertex count: %s' % vertex_count)
+    print('Index count: %s' % (polygon_count * indices_per_face))
 
     out.write(struct.pack('I', vertex_count))
     out.write(struct.pack('I', polygon_count))
@@ -182,7 +186,7 @@ def _write_mesh(manager, node, out):
     #print('%d polygon vertices' % vertex_count)
 
 
-    bytes_written = 0;
+    bytes_written = 0
     vi = 0
     vertices_exported = 0
     for i in range(polygon_count):
@@ -199,25 +203,32 @@ def _write_mesh(manager, node, out):
                     #print(obj)
                     out.write(struct.pack('fff', *_make_list(obj, 3)))
                     bytes_written += 12
+            else:
+                assert flags & FLAG_HAS_NORMALS == 0
             if tangents:
                 obj = _get_obj(tangents, 'tangents', cpi, vi)
                 if obj:
                     #print(obj)
                     out.write(struct.pack('fff', *_make_list(obj, 3)))
                     bytes_written += 12
+            else:
+                assert flags & FLAG_HAS_TANGENTS == 0
             if colors:
                 obj = _get_obj(colors, 'colors', cpi, vi)
                 if obj:
                     #print(obj)
                     out.write(struct.pack('BBBB', *_make_list(obj, 4)))
                     bytes_written += 4
+            else:
+                assert flags & FLAG_HAS_COLORS == 0
             if uvs:
                 obj = _get_obj(uvs, 'uvs', cpi, vi)
                 if obj:
                     #print(obj)
-                    u, v = _make_list(obj, 2)
-                    out.write(struct.pack('ff', u, v))
+                    out.write(struct.pack('ff', *_make_list(obj, 2)))
                     bytes_written += 8
+            else:
+                assert flags & FLAG_HAS_TEXCOORDS == 0
             if skins:
                 influences = skins[0].get(cpi, [])[:4]
                 influences += NO_WEIGHTS[len(influences):]
@@ -230,22 +241,28 @@ def _write_mesh(manager, node, out):
                     assert(bone_index < 2**BONE_INDEX_BITS)
                     packed = (bone_index << BONE_WEIGHT_BITS) | int(weight * adjustment_factor * BONE_WEIGHT_MAX)
                     out.write(struct.pack('L', packed))
-
+                    bytes_written += 4
+            else:
+                assert flags & FLAG_HAS_BONEWEIGHTS == 0
             vi += 1
             vertices_exported += 1
 
+    print('%d vertices exported (%d bytes)' % (vertices_exported, bytes_written))
     assert(vertices_exported == vertex_count)
-    #print('%d vertices exported' % vertices_exported)
 
     bytes_written += _pad(out, bytes_written, 4)
 
     vi = 0
+    index_start_offset = bytes_written
     for i in range(polygon_count):
         poly_size = mesh.GetPolygonSize(i)
         for j in range(poly_size):
             out.write(struct.pack(index_formatter, vi))
             bytes_written += bytes_per_index
             vi += 1
+
+    print('%d indices exported (%d bytes)' % (vi, bytes_written - index_start_offset))
+    assert(vi == polygon_count * indices_per_face)
 
     bytes_written += _pad(out, bytes_written, 4)
 

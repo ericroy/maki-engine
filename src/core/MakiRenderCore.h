@@ -160,6 +160,9 @@ namespace Maki
 
 				// Get or create the input layout for this vertexformat+vertexshader combination
 				if(setLayout) {
+					if(shader->inputAttributeCount != vf->attrCount) {
+						Console::Warning("Shader takes %u input attributes, but current vertex format only has %u", shader->inputAttributeCount, vf->attrCount);
+					}
 					derived->SetInputLayout(shader, vf);
 					setLayout = false;
 				}

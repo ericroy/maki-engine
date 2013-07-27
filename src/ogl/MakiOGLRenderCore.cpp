@@ -74,6 +74,11 @@ namespace Maki
 			}
 
 			DefineGLFunctions();
+
+#if _DEBUG
+			// Register debug callback for main thread's context
+			glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
+#endif
 		}
 
 		OGLRenderCore::~OGLRenderCore() {
@@ -92,6 +97,7 @@ namespace Maki
 			}		
 
 #if _DEBUG
+			// Register debug callback for render thread's context
 			glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
 #endif
 			
@@ -104,9 +110,6 @@ namespace Maki
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			SDL_GL_SwapWindow(window->window);
-
-			glEnableClientState(GL_INDEX_ARRAY);
-			glEnableClientState(GL_VERTEX_ARRAY);
 
 			glGenFramebuffers(1, &frameBuffer);
 		}
@@ -257,10 +260,10 @@ failed:
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 
-			/*GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
+			GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
 			GLuint enginePerObject = glGetUniformBlockIndex(program, "enginePerObject");
 			GLuint material = glGetUniformBlockIndex(program, "material");
-			MAKI_OGL_FAILED();*/
+			MAKI_OGL_FAILED();
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);

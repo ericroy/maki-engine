@@ -37,6 +37,7 @@ namespace Maki
 			}
 
 		public:
+			uint32 inputAttributeCount;
 			Shader vertexShader;
 			Shader pixelShader;
 			Variant variant;
