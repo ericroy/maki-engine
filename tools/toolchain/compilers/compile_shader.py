@@ -346,7 +346,7 @@ def compile(src, dst, *args):
     input_attribute_count = None
 
     for shader_type, shader in shaders.items():
-        for variant in shader['variants']:
+        for variant in shader.get('variants', []):
             data, meta, num_inputs = _cg_compile(API, shader_type, variant, shader)
             compiled_shaders[shader_type][variant] = data
             meta_nodes[shader_type][variant] = meta

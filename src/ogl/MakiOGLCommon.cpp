@@ -119,6 +119,16 @@ namespace Maki
 			GL_FLOAT, GL_UNSIGNED_INT, GL_UNSIGNED_SHORT, GL_UNSIGNED_BYTE
 		};
 
+		const char *attributeToSemanicName[Core::VertexFormat::AttributeCount] = {
+			"Position",
+			"Normal",
+			"Tangent",
+			"Color",
+			"TexCoord",
+			"BoneWeights"
+		};
+
+
 		void DefineGLFunctions()
 		{
 			static bool loaded = false;

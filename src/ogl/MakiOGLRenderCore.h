@@ -293,14 +293,13 @@ namespace Maki
 		{
 			using namespace Core;
 
-			uint32 index = 0;
 			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				if(vf->HasAttribute((VertexFormat::Attribute)i)) {
-					glEnableVertexAttribArray(index++);
+				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
+				if(vf->HasAttribute(attr)) {
+					glEnableVertexAttribArray(attr);
+				} else {
+					glDisableVertexAttribArray(attr);
 				}
-			}
-			for(uint32 i = index; i < VertexFormat::AttributeCount; i++) {
-				glDisableVertexAttribArray(i);
 			}
 		}
 
@@ -375,13 +374,12 @@ namespace Maki
 
 			const int32 stride = vf->GetStride();
 			uint32 offset = 0;
-			uint32 index = 0;
 			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 					GLint count = vf->GetDataCount(attr);
 					VertexFormat::DataType type = vf->GetDataType(attr);
-					glVertexAttribPointer(index++, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);					
+					glVertexAttribPointer(attr, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);
 					offset += count * VertexFormat::DataTypeSizes[type];
 				}
 			}
@@ -390,7 +388,7 @@ namespace Maki
 		inline void OGLRenderCore::DrawBuffer(void *buffer)
 		{
 			const Buffer *b = (Buffer *)buffer;
-			glDrawArrays(b->geometryType, 0, b->faceCount*b->indicesPerFace);
+			glDrawElements(b->geometryType, b->faceCount*b->indicesPerFace, b->indexDataType, nullptr);
 		}
 
 
