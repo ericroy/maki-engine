@@ -299,7 +299,9 @@ namespace Maki
 					glEnableVertexAttribArray(attr);
 #if _DEBUG
 					GLint location = glGetAttribLocation((GLuint)shader->handle, attributeToSemanicName[attr]);
-					assert(location != -1);
+					if(location == -1) {
+						Console::Warning("Could not find attribute %s in the shader <rid %u>", attributeToSemanicName[attr], shader->rid);
+					}
 #endif
 				} else {
 					glDisableVertexAttribArray(attr);
