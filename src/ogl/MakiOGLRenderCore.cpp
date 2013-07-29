@@ -252,13 +252,14 @@ failed:
 			GLuint program = glCreateProgram();
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
+				glBindAttribLocation(program, i, attributeToSemanicName[i]);
+			}
+
 			glAttachShader(program, (GLuint)((GPUShader *)s->pixelShader.handle)->sh);
 			glAttachShader(program, (GLuint)((GPUShader *)s->vertexShader.handle)->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				glBindAttribLocation(program, i, attributeToSemanicName[i]);
-			}
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			glLinkProgram(program);

@@ -8,6 +8,7 @@ extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 extern PFNGLATTACHSHADERPROC glAttachShader;
 extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
+extern PFNGLGETATTRIBLOCATIONPROC glGetAttribLocation;
 extern PFNGLBINDBUFFERPROC glBindBuffer;
 extern PFNGLBUFFERDATAPROC glBufferData;
 extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
@@ -85,6 +86,7 @@ namespace Maki
 		extern const GLenum channelsToFormat[5];
 		extern const GLenum typeToGLType[Core::VertexFormat::DataTypeCount];
 		extern const char *attributeToSemanicName[Core::VertexFormat::AttributeCount];
+		extern GLboolean normalizeAttribute[Core::VertexFormat::AttributeCount];
 
 		void DefineGLFunctions();
 		

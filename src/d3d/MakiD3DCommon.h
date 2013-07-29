@@ -17,8 +17,10 @@ namespace Maki
 		extern const char *attrToSemanticString[Core::VertexFormat::AttributeCount];
 		extern uint32 attrToSemanticIndex[Core::VertexFormat::AttributeCount];
 
-		// First index is type, second index is component count
-		extern const DXGI_FORMAT typeAndCountToFormat[Core::VertexFormat::DataTypeCount][5];
+		extern uint8 normalizeAttribute[Core::VertexFormat::AttributeCount];
+
+		// First index is type, second index is component count, third index is boolean 0 or 1 indicating if value should be normed
+		extern const DXGI_FORMAT typeAndCountAndNormToFormat[Core::VertexFormat::DataTypeCount][5][2];
 
 		extern const D3D11_PRIMITIVE_TOPOLOGY indicesPerFaceToGeometryType[4];
 	

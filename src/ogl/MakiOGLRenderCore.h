@@ -297,6 +297,10 @@ namespace Maki
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 					glEnableVertexAttribArray(attr);
+#if _DEBUG
+					GLint location = glGetAttribLocation((GLuint)shader->handle, attributeToSemanicName[attr]);
+					assert(location != -1);
+#endif
 				} else {
 					glDisableVertexAttribArray(attr);
 				}
@@ -379,7 +383,7 @@ namespace Maki
 				if(vf->HasAttribute(attr)) {
 					GLint count = vf->GetDataCount(attr);
 					VertexFormat::DataType type = vf->GetDataType(attr);
-					glVertexAttribPointer(attr, count, typeToGLType[type], GL_FALSE, stride, (GLvoid *)offset);
+					glVertexAttribPointer(attr, count, typeToGLType[type], normalizeAttribute[attr], stride, (GLvoid *)offset);
 					offset += count * VertexFormat::DataTypeSizes[type];
 				}
 			}

@@ -27,7 +27,7 @@ namespace Maki
 				inline void AppendSibling(Node *n) { assert(parent != nullptr); parent->AppendChild(n); }
 				Node *RemoveChild(uint32 index);
 				bool RemoveChild(Node *n);
-				void Node::Detach();
+				void Detach();
 
 				inline bool ValueEquals(const char *v) const { return strcmp(v, value) == 0; }
 			

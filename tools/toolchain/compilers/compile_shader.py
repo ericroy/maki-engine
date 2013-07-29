@@ -274,10 +274,11 @@ def _cg_compile(api, shader_type, variant, shader):
     finally:
         CG.cgDestroyContext(context)
 
+    print(compiled_program.decode('utf-8').replace('\n', '\r\n'))
+
     if api == 'd3d':
         compiled_program = _d3d_compile(compiled_program, 'vs_4_0' if shader_type == 'vertex_shader' else 'ps_4_0', shader['entry_point'][0])
 
-    #print(compiled_program)
     return compiled_program, meta_nodes, num_inputs
 
 def _parse_line(line):

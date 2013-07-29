@@ -60,7 +60,7 @@ namespace Maki
 
 					layoutData[index].SemanticName = attrToSemanticString[attr];
 					layoutData[index].SemanticIndex = attrToSemanticIndex[attr];
-					layoutData[index].Format = typeAndCountToFormat[dataType][dataCount];
+					layoutData[index].Format = typeAndCountAndNormToFormat[dataType][dataCount][normalizeAttribute[attr]];
 					layoutData[index].InputSlot = 0;
 					layoutData[index].AlignedByteOffset = offset;
 					layoutData[index].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
