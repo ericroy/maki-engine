@@ -2,6 +2,8 @@ import shutil
 from . import compile_fbx
 from . import compile_doc
 from . import compile_shader
+from . import compile_hlsl
+from . import compile_glsl
 from . import compile_lua
 from . import doc_toucher
 
