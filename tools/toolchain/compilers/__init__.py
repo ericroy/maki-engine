@@ -19,4 +19,5 @@ COMPILERS = {
     'lua': compile_lua.compile,
     'ps': doc_toucher.touch,
     'vs': doc_toucher.touch,
+    'cg': doc_toucher.touch,
 }

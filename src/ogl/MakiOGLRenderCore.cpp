@@ -265,6 +265,11 @@ failed:
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
+				GLint location = glGetAttribLocation(program, attributeToSemanicName[i]);
+				Console::Info("Attr semantic %s bound at %d  <rid %u>", attributeToSemanicName[i], location, s->rid);
+			}
+
 
 			GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
 			GLuint enginePerObject = glGetUniformBlockIndex(program, "enginePerObject");

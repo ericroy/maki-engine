@@ -88,7 +88,7 @@ CG_GL_GLSL_120     = 3
 
 
 
-API = 'ogl' if platform.system() == 'Windows' else 'ogl'
+API = 'd3d' if platform.system() == 'Windows' else 'ogl'
 
 
 ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
