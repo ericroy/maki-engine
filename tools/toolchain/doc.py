@@ -114,49 +114,61 @@ TOKEN_NAMES = {
 def _tokens(source):
     prev_token_type = None
     c = next(source)
-    while True:
-        token = []
-        if c == '#':
-            while c not in ('\r', '\n'):
-                token.append(c)
+    try:
+        while True:
+            token = []
+            if c == '#':
+                while c not in ('\r', '\n'):
+                    token.append(c)
+                    c = next(source)
+                yield TOKEN_COMMENT, ''.join(token)
+                prev_token_type = TOKEN_COMMENT
+            elif c in (' ', '\t'):
+                ws_type = c
+                while c in (' ', '\t'):
+                    if c != ws_type:
+                        raise ValueError('Maki doc contained inconsistent whitespace')
+                    token.append(c)
+                    c = next(source)
+                if prev_token_type == TOKEN_EOL:
+                    yield TOKEN_INDENT, ''.join(token)
+                    prev_token_type = TOKEN_INDENT
+            elif c == ',':
                 c = next(source)
-            yield TOKEN_COMMENT, ''.join(token)
-            prev_token_type = TOKEN_COMMENT
-        elif c in (' ', '\t'):
-            ws_type = c
-            while c in (' ', '\t'):
-                if c != ws_type:
-                    raise ValueError('Maki doc contained inconsistent whitespace')
-                token.append(c)
+                yield TOKEN_COMMA, ','
+                prev_token_type = TOKEN_COMMA
+            elif c == '"':
+                if prev_token_type == TOKEN_EOL:
+                    yield TOKEN_INDENT, ''
+                    prev_token_type = TOKEN_INDENT
                 c = next(source)
-            if prev_token_type == TOKEN_EOL:
-                yield TOKEN_INDENT, ''.join(token)
-                prev_token_type = TOKEN_INDENT
-        elif c == ',':
-            c = next(source)
-            yield TOKEN_COMMA, ','
-            prev_token_type = TOKEN_COMMA
-        elif c == '"':
-            c = next(source)
-            while not (c == '"' and token[-1] != '\\'):
-                token.append(c)
+                while not (c == '"' and token[-1] != '\\'):
+                    token.append(c)
+                    c = next(source)
+                yield TOKEN_VALUE, ''.join(token)
+                prev_token_type = TOKEN_VALUE
                 c = next(source)
-            yield TOKEN_VALUE, ''.join(token)
-            prev_token_type = TOKEN_VALUE
-            c = next(source)
-        elif c in ('\r', '\n'):
-            while c in ('\r', '\n'):
-                c = next(source)
-            yield TOKEN_EOL, '\n'
-            prev_token_type = TOKEN_EOL
-        else:
-            while c not in (' ', ',', '\r', '\n'):
-                token.append(c)
-                c = next(source)
-            while c == ' ':
-                c = next(source)
-            yield TOKEN_VALUE, ''.join(token)
-            prev_token_type = TOKEN_VALUE
+            elif c in ('\r', '\n'):
+                while c in ('\r', '\n'):
+                    c = next(source)
+                yield TOKEN_EOL, '\n'
+                prev_token_type = TOKEN_EOL
+            else:
+                if prev_token_type == TOKEN_EOL:
+                    yield TOKEN_INDENT, ''
+                    prev_token_type = TOKEN_INDENT
+                while c not in (' ', ',', '\r', '\n'):
+                    token.append(c)
+                    c = next(source)
+                while c == ' ':
+                    c = next(source)
+                yield TOKEN_VALUE, ''.join(token)
+                prev_token_type = TOKEN_VALUE
+    except StopIteration:
+        token_value = ''.join(token)
+        if token_value.strip():
+            yield TOKEN_VALUE, token_value
+        raise
 
 def deserialize(s):
     root = Node('<root>')
@@ -219,7 +231,7 @@ def test_serialize():
     print(buffer.read())
 
 def test_deserialize():
-    s = """\
+    s1 = """\
 entity
     name Hull001
     transform
@@ -244,9 +256,33 @@ entity
             nav_mesh
                 mesh scenes/module/module_nav001.mmesh
 """
-    root = deserialize(s)
-    print(root.resolve('entity.transform.pos'))
-    print(root.resolve('entity.transform.pos.#1'))
+    s2 = """\
+vertex_shader
+    file_name shaders/pos_norm_tan_uv/pos_norm_tan_uv.vs
+    target vs_4_0
+    entry_point main
+    variants
+        shadow SHADOW_VARIANT 1
+        depth DEPTH_VARIANT 1
+    defines
+        NUM_LIGHTS 7
+        NUM_SHADOW_LIGHTS 1
+        NUM_CASCADED_SHADOW_LIGHTS 1
+pixel_shader
+    file_name shaders/pos_norm_tan_uv/pos_norm_tan_uv.ps
+    target ps_4_0
+    entry_point main
+    variants
+        shadow SHADOW_VARIANT 1
+        depth DEPTH_VARIANT 1
+    defines
+        NUM_LIGHTS 7
+        NUM_SHADOW_LIGHTS 1
+        NUM_CASCADED_SHADOW_LIGHTS 1
+"""
+    root = deserialize(s2)
+    #print(root.resolve('entity.transform.pos'))
+    #print(root.resolve('entity.transform.pos.#1'))
     root.serialize(sys.stdout)
 
 if __name__ == '__main__':

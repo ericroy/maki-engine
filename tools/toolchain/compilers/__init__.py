@@ -1,4 +1,5 @@
 import shutil
+import platform
 from . import compile_fbx
 from . import compile_doc
 from . import compile_shader
@@ -9,7 +10,7 @@ from . import doc_toucher
 
 COMPILERS = {
     'mdoc': compile_doc.compile,    
-    'mshad': compile_shader.compile,
+    'mshad': compile_hlsl.compile if platform.system() == 'Windows' else compile_glsl.compile,
     'fbx': compile_fbx.compile,
     'mskel': shutil.copyfile,
     'manim': shutil.copyfile,

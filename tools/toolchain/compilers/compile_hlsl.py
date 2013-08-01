@@ -1,61 +1,182 @@
+import sys
+import os
+import tempfile
+import subprocess
+import struct
+from ctypes import *
 from base64 import b64encode
-from .. import doc
 
-def _d3d_compile(source_code, profile_string, entry_point, defines):
-    in_file = tempfile.NamedTemporaryFile(delete=False)
+from .. import doc
+from .. import CONFIG
+
+VS_PROFILE = 'vs_4_0'
+PS_PROFILE = 'ps_4_0'
+
+
+
+class Guid(Structure):
+    _fields_ = [
+        ("Data1", c_uint),
+        ("Data2", c_ushort),
+        ("Data3", c_ushort),
+        ("Data4", c_ubyte * 8)
+    ]
+
+    def __str__(self):
+        return '%08x' % self.Data1 + '%04x' % self.Data2 + '%04x' % self.Data3 + ''.join(['%02x' % x for x in self.Data4])
+
+class IUnknown(Structure):
+    _fields_ = [
+        ('_reserved', c_void_p),
+        ('QueryInterface', CFUNCTYPE(c_void_p)),
+        ('AddRef', CFUNCTYPE(c_void_p)),
+        ('Release', CFUNCTYPE(c_void_p))
+    ]
+
+class D3D11_SHADER_DESC(Structure):
+    _fields_ = [
+        ('Version', c_uint),
+        ('Creator', c_char_p),
+        ('Flags', c_uint),
+        ('ConstantBuffers', c_uint),
+        ('BoundResources', c_uint),
+        ('InputParameters', c_uint),
+        ('OutputParameters', c_uint),
+        ('InstructionCount', c_uint),
+        ('TempRegisterCount', c_uint),
+        ('TempArrayCount', c_uint),
+        ('DefCount', c_uint),
+        ('DclCount', c_uint),
+        ('TextureNormalInstructions', c_uint),
+        ('TextureLoadInstructions', c_uint),
+        ('TextureCompInstructions', c_uint),
+        ('TextureBiasInstructions', c_uint),
+        ('TextureGradientInstructions', c_uint),
+        ('FloatInstructionCount', c_uint),
+        ('IntInstructionCount', c_uint),
+        ('c_uintInstructionCount', c_uint),
+        ('StaticFlowControlCount', c_uint),
+        ('DynamicFlowControlCount', c_uint),
+        ('MacroInstructionCount', c_uint),
+        ('ArrayInstructionCount', c_uint),
+        ('CutInstructionCount', c_uint),
+        ('EmitInstructionCount', c_uint),
+        ('GSOutputTopology', c_int),
+        ('GSMaxOutputVertexCount', c_uint),
+        ('InputPrimitive', c_int),
+        ('PatchConstantParameters', c_uint),
+        ('cGSInstanceCount', c_uint),
+        ('cControlPoints', c_uint),
+        ('HSOutputPrimitive', c_int),
+        ('HSPartitioning', c_int),
+        ('TessellatorDomain', c_int),
+        ('cBarrierInstructions', c_uint),
+        ('cInterlockedInstructions', c_uint),
+        ('cTextureStoreInstructions', c_uint),
+    ]
+
+class ID3D11ShaderReflection(Structure):
+    _fields_ = IUnknown._fields_ + [
+        ('GetDesc', CFUNCTYPE(POINTER(D3D11_SHADER_DESC))),
+        ('GetConstantBufferByIndex', CFUNCTYPE(c_void_p)),
+        ('GetConstantBufferByName', CFUNCTYPE(c_void_p)),
+        ('GetResourceBindingDesc', CFUNCTYPE(c_void_p)),
+        ('GetInputParameterDesc', CFUNCTYPE(c_void_p)),
+        ('GetOutputParameterDesc', CFUNCTYPE(c_void_p)),
+        ('GetPatchConstantParameterDesc', CFUNCTYPE(c_void_p)),
+        ('GetVariableByName', CFUNCTYPE(c_void_p)),
+        ('GetResourceBindingDescByName', CFUNCTYPE(c_void_p)),
+        ('GetMovInstructionCount', CFUNCTYPE(c_void_p)),
+        ('GetMovcInstructionCount', CFUNCTYPE(c_void_p)),
+        ('GetConversionInstructionCount', CFUNCTYPE(c_void_p)),
+        ('GetBitwiseInstructionCount', CFUNCTYPE(c_void_p)),
+        ('GetGSInputPrimitive', CFUNCTYPE(c_void_p)),
+        ('IsSampleFrequencyShader', CFUNCTYPE(c_void_p)),
+        ('GetNumInterfaceSlots', CFUNCTYPE(c_void_p)),
+        ('GetMinFeatureLevel', CFUNCTYPE(c_void_p)),
+        ('GetThreadGroupSize', CFUNCTYPE(c_void_p)),
+        ('GetRequiresFlags', CFUNCTYPE(c_void_p)),
+    ]
+
+
+
+D3DCLIB = windll.LoadLibrary('C:/Program Files (x86)/Windows Kits/8.0/bin/x64/d3dcompiler_46.dll')
+IID_ID3D11ShaderReflection = Guid(0x8d536ca1, 0x0cca, 0x4956, (c_ubyte * 8)(0xa8, 0x37, 0x78, 0x69, 0x63, 0x75, 0x55, 0x84))
+
+ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
+D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
+
+def _d3d_compile(source_file, profile_string, entry_point, defines):
     out_file = tempfile.NamedTemporaryFile(delete=False)
     out_file.close()
-
     try:
-        in_file.write(source_code)
-        in_file.close()
-
-        cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:'+profile_string, '/E:'+entry_point, '/Fo:'+os.path.normpath(out_file.name), os.path.normpath(in_file.name)]
+        cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:'+profile_string, '/E:'+entry_point, '/Fo:'+os.path.normpath(out_file.name), os.path.normpath(source_file)]
+        cmd += ['/D%s=%s' % (var, val) for var, val in defines]
+        #print(cmd)
         subprocess.check_call(cmd)
-                
         with open(out_file.name, 'rb') as f:
             return f.read()
-
     finally:
-        os.remove(in_file.name)
         os.remove(out_file.name)
 
 def _meta(node_name, compiled):
-    n = doc.Node(node_name)
+    reflect = POINTER(c_byte)()
+    buff = create_string_buffer(compiled)
+    hr = D3DCLIB.D3DReflect(buff, c_size_t(len(buff)-1), byref(IID_ID3D11ShaderReflection), byref(reflect))
+    if hr < 0:
+        raise RuntimeError('D3DReflect failed (0x%08X)' % c_ulong(hr).value)
+    
+    reflect = cast(addressof(reflect.contents), POINTER(ID3D11ShaderReflection)).contents
 
+    desc = D3D11_SHADER_DESC()
+    reflect.GetDesc(desc)
+    print(desc.Creator)
+
+    n = doc.Node(node_name)
+    return n
+
+def _data(node_name, compiled):
+    n = doc.Node(node_name)
+    n.add_child(b64encode(compiled).decode('utf-8'))
     return n
 
 def _compile_shader(shader_node):
     is_vertex = shader_node.get_value() == 'vertex_shader'
-    target_profile = 'vs_4_0' if is_vertex else 'ps_4_0'
+    target_profile = VS_PROFILE if is_vertex else PS_PROFILE
     entry_point = shader_node.resolve('entry_point.#0').get_value()
-    shader_path = shader_node.resolve('file_name.#0').get_value()
-    with open(shader_path) as file:
-        source = file.read()
+    shader_path = os.path.join(ASSETS_PATH, shader_node.resolve('file_name.#0').get_value())
+
     defines = []
-    for define in shader_node['defines']:
-        defines.append((define.get_value(), define[0].get_value()))
+    try:
+        for define in shader_node['defines']:
+            defines.append((define.get_value(), define[0].get_value()))
+    except KeyError:
+        pass
     programs = {}
     
     # Generate standard version of the shader
-    compiled = _d3d_compile(source, target_profile, entry_point, defines)
-    programs['meta'] = _meta('meta', compiled)
-    programs['data'] = b64encode(compiled).decode('utf-8')
+    compiled = _d3d_compile(shader_path, target_profile, entry_point, defines)
+    programs[''] = []
+    programs[''].append(_meta('meta', compiled))
+    programs[''].append(_data('data', compiled))
 
     # Generate each variant
     for variant in shader_node['variants']:
         variant_defines = [(variant[0], variant[0][0])]
-        compiled = _d3d_compile(source, target_profile, entry_point, defines + variant_defines)
-        programs[variant.get_value()+'_meta'] = _meta(variant.get_value()+'_meta', compiled)
-        programs[variant.get_value()+'_data'] = b64encode(compiled).decode('utf-8')
+        compiled = _d3d_compile(shader_path, target_profile, entry_point, defines + variant_defines)
+        programs[variant.get_value()] = []
+        programs[variant.get_value()].append(_meta(variant.get_value()+'_meta', compiled))
+        programs[variant.get_value()].append(_data(variant.get_value()+'_data', compiled))
 
     input_attr_count = 0
-    return programs, input_attr_count if is_vertex else programs
+    return (input_attr_count, programs) if is_vertex else programs
 
 
 def compile(src, dst, *args):
-    root = doc.deserialize(src)
-    input_attr_count = vs_programs = _compile_shader(root['vertex_shader'])
+    with open(src) as file:
+        root = doc.deserialize(file.read())
+
+    input_attr_count, vs_programs = _compile_shader(root['vertex_shader'])
     ps_programs = _compile_shader(root['pixel_shader'])
 
     out_nodes = []
@@ -65,13 +186,15 @@ def compile(src, dst, *args):
     out_nodes.append(iac_node)
 
     vs_node = doc.Node('vertex_shader')
-    for key, node in vs_programs.items():
-        vs_node.add_child('key').add_child(node)
+    for key, nodes in vs_programs.items():
+        for node in nodes:
+            vs_node.add_child(node)
     out_nodes.append(vs_node)
 
     ps_node = doc.Node('pixel_shader')
-    for key, node in ps_programs.items():
-        ps_node.add_child('key').add_child(node)
+    for key, nodes in ps_programs.items():
+        for node in nodes:
+            ps_node.add_child(node)
     out_nodes.append(ps_node)
 
     with open(dst, 'w') as out:
