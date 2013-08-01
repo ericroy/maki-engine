@@ -99,10 +99,10 @@ bool Compile(bool d3d, Document::Node *shaderNode, const char *filePath, const c
 		dataNode = nullptr;
 	}
 	
-	if(!GenerateShader(d3d, filePath, profile, entryPoint, defines)) {
-		printf("Failed to generate shader with CG compiler (d3d=%d)\n", d3d);
-		return false;
-	}
+	//if(!GenerateShader(d3d, filePath, profile, entryPoint, defines)) {
+	//	printf("Failed to generate shader with CG compiler (d3d=%d)\n", d3d);
+	//	return false;
+	//}
 
 	D3D_SHADER_MACRO *macros = new D3D_SHADER_MACRO[defines.size()+1];
 	ZeroMemory(macros, (defines.size()+1)*sizeof(D3D_SHADER_MACRO));

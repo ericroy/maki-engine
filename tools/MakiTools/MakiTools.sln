@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakiDoc", "MakiDoc\MakiDoc.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakiShader", "MakiShader\MakiShader.vcxproj", "{4CB11490-E4B0-4DAB-8001-DA572A406879}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{4CB11490-E4B0-4DAB-8001-DA572A406879}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{4CB11490-E4B0-4DAB-8001-DA572A406879}.Release|Win32.ActiveCfg = Release|Win32
 		{4CB11490-E4B0-4DAB-8001-DA572A406879}.Release|Win32.Build.0 = Release|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Debug|Win32.Build.0 = Debug|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Release|Win32.ActiveCfg = Release|Win32
+		{86F2A1AB-CEC4-4920-9CCC-C61171103F2C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

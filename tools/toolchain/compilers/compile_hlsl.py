@@ -12,7 +12,7 @@ from .. import CONFIG
 VS_PROFILE = 'vs_4_0'
 PS_PROFILE = 'ps_4_0'
 
-
+Self = c_void_p
 
 class Guid(Structure):
     _fields_ = [
@@ -21,16 +21,15 @@ class Guid(Structure):
         ("Data3", c_ushort),
         ("Data4", c_ubyte * 8)
     ]
-
     def __str__(self):
         return '%08x' % self.Data1 + '%04x' % self.Data2 + '%04x' % self.Data3 + ''.join(['%02x' % x for x in self.Data4])
 
 class IUnknown(Structure):
     _fields_ = [
-        ('_reserved', c_void_p),
-        ('QueryInterface', CFUNCTYPE(c_void_p)),
-        ('AddRef', CFUNCTYPE(c_void_p)),
-        ('Release', CFUNCTYPE(c_void_p))
+        #('_reserved', c_void_p),
+        ('QueryInterface', WINFUNCTYPE(HRESULT)),
+        ('AddRef', WINFUNCTYPE(c_ulong)),
+        ('Release', WINFUNCTYPE(c_ulong))
     ]
 
 class D3D11_SHADER_DESC(Structure):
@@ -77,25 +76,28 @@ class D3D11_SHADER_DESC(Structure):
 
 class ID3D11ShaderReflection(Structure):
     _fields_ = IUnknown._fields_ + [
-        ('GetDesc', CFUNCTYPE(POINTER(D3D11_SHADER_DESC))),
-        ('GetConstantBufferByIndex', CFUNCTYPE(c_void_p)),
-        ('GetConstantBufferByName', CFUNCTYPE(c_void_p)),
-        ('GetResourceBindingDesc', CFUNCTYPE(c_void_p)),
-        ('GetInputParameterDesc', CFUNCTYPE(c_void_p)),
-        ('GetOutputParameterDesc', CFUNCTYPE(c_void_p)),
-        ('GetPatchConstantParameterDesc', CFUNCTYPE(c_void_p)),
-        ('GetVariableByName', CFUNCTYPE(c_void_p)),
-        ('GetResourceBindingDescByName', CFUNCTYPE(c_void_p)),
-        ('GetMovInstructionCount', CFUNCTYPE(c_void_p)),
-        ('GetMovcInstructionCount', CFUNCTYPE(c_void_p)),
-        ('GetConversionInstructionCount', CFUNCTYPE(c_void_p)),
-        ('GetBitwiseInstructionCount', CFUNCTYPE(c_void_p)),
-        ('GetGSInputPrimitive', CFUNCTYPE(c_void_p)),
-        ('IsSampleFrequencyShader', CFUNCTYPE(c_void_p)),
-        ('GetNumInterfaceSlots', CFUNCTYPE(c_void_p)),
-        ('GetMinFeatureLevel', CFUNCTYPE(c_void_p)),
-        ('GetThreadGroupSize', CFUNCTYPE(c_void_p)),
-        ('GetRequiresFlags', CFUNCTYPE(c_void_p)),
+        ('QueryInterface', WINFUNCTYPE(HRESULT)),
+        ('AddRef', WINFUNCTYPE(c_ulong)),
+        ('Release', WINFUNCTYPE(c_ulong)),
+        ('GetDesc', WINFUNCTYPE(HRESULT, POINTER(D3D11_SHADER_DESC))),
+        ('GetConstantBufferByIndex', WINFUNCTYPE(HRESULT)),
+        ('GetConstantBufferByName', WINFUNCTYPE(HRESULT)),
+        ('GetResourceBindingDesc', WINFUNCTYPE(HRESULT)),
+        ('GetInputParameterDesc', WINFUNCTYPE(HRESULT)),
+        ('GetOutputParameterDesc', WINFUNCTYPE(HRESULT)),
+        ('GetPatchConstantParameterDesc', WINFUNCTYPE(HRESULT)),
+        ('GetVariableByName', WINFUNCTYPE(HRESULT)),
+        ('GetResourceBindingDescByName', WINFUNCTYPE(HRESULT)),
+        ('GetMovInstructionCount', WINFUNCTYPE(HRESULT)),
+        ('GetMovcInstructionCount', WINFUNCTYPE(HRESULT)),
+        ('GetConversionInstructionCount', WINFUNCTYPE(HRESULT)),
+        ('GetBitwiseInstructionCount', WINFUNCTYPE(HRESULT)),
+        ('GetGSInputPrimitive', WINFUNCTYPE(HRESULT)),
+        ('IsSampleFrequencyShader', WINFUNCTYPE(HRESULT)),
+        ('GetNumInterfaceSlots', WINFUNCTYPE(HRESULT)),
+        ('GetMinFeatureLevel', WINFUNCTYPE(HRESULT)),
+        ('GetThreadGroupSize', WINFUNCTYPE(HRESULT)),
+        ('GetRequiresFlags', WINFUNCTYPE(HRESULT)),
     ]
 
 
@@ -126,10 +128,14 @@ def _meta(node_name, compiled):
     if hr < 0:
         raise RuntimeError('D3DReflect failed (0x%08X)' % c_ulong(hr).value)
     
-    reflect = cast(addressof(reflect.contents), POINTER(ID3D11ShaderReflection)).contents
+    print(reflect)
+    reflect = cast(reflect, POINTER(ID3D11ShaderReflection))
 
     desc = D3D11_SHADER_DESC()
-    reflect.GetDesc(desc)
+    hr = reflect.contents.GetDesc(byref(desc))
+    if hr < 0:
+        raise RuntimeError('reflect.GetDesc failed (0x%08X)' % c_ulong(hr).value)
+    
     print(desc.Creator)
 
     n = doc.Node(node_name)
