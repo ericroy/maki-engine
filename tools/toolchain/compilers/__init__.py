@@ -9,7 +9,7 @@ from . import compile_lua
 from . import doc_toucher
 
 COMPILERS = {
-    'mdoc': compile_doc.compile,    
+    'mdoc': shutil.copyfile,    
     'mshad': compile_hlsl.compile if platform.system() == 'Windows' else compile_glsl.compile,
     'fbx': compile_fbx.compile,
     'mskel': shutil.copyfile,
