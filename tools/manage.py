@@ -9,14 +9,20 @@ from toolchain import *
 def _watch(*args):
     watch.watch_forever()
 
-def _build(*args):
-    assert len(args) >= 1, 'build command expects src (and optional dst)'
-    src = util.clean_path(args[0])
-    if len(args) > 1:
-        dst = util.clean_path(args[1])
-    else:
-        dst = os.path.join(CONFIG['assets_bin_path'], os.path.relpath(src, CONFIG['assets_path']))
-    compile_args = args[2:]
+def _archive_containing(file_path):
+    file_path = os.path.normpath(file_path)
+    for arc_name, conf in CONFIG['assets'].items():
+        src_path = os.path.normpath(conf['src'])
+        if os.path.commonprefix([src_path, file_path]) != '':
+            return arc_name
+    raise RuntimeError('None of the archives specified in the project file contain %s' % file_path)
+
+def _build(src_file, arc_name=None):
+    if arc_name is None:
+        arc_name = _archive_containing(src_file)
+    conf = CONFIG['assets'][arc_name]
+    src = util.clean_path(src_file)
+    dst = os.path.join(conf['dst'], os.path.relpath(src, conf['src']))
     ext = os.path.splitext(src)[1]
     ext = ext.strip('.')
     try:
@@ -25,44 +31,44 @@ def _build(*args):
         print('Skipping file, no compiler for extension: %s' % ext)
     else:
         print('%s => %s' % (src, dst))
-        compiler(src, dst, *compile_args)
-
-def _build_all(*args):
-    if os.path.exists(CONFIG['assets_bin_path']):
-        for f in glob.glob(CONFIG['assets_bin_path']+'/*'):
-            if os.path.isdir(f):
-                shutil.rmtree(f)
-            else:
-                os.remove(f)
-    else:
-        os.mkdir(CONFIG['assets_bin_path'])
-
-    for path in util.walk(CONFIG['assets_path']):
-        src_path = os.path.join(CONFIG['assets_path'], path)
-        dest_path = os.path.join(CONFIG['assets_bin_path'], path)
-        dest_dir = os.path.dirname(dest_path)
+        dest_dir = os.path.dirname(dst)
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        _build(src_path, dest_path, *args)
-    # Rebuild all manifests
-    _manifest()
+        compiler(arc_name, src, dst)
 
-def _archive(*args):
-    if len(args) >= 2:
-        archive.archive(args[0], args[1], *args[2:])
-    else:
-        # Archive all
-        for src_dir, dst_file in CONFIG.get('archives', []):
-            archive.archive(src_dir, dst_file)
+def _build_all():
+    for arc_name, conf in CONFIG['assets'].items():
+        if os.path.exists(conf['dst']):
+            for f in glob.glob(conf['dst']+'/*'):
+                if os.path.isdir(f):
+                    shutil.rmtree(f)
+                else:
+                    os.remove(f)
+        else:
+            os.mkdir(conf['dst'])
 
-def _manifest(*args):
-    if len(args) >= 2:
-        manifest.manifest(args[0], args[1], *args[2:])
-    else:
-        # Make all manifests
-        for src_dir, manifest_name in CONFIG.get('manifests', []):
-            print('Generating manifest "%s" from directory: %s' % (manifest_name, src_dir))
-            manifest.manifest(src_dir, manifest_name)
+        for path in util.walk(conf['src']):
+            _build(os.path.join(conf['src'], path), arc_name)
+        _manifest(arc_name)
+        print()
+
+def _archive(arc_name):
+    archive.archive(arc_name)
+
+def _archive_all():
+    for arc_name in CONFIG['assets'].keys():
+        _archive(arc_name)
+        print()
+
+def _manifest(arc_name):
+    conf = CONFIG['assets'][arc_name]
+    print('Generating manifest for "%s" from directory: %s' % (arc_name, conf['src']))
+    manifest.manifest(arc_name)
+
+def _manifest_all():
+    for arc_name in CONFIG['assets'].keys():
+        _manifest(arc_name)
+        print()
 
 def _export_scene(*args):
     assert len(args) >= 2, 'export_scene command expects src and dst files'
@@ -81,7 +87,9 @@ COMMANDS = {
     'build': _build,
     'build_all': _build_all,
     'archive': _archive,
+    'archive_all': _archive_all,
     'manifest': _manifest,
+    'manifest_all': _manifest_all,
     'export_scene': _export_scene,
     'export_skeleton': _export_skeleton,
     'export_animation': _export_animation,
@@ -93,7 +101,6 @@ def main(command, *args, **kwargs):
         func = COMMANDS[command]
     except KeyError as e:
         raise KeyError('No such command: %s' % command) from e
-    
     ret = 0
     try:
         func(*args)
@@ -103,11 +110,8 @@ def main(command, *args, **kwargs):
     return ret
 
 if __name__ == '__main__':
-    #print('Project config: %s' % CONFIG_PATH)
-    
     parser = OptionParser()
     options, args = parser.parse_args()
-
     assert len(args) >= 1, 'Must provide a command'
     ret = main(*args, **vars(options))
     exit(ret)

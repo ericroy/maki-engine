@@ -16,7 +16,7 @@ namespace Maki
 
 			inline uint32 GetCount() const { return count; }
 			inline bool Contains(Rid rid) const { return (uint32)rid >= ridStart && (uint32)rid < ridStart + count; }
-			inline const char *GetPath(Rid rid) const { return pathArray[rid]; }
+			inline const char *GetPath(Rid rid) const { return pathArray[rid - ridStart]; }
 			void SetRidStart(uint32 ridStart);
 			Rid PathToRid(const char *path) const;
 			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;

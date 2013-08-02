@@ -272,7 +272,7 @@ def _enum_meshes(node):
         if node_attr and node_attr.GetAttributeType() == FbxNodeAttribute.eMesh:
             yield n
 
-def build_node(manager, base_node, dst, *args):
+def build_node(manager, base_node, dst):
     with open(dst, 'wb') as out:
         out.write(struct.pack('8s', 'maki'))
         mesh_count = len(list(_enum_meshes(base_node)))
@@ -282,11 +282,11 @@ def build_node(manager, base_node, dst, *args):
             _write_mesh(manager, node, out)
     return True
 
-def compile(src, dst, *args):
+def compile(arc_name, src, dst):
     manager, scene = InitializeSdkObjects()
     if not LoadScene(manager, scene, src):
         raise RuntimeError('Failed to load scene')
-    build_node(manager, scene.GetRootNode(), dst, *args)
+    build_node(manager, scene.GetRootNode(), dst)
 
 if __name__ == '__main__':
     assert len(sys.argv) > 2, 'Must provide src and dst as command line arguments'

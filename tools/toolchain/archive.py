@@ -3,6 +3,7 @@ import os
 import struct
 import zlib
 from io import BytesIO
+from . import CONFIG
 
 COMPRESSION_ENABLED = True
 ZLIB_COMPRESSION_LEVEL = 6
@@ -28,17 +29,20 @@ def _walk(top):
 def _clean_path(p):
     return os.path.normpath(p).replace('\\', '/')
 
-def archive(root_path, dest_filename, *args):
+def archive(arc_name):
+    conf = CONFIG['assets'][arc_name]
+
+    #root_path, dest_filename, *args):
     files = []
     toc = BytesIO()
     body = BytesIO()
-    for file_path in _walk(root_path):
+    for file_path in _walk(conf['dst']):
         files.append(file_path)
 
     for file_path in files:
         file_path = _clean_path(file_path)
         flags = 0
-        with open(os.path.join(root_path, file_path), 'rb') as file:
+        with open(os.path.join(conf['dst'], file_path), 'rb') as file:
             raw_data = file.read()
             compressed_data = raw_data
 
@@ -54,7 +58,7 @@ def archive(root_path, dest_filename, *args):
             _pad(body, 8)
             print(file_path)
 
-    with open(dest_filename, 'wb') as archive:
+    with open(os.path.join(CONFIG['bin_path'], arc_name+'.marc'), 'wb') as archive:
         len_file_header = 8
         toc_count = len(files)
         body_offset = toc.tell()+len_file_header
@@ -70,5 +74,5 @@ def archive(root_path, dest_filename, *args):
         print("Wrote archive (%d bytes)" % archive.tell())
 
 if __name__ == '__main__':
-    assert len(sys.argv) >= 3, 'Archive expects a src dir and dst file'
-    archive(sys.argv[1], sys.argv[2], sys.argv[3:])
+    assert len(sys.argv) == 2, 'Archive requires <arc_name>'
+    archive(sys.argv[1])

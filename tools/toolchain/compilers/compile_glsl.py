@@ -1,3 +1,3 @@
 
-def compile(src, dst, *args):
+def compile(arc_name, src, dst):
     pass

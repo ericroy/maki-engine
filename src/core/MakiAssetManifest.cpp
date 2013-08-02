@@ -34,7 +34,7 @@ namespace Maki
 			std::string fullPath = commonPathPrefix + path;
 			for(uint32 i = 0; i < count; i++) {
 				if(fullPath == pathArray[i]) {
-					return TO_RID(i);
+					return TO_RID(ridArray[i]);
 				}
 			}
 			return RID_NONE;

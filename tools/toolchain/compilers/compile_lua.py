@@ -8,7 +8,7 @@ def _clean(path):
     drive, tail = os.path.splitdrive(os.path.normpath(path))
     return drive.lower() + tail
 
-def compile(src, dst, *args):
+def compile(arc_name, src, dst):
     old_cwd = os.getcwd()
     cwd = _clean(os.path.expandvars('$MAKI_DIR/tools'))
     src = _clean(os.path.abspath(src))

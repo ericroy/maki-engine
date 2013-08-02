@@ -15,7 +15,6 @@ PS_PROFILE = 'ps_4_0'
 
 BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
 
-ASSETS_PATH = os.path.join(CONFIG['project_root'], CONFIG['assets_path'])
 D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
 
 def _d3d_compile(source_file, profile_string, entry_point, defines):
@@ -27,7 +26,7 @@ def _d3d_compile(source_file, profile_string, entry_point, defines):
         cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:'+profile_string, '/E:'+entry_point, '/Fc:'+os.path.normpath(listing_file.name),
             '/Fo:'+os.path.normpath(out_file.name), os.path.normpath(source_file)]
         cmd += ['/D%s=%s' % (var, val) for var, val in defines]
-        print(cmd)
+        #print(cmd)
         subprocess.check_call(cmd)
         with open(listing_file.name) as listing:
             with open(out_file.name, 'rb') as bin:
@@ -70,7 +69,7 @@ def _meta(node_name, listing, compiled, input_attrs=None):
                     line = next(lines).strip()
                     while True:
                         parts = line.split()
-                        if len(parts) == 2 and '}' in parts:
+                        if len(parts) == 2 and parts[1] == '}':
                             break
                         buffer_lines.append(line)
                         line = next(lines).strip()
@@ -93,11 +92,11 @@ def _data(node_name, compiled):
     n.add_child(b64encode(compiled).decode('utf-8'))
     return n
 
-def _compile_shader(shader_node):
+def _compile_shader(arc_name, shader_node):
     is_vertex = shader_node.get_value() == 'vertex_shader'
     target_profile = VS_PROFILE if is_vertex else PS_PROFILE
     entry_point = shader_node.resolve('entry_point.#0').get_value()
-    shader_path = os.path.join(ASSETS_PATH, shader_node.resolve('file_name.#0').get_value())
+    shader_path = os.path.join(CONFIG['assets'][arc_name]['src'], shader_node.resolve('file_name.#0').get_value())
 
     defines = []
     try:
@@ -131,12 +130,12 @@ def _compile_shader(shader_node):
     return (len(input_attrs), programs) if is_vertex else programs
 
 
-def compile(src, dst, *args):
+def compile(arc_name, src, dst):
     with open(src) as file:
         root = doc.deserialize(file.read())
 
-    input_attr_count, vs_programs = _compile_shader(root['vertex_shader'])
-    ps_programs = _compile_shader(root['pixel_shader'])
+    input_attr_count, vs_programs = _compile_shader(arc_name, root['vertex_shader'])
+    ps_programs = _compile_shader(arc_name, root['pixel_shader'])
 
     out_nodes = []
 

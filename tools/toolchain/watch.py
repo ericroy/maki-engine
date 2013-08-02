@@ -1,10 +1,12 @@
 import sys
+import logging
 import os
 import time
 import win32file
 import win32con
 import win32event
 import threading
+import subprocess
 from collections import defaultdict
 from . import util
 from . import CONFIG
@@ -12,6 +14,11 @@ from . import CONFIG
 FILE_LIST_DIRECTORY = 0x0001
 FILE_NOTIFY_CHANGE_CREATION = 0x00000040
 FILE_NOTIFY_CHANGE_LAST_WRITE = 0x00000010
+
+MANAGE_SCRIPT = os.path.expandvars('$MAKI_DIR/tools/manage.py')
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class UDPNotifier(object):
     def __init__(self, host, port):
@@ -71,25 +78,42 @@ class Observer(threading.Thread):
         win32file.CancelIo(self._handle)
         win32event.SetEvent(self._overlapped.hEvent)
 
-
 def _builder(path):
-    print('Build: %s' % path)
+    if os.path.isdir(path):
+        return
+    if os.path.splitext(path)[1].lower() == '.tmp':
+        return
+    cmd = ['python', MANAGE_SCRIPT, 'build', path]
+    try:
+        subprocess.check_call(cmd)
+    except:
+        logger.exception('Build attempt failed')
+
 
 def watch_forever():
-    print('Watching...')
+    observers = []
     udp_notify = UDPNotifier('127.0.0.1', 11001)
-    obs1 = Observer(CONFIG['assets_path'], _builder)
-    obs2 = Observer(CONFIG['assets_bin_path'], udp_notify)
-    obs1.start()
-    obs2.start()
+
+    for arc_name, conf in CONFIG['assets'].items():
+        logger.info('Watching %s and %s', conf['src'], conf['dst'])
+        obs1 = Observer(conf['src'], _builder)
+        obs2 = Observer(conf['dst'], udp_notify)
+        observers += [obs1, obs2]
+        obs1.start()
+        obs2.start()
+
+    
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         pass
     finally:
-        obs1.stop()
-        obs2.stop()
-        obs1.join()
-        obs2.join()
+        logger.info('Stopping observers')
+        for obs in observers:
+            obs.stop()
+        logger.info('Joining observers')
+        for obs in observers:
+            obs.join()
+        logger.info('Done')
         udp_notify.close()

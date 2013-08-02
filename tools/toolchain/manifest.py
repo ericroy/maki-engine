@@ -4,11 +4,7 @@ from . import CONFIG
 from . import compilers
 from . import util
 
-ENUM_NAME_REPLACEMENTS = (
-    '/', ' ', '.', '_', '-',
-)
-
-COMMON_PREFIX = '../assets_bin/'
+ENUM_NAME_REPLACEMENTS = ('/', ' ', '.', '_', '-')
 
 TEMPLATE_HEADER = '''
 /* Programmatically generated, do not modify! */
@@ -27,8 +23,8 @@ public:
     %(public_vars)s
 
 public:
-    Assets(void) : Maki::Core::AssetManifest(AssetCount, rids, assetPaths, "%(common_prefix)s") {}
-    virtual ~Assets() {}
+    %(name)s(void) : Maki::Core::AssetManifest(AssetCount, rids, assetPaths, "%(common_prefix)s") {}
+    virtual ~%(name)s() {}
 };
 
 '''
@@ -41,18 +37,19 @@ Maki::Rid %(name)s::rids[%(name)s::AssetCount] = {%(rid_list)s};
 
 %(public_var_defs)s
 
-const char *Assets::assetPaths[AssetCount] = {
+const char *%(name)s::assetPaths[AssetCount] = {
 %(paths)s
 };
 '''
 
-def _write_manifest(manifest_name, resources):
+def _write_manifest(conf, resources):
+    manifest_name = conf['manifest']
     paths = ''
     public_vars = ''
     private_var_defs = ''
     public_var_defs = ''
     rid_list = ','.join(['{%s}' % i for i in range(len(resources))])
-    common_prefix = util.clean_path(os.path.relpath(CONFIG['assets_bin_path'], CONFIG['bin_path']))+'/'
+    common_prefix = util.clean_path(os.path.relpath(conf['dst'], CONFIG['bin_path']))+'/'
 
     for i, (name, rel_path) in enumerate(resources):
         public_vars += 'static const Maki::Rid &%s; // %d\n\t' % (name, i)
@@ -96,16 +93,17 @@ def _make_enum_name(p):
         parts.append(_titlecase(name))
     return '_'.join(parts)+'_'+ext
 
-def manifest(src_dir, manifest_name, *args):
+def manifest(arc_name):
+    conf = CONFIG['assets'][arc_name]
     resources = []
-    for path in util.walk(src_dir):
+    for path in util.walk(conf['dst']):
         ext = os.path.splitext(path)[1]
         ext = ext.strip('.')
         if ext in compilers.COMPILERS:
             name = _make_enum_name(path)
             resources.append([name, path])
-    _write_manifest(manifest_name, resources)
+    _write_manifest(conf, resources)
 
 if __name__ == '__main__':
-    assert len(sys.argv) > 3, 'Manifest requires src dir and manifest name'
-    manifest(sys.argv[1], sys.argv[2], *sys.argv[3:])
+    assert len(sys.argv) == 2, 'Manifest requires <arc_name>'
+    manifest(sys.argv[1])
