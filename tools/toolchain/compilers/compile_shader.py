@@ -10,12 +10,8 @@ from base64 import b64encode
 from .. import doc
 from .. import CONFIG
 
-VS_PROFILE = 'vs_4_0'
-PS_PROFILE = 'ps_4_0'
-
-BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
-
 D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
+D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
 
 def _d3d_compile(source_file, profile_string, entry_point, defines):
     listing_file = tempfile.NamedTemporaryFile(delete=False)
@@ -35,10 +31,7 @@ def _d3d_compile(source_file, profile_string, entry_point, defines):
         os.remove(out_file.name)
         os.remove(listing_file.name)
 
-
-_buffer_field_expr = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
-
-def _meta(node_name, listing, compiled, input_attrs=None):
+def _d3d_meta(node_name, listing, compiled, input_attrs=None):
     buffer_slots = {}
     buffer_contents = {}
 
@@ -73,7 +66,7 @@ def _meta(node_name, listing, compiled, input_attrs=None):
                             break
                         buffer_lines.append(line)
                         line = next(lines).strip()
-                    buffer_contents[buffer_name] = re.findall(_buffer_field_expr, '\n'.join(buffer_lines))
+                    buffer_contents[buffer_name] = re.findall(D3D_BUFFER_MEMBER, '\n'.join(buffer_lines))
             line = next(lines).strip()
     except StopIteration:
         pass
@@ -87,14 +80,45 @@ def _meta(node_name, listing, compiled, input_attrs=None):
             uniform_node.add_child(var_name).add_children([str(var_offset), str(var_length)])
     return n
 
+
+
+def _ogl_compile(source_file, profile_string, entry_point, defines):
+    with open(source_file, 'r') as file:
+        s = file.read()
+    return s, s
+
+def _ogl_meta(node_name, listing, compiled, input_attrs=None):
+    buffer_slots = {}
+    buffer_contents = {}
+
+    n = doc.Node(node_name)
+    for buffer_name, slot in buffer_slots.items():
+        buffer_node = n.add_child(buffer_name)
+        buffer_node.add_child('slot').add_child(str(slot))
+        uniform_node = buffer_node.add_child('uniforms')
+        for var_name, var_offset, var_length in buffer_contents[buffer_name]:
+            uniform_node.add_child(var_name).add_children([str(var_offset), str(var_length)])
+    return n
+
+PROFILE = {
+    'd3d': {'vs': 'vs_4_0', 'ps': 'ps_4_0'},
+    'ogl': {'vs': '', 'ps': ''}
+}
+
+BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
+
+META = {'d3d': _d3d_meta, 'ogl': _ogl_meta}
+COMPILE = {'d3d': _d3d_compile, 'ogl': _ogl_compile}
+
+
 def _data(node_name, compiled):
     n = doc.Node(node_name)
     n.add_child(b64encode(compiled).decode('utf-8'))
     return n
 
-def _compile_shader(arc_name, shader_node):
-    is_vertex = shader_node.get_value() == 'vertex_shader'
-    target_profile = VS_PROFILE if is_vertex else PS_PROFILE
+def _compile_shader(arc_name, is_vertex, shader_node):
+    render_api = CONFIG['render_api']
+    target_profile = PROFILE[render_api]['vs'] if is_vertex else PROFILE[render_api]['ps']
     entry_point = shader_node.resolve('entry_point.#0').get_value()
     shader_path = os.path.join(CONFIG['assets'][arc_name]['src'], shader_node.resolve('file_name.#0').get_value())
 
@@ -105,13 +129,13 @@ def _compile_shader(arc_name, shader_node):
     except KeyError:
         pass
     programs = {}
-    
+
     input_attrs = [] if is_vertex else None
 
     # Generate standard version of the shader
-    listing, compiled = _d3d_compile(shader_path, target_profile, entry_point, defines)
+    listing, compiled = COMPILE[render_api](shader_path, target_profile, entry_point, defines)
     programs[''] = []
-    programs[''].append(_meta('meta', listing, compiled, input_attrs))
+    programs[''].append(META[render_api]('meta', listing, compiled, input_attrs))
     programs[''].append(_data('data', compiled))
 
     # Generate each variant
@@ -122,9 +146,9 @@ def _compile_shader(arc_name, shader_node):
     else:
         for variant in variants:
             variant_defines = [(variant[0], variant[0][0])]
-            listing, compiled = _d3d_compile(shader_path, target_profile, entry_point, defines + variant_defines)
+            listing, compiled = COMPILE[render_api](shader_path, target_profile, entry_point, defines + variant_defines)
             programs[variant.get_value()] = []
-            programs[variant.get_value()].append(_meta(variant.get_value()+'_meta', listing, compiled))
+            programs[variant.get_value()].append(META[render_api](variant.get_value()+'_meta', listing, compiled))
             programs[variant.get_value()].append(_data(variant.get_value()+'_data', compiled))
 
     return (len(input_attrs), programs) if is_vertex else programs
@@ -134,8 +158,8 @@ def compile(arc_name, src, dst):
     with open(src) as file:
         root = doc.deserialize(file.read())
 
-    input_attr_count, vs_programs = _compile_shader(arc_name, root['vertex_shader'])
-    ps_programs = _compile_shader(arc_name, root['pixel_shader'])
+    input_attr_count, vs_programs = _compile_shader(arc_name, True, root['vertex_shader'])
+    ps_programs = _compile_shader(arc_name, False, root['pixel_shader'])
 
     out_nodes = []
 

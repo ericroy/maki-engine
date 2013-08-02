@@ -1,7 +1,7 @@
 import os
 import time
 
-def touch_mshad(src, dst, *args):
+def touch_mshad(arc_name, src, dst):
     now = time.time()
     touch_path = os.path.splitext(src)[0]+'.mshad'
     try:

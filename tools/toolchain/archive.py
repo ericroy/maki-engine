@@ -31,8 +31,6 @@ def _clean_path(p):
 
 def archive(arc_name):
     conf = CONFIG['assets'][arc_name]
-
-    #root_path, dest_filename, *args):
     files = []
     toc = BytesIO()
     body = BytesIO()

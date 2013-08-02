@@ -2,17 +2,17 @@ import shutil
 import platform
 from . import compile_fbx
 from . import compile_doc
-from . import compile_hlsl
-from . import compile_glsl
+from . import compile_shader
 from . import compile_lua
 from . import doc_toucher
+from .. import CONFIG
 
 def _copy(arc_name, src, dst):
     shutil.copyfile(src, dst)
 
 COMPILERS = {
     'mdoc': _copy,    
-    'mshad': compile_hlsl.compile if platform.system() == 'Windows' else compile_glsl.compile,
+    'mshad': compile_shader.compile,
     'fbx': compile_fbx.compile,
     'mskel': _copy,
     'manim': _copy,

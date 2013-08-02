@@ -6,8 +6,6 @@ namespace Maki
 	namespace Core
 	{
 
-		
-	
 		class AssetManifest
 		{
 		public:
