@@ -3,6 +3,7 @@ import os
 import tempfile
 import subprocess
 import struct
+import re
 from ctypes import *
 from base64 import b64encode
 
@@ -35,6 +36,9 @@ def _d3d_compile(source_file, profile_string, entry_point, defines):
         os.remove(out_file.name)
         os.remove(listing_file.name)
 
+
+_buffer_field_expr = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
+
 def _meta(node_name, listing, compiled, input_attrs=None):
     buffer_slots = {}
     buffer_contents = {}
@@ -62,17 +66,15 @@ def _meta(node_name, listing, compiled, input_attrs=None):
             elif line.startswith('// cbuffer'):
                 buffer_name = line.split()[2]
                 if buffer_name in BUFFERS:
+                    buffer_lines = []
                     line = next(lines).strip()
                     while True:
                         parts = line.split()
-                        if '}' in parts:
+                        if len(parts) == 2 and '}' in parts:
                             break
-                        if len(parts) >= 8:
-                            var_name = parts[2].strip(';').split('[')[0]                           
-                            var_offset = int(parts[5])
-                            var_length = int(parts[7])
-                            buffer_contents.setdefault(buffer_name, []).append((var_name, var_offset, var_length))
+                        buffer_lines.append(line)
                         line = next(lines).strip()
+                    buffer_contents[buffer_name] = re.findall(_buffer_field_expr, '\n'.join(buffer_lines))
             line = next(lines).strip()
     except StopIteration:
         pass
