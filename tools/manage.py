@@ -4,7 +4,7 @@ import glob
 import shutil
 import traceback
 from optparse import OptionParser
-from toolchain import *
+from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers
 
 def _watch(*args):
     watch.watch_forever()
@@ -110,8 +110,7 @@ def main(command, *args, **kwargs):
     return ret
 
 if __name__ == '__main__':
-    parser = OptionParser()
-    options, args = parser.parse_args()
+    options, args = option_parser.parse_args()
     assert len(args) >= 1, 'Must provide a command'
     ret = main(*args, **vars(options))
     exit(ret)

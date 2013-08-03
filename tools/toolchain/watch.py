@@ -8,8 +8,7 @@ import win32event
 import threading
 import subprocess
 from collections import defaultdict
-from . import util
-from . import CONFIG
+from . import CONFIG, CONFIG_PATH, util
 
 FILE_LIST_DIRECTORY = 0x0001
 FILE_NOTIFY_CHANGE_CREATION = 0x00000040
@@ -84,6 +83,8 @@ def _builder(path):
     if os.path.splitext(path)[1].lower() == '.tmp':
         return
     cmd = ['python', MANAGE_SCRIPT, 'build', path]
+    if CONFIG_PATH is not None:
+        cmd += ['--project', CONFIG_PATH]
     try:
         subprocess.check_call(cmd)
     except:

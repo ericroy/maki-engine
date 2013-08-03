@@ -188,8 +188,13 @@ def deserialize(s):
         elif tok_type == TOKEN_INDENT:
             old_indent = indent
             if indent_format is None:
-                indent_format = tok
-            indent = len(tok) // len(indent_format)
+                if len(tok) > 0:
+                    indent_format = tok
+                    indent = len(tok) // len(indent_format)
+                else:
+                    indent = 0
+            else:
+                indent = len(tok) // len(indent_format)
             steps = indent - old_indent
             if steps < 0:
                 for i in range(0, -steps):
