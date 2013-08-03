@@ -10,14 +10,32 @@ from base64 import b64encode
 from .. import doc
 from .. import CONFIG
 
-GLFW_VISIBLE = 0x00020004
-GLFW_CONTEXT_VERSION_MAJOR = 0x00022002
-GLFW_CONTEXT_VERSION_MINOR = 0x00022003
-GLFW_OPENGL_DEBUG_CONTEXT = 0x00022007
-GLFW_OPENGL_FORWARD_COMPAT = 0x00022006
-GLFW_OPENGL_PROFILE = 0x00022008
-GLFW_OPENGL_COMPAT_PROFILE = 0x00032002
-GLFW_OPENGL_CORE_PROFILE = 0x00032001
+SDL_GL_RED_SIZE = 0
+SDL_GL_GREEN_SIZE = 1
+SDL_GL_BLUE_SIZE = 2
+SDL_GL_ALPHA_SIZE = 3
+SDL_GL_BUFFER_SIZE = 4
+SDL_GL_DOUBLEBUFFER = 5
+SDL_GL_DEPTH_SIZE = 6
+SDL_GL_STENCIL_SIZE = 7
+SDL_GL_ACCUM_RED_SIZE = 8
+SDL_GL_ACCUM_GREEN_SIZE = 9
+SDL_GL_ACCUM_BLUE_SIZE = 10
+SDL_GL_ACCUM_ALPHA_SIZE = 11
+SDL_GL_STEREO = 12
+SDL_GL_MULTISAMPLEBUFFERS = 13
+SDL_GL_MULTISAMPLESAMPLES = 14
+SDL_GL_ACCELERATED_VISUAL = 15
+SDL_GL_RETAINED_BACKING = 16
+SDL_GL_CONTEXT_MAJOR_VERSION = 17
+SDL_GL_CONTEXT_MINOR_VERSION = 18
+SDL_GL_CONTEXT_EGL = 19
+SDL_GL_CONTEXT_FLAGS = 20
+SDL_GL_CONTEXT_PROFILE_MASK = 21
+SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
+SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG = 2
+SDL_WINDOW_OPENGL = 0x00000002
+SDL_INIT_VIDEO = 0x00000020
 
 GL_FRAGMENT_SHADER = 0x8B30
 GL_VERTEX_SHADER = 0x8B31
@@ -36,9 +54,8 @@ GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8A46
 
 
 
-GLFW = cdll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/glfw3.dll'))
 if sys.platform.startswith('win'):
-    GL = windll.LoadLibrary('opengl32')
+    GL = windll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/opengl32.dll'))
     _gl_func_type = WINFUNCTYPE
 elif sys.platform.startswith('darwin'):
     GL = windll.LoadLibrary('OpenGL')
@@ -47,30 +64,35 @@ else:
     GL = windll.LoadLibrary('GL')
     _gl_func_type = CFUNCTYPE
 
-# Create a context so that we'll be able to call shader functions and the like
-# YIKES: Mac OS X: This function will change the current directory of the application to the Contents/Resources subdirectory of the application's bundle, if present.
-if GLFW.glfwInit() == 0:
-    raise RuntimeError('Failed to init GLFW')
 
-def _glfw_error_handler(err_code, msg):
-    print('GLFW ERROR (%s) %s' % (err_code, msg))
-glfw_error_handler = CFUNCTYPE(None, c_int, c_char_p)(_glfw_error_handler)
-GLFW.glfwSetErrorCallback(glfw_error_handler)
 
-GLFW.glfwWindowHint(GLFW_VISIBLE, 0)
-GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
-GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1)
-GLFW.glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1)
-GLFW.glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1)
-#GLFW.glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-window = GLFW.glfwCreateWindow(640, 480, 'Hullo', 0, 0)
-if window == 0:
-    raise RuntimeError('Failed to create GLFW window')
+SDL = cdll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/SDL2.dll'))
+def _check_sdl_error():
+    msg = c_char_p(SDL.SDL_GetError())
+    if len(msg.value) > 0:
+        raise RuntimeError('SDL error: %s' % msg.value)
 
-GLFW.glfwMakeContextCurrent(window)
+SDL.SDL_Init(SDL_INIT_VIDEO)
+_check_sdl_error()
+
+SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
+SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
+SDL.SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+SDL.SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8)
+SDL.SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
+SDL.SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8)
+SDL.SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32)
+SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
+_check_sdl_error()
+
+window = SDL.SDL_CreateWindow('', 0, 0, 100, 100, SDL_WINDOW_OPENGL)
+_check_sdl_error()
+
+context = SDL.SDL_GL_CreateContext(window)
+_check_sdl_error()
 
 def getProcAddress(name, *args):
-    addr = GLFW.glfwGetProcAddress(name)
+    addr = SDL.SDL_GL_GetProcAddress(name)
     assert addr != 0, 'Failed to load %s' % name
     return _gl_func_type(*args)(addr)
 
