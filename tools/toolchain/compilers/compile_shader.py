@@ -55,7 +55,7 @@ GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8A46
 
 
 if sys.platform.startswith('win'):
-    GL = windll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/opengl32.dll'))
+    GL = windll.LoadLibrary('opengl32')
     _gl_func_type = WINFUNCTYPE
 elif sys.platform.startswith('darwin'):
     GL = windll.LoadLibrary('OpenGL')
@@ -364,5 +364,3 @@ def compile(arc_name, src, dst):
             for node in nodes:
                 n.add_child(node)
         n.serialize(out)
-
-    
