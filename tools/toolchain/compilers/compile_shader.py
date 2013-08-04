@@ -77,7 +77,9 @@ def _check_sdl_error():
 
 
 def _glGetProcAddress(name, *args):
-    addr = SDL.SDL_GL_GetProcAddress(name)
+    proc_name = create_string_buffer(name.encode('utf-8'))
+    addr = SDL.SDL_GL_GetProcAddress(proc_name)
+    #addr = GL.wglGetProcAddress(proc_name)
     assert addr != 0, 'Could not get proc address for: %s' % name
     return _gl_func_type(*args)(addr)
 
@@ -108,8 +110,15 @@ def _init_ogl():
     _check_sdl_error()
     assert context != 0
 
-    global glCreateShader 
-    glCreateShader = _glGetProcAddress('glCreateShader', c_uint, c_int)
+    global glCreateShader; glCreateShader = _glGetProcAddress('glCreateShader', c_uint, c_int)
+    global glShaderSource; glShaderSource = _glGetProcAddress('glShaderSource', None, c_uint, c_size_t, POINTER(c_char_p), POINTER(c_int))
+    global glGetShaderiv; glGetShaderiv = _glGetProcAddress('glGetShaderiv', None, c_uint, c_int, POINTER(c_int))
+    global glGetProgramiv; glGetProgramiv = _glGetProcAddress('glGetProgramiv', None, c_uint, c_int, POINTER(c_int))
+    global glCreateProgram; glCreateProgram = _glGetProcAddress('glCreateProgram', c_uint)
+    global glAttachShader; glAttachShader = _glGetProcAddress('glAttachShader', None, c_uint, c_uint)
+    global glLinkProgram; glLinkProgram = _glGetProcAddress('glLinkProgram', None, c_uint)
+    global glGetUniformBlockIndex; glGetUniformBlockIndex = _glGetProcAddress('glGetUniformBlockIndex', c_uint, c_uint, c_char_p)
+    global glBindBuffer; glBindBuffer = _glGetProcAddress('glBindBuffer', None, c_int, c_uint)
 
     _ogl_initialized = True
 
@@ -130,7 +139,7 @@ D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
 
 def _data(node_name, compiled):
     n = doc.Node(node_name)
-    n.add_child(b64encode(compiled).decode('utf-8'))
+    n.add_child(b64encode(compiled.encode('utf-8')).decode('utf-8'))
     return n
 
 def _meta(node_name, buffer_slots, buffer_contents):
@@ -230,11 +239,13 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
     buffer_slots = {}
     buffer_contents = {}
     for buffer_name in BUFFERS:
-        slot = GL.glGetUniformBlockIndex(prog, buffer_name)
+
+        bn = create_string_buffer(buffer_name.encode('utf-8'))
+        slot = glGetUniformBlockIndex(prog, bn)
         if slot == GL_INVALID_INDEX:
             continue
         
-        GL.glBindBuffer(GL_UNIFORM_BUFFER, slot)
+        glBindBuffer(GL_UNIFORM_BUFFER, slot)
 
         referenced = c_int()
         enum = GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER if shader_type == 'vs' else GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER
@@ -270,21 +281,23 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
 
 def _ogl_compile_glsl(source, shader_type):
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
-    source_length = c_int(len(source))
-    GL.glShaderSource(sh, 1, byref(source), byref(source_length))
+    source_buffer = create_string_buffer(source.encode('utf-8'))
+    buffer_ptr = c_char_p(source_buffer.value)
+    source_length = c_int(len(source_buffer))
+    glShaderSource(sh, 1, byref(buffer_ptr), byref(source_length))
     status = c_int()
-    GL.glGetShaderiv(sh, GL_COMPILE_STATUS, byref(status))
+    glGetShaderiv(sh, GL_COMPILE_STATUS, byref(status))
     if status == 0:
         raise ValueError('GL shader compilation failed')
     return sh
 
 def _ogl_link(vs, ps):
-    prog = GL.glCreateProgram()
-    GL.glAttachShader(prog, vs)
-    GL.glAttachShader(prog, ps)
-    GL.glLinkProgram(prog)
+    prog = glCreateProgram()
+    glAttachShader(prog, vs)
+    glAttachShader(prog, ps)
+    glLinkProgram(prog)
     status = c_int()
-    GL.glGetShaderiv(sh, GL_LINK_STATUS, byref(status))
+    glGetProgramiv(prog, GL_LINK_STATUS, byref(status))
     if status == 0:
         raise ValueError('GL shader link failed')
     return prog
@@ -296,7 +309,7 @@ def _ogl_defines_prefix(defines):
     return ''.join(source)
 
 def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines):
-    input_attr_count = 0
+    input_attr_count = c_int(0)
     vs_programs = {}
     ps_programs = {}
 
@@ -316,11 +329,11 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
         ps = _ogl_compile_glsl(ps_final_source, 'ps')
         prog = _ogl_link(vs, ps)
 
-        input_attr_count = GL.glGetProgram(prog, GL_ACTIVE_ATTRIBUTES)
-        vs_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog), _data(data_node_name, vs_final_source)]
-        ps_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog), _data(data_node_name, ps_final_source)]
+        glGetProgramiv(prog, GL_ACTIVE_ATTRIBUTES, byref(input_attr_count))
+        vs_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'vs'), _data(data_node_name, vs_final_source)]
+        ps_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'ps'), _data(data_node_name, ps_final_source)]
 
-    return input_attr_count, vs_programs, ps_programs
+    return input_attr_count.value, vs_programs, ps_programs
 
 
 

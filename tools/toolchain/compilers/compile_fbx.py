@@ -124,9 +124,8 @@ def _get_obj(elements, elements_name, cpi, vi):
 
 def _write_mesh(manager, node, out):
     #print('Mesh name:', node.GetName())
-
     converter = FbxGeometryConverter(manager)
-    mesh = converter.TriangulateMesh(node.GetMesh())
+    mesh = converter.Triangulate(node.GetMesh(), True)
     vertex_count = mesh.GetPolygonVertexCount()
     polygon_count = mesh.GetPolygonCount()
 
@@ -274,7 +273,7 @@ def _enum_meshes(node):
 
 def build_node(manager, base_node, dst):
     with open(dst, 'wb') as out:
-        out.write(struct.pack('8s', 'maki'))
+        out.write(struct.pack('8s', b'maki'))
         mesh_count = len(list(_enum_meshes(base_node)))
         #print('Exporting %d meshes' % mesh_count)
         out.write(struct.pack('I', mesh_count))
