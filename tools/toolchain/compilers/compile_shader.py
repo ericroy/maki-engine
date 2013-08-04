@@ -35,6 +35,10 @@ SDL_GL_CONTEXT_PROFILE_MASK = 21
 SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
 SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG = 2
 SDL_WINDOW_OPENGL = 0x00000002
+SDL_WINDOW_SHOWN = 0x00000004
+SDL_WINDOW_HIDDEN = 0x00000008
+SDL_WINDOW_RESIZABLE = 32
+SDL_WINDOW_INPUT_FOCUS = 512
 SDL_INIT_VIDEO = 0x00000020
 
 GL_FRAGMENT_SHADER = 0x8B30
@@ -65,38 +69,49 @@ else:
     _gl_func_type = CFUNCTYPE
 
 
-
 SDL = cdll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/SDL2.dll'))
 def _check_sdl_error():
     msg = c_char_p(SDL.SDL_GetError())
     if len(msg.value) > 0:
         raise RuntimeError('SDL error: %s' % msg.value)
 
-SDL.SDL_Init(SDL_INIT_VIDEO)
-_check_sdl_error()
 
-SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
-SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
-SDL.SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
-SDL.SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8)
-SDL.SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
-SDL.SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8)
-SDL.SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32)
-SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
-_check_sdl_error()
-
-window = SDL.SDL_CreateWindow('', 0, 0, 100, 100, SDL_WINDOW_OPENGL)
-_check_sdl_error()
-
-context = SDL.SDL_GL_CreateContext(window)
-_check_sdl_error()
-
-def getProcAddress(name, *args):
+def _glGetProcAddress(name, *args):
     addr = SDL.SDL_GL_GetProcAddress(name)
-    assert addr != 0, 'Failed to load %s' % name
+    assert addr != 0, 'Could not get proc address for: %s' % name
     return _gl_func_type(*args)(addr)
 
-glCreateShader = getProcAddress('glCreateShader', c_uint, c_int)
+_ogl_initialized = False
+def _init_ogl():
+    global _ogl_initialized
+    if _ogl_initialized:
+        return
+
+    SDL.SDL_Init(SDL_INIT_VIDEO)
+    _check_sdl_error()
+
+    window = SDL.SDL_CreateWindow('', 0, 0, 50, 50, SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN)
+    _check_sdl_error()
+    assert window != 0
+
+    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
+    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
+    SDL.SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+    SDL.SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8)
+    SDL.SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
+    SDL.SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8)
+    SDL.SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32)
+    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
+    _check_sdl_error()
+
+    context = SDL.SDL_GL_CreateContext(window)
+    _check_sdl_error()
+    assert context != 0
+
+    global glCreateShader 
+    glCreateShader = _glGetProcAddress('glCreateShader', c_uint, c_int)
+
+    _ogl_initialized = True
 
 
 
@@ -254,10 +269,9 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
     return _meta(node_name, buffer_slots, buffer_contents)
 
 def _ogl_compile_glsl(source, shader_type):
-    source = create_string_buffer(source)
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
-    source_length = c_int(len(final_source))
-    GL.glShaderSource(sh, 1, byref(final_source), byref(source_length))
+    source_length = c_int(len(source))
+    GL.glShaderSource(sh, 1, byref(source), byref(source_length))
     status = c_int()
     GL.glGetShaderiv(sh, GL_COMPILE_STATUS, byref(status))
     if status == 0:
@@ -348,6 +362,7 @@ def compile(arc_name, src, dst):
     if CONFIG['render_api'] == 'd3d':
         input_attr_count, vs_programs, ps_programs = _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines)
     else:
+        _init_ogl()
         input_attr_count, vs_programs, ps_programs = _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines)
 
     with open(dst, 'w') as out:

@@ -1,7 +1,6 @@
 import shutil
 import platform
 from . import compile_fbx
-from . import compile_doc
 from . import compile_shader
 from . import compile_lua
 from . import doc_toucher

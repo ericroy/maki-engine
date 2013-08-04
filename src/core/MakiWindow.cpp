@@ -235,7 +235,8 @@ namespace Maki
 			std::string title = config->GetString("engine.title", "");
 
 			window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width,  height, flags);
-			if(window == nullptr) {
+			const char *err = SDL_GetError();
+			if(window == nullptr || strlen(err) != 0) {
 				Console::Error("Failed to create SDL window: %s", SDL_GetError());
 				SDL_ClearError();
 			}
