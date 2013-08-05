@@ -2,10 +2,12 @@
 
 ## Dependencies
 
+### Core
+ * SDL 2.0.0
+
 ### Framework
  * bullet-2.81-rev2613
  * LuaJIT-2.0.2
- * SDL 2.0.0
 
 ### Tools
  * python 3.2 x86
