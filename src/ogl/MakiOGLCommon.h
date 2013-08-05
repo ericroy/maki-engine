@@ -85,7 +85,7 @@ namespace Maki
 		extern const GLenum bytesPerIndexToFormat[5];
 		extern const GLenum channelsToFormat[5];
 		extern const GLenum typeToGLType[Core::VertexFormat::DataTypeCount];
-		extern const char *attributeToSemanicName[Core::VertexFormat::AttributeCount];
+		extern const char *attributeName[Core::VertexFormat::AttributeCount];
 		extern GLboolean normalizeAttribute[Core::VertexFormat::AttributeCount];
 
 		void DefineGLFunctions();

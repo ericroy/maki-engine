@@ -9,6 +9,7 @@ from base64 import b64encode
 
 from .. import doc
 from .. import CONFIG
+from .gl_constants import *
 
 SDL_GL_RED_SIZE = 0
 SDL_GL_GREEN_SIZE = 1
@@ -41,31 +42,17 @@ SDL_WINDOW_RESIZABLE = 32
 SDL_WINDOW_INPUT_FOCUS = 512
 SDL_INIT_VIDEO = 0x00000020
 
-GL_FRAGMENT_SHADER = 0x8B30
-GL_VERTEX_SHADER = 0x8B31
-GL_COMPILE_STATUS = 0x8B81
-GL_LINK_STATUS = 0x8B82
-GL_INVALID_INDEX = 0xFFFFFFFF
-GL_ACTIVE_ATTRIBUTES = 0x8B89
-GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS = 0x8A42
-GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = 0x8A43
-GL_UNIFORM_OFFSET = 0x8A3B
-GL_UNIFORM_SIZE = 0x8A38
-GL_UNIFORM_NAME_LENGTH = 0x8A39
-GL_UNIFORM_BUFFER = 0x8A11
-GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = 0x8A44
-GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8A46
-
-
-
 if sys.platform.startswith('win'):
     GL = windll.LoadLibrary('opengl32')
+    GLU = windll.LoadLibrary('glu32')
     _gl_func_type = WINFUNCTYPE
 elif sys.platform.startswith('darwin'):
     GL = windll.LoadLibrary('OpenGL')
+    GLU = windll.LoadLibrary('GLU')
     _gl_func_type = CFUNCTYPE
 else:
     GL = windll.LoadLibrary('GL')
+    GLU = windll.LoadLibrary('GLU')
     _gl_func_type = CFUNCTYPE
 
 
@@ -75,6 +62,10 @@ def _check_sdl_error():
     if len(msg.value) > 0:
         raise RuntimeError('SDL error: %s' % msg.value)
 
+def _check_gl_error():
+    err = GL.glGetError()
+    if err != 0:
+        raise RuntimeError('GL error: %s' % c_char_p(GLU.gluErrorString(err)).value.decode('utf-8'))
 
 def _glGetProcAddress(name, *args):
     proc_name = create_string_buffer(name.encode('utf-8'))
@@ -112,6 +103,7 @@ def _init_ogl():
 
     global glCreateShader; glCreateShader = _glGetProcAddress('glCreateShader', c_uint, c_int)
     global glShaderSource; glShaderSource = _glGetProcAddress('glShaderSource', None, c_uint, c_size_t, POINTER(c_char_p), POINTER(c_int))
+    global glCompileShader; glCompileShader = _glGetProcAddress('glCompileShader', None, c_uint)
     global glGetShaderiv; glGetShaderiv = _glGetProcAddress('glGetShaderiv', None, c_uint, c_int, POINTER(c_int))
     global glGetProgramiv; glGetProgramiv = _glGetProcAddress('glGetProgramiv', None, c_uint, c_int, POINTER(c_int))
     global glCreateProgram; glCreateProgram = _glGetProcAddress('glCreateProgram', c_uint)
@@ -119,6 +111,11 @@ def _init_ogl():
     global glLinkProgram; glLinkProgram = _glGetProcAddress('glLinkProgram', None, c_uint)
     global glGetUniformBlockIndex; glGetUniformBlockIndex = _glGetProcAddress('glGetUniformBlockIndex', c_uint, c_uint, c_char_p)
     global glBindBuffer; glBindBuffer = _glGetProcAddress('glBindBuffer', None, c_int, c_uint)
+    global glGetShaderInfoLog; glGetShaderInfoLog = _glGetProcAddress('glGetShaderInfoLog', None, c_uint, c_size_t, POINTER(c_size_t), c_char_p)
+    global glGetProgramInfoLog; glGetProgramInfoLog = _glGetProcAddress('glGetProgramInfoLog', None, c_uint, c_size_t, POINTER(c_size_t), c_char_p)
+    global glGetActiveUniform; glGetActiveUniform = _glGetProcAddress('glGetActiveUniform', None, c_uint, c_uint, c_size_t, POINTER(c_size_t), POINTER(c_int), POINTER(c_int), c_char_p)
+    global glGetActiveUniformBlockiv; glGetActiveUniformBlockiv = _glGetProcAddress('glGetActiveUniformBlockiv', None, c_uint, c_uint, c_int, POINTER(c_int))
+    global glGetActiveUniformsiv; glGetActiveUniformsiv = _glGetProcAddress('glGetActiveUniformsiv', None, c_uint, c_size_t, POINTER(c_uint), c_int, POINTER(c_int))
 
     _ogl_initialized = True
 
@@ -134,7 +131,7 @@ BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
 D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
 D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
 D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
-
+OGL_PROFILE = '330'
 
 
 def _data(node_name, compiled):
@@ -233,73 +230,129 @@ def _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
     return input_attr_count, vs_programs, ps_programs
 
 
+def _ogl_uniform_size(data_type, size, array_stride, matrix_stride):
+    if array_stride > 0:
+        return array_stride * size
+    elif matrix_stride > 0:
+        if data_type in (GL_FLOAT_MAT2, GL_FLOAT_MAT2x3, GL_FLOAT_MAT2x4, GL_DOUBLE_MAT2, GL_DOUBLE_MAT2x3, GL_DOUBLE_MAT2x4):
+            return 2 * matrix_stride
+        elif data_type in (GL_FLOAT_MAT3, GL_FLOAT_MAT3x2, GL_FLOAT_MAT3x4, GL_DOUBLE_MAT3, GL_DOUBLE_MAT3x2, GL_DOUBLE_MAT3x4):
+            return 3 * matrix_stride
+        elif data_type in (GL_FLOAT_MAT4, GL_FLOAT_MAT4x2, GL_FLOAT_MAT4x3, GL_DOUBLE_MAT4, GL_DOUBLE_MAT4x2, GL_DOUBLE_MAT4x3):
+            return 4 * matrix_stride
+        else:
+            assert False, "Don't know the size of this type %s" % data_type
+    else:
+        return GL_TYPE_BYTE_SIZES[data_type]
 
+
+def _ogl_get_active_uniforms(prog, indices, enum):
+    values = (c_int * len(indices))()
+    glGetActiveUniformsiv(prog, c_size_t(len(indices)), indices, enum, values)
+    _check_gl_error()
+    return values
 
 def _ogl_create_meta_node(node_name, prog, shader_type):
+    print('Creating %s for %s' % (node_name, shader_type))
     buffer_slots = {}
     buffer_contents = {}
     for buffer_name in BUFFERS:
 
         bn = create_string_buffer(buffer_name.encode('utf-8'))
         slot = glGetUniformBlockIndex(prog, bn)
+        _check_gl_error()
         if slot == GL_INVALID_INDEX:
+            print('Buffer "%s" not found' % buffer_name)
             continue
         
-        glBindBuffer(GL_UNIFORM_BUFFER, slot)
-
-        referenced = c_int()
+        referenced = c_int(0)
         enum = GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER if shader_type == 'vs' else GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER
-        GL.glGetActiveUniformsiv(prog, slot, enum, byref(referenced))
+        glGetActiveUniformBlockiv(prog, slot, enum, byref(referenced))
+        _check_gl_error()
         if referenced.value == 0:
+            print('Buffer "%s" not referenced' % buffer_name)
             continue
 
         buffer_slots[buffer_name] = int(slot)
 
+        glBindBuffer(GL_UNIFORM_BUFFER, slot)
+        _check_gl_error()
+
         count = c_int()
-        GL.glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, byref(count))
-       
+        glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, byref(count))
+        _check_gl_error()
+
         indices = (c_uint * count.value)()
-        GL.glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices)
+        glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, cast(indices, POINTER(c_int)))
+        _check_gl_error()        
 
-        offsets = (c_int * count.value)()
-        GL.glGetActiveUniformsiv(prog, count, indices, GL_UNIFORM_OFFSET, offsets)
-        
-        #sizes = (c_size_t * count.value)()
-        #GL.glGetActiveUniformsiv(prog, count, indices, GL_UNIFORM_SIZE, sizes)
+        offsets = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_OFFSET)
+        types = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_TYPE)
+        sizes = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_SIZE)
+        array_strides = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_ARRAY_STRIDE)
+        matrix_strides = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_MATRIX_STRIDE)
+        name_lengths = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_NAME_LENGTH)
+        byte_lengths = [_ogl_uniform_size(types[i], sizes[i], array_strides[i], matrix_strides[i]) for i in range(count.value)]
 
-        name_lengths = (c_int * count.value)()
-        GL.glGetActiveUniformsiv(prog, count, indices, GL_UNIFORM_NAME_LENGTH, name_lengths)        
-        
-        name = create_string_buffer(max(name_lengths)+1)
+        name_buffer = create_string_buffer(max(name_lengths)+1)
         for i in range(count.value):
             size = c_int()
             gl_type = c_int()
-            GL.glGetActiveUniform(prog, indices[i], len(name), 0, byref(size), byref(gl_type), name)
-            buffer_contents.setdefault(buffer_name, []).append((name.value, offsets[i].value, size.value))
+            length = c_size_t(0)
+            glGetActiveUniform(prog, indices[i], len(name_buffer), byref(length), byref(size), byref(gl_type), name_buffer)
+            _check_gl_error()
+
+            name = name_buffer.value.decode('utf-8')
+            buffer_contents.setdefault(buffer_name, []).append((name, offsets[i], byte_lengths[i]))
 
     return _meta(node_name, buffer_slots, buffer_contents)
 
-def _ogl_compile_glsl(source, shader_type):
+def _ogl_compile_glsl(file_name, source, shader_type):
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
+    _check_gl_error()
+
     source_buffer = create_string_buffer(source.encode('utf-8'))
     buffer_ptr = c_char_p(source_buffer.value)
     source_length = c_int(len(source_buffer))
     glShaderSource(sh, 1, byref(buffer_ptr), byref(source_length))
+    _check_gl_error()
+
+    glCompileShader(sh)
+    _check_gl_error()
+
     status = c_int()
     glGetShaderiv(sh, GL_COMPILE_STATUS, byref(status))
-    if status == 0:
-        raise ValueError('GL shader compilation failed')
+    _check_gl_error()
+    if status.value == 0:
+        max_log_length = c_size_t(1024 * 10)
+        log = create_string_buffer(max_log_length.value)
+        log_length = c_size_t()
+        glGetShaderInfoLog(sh, max_log_length, byref(log_length), log)
+        raise RuntimeError('GL shader compilation failed (%s):\n%s' % (file_name, log.value.decode('utf-8')))
     return sh
 
 def _ogl_link(vs, ps):
     prog = glCreateProgram()
+    _check_gl_error()
+    
     glAttachShader(prog, vs)
+    _check_gl_error()
+    
     glAttachShader(prog, ps)
+    _check_gl_error()
+    
     glLinkProgram(prog)
+    _check_gl_error()
+
     status = c_int()
     glGetProgramiv(prog, GL_LINK_STATUS, byref(status))
-    if status == 0:
-        raise ValueError('GL shader link failed')
+    _check_gl_error()
+    if status.value == 0:
+        max_log_length = c_size_t(1024 * 10)
+        log = create_string_buffer(max_log_length.value)
+        log_length = c_size_t()
+        glGetProgramInfoLog(sh, max_log_length, byref(log_length), log)
+        raise RuntimeError('GL shader program link failed:\n%s' % log.value.decode('utf-8'))
     return prog
 
 def _ogl_defines_prefix(defines):
@@ -322,14 +375,18 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
         meta_node_name = (variant+'_meta').strip('_')
         data_node_name = (variant+'_data').strip('_')
 
-        vs_final_source = _ogl_defines_prefix(vs_defines + variant_defs) + vs_source
-        ps_final_source = _ogl_defines_prefix(ps_defines + variant_defs) + ps_source
+        vs_final_source = ('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(vs_defines + variant_defs) + vs_source
+        ps_final_source = ('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(ps_defines + variant_defs) + ps_source
 
-        vs = _ogl_compile_glsl(vs_final_source, 'vs')
-        ps = _ogl_compile_glsl(ps_final_source, 'ps')
+        vs = _ogl_compile_glsl(vs_path, vs_final_source, 'vs')
+        ps = _ogl_compile_glsl(ps_path, ps_final_source, 'ps')
         prog = _ogl_link(vs, ps)
 
-        glGetProgramiv(prog, GL_ACTIVE_ATTRIBUTES, byref(input_attr_count))
+        if variant == '':
+            glGetProgramiv(prog, GL_ACTIVE_ATTRIBUTES, byref(input_attr_count))
+            _check_gl_error()
+            print(input_attr_count.value)
+
         vs_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'vs'), _data(data_node_name, vs_final_source)]
         ps_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'ps'), _data(data_node_name, ps_final_source)]
 

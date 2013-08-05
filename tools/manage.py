@@ -13,8 +13,12 @@ def _archive_containing(file_path):
     file_path = os.path.normpath(file_path)
     for arc_name, conf in CONFIG['assets'].items():
         src_path = os.path.normpath(conf['src'])
-        if os.path.commonprefix([src_path, file_path]) != '':
-            return arc_name
+        p = file_path
+        while len(p) > 0:
+            if os.path.samefile(src_path, p):
+                print('Determined that file %s belongs to archive %s' % (file_path, arc_name))
+                return arc_name
+            p = os.path.split(p)[0]
     raise RuntimeError('None of the archives specified in the project file contain %s' % file_path)
 
 def _build(src_file, arc_name=None):
@@ -41,7 +45,10 @@ def _build_all():
         if os.path.exists(conf['dst']):
             for f in glob.glob(conf['dst']+'/*'):
                 if os.path.isdir(f):
-                    shutil.rmtree(f)
+                    try:
+                        shutil.rmtree(f)
+                    except:
+                        shutil.rmtree(f)
                 else:
                     os.remove(f)
         else:
