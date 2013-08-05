@@ -136,7 +136,7 @@ OGL_PROFILE = '330'
 
 def _data(node_name, compiled):
     n = doc.Node(node_name)
-    n.add_child(b64encode(compiled.encode('utf-8')).decode('utf-8'))
+    n.add_child(b64encode(compiled).decode('utf-8'))
     return n
 
 def _meta(node_name, buffer_slots, buffer_contents):
@@ -375,8 +375,8 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
         meta_node_name = (variant+'_meta').strip('_')
         data_node_name = (variant+'_data').strip('_')
 
-        vs_final_source = ('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(vs_defines + variant_defs) + vs_source
-        ps_final_source = ('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(ps_defines + variant_defs) + ps_source
+        vs_final_source = (('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(vs_defines + variant_defs) + vs_source).encode('utf-8')
+        ps_final_source = (('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(ps_defines + variant_defs) + ps_source).encode('utf-8')
 
         vs = _ogl_compile_glsl(vs_path, vs_final_source, 'vs')
         ps = _ogl_compile_glsl(ps_path, ps_final_source, 'ps')

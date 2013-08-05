@@ -5,11 +5,135 @@
 #include "core/MakiInputState.h"
 
 #if defined(_WIN32) || defined(_WIN64)
-#define NOMINMAX 1
-#include <Windows.h>
 #include <io.h>
 #include <fcntl.h>
+#include <wbemidl.h>
+#include <oleauto.h>
+//#include <wmsstd.h>
 #endif
+
+
+#if defined(_WIN32) || defined(_WIN64)
+// See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx
+//-----------------------------------------------------------------------------
+// Enum each PNP device using WMI and check each device ID to see if it contains 
+// "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it's an XInput device
+// Unfortunately this information can not be found by just using DirectInput 
+//-----------------------------------------------------------------------------
+static BOOL IsXInputDevice( const GUID* pGuidProductFromDirectInput )
+{
+    IWbemLocator*           pIWbemLocator  = NULL;
+    IEnumWbemClassObject*   pEnumDevices   = NULL;
+    IWbemClassObject*       pDevices[20]   = {0};
+    IWbemServices*          pIWbemServices = NULL;
+    BSTR                    bstrNamespace  = NULL;
+    BSTR                    bstrDeviceID   = NULL;
+    BSTR                    bstrClassName  = NULL;
+    DWORD                   uReturned      = 0;
+    bool                    bIsXinputDevice= false;
+    UINT                    iDevice        = 0;
+    VARIANT                 var;
+    HRESULT                 hr;
+
+    // CoInit if needed
+    hr = CoInitialize(NULL);
+    bool bCleanupCOM = SUCCEEDED(hr);
+
+    // Create WMI
+    hr = CoCreateInstance( __uuidof(WbemLocator),
+                           NULL,
+                           CLSCTX_INPROC_SERVER,
+                           __uuidof(IWbemLocator),
+                           (LPVOID*) &pIWbemLocator);
+    if( FAILED(hr) || pIWbemLocator == NULL )
+        goto LCleanup;
+
+    bstrNamespace = SysAllocString( L"\\\\.\\root\\cimv2" );if( bstrNamespace == NULL ) goto LCleanup;        
+    bstrClassName = SysAllocString( L"Win32_PNPEntity" );   if( bstrClassName == NULL ) goto LCleanup;        
+    bstrDeviceID  = SysAllocString( L"DeviceID" );          if( bstrDeviceID == NULL )  goto LCleanup;        
+    
+    // Connect to WMI 
+    hr = pIWbemLocator->ConnectServer( bstrNamespace, NULL, NULL, 0L, 
+                                       0L, NULL, NULL, &pIWbemServices );
+    if( FAILED(hr) || pIWbemServices == NULL )
+        goto LCleanup;
+
+    // Switch security level to IMPERSONATE. 
+    CoSetProxyBlanket( pIWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, 
+                       RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );                    
+
+    hr = pIWbemServices->CreateInstanceEnum( bstrClassName, 0, NULL, &pEnumDevices ); 
+    if( FAILED(hr) || pEnumDevices == NULL )
+        goto LCleanup;
+
+    // Loop over all devices
+    for( ;; )
+    {
+        // Get 20 at a time
+        hr = pEnumDevices->Next( 10000, 20, pDevices, &uReturned );
+        if( FAILED(hr) )
+            goto LCleanup;
+        if( uReturned == 0 )
+            break;
+
+        for( iDevice=0; iDevice<uReturned; iDevice++ )
+        {
+            // For each device, get its device ID
+            hr = pDevices[iDevice]->Get( bstrDeviceID, 0L, &var, NULL, NULL );
+            if( SUCCEEDED( hr ) && var.vt == VT_BSTR && var.bstrVal != NULL )
+            {
+                // Check if the device ID contains "IG_".  If it does, then it's an XInput device
+				    // This information can not be found from DirectInput 
+                if( wcsstr( var.bstrVal, L"IG_" ) )
+                {
+                    // If it does, then get the VID/PID from var.bstrVal
+                    DWORD dwPid = 0, dwVid = 0;
+                    WCHAR* strVid = wcsstr( var.bstrVal, L"VID_" );
+                    if( strVid && swscanf( strVid, L"VID_%4X", &dwVid ) != 1 )
+                        dwVid = 0;
+                    WCHAR* strPid = wcsstr( var.bstrVal, L"PID_" );
+                    if( strPid && swscanf( strPid, L"PID_%4X", &dwPid ) != 1 )
+                        dwPid = 0;
+
+                    // Compare the VID/PID to the DInput device
+                    DWORD dwVidPid = MAKELONG( dwVid, dwPid );
+                    if( dwVidPid == pGuidProductFromDirectInput->Data1 )
+                    {
+                        bIsXinputDevice = true;
+                        goto LCleanup;
+                    }
+                }
+            }   
+            SAFE_RELEASE( pDevices[iDevice] );
+        }
+    }
+
+LCleanup:
+    if(bstrNamespace)
+        SysFreeString(bstrNamespace);
+    if(bstrDeviceID)
+        SysFreeString(bstrDeviceID);
+    if(bstrClassName)
+        SysFreeString(bstrClassName);
+    for( iDevice=0; iDevice<20; iDevice++ )
+        SAFE_RELEASE( pDevices[iDevice] );
+    SAFE_RELEASE( pEnumDevices );
+    SAFE_RELEASE( pIWbemLocator );
+    SAFE_RELEASE( pIWbemServices );
+
+    if( bCleanupCOM )
+        CoUninitialize();
+
+    return bIsXinputDevice;
+}
+
+#endif
+
+
+
+
+
+
 
 
 namespace Maki
@@ -207,6 +331,7 @@ namespace Maki
 		{
 			memset(keyStates, 0, sizeof(keyStates));
 			memset(joysticks, 0, sizeof(joysticks));
+			memset(joystickIsXInput, 0, sizeof(joystickIsXInput));
 
 #if defined(_WIN32) || defined(_WIN64)
 			if(config->GetBool("engine.show_console", false)) {
@@ -241,25 +366,7 @@ namespace Maki
 				SDL_ClearError();
 			}
 
-			int32 joystickCount = std::min(SDL_NumJoysticks(), InputState::MAX_PLAYERS);
-			for(int32 i = 0; i < joystickCount; i++) {
-				joysticks[i] = SDL_JoystickOpen(i);
-
-				if(SDL_JoystickNumButtons(joysticks[i]) < 8 || SDL_JoystickNumAxes(joysticks[i]) < 4 || SDL_JoystickNumHats(joysticks[i]) < 1) {
-					// Incompatible joystick - we require a gamepad basically
-					SDL_JoystickClose(joysticks[i]);
-					joysticks[i] = nullptr;
-					continue;
-				}
-				
-				if(SDL_JoystickEventState(SDL_QUERY) < 0) {
-					Console::Error("Failed to put SDL joystick in query mode: %s", SDL_GetError());
-					SDL_ClearError();
-					SDL_JoystickClose(joysticks[i]);
-					joysticks[i] = nullptr;
-					continue;
-				}
-			}
+			DiscoverJoysticks();
 		}
 
 		Window::~Window()
@@ -309,61 +416,194 @@ namespace Maki
 
 		void Window::PollInput(InputState *state)
 		{
-			for(uint8 i = 0; i < InputState::MAX_PLAYERS; i++) {
+			for(uint32 i = 0; i < InputState::MAX_PLAYERS; i++) {
 				// Copy keystate to player
 				state->GetPlayer(i)->SetKeyStates(keyStates);
 
-				SDL_Joystick *joy = joysticks[i];
-				if(joy == nullptr) {
-					continue;
+				if(joystickIsXInput[i]) {
+					PollXInput(state, i);
+				} else {
+					PollRegular(state, i);
 				}
-				
-				if((joystickConnectedFlags & (1 << i)) == 0) {
-					// Just connected
-					state->ConnectController(i);
-					joystickConnectedFlags |= 1 << i;
-				}
-
-				// Poll the joystick before we check its state
-				SDL_JoystickUpdate();
-
-				InputState::Controller &c = state->GetController(i);
-				
-				c.values[InputState::Button_A] = (float)SDL_JoystickGetButton(joy, 0);
-				c.values[InputState::Button_B] = (float)SDL_JoystickGetButton(joy, 1);
-				c.values[InputState::Button_X] = (float)SDL_JoystickGetButton(joy, 2);
-				c.values[InputState::Button_Y] = (float)SDL_JoystickGetButton(joy, 3);
-
-				c.values[InputState::Button_LeftShoulder] = (float)SDL_JoystickGetButton(joy, 4);
-				c.values[InputState::Button_RightShoulder] = (float)SDL_JoystickGetButton(joy, 5);
-
-				// TODO:
-				// An xbox controller has analog triggers (probably treated as an axis by SDL), but a older style gamepad probably has buttons
-				// Make sure this works with both kinds of controllers
-				c.values[InputState::Button_LeftTrigger] = (float)SDL_JoystickGetButton(joy, 6);
-				c.values[InputState::Button_RightTrigger] = (float)SDL_JoystickGetButton(joy, 7);
-
-				c.values[InputState::Button_Back] = (float)SDL_JoystickGetButton(joy, 8);
-				c.values[InputState::Button_Start] = (float)SDL_JoystickGetButton(joy, 9);
-
-				
-				uint8 dpad = SDL_JoystickGetHat(joy, 0);
-				c.values[InputState::Button_DPadUp] = (dpad & SDL_HAT_UP) != 0 ? 1.0f : 0.0f;
-				c.values[InputState::Button_DPadDown] = (dpad & SDL_HAT_DOWN) != 0 ? 1.0f : 0.0f;
-				c.values[InputState::Button_DPadLeft] = (dpad & SDL_HAT_LEFT) != 0 ? 1.0f : 0.0f;
-				c.values[InputState::Button_DPadRight] = (dpad & SDL_HAT_RIGHT) != 0 ? 1.0f : 0.0f;
-
-
-				// Analog stuff
-				static const uint16 GAMEPAD_LEFT_THUMB_DEADZONE = 7849;
-				static const uint16 GAMEPAD_RIGHT_THUMB_DEADZONE = 8689;
-				c.values[InputState::Button_LeftThumbX] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 0), GAMEPAD_LEFT_THUMB_DEADZONE);
-				c.values[InputState::Button_LeftThumbY] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 1), GAMEPAD_LEFT_THUMB_DEADZONE);
-				c.values[InputState::Button_RightThumbX] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 2),GAMEPAD_RIGHT_THUMB_DEADZONE);
-				c.values[InputState::Button_RightThumbY] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 3), GAMEPAD_RIGHT_THUMB_DEADZONE);
 			}
 		}
 
+		void Window::PollRegular(InputState *state, uint32 joystickIndex)
+		{
+			SDL_Joystick *joy = joysticks[joystickIndex];
+			if(joy == nullptr) {
+				return;
+			}
+				
+			if((joystickConnectedFlags & (1 << joystickIndex)) == 0) {
+				// Just connected
+				state->ConnectController(joystickIndex);
+				joystickConnectedFlags |= 1 << joystickIndex;
+			}
+
+			// Poll the joystick before we check its state
+			SDL_JoystickUpdate();
+
+			InputState::Controller &c = state->GetController(joystickIndex);
+				
+			c.values[InputState::Button_A] = (float)SDL_JoystickGetButton(joy, 0);
+			c.values[InputState::Button_B] = (float)SDL_JoystickGetButton(joy, 1);
+			c.values[InputState::Button_X] = (float)SDL_JoystickGetButton(joy, 2);
+			c.values[InputState::Button_Y] = (float)SDL_JoystickGetButton(joy, 3);
+
+			c.values[InputState::Button_LeftShoulder] = (float)SDL_JoystickGetButton(joy, 4);
+			c.values[InputState::Button_RightShoulder] = (float)SDL_JoystickGetButton(joy, 5);
+
+			// TODO:
+			// An xbox controller has analog triggers (probably treated as an axis by SDL), but a older style gamepad probably has buttons
+			// Make sure this works with both kinds of controllers
+			c.values[InputState::Button_LeftTrigger] = (float)SDL_JoystickGetButton(joy, 6);
+			c.values[InputState::Button_RightTrigger] = (float)SDL_JoystickGetButton(joy, 7);
+
+			c.values[InputState::Button_Back] = (float)SDL_JoystickGetButton(joy, 8);
+			c.values[InputState::Button_Start] = (float)SDL_JoystickGetButton(joy, 9);
+
+				
+			uint8 dpad = SDL_JoystickGetHat(joy, 0);
+			c.values[InputState::Button_DPadUp] = (dpad & SDL_HAT_UP) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadDown] = (dpad & SDL_HAT_DOWN) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadLeft] = (dpad & SDL_HAT_LEFT) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadRight] = (dpad & SDL_HAT_RIGHT) != 0 ? 1.0f : 0.0f;
+
+
+			// Analog stuff
+			static const uint16 GAMEPAD_LEFT_THUMB_DEADZONE = 7849;
+			static const uint16 GAMEPAD_RIGHT_THUMB_DEADZONE = 8689;
+			c.values[InputState::Button_LeftThumbX] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 0), GAMEPAD_LEFT_THUMB_DEADZONE);
+			c.values[InputState::Button_LeftThumbY] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 1), GAMEPAD_LEFT_THUMB_DEADZONE);
+			c.values[InputState::Button_RightThumbX] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 2),GAMEPAD_RIGHT_THUMB_DEADZONE);
+			c.values[InputState::Button_RightThumbY] = -SignedAnalogInputToFloat(SDL_JoystickGetAxis(joy, 3), GAMEPAD_RIGHT_THUMB_DEADZONE);
+		}
+
+		void Window::PollXInput(InputState *state, uint32 joystickIndex)
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			bool wasConnected = (joystickConnectedFlags & (1<<joystickIndex)) != 0;
+			
+			uint32 xInputIndex = joystickIndexToXInputIndex[joystickIndex];
+			uint32 packetNum = wasConnected ? controllers[xInputIndex].dwPacketNumber : 0;
+
+			ZeroMemory(&controllers[xInputIndex], sizeof(XINPUT_STATE));
+			DWORD res = XInputGetState(xInputIndex, &controllers[xInputIndex]);
+			if(res != ERROR_SUCCESS) {
+				if(wasConnected) {
+					Console::Info("Controller %d (XI%d) disconnected", joystickIndex, xInputIndex);
+					state->DisconnectController(joystickIndex);
+				}
+				joystickConnectedFlags &= ~(1<<joystickIndex);
+				return;
+			}
+
+			const XINPUT_STATE &xs = controllers[xInputIndex];
+
+			// Mark as connected
+			joystickConnectedFlags |= 1<<joystickIndex;
+			if(!wasConnected) {
+				Console::Info("Controller %d (XI%d) connected", joystickIndex, xInputIndex);
+				state->ConnectController(joystickIndex);
+			}
+
+			if(xs.dwPacketNumber == packetNum) {
+				// State has not changed
+				return;
+			}
+			// Else, look for state changes
+
+			InputState::Controller &c = state->GetController(joystickIndex);
+
+			// Binary stuff
+			c.values[InputState::Button_DPadUp] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadDown] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadLeft] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_DPadRight] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0 ? 1.0f : 0.0f;
+
+			c.values[InputState::Button_A] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_B] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_X] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_Y] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0 ? 1.0f : 0.0f;
+
+			c.values[InputState::Button_LeftShoulder] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_RightShoulder] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0 ? 1.0f : 0.0f;
+
+			c.values[InputState::Button_LeftThumb] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_RightThumb] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0 ? 1.0f : 0.0f;
+
+			c.values[InputState::Button_Back] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0 ? 1.0f : 0.0f;
+			c.values[InputState::Button_Start] = (xs.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0 ? 1.0f : 0.0f;
+
+			// Analog stuff
+			c.values[InputState::Button_LeftTrigger] = AnalogInputToFloat(xs.Gamepad.bLeftTrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+			c.values[InputState::Button_RightTrigger] = AnalogInputToFloat(xs.Gamepad.bRightTrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+			c.values[InputState::Button_LeftThumbX] = -SignedAnalogInputToFloat(xs.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+			c.values[InputState::Button_LeftThumbY] = SignedAnalogInputToFloat(xs.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+			c.values[InputState::Button_RightThumbX] = -SignedAnalogInputToFloat(xs.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+			c.values[InputState::Button_RightThumbY] = SignedAnalogInputToFloat(xs.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+#endif
+		}
+
+
+		void Window::DiscoverJoysticks()
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			int32 joystickCount = std::min(SDL_NumJoysticks(), InputState::MAX_PLAYERS);
+			int32 xInputJoystickCount = 0;
+			for(int32 i = 0; i < joystickCount; i++) {
+				joysticks[i] = SDL_JoystickOpen(i);
+
+				if(joysticks[i] != nullptr) {
+					SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(i);
+					if(IsXInputDevice((const GUID *)&guid)) {
+						Console::Info("Joystick %d is XInput", i);
+						joystickIsXInput[i] = true;
+						joystickIndexToXInputIndex[i] = xInputJoystickCount++;
+						continue;
+					}
+				}
+
+				Console::Info("Joystick %d is DirectInput", i);
+
+				if(SDL_JoystickNumButtons(joysticks[i]) < 8 || SDL_JoystickNumAxes(joysticks[i]) < 4 || SDL_JoystickNumHats(joysticks[i]) < 1) {
+					// Incompatible joystick - we require a gamepad basically
+					SDL_JoystickClose(joysticks[i]);
+					joysticks[i] = nullptr;
+					continue;
+				}
+				
+				if(SDL_JoystickEventState(SDL_QUERY) < 0) {
+					Console::Error("Failed to put SDL joystick in query mode: %s", SDL_GetError());
+					SDL_ClearError();
+					SDL_JoystickClose(joysticks[i]);
+					joysticks[i] = nullptr;
+					continue;
+				}
+			}
+#else
+			int32 joystickCount = std::min(SDL_NumJoysticks(), InputState::MAX_PLAYERS);
+			for(int32 i = 0; i < joystickCount; i++) {
+				joysticks[i] = SDL_JoystickOpen(i);
+
+				if(SDL_JoystickNumButtons(joysticks[i]) < 8 || SDL_JoystickNumAxes(joysticks[i]) < 4 || SDL_JoystickNumHats(joysticks[i]) < 1) {
+					// Incompatible joystick - we require a gamepad basically
+					SDL_JoystickClose(joysticks[i]);
+					joysticks[i] = nullptr;
+					continue;
+				}
+				
+				if(SDL_JoystickEventState(SDL_QUERY) < 0) {
+					Console::Error("Failed to put SDL joystick in query mode: %s", SDL_GetError());
+					SDL_ClearError();
+					SDL_JoystickClose(joysticks[i]);
+					joysticks[i] = nullptr;
+					continue;
+				}
+			}
+#endif
+		}
 
 	} // namespace Core
 
