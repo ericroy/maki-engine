@@ -27,9 +27,14 @@ namespace Maki
 			inline float GetAspect() { return height == 0 ? (float)width : width / (float)height; };
 
 		private:
-			void PollRegular(InputState *state, uint32 joystickIndex);
-			void PollXInput(InputState *state, uint32 joystickIndex);
-			void DiscoverJoysticks();
+			void ConnectGameController(int32 i); 
+			inline int32 GetControllerIndex(int32 instanceId)
+			{
+				for(int32 i = 0; i < InputState::MAX_PLAYERS; i++) {
+					if(controllerInstanceIds[i] == instanceId) { return i; }
+				}
+				return -1;
+			}
 
 		public:
 			int32 width;
@@ -39,14 +44,9 @@ namespace Maki
 
 		private:
 			InputState::KeyStateReport keyStates[256];
-			uint32 joystickConnectedFlags;
-			SDL_Joystick *joysticks[InputState::MAX_PLAYERS];
-			bool joystickIsXInput[InputState::MAX_PLAYERS];
-
-#if defined(_WIN32) || defined(_WIN64)
-			uint32 joystickIndexToXInputIndex[InputState::MAX_PLAYERS];
-			XINPUT_STATE controllers[InputState::MAX_PLAYERS];
-#endif
+			SDL_GameController *controllerHandles[InputState::MAX_PLAYERS];
+			InputState::Controller controllers[InputState::MAX_PLAYERS];
+			int32 controllerInstanceIds[InputState::MAX_PLAYERS];
 		};
 
 	} // namespace Core

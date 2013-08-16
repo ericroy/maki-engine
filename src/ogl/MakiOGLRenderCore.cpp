@@ -265,16 +265,15 @@ failed:
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
+			/*for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
 				GLint location = glGetAttribLocation(program, attributeName[i]);
 				Console::Info("Attr semantic %s bound at %d  <rid %u>", attributeName[i], location, s->rid);
-			}
+			}*/
 
-
-			GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
+			/*GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
 			GLuint enginePerObject = glGetUniformBlockIndex(program, "enginePerObject");
 			GLuint material = glGetUniformBlockIndex(program, "material");
-			MAKI_OGL_FAILED();
+			MAKI_OGL_FAILED();*/
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);

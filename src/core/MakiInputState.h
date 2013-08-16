@@ -157,6 +157,8 @@ namespace Maki
 
 			enum Button
 			{
+				Button_Invalid = -1,
+
 				// Digital stuff, values 0 or 1
 				Button_DPadUp = 0, Button_DPadDown, Button_DPadLeft, Button_DPadRight,
 				Button_Start, Button_Back,

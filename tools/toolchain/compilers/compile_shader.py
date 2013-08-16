@@ -132,6 +132,7 @@ D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
 D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
 D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
 OGL_PROFILE = '330'
+OGL_INCLUDE = re.compile(r'(#pragma include "([^"]+)")')
 
 
 def _data(node_name, compiled):
@@ -230,6 +231,23 @@ def _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
     return input_attr_count, vs_programs, ps_programs
 
 
+
+def _ogl_process_includes(file_path, source):
+    base_path = os.path.split(file_path)[0]
+    while True:
+        result_iter = re.finditer(OGL_INCLUDE, source)
+        try:
+            statement, included_path = next(result_iter).groups()
+        except StopIteration:
+            break
+        else:
+            included_path = os.path.join(base_path, included_path)
+            with open(included_path) as file:
+                included_source = file.read()
+            included_source = _ogl_process_includes(included_path, included_source)
+            source = source.replace(statement, included_source)
+    return source
+
 def _ogl_uniform_size(data_type, size, array_stride, matrix_stride):
     if array_stride > 0:
         return array_stride * size
@@ -244,7 +262,6 @@ def _ogl_uniform_size(data_type, size, array_stride, matrix_stride):
             assert False, "Don't know the size of this type %s" % data_type
     else:
         return GL_TYPE_BYTE_SIZES[data_type]
-
 
 def _ogl_get_active_uniforms(prog, indices, enum):
     values = (c_int * len(indices))()
@@ -311,7 +328,7 @@ def _ogl_compile_glsl(file_name, source, shader_type):
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
     _check_gl_error()
 
-    source_buffer = create_string_buffer(source.encode('utf-8'))
+    source_buffer = create_string_buffer(source)
     buffer_ptr = c_char_p(source_buffer.value)
     source_length = c_int(len(source_buffer))
     glShaderSource(sh, 1, byref(buffer_ptr), byref(source_length))
@@ -368,8 +385,11 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
 
     with open(vs_path) as file:
         vs_source = file.read()
+    vs_source = _ogl_process_includes(vs_path, vs_source)
+
     with open(ps_path) as file:
         ps_source = file.read()
+    ps_source = _ogl_process_includes(ps_path, ps_source)
 
     for variant, variant_defs in variants.items():
         meta_node_name = (variant+'_meta').strip('_')

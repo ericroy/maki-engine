@@ -297,12 +297,6 @@ namespace Maki
 				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 					glEnableVertexAttribArray(attr);
-#if _DEBUG
-					GLint location = glGetAttribLocation((GLuint)shader->handle, attributeName[attr]);
-					if(location == -1) {
-						Console::Warning("Could not find attribute %s in the shader <rid %u>", attributeName[attr], shader->rid);
-					}
-#endif
 				} else {
 					glDisableVertexAttribArray(attr);
 				}

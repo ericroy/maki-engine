@@ -42,8 +42,8 @@ namespace Maki
 					perp = m * perp;
 					Vector4 up = dir.Cross(perp);
 
-					dir *= dt * c->GetFloat(InputState::Button_LeftThumbY) * 8.0f;
-					perp *= dt * c->GetFloat(InputState::Button_LeftThumbX) * 8.0f;
+					dir *= dt * -c->GetFloat(InputState::Button_LeftThumbY) * 8.0f;
+					perp *= dt * -c->GetFloat(InputState::Button_LeftThumbX) * 8.0f;
 
 					Vector4 pos = n.transComp->GetPosition();
 					pos += dir + perp;
@@ -53,8 +53,8 @@ namespace Maki
 					Vector3 angles;
 					n.transComp->GetOrientation().ToEulerAngles(angles);			
 			
-					angles.z += dt * c->GetFloat(InputState::Button_RightThumbX) * 2.0f;
-					angles.x += dt * c->GetFloat(InputState::Button_RightThumbY) * 2.0f;
+					angles.z += dt * -c->GetFloat(InputState::Button_RightThumbX) * 2.0f;
+					angles.x += dt * -c->GetFloat(InputState::Button_RightThumbY) * 2.0f;
 					if(angles.x > MAKI_PI - 0.001f) {
 						angles.x = MAKI_PI - 0.001f;
 					} else if(angles.x < 0.001f) {
