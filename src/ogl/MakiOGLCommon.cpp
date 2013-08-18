@@ -150,6 +150,7 @@ namespace Maki
 
 			MAKI_DEFINE_GL_FUNC(glBufferData);
 			MAKI_DEFINE_GL_FUNC(glBufferSubData);
+			MAKI_DEFINE_GL_FUNC(glCompressedTexImage2D);
 			MAKI_DEFINE_GL_FUNC(glCompileShader);
 			MAKI_DEFINE_GL_FUNC(glAttachShader);
 			MAKI_DEFINE_GL_FUNC(glCreateProgram);

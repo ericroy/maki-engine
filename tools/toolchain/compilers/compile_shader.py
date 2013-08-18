@@ -319,6 +319,10 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
             _check_gl_error()
 
             name = name_buffer.value.decode('utf-8')
+            #if '.' in name:
+            #    continue
+            #name = name.split('[', 1)[0]
+
             buffer_contents.setdefault(buffer_name, []).append((name, offsets[i], byte_lengths[i]))
 
     return _meta(node_name, buffer_slots, buffer_contents)

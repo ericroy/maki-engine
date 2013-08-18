@@ -59,6 +59,7 @@ typedef uint32_t uint32;
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
 #define GL_BGR 0x80E0
 #define GL_BGRA 0x80E1
+#define GL_LUMINANCE 0x1909
 
 typedef struct
 {
@@ -222,9 +223,15 @@ static int parse_dds(MOJODDS_Header *header, const uint8 **ptr, size_t *len,
 
         calcSizeFlag = DDSD_PITCH;
         calcSize = ((width * header->ddspf.dwRGBBitCount) + 7) / 8;
-    } // else if
-
-    //else if (header->ddspf.dwFlags & DDPF_LUMINANCE)  // !!! FIXME
+    }
+    else if (header->ddspf.dwFlags & DDPF_LUMINANCE)
+	{
+		if(header->ddspf.dwRGBBitCount != 8 || header->ddspf.dwRBitMask != 0x000000FF)
+			return 0;
+		*_glfmt = GL_LUMINANCE;
+		calcSizeFlag = DDSD_PITCH;
+        calcSize = ((width * header->ddspf.dwRGBBitCount) + 7) / 8;
+	}
     //else if (header->ddspf.dwFlags & DDPF_YUV)  // !!! FIXME
     //else if (header->ddspf.dwFlags & DDPF_ALPHA)  // !!! FIXME
     else

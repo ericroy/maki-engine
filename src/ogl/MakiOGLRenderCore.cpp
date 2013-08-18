@@ -383,10 +383,10 @@ failed:
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			const void *dataOut;
-			unsigned long dataLengthOut;
-            uint32 format;
-			uint32 mipLevels;
+			const void *dataOut = nullptr;
+			unsigned long dataLengthOut = 0;
+            uint32 format = 0;
+			uint32 mipLevels = 0;
 			int32 ret = MOJODDS_getTexture(data, dataLength, &dataOut, &dataLengthOut, &format, &t->width, &t->height, &mipLevels);
 			if(ret == 0) {
 				Console::Error("Failed to mojo-load dds file");
@@ -406,7 +406,26 @@ failed:
 
 			// TODO:
 			// Need to determine internal format here - probably need to borrow code from directx dds loader
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, t->width, t->height, 0, dataLengthOut, dataOut);
+			switch(format)
+			{
+			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+				glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, t->width, t->height, 0, dataLengthOut, dataOut);
+				break;
+			case GL_RGB:
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t->width, t->height, 0, GL_RGB, GL_UNSIGNED_BYTE, dataOut);
+				break;
+			case GL_RGBA:
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->width, t->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataOut);
+				break;
+			case GL_LUMINANCE:
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t->width, t->height, 0, GL_RED, GL_UNSIGNED_BYTE, dataOut);
+				break;
+			default:
+				Console::Error("Failed to load texture, not a supported internal pixel format");
+				goto failed;
+			}
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();

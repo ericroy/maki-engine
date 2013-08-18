@@ -50,7 +50,7 @@ extern PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
 extern PFNGLBINDBUFFERBASEPROC glBindBufferBase;
 
 
-// GL__framebuffer_object
+// framebuffer_object
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
 extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
