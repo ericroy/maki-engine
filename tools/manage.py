@@ -16,7 +16,7 @@ def _archive_containing(file_path):
         p = file_path
         while len(p) > 0:
             if os.path.samefile(src_path, p):
-                print('Determined that file %s belongs to archive %s' % (file_path, arc_name))
+                #print('Determined that file %s belongs to archive %s' % (file_path, arc_name))
                 return arc_name
             p = os.path.split(p)[0]
     raise RuntimeError('None of the archives specified in the project file contain %s' % file_path)

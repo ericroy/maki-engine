@@ -4,6 +4,7 @@ import tempfile
 import subprocess
 import struct
 import re
+import io
 from ctypes import *
 from base64 import b64encode
 
@@ -132,7 +133,7 @@ D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
 D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
 D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
 OGL_PROFILE = '330'
-OGL_INCLUDE = re.compile(r'(#pragma include "([^"]+)")')
+OGL_INCLUDE = re.compile(r'^#pragma include "([^"]+)"\s*$')
 
 
 def _data(node_name, compiled):
@@ -232,21 +233,22 @@ def _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
 
 
 
-def _ogl_process_includes(file_path, source):
+def _ogl_process_includes(file_path, source, recursion_depth = 0):
     base_path = os.path.split(file_path)[0]
-    while True:
-        result_iter = re.finditer(OGL_INCLUDE, source)
-        try:
-            statement, included_path = next(result_iter).groups()
-        except StopIteration:
-            break
-        else:
-            included_path = os.path.join(base_path, included_path)
+    stream = io.StringIO(source)
+    modified_source = ['#line 1 %s\n' % recursion_depth]
+    for line_no, line in enumerate(stream):
+        m = re.match(OGL_INCLUDE, line)
+        if m:
+            included_path = os.path.join(base_path, m.group(1))
             with open(included_path) as file:
                 included_source = file.read()
-            included_source = _ogl_process_includes(included_path, included_source)
-            source = source.replace(statement, included_source)
-    return source
+            included_source = _ogl_process_includes(included_path, included_source, recursion_depth+1)
+            modified_source += [included_source, '\n']
+            modified_source.append('#line %s %s\n' % (line_no+2, recursion_depth))
+        else:
+            modified_source.append(line)
+    return ''.join(modified_source)
 
 def _ogl_uniform_size(data_type, size, array_stride, matrix_stride):
     if array_stride > 0:
@@ -270,7 +272,6 @@ def _ogl_get_active_uniforms(prog, indices, enum):
     return values
 
 def _ogl_create_meta_node(node_name, prog, shader_type):
-    print('Creating %s for %s' % (node_name, shader_type))
     buffer_slots = {}
     buffer_contents = {}
     for buffer_name in BUFFERS:
@@ -279,7 +280,6 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
         slot = glGetUniformBlockIndex(prog, bn)
         _check_gl_error()
         if slot == GL_INVALID_INDEX:
-            print('Buffer "%s" not found' % buffer_name)
             continue
         
         referenced = c_int(0)
@@ -287,7 +287,6 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
         glGetActiveUniformBlockiv(prog, slot, enum, byref(referenced))
         _check_gl_error()
         if referenced.value == 0:
-            print('Buffer "%s" not referenced' % buffer_name)
             continue
 
         buffer_slots[buffer_name] = int(slot)
@@ -368,7 +367,7 @@ def _ogl_link(vs, ps):
         max_log_length = c_size_t(1024 * 10)
         log = create_string_buffer(max_log_length.value)
         log_length = c_size_t()
-        glGetProgramInfoLog(sh, max_log_length, byref(log_length), log)
+        glGetProgramInfoLog(prog, max_log_length, byref(log_length), log)
         raise RuntimeError('GL shader program link failed:\n%s' % log.value.decode('utf-8'))
     return prog
 
@@ -405,7 +404,6 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
         if variant == '':
             glGetProgramiv(prog, GL_ACTIVE_ATTRIBUTES, byref(input_attr_count))
             _check_gl_error()
-            print(input_attr_count.value)
 
         vs_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'vs'), _data(data_node_name, vs_final_source)]
         ps_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'ps'), _data(data_node_name, ps_final_source)]

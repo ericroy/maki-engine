@@ -3,6 +3,7 @@
 #include "core/MakiConfig.h"
 #include "core/MakiEngine.h"
 #include "core/MakiInputState.h"
+#include <sstream>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <io.h>
@@ -253,6 +254,19 @@ namespace Maki
 
 			SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
+			// Load up any additional controller mappings that are specified in the config
+			std::stringstream mappings;
+			char controllerMappingKey[64];
+			for(uint32 i = 0; ; i++) {
+				sprintf_s(controllerMappingKey, "engine.controller_support_%d", i);
+				const char *value = config->GetString(controllerMappingKey, nullptr);
+				if(value == nullptr) {
+					break;
+				}
+				mappings << value << std::endl;
+			}
+			SDL_SetHint(SDL_HINT_GAMECONTROLLERCONFIG, mappings.str().c_str());
+
 			if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0) {
 				Console::Error("Failed to init SDL video subsystem: %s", SDL_GetError());
 				SDL_ClearError();
@@ -283,9 +297,17 @@ namespace Maki
 			// Discover already-connected game controllers
 			int32 joystickCount = std::min(SDL_NumJoysticks(), InputState::MAX_PLAYERS);
 			for(int32 i = 0; i < joystickCount; i++) {
-				if(SDL_IsGameController(i))
-				{
+				if(SDL_IsGameController(i)) {
 					ConnectGameController(i);
+				} else {
+					SDL_Joystick *joy = SDL_JoystickOpen(i);
+					if(joy != nullptr) {
+						SDL_JoystickGUID guid = SDL_JoystickGetGUID(joy);
+						char buffer[33];
+						SDL_JoystickGetGUIDString(guid, buffer, 33);
+						Console::Info("Found joystick that was not a compatible game controller (%s: %s)", buffer, SDL_JoystickName(joy));
+						SDL_JoystickClose(joy);
+					}
 				}
 			}
 		}

@@ -38,8 +38,8 @@ namespace Maki
 		const char *Config::GetString(const char *keyPath, const char *defaultValue) const
 		{
 			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr) { return defaultValue; }
-			return n->value;
+			if(n == nullptr || n->count == 0) { return defaultValue; }
+			return n->children[0]->value;
 		}
 
 		int32 Config::GetInt(const char *keyPath, int32 defaultValue) const
