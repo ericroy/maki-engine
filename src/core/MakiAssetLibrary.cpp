@@ -35,12 +35,16 @@ namespace Maki
 				group.archive = new Archive();
 				if(!group.archive->Load(archivePath, totalAssetCount)) {
 					delete group.archive;
+					Console::Error("Failed to mount archive: %s", archivePath);
 					return false;
 				}
+				Console::Info("Mounted archive: %s", archivePath);
 			}
 			
 			totalAssetCount += group.manifest->GetCount();
 			groups.push_back(group);
+
+			Console::Info("Mounted loose archive rooted at: %s", manifest->GetCommonPathPrefix());
 			return true;
 		}
 

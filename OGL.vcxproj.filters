@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\mojo">
-      <UniqueIdentifier>{4a0cd930-4526-4aec-95d4-a66c81959765}</UniqueIdentifier>
-    </Filter>
     <Filter Include="mojodds">
       <UniqueIdentifier>{9515a0af-774e-4aa7-9760-262659ed032d}</UniqueIdentifier>
     </Filter>
@@ -39,18 +36,6 @@
     <ClInclude Include="src\ogl\glext.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ogl\mojo\mojoshader.h">
-      <Filter>Source Files\mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ogl\mojo\mojoshader_internal.h">
-      <Filter>Source Files\mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ogl\mojo\mojoshader_parser_hlsl.h">
-      <Filter>Source Files\mojo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ogl\mojo\mojoshader_version.h">
-      <Filter>Source Files\mojo</Filter>
-    </ClInclude>
     <ClInclude Include="src\ogl\mojodds\mojodds.h">
       <Filter>mojodds</Filter>
     </ClInclude>
@@ -67,30 +52,6 @@
     </ClCompile>
     <ClCompile Include="src\ogl\MakiOGLRenderCore.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_assembler.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_common.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_compiler.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_effects.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_lexer.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_opengl.cpp">
-      <Filter>Source Files\mojo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ogl\mojo\mojoshader_preprocessor.cpp">
-      <Filter>Source Files\mojo</Filter>
     </ClCompile>
     <ClCompile Include="src\ogl\mojodds\mojodds.cpp">
       <Filter>mojodds</Filter>
