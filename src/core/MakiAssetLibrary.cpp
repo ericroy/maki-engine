@@ -50,7 +50,11 @@ namespace Maki
 			groups.push_back(group);
 
 			if(archivePath == nullptr) {
+#if _DEBUG
+				Console::Info("Mounted loose archive rooted at: %s", (debugModePathAdjustment + manifest->commonPathPrefix).c_str());
+#else
 				Console::Info("Mounted loose archive rooted at: %s", manifest->commonPathPrefix.c_str());
+#endif
 			}
 			return true;
 		}
