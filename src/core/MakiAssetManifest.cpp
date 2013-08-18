@@ -47,6 +47,11 @@ namespace Maki
 			}
 			const char *path = GetPath(rid);
 
+#if _DEBUG
+			std::string fullPath = debugModePathAdjustment + path;
+			path = fullPath.c_str();
+#endif
+
 			FILE *fp = nullptr;
 			if(fopen_s(&fp, path, "rb") != 0 || fp == nullptr) {
 				Console::Error("Failed to open resource: %s", path);

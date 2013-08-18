@@ -15,17 +15,19 @@ namespace Maki
 			inline uint32 GetCount() const { return count; }
 			inline bool Contains(Rid rid) const { return (uint32)rid >= ridStart && (uint32)rid < ridStart + count; }
 			inline const char *GetPath(Rid rid) const { return pathArray[rid - ridStart]; }
-			inline const char *GetCommonPathPrefix() const { return commonPathPrefix.c_str(); }
 			void SetRidStart(uint32 ridStart);
 			Rid PathToRid(const char *path) const;
 			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
+
+		public:
+			std::string commonPathPrefix;
+			std::string debugModePathAdjustment;
 
 		private:
 			uint32 count;
 			uint32 ridStart;
 			Rid *ridArray;
 			const char **pathArray;
-			std::string commonPathPrefix;
 		};
 
 	} // namespace Core

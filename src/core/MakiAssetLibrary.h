@@ -27,12 +27,13 @@ namespace Maki
 			Rid PathToRid(const char *path) const;
 			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
 
+		public:
+			// Allow a path prefix to be applied for all assets, but only in debug mode
+			std::string debugModePathAdjustment;
+
 		private:
 			uint32 totalAssetCount;
-
-
 			std::vector<Group> groups;
-
 		};
 
 		

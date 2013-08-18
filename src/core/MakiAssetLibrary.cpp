@@ -25,8 +25,13 @@ namespace Maki
 		bool AssetLibrary::Mount(AssetManifest *manifest, const char *archivePath)
 		{
 #if _DEBUG
+			// Stomp out the archive path in debug mode so we will always load loose files from disk
 			archivePath = nullptr;
+
+			// In debug mode, the debugModePathPrefix is used to make all assets load from a modified location
+			manifest->debugModePathAdjustment = debugModePathAdjustment;
 #endif
+
 			Group group;
 			group.manifest = manifest;
 			group.manifest->SetRidStart(totalAssetCount);
@@ -44,7 +49,9 @@ namespace Maki
 			totalAssetCount += group.manifest->GetCount();
 			groups.push_back(group);
 
-			Console::Info("Mounted loose archive rooted at: %s", manifest->GetCommonPathPrefix());
+			if(archivePath == nullptr) {
+				Console::Info("Mounted loose archive rooted at: %s", manifest->commonPathPrefix.c_str());
+			}
 			return true;
 		}
 

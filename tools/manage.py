@@ -65,7 +65,7 @@ def _archive(arc_name):
         archive.archive(arc_name)
     else:
         # If the configuration says that we shouldn't archive, then just copy the loose files instead
-        dst = os.path.join(CONFIG['bin_path'], conf['dst'])
+        dst = os.path.join(CONFIG['archive_path'], conf['dst'])
         if os.path.exists(dst):
             shutil.rmtree(dst)
         shutil.copytree(conf['src'], dst)

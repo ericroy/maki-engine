@@ -15,18 +15,18 @@ namespace Maki
 			uint32 bytes;
 			char *data = lib->AllocRead(rid, &bytes);
 			if(data == nullptr) {
-				goto failed;
+				Console::Error("Failed to open config file");
+				SAFE_DELETE(doc);
+				SAFE_FREE(data);
+				return;
 			}
 			if(!doc->Load(data, bytes)) {
-				goto failed;
+				Console::Error("Failed to parse config file");
+				SAFE_DELETE(doc);
+				SAFE_FREE(data);
+				return;
 			}
 
-			SAFE_FREE(data);
-			return;
-
-		failed:
-			Console::Error("Failed to parse config file");
-			SAFE_DELETE(doc);
 			SAFE_FREE(data);
 		}
 

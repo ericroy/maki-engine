@@ -49,7 +49,7 @@ def _write_manifest(conf, resources):
     private_var_defs = ''
     public_var_defs = ''
     rid_list = ','.join(['{%s}' % i for i in range(len(resources))])
-    common_prefix = util.clean_path(os.path.relpath(conf['dst'], CONFIG['bin_path']))+'/'
+    common_prefix = util.clean_path(os.path.relpath(os.path.join(CONFIG['archive_path'], conf['dst']), CONFIG['bin_path']))+'/'
 
     for i, (name, rel_path) in enumerate(resources):
         public_vars += 'static const Maki::Rid &%s; // %d\n\t' % (name, i)

@@ -56,7 +56,7 @@ def archive(arc_name):
             _pad(body, 8)
             print(file_path)
 
-    with open(os.path.join(CONFIG['bin_path'], arc_name+'.marc'), 'wb') as archive:
+    with open(os.path.join(CONFIG['archive_path'], arc_name+'.marc'), 'wb') as archive:
         len_file_header = 8
         toc_count = len(files)
         body_offset = toc.tell()+len_file_header

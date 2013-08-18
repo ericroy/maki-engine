@@ -15,17 +15,17 @@ namespace Maki
 	namespace Core
 	{
 
-#if defined(_WIN32) || defined(_WIN64)
-		void ShowConsole()
+		void ShowConsoleWindow()
 		{
+#if defined(_WIN32) || defined(_WIN64)
 			::AllocConsole();
 			HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
 			int hCrt = _open_osfhandle((long) handle_out, _O_TEXT);
 			FILE* hf_out = _fdopen(hCrt, "w");
 			setvbuf(hf_out, NULL, _IONBF, 1);
 			*stdout = *hf_out;
-		}
 #endif
+		}
 
 
 		inline float SignedAnalogInputToFloat(int16 v, int16 dz) {
@@ -245,12 +245,6 @@ namespace Maki
 			memset(controllerHandles, 0, sizeof(controllerHandles));
 			memset(controllers, 0, sizeof(controllers));
 			memset(controllerInstanceIds, 0xff, sizeof(controllerInstanceIds));
-
-#if defined(_WIN32) || defined(_WIN64)
-			if(config->GetBool("engine.show_console", false)) {
-				ShowConsole();
-			}
-#endif
 
 			SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
