@@ -311,6 +311,7 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
         byte_lengths = [_ogl_uniform_size(types[i], sizes[i], array_strides[i], matrix_strides[i]) for i in range(count.value)]
 
         name_buffer = create_string_buffer(max(name_lengths)+1)
+        fields_seen = set()
         for i in range(count.value):
             size = c_int()
             gl_type = c_int()
@@ -319,10 +320,11 @@ def _ogl_create_meta_node(node_name, prog, shader_type):
             _check_gl_error()
 
             name = name_buffer.value.decode('utf-8')
-            #if '.' in name:
-            #    continue
-            #name = name.split('[', 1)[0]
-
+            name = name.split('[', 1)[0]
+            name = name.split('.', 1)[0]
+            if name in fields_seen:
+                continue
+            fields_seen.add(name)
             buffer_contents.setdefault(buffer_name, []).append((name, offsets[i], byte_lengths[i]))
 
     return _meta(node_name, buffer_slots, buffer_contents)
