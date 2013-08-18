@@ -17,8 +17,6 @@ namespace Maki
 		class Config;
 		class Engine;
 
-		void ShowConsoleWindow();
-
 		class Window
 		{
 		public:

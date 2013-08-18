@@ -5,28 +5,11 @@
 #include "core/MakiInputState.h"
 #include <sstream>
 
-#if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
-#include <fcntl.h>
-#endif
 
 namespace Maki
 {
 	namespace Core
 	{
-
-		void ShowConsoleWindow()
-		{
-#if defined(_WIN32) || defined(_WIN64)
-			::AllocConsole();
-			HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
-			int hCrt = _open_osfhandle((long) handle_out, _O_TEXT);
-			FILE* hf_out = _fdopen(hCrt, "w");
-			setvbuf(hf_out, NULL, _IONBF, 1);
-			*stdout = *hf_out;
-#endif
-		}
-
 
 		inline float SignedAnalogInputToFloat(int16 v, int16 dz) {
 			if(v > dz) {
