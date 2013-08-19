@@ -161,7 +161,7 @@ namespace Maki
 
 		// Resource creation, deletion, modification:
 
-		void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
+		void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
@@ -169,13 +169,15 @@ namespace Maki
 			bool reuse = b != nullptr;
 
 			if(reuse) {
-				b->DeleteBuffers();
+				if(lengthChanged) {
+					b->DeleteBuffers();
+					glGenBuffers(2, b->vbos);
+				}
 			} else {
 				b = new Buffer();
 				memset(b, 0, sizeof(Buffer));
+				glGenBuffers(2, b->vbos);
 			}
-
-			glGenBuffers(2, b->vbos);
 
 			b->vertexCount = vertexCount;
 			b->faceCount = faceCount;
@@ -192,30 +194,13 @@ namespace Maki
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 
 			int32 stride = vf->GetStride();
-			if(!reuse) {
-				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, nullptr, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, nullptr, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-			}
-
-			void *dest = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-			if(dest != nullptr) {
-				memcpy(dest, vertexData, stride*vertexCount);
-				glUnmapBuffer(GL_ARRAY_BUFFER);
+			if(reuse && !lengthChanged) {
+				glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertexCount, vertexData);
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytesPerIndex*indicesPerFace*faceCount, indexData);
 			} else {
-				Console::Error("Failed to map array buffer");
+				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			}
-
-			dest = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-			if(dest != nullptr) {
-				memcpy(dest, indexData, bytesPerIndex*indicesPerFace*faceCount);
-				glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-			} else {
-				Console::Error("Failed to map element array buffer");
-			}
-
-			//glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertexCount, vertexData);
-			//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytesPerIndex*indicesPerFace*faceCount, indexData);
-
 			return (void *)b;
 		}
 

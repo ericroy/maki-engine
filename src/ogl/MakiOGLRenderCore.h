@@ -40,7 +40,7 @@ namespace Maki
 			void Resized(uint32 width, uint32 height);
 
 			// GPU resource creation / destruction
-			void *UploadBuffer(void *buffer, Core::VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic);
+			void *UploadBuffer(void *buffer, Core::VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged);
 			void FreeBuffer(void *buffer);
 			bool CreateShaderProgram(Core::ShaderProgram *s);
 			void DeleteShaderProgram(Core::ShaderProgram *s);

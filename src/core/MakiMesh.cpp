@@ -30,7 +30,9 @@ namespace Maki
 			buffer(nullptr),
 			vertexInsertionIndex(0),
 			indexInsertionIndex(0),
-			dynamic(dynamic)
+			dynamic(dynamic),
+			oldVertexDataSize(-1),
+			oldIndexDataSize(-1)
 		{
 		}
 
@@ -51,7 +53,9 @@ namespace Maki
 			buffer(nullptr),
 			vertexInsertionIndex(0),
 			indexInsertionIndex(0),
-			dynamic(false)
+			dynamic(false),
+			oldVertexDataSize(-1),
+			oldIndexDataSize(-1)
 		{
 			switch(type) {
 			case Object_Rect:
@@ -82,7 +86,9 @@ namespace Maki
 			buffer(nullptr),
 			vertexInsertionIndex(0),
 			indexInsertionIndex(0),
-			dynamic(false)
+			dynamic(false),
+			oldVertexDataSize(-1),
+			oldIndexDataSize(-1)
 		{
 			std::swap(siblings, other.obj->siblings);
 			std::swap(vertexCount, other.obj->vertexCount);
@@ -101,6 +107,8 @@ namespace Maki
 			std::swap(vertexInsertionIndex, other.obj->vertexInsertionIndex);
 			std::swap(indexInsertionIndex, other.obj->indexInsertionIndex);
 			std::swap(dynamic, other.obj->dynamic);
+			std::swap(oldVertexDataSize, other.obj->oldVertexDataSize);
+			std::swap(oldIndexDataSize, other.obj->oldIndexDataSize);
 			std::swap(bounds, other.obj->bounds);
 		}
 
@@ -352,12 +360,18 @@ namespace Maki
 				vf.PushAttribute(VertexFormat::Attribute_BoneWeight, VertexFormat::DataType_UnsignedInt32, 4);
 			}
 
-			buffer = Engine::Get()->renderer->UploadBuffer(buffer, &vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic);
+			bool lengthChanged = oldVertexDataSize != vertexDataSize || oldIndexDataSize != indexDataSize;
+
+			buffer = Engine::Get()->renderer->UploadBuffer(buffer, &vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic, lengthChanged);
 
 			// Get or create vertex format
 			Handle newVertexFormat = CoreManagers::Get()->vertexFormatManager->FindOrAdd(vf);
 			VertexFormatManager::Free(vertexFormat);
 			vertexFormat = newVertexFormat;
+
+			// Record the data sizes so if Upload is called again later, we can see if the buffers have changed length
+			oldVertexDataSize = vertexDataSize;
+			oldIndexDataSize = indexDataSize;
 		}
 
 		void Mesh::CalculateBounds()

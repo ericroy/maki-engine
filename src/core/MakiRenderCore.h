@@ -30,7 +30,7 @@ namespace Maki
 
 			// GPU resource creation, updates, destruction
 			// These all acquire the execution mutex for the render core
-			virtual void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic) = 0;
+			virtual void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged) = 0;
 			virtual void FreeBuffer(void *buffer) = 0;
 			virtual bool CreateShaderProgram(ShaderProgram *s) = 0;
 			virtual void DeleteShaderProgram(ShaderProgram *s) = 0;

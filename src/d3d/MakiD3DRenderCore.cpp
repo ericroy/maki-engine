@@ -320,7 +320,7 @@ namespace Maki
 
 		// Resource creation, deletion, modification:
 
-		void *D3DRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
+		void *D3DRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
@@ -343,6 +343,9 @@ namespace Maki
 		
 			assert(bytesPerIndex > 0 && bytesPerIndex <= 4 && bytesPerIndex != 3);
 			b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
+
+			// TODO:
+			// In the case where the buffer lenghts have not changed, we should probably just map this instead of recreating the buffers
 
 			// Create vertex buffer
 			D3D11_SUBRESOURCE_DATA srd;

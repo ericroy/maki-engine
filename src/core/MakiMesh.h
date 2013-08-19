@@ -101,6 +101,10 @@ namespace Maki
 			uint32 indexDataSize;
 			char *indexData;
 
+			// The data sizes at the time of last upload
+			uint32 oldVertexDataSize;
+			uint32 oldIndexDataSize;
+
 			bool dynamic;
 			void *buffer;
 		};

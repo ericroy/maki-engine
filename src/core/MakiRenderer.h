@@ -82,7 +82,7 @@ namespace Maki
 
 			// GPU resource creation, updates, destruction
 			// These actions are applied synchonously on the core, so they involve acquiring a mutex
-			inline void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic);
+			inline void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged);
 			inline void FreeBuffer(void *buffer);
 			inline bool CreateShaderProgram(ShaderProgram *s);
 			inline void DeleteShaderProgram(ShaderProgram *s);
@@ -248,9 +248,9 @@ namespace Maki
 
 
 
-		inline void *Renderer::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic)
+		inline void *Renderer::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
 		{
-			return core->UploadBuffer(buffer, vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic);
+			return core->UploadBuffer(buffer, vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic, lengthChanged);
 		}
 	
 		inline void Renderer::FreeBuffer(void *buffer)
