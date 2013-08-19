@@ -325,12 +325,12 @@ namespace Maki
 			std::lock_guard<std::mutex> lock(mutex);
 
 			Buffer *b = (Buffer *)buffer;
-			if(b == nullptr) {
-				buffer = b = new Buffer();
-				memset(b, 0, sizeof(Buffer));
-			} else {
+			if(b != nullptr) {
 				SAFE_RELEASE(b->vbos[0]);
 				SAFE_RELEASE(b->vbos[1]);
+			} else {
+				b = new Buffer();
+				memset(b, 0, sizeof(Buffer));
 			}
 
 			b->vertexCount = vertexCount;
@@ -374,7 +374,7 @@ namespace Maki
 				Console::Error("Failed to create d3d index buffer");
 			}
 
-			return buffer;
+			return (void *)b;
 		}
 
 		void D3DRenderCore::FreeBuffer(void *buffer)

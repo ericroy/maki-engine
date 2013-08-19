@@ -275,8 +275,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "enginePerFrame") == shader->vertexShader.frameUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			SetPerFrameConstants(state, &shader->vertexShader, gs->scratchBuffer);
@@ -286,8 +284,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "enginePerFrame") == shader->pixelShader.frameUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 			SetPerFrameConstants(state, &shader->pixelShader, gs->scratchBuffer);
@@ -327,8 +323,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "material") == shader->vertexShader.materialUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 			BindMaterialConstants(&shader->vertexShader, true, gs->scratchBuffer, mat);
@@ -338,8 +332,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "material") == shader->pixelShader.materialUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 			BindMaterialConstants(&shader->pixelShader, false, gs->scratchBuffer, mat);
@@ -360,8 +352,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "enginePerObject") == shader->vertexShader.objectUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
@@ -371,8 +361,6 @@ namespace Maki
 
 		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			assert(glGetUniformBlockIndex((GLuint)shader->handle, "enginePerObject") == shader->pixelShader.objectUniformBufferLocation);
-
 			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
 			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
 			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);

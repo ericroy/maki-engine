@@ -166,15 +166,16 @@ namespace Maki
 			std::lock_guard<std::mutex> lock(mutex);
 
 			Buffer *b = (Buffer *)buffer;
-			if(b == nullptr) {
-				buffer = b = new Buffer();
-				memset(b, 0, sizeof(Buffer));
-			} else {
+			bool reuse = b != nullptr;
+
+			if(reuse) {
 				b->DeleteBuffers();
+			} else {
+				b = new Buffer();
+				memset(b, 0, sizeof(Buffer));
 			}
 
 			glGenBuffers(2, b->vbos);
-			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			b->vertexCount = vertexCount;
 			b->faceCount = faceCount;
@@ -187,25 +188,19 @@ namespace Maki
 			assert(bytesPerIndex > 0 && bytesPerIndex <= 4 && bytesPerIndex != 3);
 			b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
 
-			int32 stride = vf->GetStride();
-
-			// Setup the vertex buffer
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
-			glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
-			// Setup the index buffer
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			return buffer;
-failed:
-			if(b != nullptr) {
-				b->DeleteBuffers();
-				delete b;
+			int32 stride = vf->GetStride();
+			if(reuse) {
+				glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertexCount, vertexData);
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytesPerIndex*indicesPerFace*faceCount, indexData);
+			} else {
+				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			}
-			return nullptr;
+
+			return (void *)b;
 		}
 
 		void OGLRenderCore::FreeBuffer(void *buffer)

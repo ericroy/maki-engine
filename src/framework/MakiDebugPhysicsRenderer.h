@@ -18,7 +18,8 @@ namespace Maki
 			DebugPhysicsRenderer(Rid matRid);
 			virtual ~DebugPhysicsRenderer();
 
-			void Draw(btDynamicsWorld *world);
+			void Update(btDynamicsWorld *world);
+			void Draw();
 			virtual void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color);
 			virtual void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int32 lifeTime, const btVector3 &color);
 			virtual void reportErrorWarning(const char *warningString);

@@ -31,14 +31,12 @@ namespace Maki
 			m.SetVertexAttributes(VertexFormat::AttributeFlag_Color);
 			m.SetIndexAttributes(2, 2);
 
-			Point p[2];
-			memset(p, 0, sizeof(p));
-
+			Point p[2] = {{ 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }, { 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }};
 			for(uint32 i = 0; i < MAX_LINES; ++i) {	
-				m.PushVertexData(sizeof(p), (char *)&p);
+				m.PushVertexData(sizeof(p), (char *)p);
 
 				uint16 line[2] = { i*2, i*2+1 };
-				m.PushIndexData(sizeof(line), (char *)&line);
+				m.PushIndexData(sizeof(line), (char *)line);
 			}
 
 			m.Upload();
@@ -56,19 +54,22 @@ namespace Maki
 			cmd.Clear();
 		}
 
-		void DebugPhysicsRenderer::Draw(btDynamicsWorld *world)
+		void DebugPhysicsRenderer::Update(btDynamicsWorld *world)
 		{
-			Engine *eng = Engine::Get();
 			lineIndex = 0;
 			
 			Mesh *m = MeshManager::Get(lines);
-			Point *verts = (Point *)m->GetVertexData();
-			memset(verts, 0, sizeof(verts));
+			char *verts = m->GetVertexData();
+			memset(verts, 0, m->GetVertexStride() * m->GetVertexCount());
 
 			world->setDebugDrawer(this);
 			world->debugDrawWorld();
 						
 			m->Upload();
+		}
+
+		void DebugPhysicsRenderer::Draw()
+		{
 			Engine::Get()->renderer->Draw(cmd, Matrix44::Identity);
 		}
 

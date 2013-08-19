@@ -455,7 +455,13 @@ def compile(arc_name, src, dst):
     vs_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('vertex_shader.file_name.#0').get_value())
     ps_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('pixel_shader.file_name.#0').get_value())
 
-    if CONFIG['render_api'] == 'd3d':
+    conf = CONFIG['assets'][arc_name]
+    try:
+        render_api = conf['render_api']
+    except KeyError:
+        raise RuntimeError('Asset entry must specify render_api, because it contains shaders (%s)' % arc_name)
+
+    if render_api == 'd3d':
         input_attr_count, vs_programs, ps_programs = _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines)
     else:
         _init_ogl()
