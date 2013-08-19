@@ -192,13 +192,29 @@ namespace Maki
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
 
 			int32 stride = vf->GetStride();
-			if(reuse) {
-				glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertexCount, vertexData);
-				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytesPerIndex*indicesPerFace*faceCount, indexData);
-			} else {
-				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+			if(!reuse) {
+				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, nullptr, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, nullptr, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			}
+
+			void *dest = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+			if(dest != nullptr) {
+				memcpy(dest, vertexData, stride*vertexCount);
+				glUnmapBuffer(GL_ARRAY_BUFFER);
+			} else {
+				Console::Error("Failed to map array buffer");
+			}
+
+			dest = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+			if(dest != nullptr) {
+				memcpy(dest, indexData, bytesPerIndex*indicesPerFace*faceCount);
+				glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+			} else {
+				Console::Error("Failed to map element array buffer");
+			}
+
+			//glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertexCount, vertexData);
+			//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytesPerIndex*indicesPerFace*faceCount, indexData);
 
 			return (void *)b;
 		}
@@ -397,15 +413,6 @@ failed:
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, t->width, t->height);
 			glBindRenderbuffer(GL_RENDERBUFFER, 0);
 			if(MAKI_OGL_FAILED()) { goto failed; }
-
-
-			//glBindTexture(GL_TEXTURE_2D, tex);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_TEXTURE_BORDER);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_TEXTURE_BORDER);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, t->width, t->height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
-			//if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();
 			gtex->tex = tex;

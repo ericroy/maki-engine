@@ -12,7 +12,7 @@ namespace Maki
 		class DebugPhysicsRenderer : public btIDebugDraw
 		{
 		public:
-			static const uint32 MAX_LINES = 4096;
+			static const uint32 MAX_LINES = 2048;
 
 		public:
 			DebugPhysicsRenderer(Rid matRid);
