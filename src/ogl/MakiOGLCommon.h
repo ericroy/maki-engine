@@ -5,6 +5,7 @@
 #define MAKI_EXTERN_GL_FUNC(Type, Name) extern PFN##Type##PROC Name;
 			
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 extern PFNGLATTACHSHADERPROC glAttachShader;
 extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
@@ -42,6 +43,9 @@ extern PFNGLUNIFORM4IPROC glUniform4i;
 extern PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
 extern PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 extern PFNGLUSEPROGRAMPROC glUseProgram;
+extern PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
+extern PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
+extern PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
 extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 
@@ -63,9 +67,8 @@ extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
-#if _DEBUG
 extern PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;
-#endif
+
 
 
 namespace Maki
@@ -80,7 +83,8 @@ namespace Maki
 #else
 #		define MAKI_OGL_FAILED() false
 #endif
-
+		const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
+		
 		extern const GLenum indicesPerFaceToGeometryType[4];
 		extern const GLenum bytesPerIndexToFormat[5];
 		extern const GLenum channelsToFormat[5];

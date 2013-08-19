@@ -21,21 +21,25 @@ namespace Maki
 			mainThreadContext(nullptr),
 			renderThreadContext(nullptr),
 			frameBuffer(0),
+			vao(0),
 			defaultRenderTarget(0),
 			defaultDepthStencil(0),
 			currentRenderTarget(0),
 			currentRenderTargetType(RenderState::RenderTarget_Default),
 			currentDepthStencil(0),
-			currentDepthStencilType(RenderState::DepthStencil_Default)
+			currentDepthStencilType(RenderState::DepthStencil_Default),
+			depthWriteEnabled(true),
+			blendEnabled(false),
+			currentDepthTest(RenderState::DepthTest_Less),
+			currentCullMode(RenderState::CullMode_Back),
+			debugOutput(false)
 		{
-			
-
 			vsync = config->GetBool("engine.vertical_sync", true);
 			// -1 allows late swaps to happen immediately
 			SDL_GL_SetSwapInterval(vsync ? -1 : 0);
 
-			int32 major = config->GetInt("engine.ogl_major_version", 3);
-			int32 minor = config->GetInt("engine.ogl_minor_version", 1);
+			int32 major = config->GetInt("ogl.major_version", 3);
+			int32 minor = config->GetInt("ogl.minor_version", 1);
 
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
@@ -44,19 +48,25 @@ namespace Maki
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+			SDL_GL_SetAttribute(SDL_GL_STEREO, 0);
 
-			if(config->GetInt("engine.ogl_forward_compatible", true)) {
-				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+			if(config->GetBool("ogl.require_hw_accel", false)) {
+				Console::Info("Requiring OpenGL hardware acceleration");
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_ACCELERATED_VISUAL);
 			}
-#if _DEBUG
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
+			if(config->GetBool("ogl.debug_context", false)) {
+				Console::Info("Requesting OpenGL debug context");
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+			}
+
 
 			Console::Info("Creating OpenGL %d.%d contexts", major, minor);
 
 			mainThreadContext = SDL_GL_CreateContext(window->window);
 			if(mainThreadContext == nullptr) {
-				Console::Error("Failed to create ogl main context: %s", SDL_GetError());
+				Console::Error("Failed to create OpenGL main context: %s", SDL_GetError());
 				SDL_ClearError();
 			}
 
@@ -64,24 +74,29 @@ namespace Maki
 			
 			renderThreadContext = SDL_GL_CreateContext(window->window);
 			if(renderThreadContext == nullptr) {
-				Console::Error("Failed to create ogl render context: %s", SDL_GetError());
+				Console::Error("Failed to create OpenGL render context: %s", SDL_GetError());
 				SDL_ClearError();
 			}
 			
 			if(SDL_GL_MakeCurrent(window->window, mainThreadContext) != 0) {
-				Console::Error("Failed to make ogl main context current: %s", SDL_GetError());
+				Console::Error("Failed to make OpenGL main context current: %s", SDL_GetError());
 				SDL_ClearError();
 			}
 
 			DefineGLFunctions();
 
-#if _DEBUG
-			// Register debug callback for main thread's context
-			glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
-#endif
+			debugOutput = config->GetBool("ogl.debug_messages", false);
+			if(debugOutput) {
+				Console::Info("Registering for OpenGL debug messages");
+				// Register debug callback for main thread's context
+				glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
+				glEnable(GL_DEBUG_OUTPUT);
+				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			}
 		}
 
 		OGLRenderCore::~OGLRenderCore() {
+			glDeleteVertexArrays(1, &vao);
 			glDeleteFramebuffers(1, &frameBuffer);
 			SDL_GL_DeleteContext(mainThreadContext);
 			SDL_GL_DeleteContext(renderThreadContext);
@@ -96,15 +111,28 @@ namespace Maki
 				SDL_ClearError();
 			}		
 
-#if _DEBUG
-			// Register debug callback for render thread's context
-			glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
-#endif
+			if(debugOutput) {
+				// Register debug callback for render thread's context
+				glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
+				glEnable(GL_DEBUG_OUTPUT);
+				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			}
+
 			
 			// Set initial state:
 			windowWidth = 1;
 			windowHeight = 1;
 			glViewport(0, 0, windowWidth, windowHeight);
+
+			glDepthMask(GL_TRUE);
+			glDepthFunc(GL_LESS);
+			glEnable(GL_DEPTH_TEST);
+
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			
+			glEnable(GL_BLEND);
+
 
 			// Render a blank frame so we don't see a flash of white on startup
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -112,6 +140,11 @@ namespace Maki
 			SDL_GL_SwapWindow(window->window);
 
 			glGenFramebuffers(1, &frameBuffer);
+
+			// Using one global VAO, because I read in some valve presentation that switching VAOs is typically slower than 
+			// just making glVertexAttribPointer calls each time.  I should probably test this out...
+			glGenVertexArrays(1, &vao);
+			glBindVertexArray(vao);
 		}
 
 		void OGLRenderCore::Resized(uint32 newWidth, uint32 newHeight)
@@ -134,9 +167,8 @@ namespace Maki
 
 			Buffer *b = (Buffer *)buffer;
 			if(b == nullptr) {
-				b = new Buffer();
+				buffer = b = new Buffer();
 				memset(b, 0, sizeof(Buffer));
-				buffer = b;
 			} else {
 				b->DeleteBuffers();
 			}
@@ -225,6 +257,7 @@ failed:
 				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 				glBufferData(GL_UNIFORM_BUFFER, s->materialUniformBytes, 0, GL_STREAM_DRAW);
 			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			int32 largestBuffer = std::max(std::max(s->materialUniformBytes, s->engineObjectUniformBytes), s->engineFrameUniformBytes);
 			gs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer, 16);
@@ -260,20 +293,8 @@ failed:
 			glAttachShader(program, (GLuint)((GPUShader *)s->vertexShader.handle)->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
-
-			/*for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				GLint location = glGetAttribLocation(program, attributeName[i]);
-				Console::Info("Attr semantic %s bound at %d  <rid %u>", attributeName[i], location, s->rid);
-			}*/
-
-			/*GLuint enginePerFrame = glGetUniformBlockIndex(program, "enginePerFrame");
-			GLuint enginePerObject = glGetUniformBlockIndex(program, "enginePerObject");
-			GLuint material = glGetUniformBlockIndex(program, "material");
-			MAKI_OGL_FAILED();*/
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
@@ -281,6 +302,28 @@ failed:
 			if(linkStatus == GL_FALSE) {
 				Console::Error("Failed to link glsl program");
 				goto failed;
+			}
+
+			// Lookup texture sampler locations
+			// Arbitrarily, we'll decide to store the sampler locations in the vertex shader's array
+			glUseProgram(program);
+			GPUShader *gvs = (GPUShader *)s->vertexShader.handle;
+			char buffer[32];
+			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START; i++) {
+				sprintf_s(buffer, "uSampler%d", i);
+				GLint location = glGetUniformLocation(program, buffer);
+				if(location >= 0) {
+					glUniform1i(location, i);
+				}
+				gvs->textureSamplerLocations[i] = location;
+			}
+			for(uint32 i = 0; i < Core::RenderState::MAX_LIGHTS; i++) {
+				sprintf_s(buffer, "uShadowSampler%d", i);
+				GLint location = glGetUniformLocation(program, buffer);
+				if(location >= 0) {
+					glUniform1i(location, i);
+				}
+				gvs->textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+i] = location;
 			}
 
 			s->handle = (intptr_t)program;			
@@ -402,7 +445,7 @@ failed:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			// TODO:
 			// Need to determine internal format here - probably need to borrow code from directx dds loader
@@ -426,6 +469,9 @@ failed:
 				Console::Error("Failed to load texture, not a supported internal pixel format");
 				goto failed;
 			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			glGenerateMipmap(GL_TEXTURE_2D);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
 			GPUTexture *gtex = new GPUTexture();

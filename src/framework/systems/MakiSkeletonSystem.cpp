@@ -1,6 +1,5 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-//#include "framework/MakiDebugArmature.h"
 #include "framework/systems/MakiSkeletonSystem.h"
 #include "framework/components/MakiMeshComponent.h"
 #include "framework/components/MakiSkeletonComponent.h"

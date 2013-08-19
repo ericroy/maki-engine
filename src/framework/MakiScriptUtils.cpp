@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiScriptUtils.h"
 #include "framework/MakiScript.h"

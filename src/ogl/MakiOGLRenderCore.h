@@ -31,9 +31,6 @@ namespace Maki
 
 		class OGLRenderCore : public Core::RenderCore
 		{
-		private:
-			static const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
-
 		public:
 			OGLRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~OGLRenderCore();
@@ -99,8 +96,17 @@ namespace Maki
 			GLuint currentDepthStencil;
 			Core::RenderState::DepthStencil currentDepthStencilType;
 
+			bool depthWriteEnabled;
+			bool blendEnabled;
+			Core::RenderState::DepthTest currentDepthTest;
+			Core::RenderState::CullMode currentCullMode;
+			
 			bool vsync;
+			bool debugOutput;
 			std::mutex mutex;
+
+
+			GLuint vao;
 		};
 
 
@@ -188,23 +194,31 @@ namespace Maki
 		{
 			using namespace Core;
 
-			switch(depthTest) {
-			case RenderState::DepthTest_Less:
-				glEnable(GL_DEPTH_TEST);
-				glDepthFunc(GL_LESS);
-				break;
-			case RenderState::DepthTest_Equal:
-				glEnable(GL_DEPTH_TEST);
-				glDepthFunc(GL_EQUAL);
-				break;
-			case RenderState::DepthTest_LessEqual:
-				glEnable(GL_DEPTH_TEST);
-				glDepthFunc(GL_LEQUAL);
-				break;
-			case RenderState::DepthTest_Disabled:
-			default:
-				glDisable(GL_DEPTH_TEST);
-				break;
+			if(depthWriteEnabled != depthWrite) {
+				glDepthMask(depthWrite ? GL_TRUE : GL_FALSE);
+				depthWriteEnabled = depthWrite;
+			}
+
+			if(currentDepthTest != depthTest) {
+				if(depthTest == RenderState::DepthTest_Disabled) {
+					glDisable(GL_DEPTH_TEST);
+				} else if(currentDepthTest == RenderState::DepthTest_Disabled) {
+					glEnable(GL_DEPTH_TEST);
+				}
+
+				switch(depthTest) {
+				case RenderState::DepthTest_Less:
+					glDepthFunc(GL_LESS);
+					break;
+				case RenderState::DepthTest_Equal:
+					glDepthFunc(GL_EQUAL);
+					break;
+				case RenderState::DepthTest_LessEqual:
+					glDepthFunc(GL_LEQUAL);
+					break;
+				}
+
+				currentDepthTest = depthTest;
 			}
 		}
 
@@ -212,29 +226,37 @@ namespace Maki
 		{
 			using namespace Core;
 
-			switch(cullMode) {
-			case RenderState::CullMode_Front:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_FRONT);
-				break;
-			case RenderState::CullMode_Back:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_BACK);
-				break;
-			case RenderState::CullMode_None:
-			default:
-				glDisable(GL_CULL_FACE);
-				break;
+			if(currentCullMode != cullMode) {
+				if(cullMode == RenderState::CullMode_None) {
+					glDisable(GL_CULL_FACE);
+				} else if(currentCullMode == RenderState::CullMode_None) {
+					glEnable(GL_CULL_FACE);
+				}
+
+				switch(cullMode) {
+				case RenderState::CullMode_Front:
+					glCullFace(GL_FRONT);
+					break;
+				case RenderState::CullMode_Back:
+					glCullFace(GL_BACK);
+					break;
+				}
+
+				currentCullMode = cullMode;
 			}
 		}
 
 		inline void OGLRenderCore::SetBlendState(bool enabled)
 		{
-			if(enabled) {
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			} else {
-				glDisable(GL_BLEND);
+			if(blendEnabled != enabled) {
+				if(enabled) {
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				} else {
+					glDisable(GL_BLEND);
+				}
+
+				blendEnabled = enabled;
 			}
 		}
 

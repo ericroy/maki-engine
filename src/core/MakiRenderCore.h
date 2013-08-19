@@ -71,6 +71,7 @@ namespace Maki
 
 			// Resize screen buffers if necessary
 			if(windowWidth != state.windowWidth || windowHeight != state.windowHeight) {
+				Console::Info("Renderer resizing to %dx%d", state.windowWidth, state.windowHeight);
 				derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
 				derived->Resized(state.windowWidth, state.windowHeight);
 				windowWidth = state.windowWidth;

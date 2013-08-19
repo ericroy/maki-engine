@@ -9,6 +9,8 @@ namespace Maki
 		void Buffer::DeleteBuffers()
 		{
 			glDeleteBuffers(2, vbos);
+			vbos[0] = 0;
+			vbos[1] = 0;
 		}
 
 
@@ -17,6 +19,7 @@ namespace Maki
 		GPUShader::GPUShader()
 			: sh(0), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
 		{
+			memset(textureSamplerLocations, 0xff, sizeof(textureSamplerLocations));
 		}
 
 		GPUShader::~GPUShader()

@@ -13,6 +13,7 @@ template<typename FT> inline FT GetOGLFunc(FT f, char *name) {
 }
 			
 PFNGLACTIVETEXTUREPROC glActiveTexture;
+PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 PFNGLATTACHSHADERPROC glAttachShader;
 PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
@@ -50,6 +51,9 @@ PFNGLUNIFORM4IPROC glUniform4i;
 PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
 PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 PFNGLUSEPROGRAMPROC glUseProgram;
+PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
+PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
+PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 
@@ -71,10 +75,8 @@ PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
-
-#if _DEBUG
 PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;
-#endif
+
 
 using namespace Maki::Core;
 
@@ -150,6 +152,7 @@ namespace Maki
 
 			MAKI_DEFINE_GL_FUNC(glBufferData);
 			MAKI_DEFINE_GL_FUNC(glBufferSubData);
+			MAKI_DEFINE_GL_FUNC(glGenerateMipmap);
 			MAKI_DEFINE_GL_FUNC(glCompressedTexImage2D);
 			MAKI_DEFINE_GL_FUNC(glCompileShader);
 			MAKI_DEFINE_GL_FUNC(glAttachShader);
@@ -187,6 +190,9 @@ namespace Maki
 			MAKI_DEFINE_GL_FUNC(glUniformMatrix3fv);
 			MAKI_DEFINE_GL_FUNC(glUniformMatrix4fv);
 			MAKI_DEFINE_GL_FUNC(glUseProgram);
+			MAKI_DEFINE_GL_FUNC(glGenVertexArrays);
+			MAKI_DEFINE_GL_FUNC(glBindVertexArray);
+			MAKI_DEFINE_GL_FUNC(glDeleteVertexArrays);
 			MAKI_DEFINE_GL_FUNC(glVertexAttribPointer);
 
 
@@ -207,9 +213,8 @@ namespace Maki
 			MAKI_DEFINE_GL_FUNC(glFramebufferRenderbuffer);
 			MAKI_DEFINE_GL_FUNC(glCheckFramebufferStatus);
 
-#if _DEBUG
 			MAKI_DEFINE_GL_FUNC(glDebugMessageCallback);
-#endif
+
 			loaded = true;
 		}
 

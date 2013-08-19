@@ -37,6 +37,8 @@ namespace Maki
 			GLuint uboPerObject;
 			GLuint uboMaterial;
 			char *scratchBuffer;
+
+			GLint textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
 		};
 
 		struct GPUTexture

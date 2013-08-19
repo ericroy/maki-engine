@@ -41,8 +41,8 @@ namespace Maki
 			memset(nullArray, 0, sizeof(nullArray));
 
 			vsync = config->GetBool("engine.vertical_sync", true);
-			maxVertexFormatsPerVertexShader = config->GetUint("engine.max_vertex_formats_per_vertex_shader", 6);
-				
+			maxVertexFormatsPerVertexShader = config->GetUint("d3d.max_vertex_formats_per_vertex_shader", 6);
+			
 			// Get hwnd from SDL window
 			SDL_SysWMinfo sdlInfo;
 			SDL_version sdlVer;
@@ -65,14 +65,36 @@ namespace Maki
 
 
 			UINT flags = 0;
-#if _DEBUG
-			flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+			
+			if(config->GetBool("d3d.debug_context", false)) {
+				Console::Info("Requesting Direct3D debug context");
+				flags |= D3D11_CREATE_DEVICE_DEBUG;
+			}
 
-			Console::Info("Creating D3D 10.0 context");
+			uint16 major = (uint16)config->GetUint("d3d.major_version", 10);
+			uint16 minor = (uint16)config->GetUint("d3d.minor_version", 0);
+			int64 version = (major << 16) | minor;
+			D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_10_0;
+			switch(version) {
+			case (10<<16)|0:
+				featureLevel = D3D_FEATURE_LEVEL_10_0;
+				break;
+			case (10<<16)|1:
+				featureLevel = D3D_FEATURE_LEVEL_10_1;
+				break;
+			case (11<<16)|0:
+				featureLevel = D3D_FEATURE_LEVEL_11_0;
+				break;
+			case (11<<16)|1:
+				featureLevel = D3D_FEATURE_LEVEL_11_1;
+				break;
+			default:
+				Console::Error("Unsupported Direct3D major/minor version, using defaults instead");
+			}
 
-			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_10_0;
-			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevels, 1,
+			Console::Info("Creating Direct3D %d.%d context", major, minor);
+
+			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1,
 				D3D11_SDK_VERSION, &scd, &swapChain, &device, nullptr, &context);
 			if(MAKI_D3D_FAILED(ret)) {
 				Console::Error("Failed to create device and swap chain");
@@ -304,9 +326,8 @@ namespace Maki
 
 			Buffer *b = (Buffer *)buffer;
 			if(b == nullptr) {
-				b = new Buffer();
+				buffer = b = new Buffer();
 				memset(b, 0, sizeof(Buffer));
-				buffer = b;
 			} else {
 				SAFE_RELEASE(b->vbos[0]);
 				SAFE_RELEASE(b->vbos[1]);

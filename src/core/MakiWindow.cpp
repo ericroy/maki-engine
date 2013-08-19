@@ -249,7 +249,7 @@ namespace Maki
 				SDL_ClearError();
 			}			
 			
-			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_RESIZABLE|SDL_WINDOW_SHOWN;
+			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_SHOWN;
 
 			if(renderCoreType == RenderCore::Type_OGL) {
 				flags |= SDL_WINDOW_OPENGL;

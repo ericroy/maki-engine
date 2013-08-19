@@ -36,6 +36,9 @@ SDL_GL_CONTEXT_FLAGS = 20
 SDL_GL_CONTEXT_PROFILE_MASK = 21
 SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
 SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG = 2
+SDL_GL_CONTEXT_PROFILE_CORE = 1
+
+
 SDL_WINDOW_OPENGL = 0x00000002
 SDL_WINDOW_SHOWN = 0x00000004
 SDL_WINDOW_HIDDEN = 0x00000008
@@ -71,7 +74,6 @@ def _check_gl_error():
 def _glGetProcAddress(name, *args):
     proc_name = create_string_buffer(name.encode('utf-8'))
     addr = SDL.SDL_GL_GetProcAddress(proc_name)
-    #addr = GL.wglGetProcAddress(proc_name)
     assert addr != 0, 'Could not get proc address for: %s' % name
     return _gl_func_type(*args)(addr)
 
@@ -95,7 +97,7 @@ def _init_ogl():
     SDL.SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
     SDL.SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8)
     SDL.SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32)
-    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
+    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE)
     _check_sdl_error()
 
     context = SDL.SDL_GL_CreateContext(window)
