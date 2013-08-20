@@ -71,6 +71,21 @@ namespace Maki
 			return RID_NONE;
 		}
 
+		Rid AssetLibrary::FullPathToRid(const char *path) const
+		{
+			const uint32 count = groups.size();
+			for(uint32 i = 0; i < count; i++) {
+				const std::string &prefix = groups[i].manifest->commonPathPrefix;
+				if(strstr(path, prefix.c_str()) == path) {
+					Rid rid = groups[i].manifest->PathToRid(path + prefix.length());
+					if(rid != RID_NONE) {
+						return rid;
+					}
+				}
+			}
+			return RID_NONE;
+		}
+
 		char *AssetLibrary::AllocRead(Rid rid, uint32 *bytesRead) const
 		{
 			if(rid == RID_NONE) {

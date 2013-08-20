@@ -21,7 +21,7 @@ namespace Maki
 			virtual ~FrameworkManagers();
 			void DumpManagerStats();
 			virtual void ReloadAssets();
-			virtual void ReloadAsset(Rid rid);
+			virtual bool ReloadAsset(Rid rid);
 
 		public:
 			ScriptManager *scriptManager;

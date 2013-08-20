@@ -25,6 +25,7 @@ namespace Maki
 
 			bool Mount(AssetManifest *manifest, const char *archivePath = nullptr);
 			Rid PathToRid(const char *path) const;
+			Rid FullPathToRid(const char *path) const;
 			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
 
 		public:

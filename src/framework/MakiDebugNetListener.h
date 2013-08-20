@@ -21,7 +21,8 @@ namespace Maki
 			DebugNetListener();
 			virtual ~DebugNetListener();
 			void Tick();
-			inline void RegisterListener(Rid rid, std::function<void(Rid)> f) { listeners[rid] = f; }
+			inline void SetListener(std::function<void(Rid)> f) { genericListener = f; }
+			inline void SetListener(Rid rid, std::function<void(Rid)> f) { listeners[rid] = f; }
 
 		private:
 			void FireNotification(Rid rid);
@@ -29,6 +30,7 @@ namespace Maki
 		private:
 			Context *context;
 			char recvBuf[MAX_BUFFER_LENGTH+1];
+			std::function<void(Rid)> genericListener;
 			std::map<Rid, std::function<void(Rid)>> listeners;
 		};
 

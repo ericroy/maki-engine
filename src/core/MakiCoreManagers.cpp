@@ -108,7 +108,7 @@ namespace Maki
 			DumpManagerStats();
 		}
 
-		void CoreManagers::ReloadAsset(Rid rid)
+		bool CoreManagers::ReloadAsset(Rid rid)
 		{
 			Engine *eng = Engine::Get();
 			if(eng != nullptr) {
@@ -122,12 +122,9 @@ namespace Maki
 			} else if(skeletonManager->ReloadAsset(rid)) {
 			} else if(skeletonAnimationManager->ReloadAsset(rid)) {
 			} else {
-				Console::Info("Rid was not a hot-swappable asset <rid %d>", rid);
-				return;
+				return false;
 			}
-
-			Console::Info("Reloading <rid %d>", rid);
-			DumpManagerStats();
+			return true;
 		}
 
 	} // namespace Core

@@ -2,6 +2,8 @@ import sys
 import logging
 import os
 import time
+import socket
+import struct
 import win32file
 import win32con
 import win32event
@@ -20,15 +22,20 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class UDPNotifier(object):
-    def __init__(self, host, port):
-        self._host = host
+    def __init__(self, port):
         self._port = port
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self._socket.bind(('127.0.0.1', 0))
 
     def __call__(self, path):
         print('Notify %s' % path)
+        b = path.encode('utf-8')
+        data = struct.pack('I%ds' % len(b), 0, b)
+        self._socket.sendto(data, ('<broadcast>', self._port))
 
     def close(self):
-        pass
+        self._socket.close()
 
 class Observer(threading.Thread):
     def __init__(self, path, callback):
@@ -93,7 +100,7 @@ def _builder(path):
 
 def watch_forever():
     observers = []
-    udp_notify = UDPNotifier('127.0.0.1', 11001)
+    udp_notify = UDPNotifier(11001)
 
     for arc_name, conf in CONFIG['assets'].items():
         logger.info('Watching %s and %s', conf['src'], conf['dst'])

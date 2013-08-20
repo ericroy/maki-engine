@@ -73,6 +73,9 @@ namespace Maki
 		}
 
 		void DebugNetListener::FireNotification(Rid rid) {
+			if(genericListener != nullptr) {
+				genericListener(rid);
+			}
 			std::map< Rid, std::function<void(Rid)> >::iterator iter = listeners.find(rid);
 			if(iter != listeners.end()) {
 				Console::Info("Notifying registered listener about changes to <rid %d>", rid);
@@ -103,9 +106,12 @@ namespace Maki
 				{
 				case 0:
 					Console::Info("Got packet type %u (path='%s')", packetType, p);
-					rid = Engine::Get()->assets->PathToRid(p);
-					CoreManagers::Get()->ReloadAsset(rid);
-					FireNotification(rid);
+					rid = Engine::Get()->assets->FullPathToRid(p);
+					if(rid != RID_NONE) {
+						FireNotification(rid);
+					} else {
+						Console::Warning("Could not convert path to rid: %s", p);
+					}
 					break;
 				default:
 					Console::Warning("Got unrecognized packet type: %d", packetType);

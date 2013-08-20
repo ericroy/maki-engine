@@ -44,7 +44,7 @@ namespace Maki
 			DumpManagerStats();
 		}
 
-		void FrameworkManagers::ReloadAsset(Rid rid)
+		bool FrameworkManagers::ReloadAsset(Rid rid)
 		{
 			Engine *eng = Engine::Get();
 			if(eng != nullptr) {
@@ -53,12 +53,10 @@ namespace Maki
 
 			if(scriptManager->ReloadAsset(rid)) {
 			} else {
-				Console::Info("Rid was not a hot-swappable asset <rid %d>", rid);
-				return;
+				return false;
 			}
 
-			Console::Info("Reloading <rid %d>", rid);
-			DumpManagerStats();
+			return true;
 		}
 
 	} // namespace Core

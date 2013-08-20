@@ -26,7 +26,7 @@ namespace Maki
 			virtual ~CoreManagers();
 			void DumpManagerStats();
 			virtual void ReloadAssets();
-			virtual void ReloadAsset(Rid rid);
+			virtual bool ReloadAsset(Rid rid);
 
 		public:
 			TextureManager *textureManager;
