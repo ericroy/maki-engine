@@ -40,7 +40,7 @@ namespace Maki
 		{
 			memset(nullArray, 0, sizeof(nullArray));
 
-			vsync = config->GetBool("engine.vertical_sync", true);
+			vsync = config->GetBool("engine.vsync", false);
 			maxVertexFormatsPerVertexShader = config->GetUint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
 			// Get hwnd from SDL window
@@ -345,7 +345,7 @@ namespace Maki
 			b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
 
 			// TODO:
-			// In the case where the buffer lenghts have not changed, we should probably just map this instead of recreating the buffers
+			// In the case where the buffer lengths have not changed, we should probably just map this instead of recreating the buffers
 
 			// Create vertex buffer
 			D3D11_SUBRESOURCE_DATA srd;

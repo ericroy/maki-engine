@@ -229,6 +229,7 @@ namespace Maki
 			memset(controllers, 0, sizeof(controllers));
 			memset(controllerInstanceIds, 0xff, sizeof(controllerInstanceIds));
 
+			SDL_SetHint(SDL_HINT_RENDER_VSYNC, 0);
 			SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
 			// Load up any additional controller mappings that are specified in the config

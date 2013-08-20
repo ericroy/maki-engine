@@ -34,9 +34,7 @@ namespace Maki
 			currentCullMode(RenderState::CullMode_Back),
 			debugOutput(false)
 		{
-			vsync = config->GetBool("engine.vertical_sync", true);
-			// -1 allows late swaps to happen immediately
-			SDL_GL_SetSwapInterval(vsync ? -1 : 0);
+			vsync = config->GetBool("engine.vsync", false);
 
 			int32 major = config->GetInt("ogl.major_version", 3);
 			int32 minor = config->GetInt("ogl.minor_version", 1);
@@ -49,7 +47,7 @@ namespace Maki
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 			SDL_GL_SetAttribute(SDL_GL_STEREO, 0);
-
+			
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 			if(config->GetBool("ogl.require_hw_accel", false)) {
@@ -109,7 +107,9 @@ namespace Maki
 			if(SDL_GL_MakeCurrent(window->window, renderThreadContext) != 0) {
 				Console::Error("Failed to make ogl render context current: %s", SDL_GetError());
 				SDL_ClearError();
-			}		
+			}
+
+			SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 
 			if(debugOutput) {
 				// Register debug callback for render thread's context
@@ -201,6 +201,10 @@ namespace Maki
 				glBufferData(GL_ARRAY_BUFFER, stride*vertexCount, vertexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesPerIndex*indicesPerFace*faceCount, indexData, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 			}
+
+			// Must finish here to ensure that vbos have actually received the data before the render thread tries to draw with them
+			glFinish();
+			
 			return (void *)b;
 		}
 
@@ -230,6 +234,27 @@ namespace Maki
 			glCompileShader(gs->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			GLint infoLogLength;
+			glGetShaderiv(gs->sh, GL_INFO_LOG_LENGTH, &infoLogLength);
+			if(infoLogLength > 0) {
+				char *buffer = new char[infoLogLength+1];
+				glGetShaderInfoLog(gs->sh, infoLogLength, NULL, buffer);
+				bool empty = true;
+				char *p = buffer;
+				while(*p != 0) {
+					if(*p != ' ' && *p != '\t' && *p != '\r' && *p != '\n') {
+						empty = false;
+						break;
+					}
+					p++;
+				}
+				if(!empty) {
+					Console::Info("Program info log:");
+					Console::Info(buffer);
+				}
+				delete[] buffer;
+			}
+
 			GLint compileStatus;
 			glGetShaderiv(gs->sh, GL_COMPILE_STATUS, &compileStatus);
 			if(MAKI_OGL_FAILED()) { goto failed; }
@@ -242,16 +267,19 @@ namespace Maki
 				glGenBuffers(1, &gs->uboPerFrame);
 				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
 				glBufferData(GL_UNIFORM_BUFFER, s->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
+				glBindBufferBase(GL_UNIFORM_BUFFER, s->frameUniformBufferLocation, gs->uboPerFrame);
 			}
 			if(s->objectUniformBufferLocation != -1) {
 				glGenBuffers(1, &gs->uboPerObject);
 				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
 				glBufferData(GL_UNIFORM_BUFFER, s->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
+				glBindBufferBase(GL_UNIFORM_BUFFER, s->objectUniformBufferLocation, gs->uboPerObject);
 			}
 			if(s->materialUniformBufferLocation != -1) {
 				glGenBuffers(1, &gs->uboMaterial);
 				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
 				glBufferData(GL_UNIFORM_BUFFER, s->materialUniformBytes, 0, GL_STREAM_DRAW);
+				glBindBufferBase(GL_UNIFORM_BUFFER, s->materialUniformBufferLocation, gs->uboMaterial);
 			}
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
@@ -281,16 +309,38 @@ failed:
 			GLuint program = glCreateProgram();
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				glBindAttribLocation(program, i, attributeName[i]);
-			}
-
 			glAttachShader(program, (GLuint)((GPUShader *)s->pixelShader.handle)->sh);
 			glAttachShader(program, (GLuint)((GPUShader *)s->vertexShader.handle)->sh);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
+			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
+				glBindAttribLocation(program, i, attributeName[i]);
+				if(MAKI_OGL_FAILED()) { goto failed; }
+			}
+
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
+			
+			GLint infoLogLength;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+			if(infoLogLength > 0) {
+				char *buffer = new char[infoLogLength+1];
+				glGetProgramInfoLog(program, infoLogLength, NULL, buffer);
+				bool empty = true;
+				char *p = buffer;
+				while(*p != 0) {
+					if(*p != ' ' && *p != '\t' && *p != '\r' && *p != '\n') {
+						empty = false;
+						break;
+					}
+					p++;
+				}
+				if(!empty) {
+					Console::Info("Program info log:");
+					Console::Info(buffer);
+				}
+				delete[] buffer;
+			}
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
