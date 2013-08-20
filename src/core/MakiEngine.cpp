@@ -46,7 +46,7 @@ namespace Maki
 			while((now = timeSource->GetTimeMillis()) > nextUpdate && skippedFrames < maxSkippedFrames) {
 						
 				updateTimer.Tick();
-				Console::Info("Update tick: %f", updateTimer.averageFps);
+				//Console::Info("Update tick: %f", updateTimer.averageFps);
 
 				window->PollInput(inputState);
 				if(FrameUpdate != nullptr) {
@@ -58,7 +58,7 @@ namespace Maki
 			}
 
 			renderTimer.Tick();
-			Console::Info("Render tick: %f", renderTimer.averageFps);
+			//Console::Info("Render tick: %f", renderTimer.averageFps);
 			if(FrameDraw != nullptr) {
 				FrameDraw();
 			}
