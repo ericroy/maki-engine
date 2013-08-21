@@ -222,7 +222,12 @@ namespace Maki
 
 		bool OGLRenderCore::CreateShader(GLenum shaderType, Shader *s)
 		{
-			GPUShader *gs = new GPUShader();
+			GPUShader *gs = nullptr;
+			if(shaderType == GL_VERTEX_SHADER) {
+				gs = new GPUVertexShader();
+			} else {
+				gs = new GPUPixelShader();
+			}
 
 			gs->sh = glCreateShader(shaderType);
 			if(MAKI_OGL_FAILED()) { goto failed; }
@@ -236,22 +241,11 @@ namespace Maki
 
 			GLint infoLogLength;
 			glGetShaderiv(gs->sh, GL_INFO_LOG_LENGTH, &infoLogLength);
-			if(infoLogLength > 0) {
+			if(infoLogLength > 1) {
 				char *buffer = new char[infoLogLength+1];
 				glGetShaderInfoLog(gs->sh, infoLogLength, NULL, buffer);
-				bool empty = true;
-				char *p = buffer;
-				while(*p != 0) {
-					if(*p != ' ' && *p != '\t' && *p != '\r' && *p != '\n') {
-						empty = false;
-						break;
-					}
-					p++;
-				}
-				if(!empty) {
-					Console::Info("Program info log:");
-					Console::Info(buffer);
-				}
+				Console::Info("Program info log:");
+				Console::Info(buffer);
 				delete[] buffer;
 			}
 
@@ -262,29 +256,6 @@ namespace Maki
 				Console::Error("Failed to compile glsl %s shader", shaderType == GL_FRAGMENT_SHADER ? "pixel" : "vertex");
 				goto failed;
 			}
-
-			if(s->frameUniformBufferLocation != -1) {
-				glGenBuffers(1, &gs->uboPerFrame);
-				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
-				glBufferData(GL_UNIFORM_BUFFER, s->engineFrameUniformBytes, 0, GL_STREAM_DRAW);
-				glBindBufferBase(GL_UNIFORM_BUFFER, s->frameUniformBufferLocation, gs->uboPerFrame);
-			}
-			if(s->objectUniformBufferLocation != -1) {
-				glGenBuffers(1, &gs->uboPerObject);
-				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-				glBufferData(GL_UNIFORM_BUFFER, s->engineObjectUniformBytes, 0, GL_STREAM_DRAW);
-				glBindBufferBase(GL_UNIFORM_BUFFER, s->objectUniformBufferLocation, gs->uboPerObject);
-			}
-			if(s->materialUniformBufferLocation != -1) {
-				glGenBuffers(1, &gs->uboMaterial);
-				glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-				glBufferData(GL_UNIFORM_BUFFER, s->materialUniformBytes, 0, GL_STREAM_DRAW);
-				glBindBufferBase(GL_UNIFORM_BUFFER, s->materialUniformBufferLocation, gs->uboMaterial);
-			}
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
-			int32 largestBuffer = std::max(std::max(s->materialUniformBytes, s->engineObjectUniformBytes), s->engineFrameUniformBytes);
-			gs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer, 16);
 
 			s->handle = (intptr_t)gs;
 			return true;
@@ -307,38 +278,21 @@ failed:
 			}
 
 			GLuint program = glCreateProgram();
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
 			glAttachShader(program, (GLuint)((GPUShader *)s->pixelShader.handle)->sh);
 			glAttachShader(program, (GLuint)((GPUShader *)s->vertexShader.handle)->sh);
-			if(MAKI_OGL_FAILED()) { goto failed; }
-
 			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
 				glBindAttribLocation(program, i, attributeName[i]);
-				if(MAKI_OGL_FAILED()) { goto failed; }
 			}
-
 			glLinkProgram(program);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 			
 			GLint infoLogLength;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-			if(infoLogLength > 0) {
+			if(infoLogLength > 1) {
 				char *buffer = new char[infoLogLength+1];
 				glGetProgramInfoLog(program, infoLogLength, NULL, buffer);
-				bool empty = true;
-				char *p = buffer;
-				while(*p != 0) {
-					if(*p != ' ' && *p != '\t' && *p != '\r' && *p != '\n') {
-						empty = false;
-						break;
-					}
-					p++;
-				}
-				if(!empty) {
-					Console::Info("Program info log:");
-					Console::Info(buffer);
-				}
+				Console::Info("Program info log:");
+				Console::Info(buffer);
 				delete[] buffer;
 			}
 
@@ -349,26 +303,59 @@ failed:
 				Console::Error("Failed to link glsl program");
 				goto failed;
 			}
+			assert(glIsProgram(program));
+
+
+			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
+			
+			s->vertexShader.frameUniformBufferLocation = glGetUniformBlockIndex(program, "enginePerFrame");
+			if(s->vertexShader.frameUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboPerFrame);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
+				glBufferData(GL_UNIFORM_BUFFER, s->vertexShader.engineFrameUniformBytes, 0, GL_STREAM_DRAW);
+				glUniformBlockBinding(program, s->vertexShader.frameUniformBufferLocation, UniformBuffer_Frame);
+
+				// TODO:
+				// Resolve location of each supported uniform
+			}
+
+			s->vertexShader.objectUniformBufferLocation = glGetUniformBlockIndex(program, "enginePerObject");
+			if(s->vertexShader.objectUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboPerObject);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
+				glBufferData(GL_UNIFORM_BUFFER, s->vertexShader.engineObjectUniformBytes, 0, GL_STREAM_DRAW);
+				glUniformBlockBinding(program, s->vertexShader.objectUniformBufferLocation, UniformBuffer_Object);
+				
+				// TODO:
+				// Resolve location of each supported uniform
+			}
+
+			s->vertexShader.materialUniformBufferLocation = glGetUniformBlockIndex(program, "material");
+			if(s->vertexShader.materialUniformBufferLocation != -1) {
+				glGenBuffers(1, &gvs->uboMaterial);
+				glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
+				glBufferData(GL_UNIFORM_BUFFER, s->vertexShader.materialUniformBytes, 0, GL_STREAM_DRAW);
+				glUniformBlockBinding(program, s->vertexShader.materialUniformBufferLocation, UniformBuffer_Material);
+				
+				// TODO:
+				// Resolve location of each supported uniform
+			}
+			if(MAKI_OGL_FAILED()) { goto failed; }
+
+			int32 largestBuffer = std::max(std::max(s->vertexShader.materialUniformBytes, s->vertexShader.engineObjectUniformBytes), s->vertexShader.engineFrameUniformBytes);
+			gvs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer, 16);
 
 			// Lookup texture sampler locations
 			// Arbitrarily, we'll decide to store the sampler locations in the vertex shader's array
-			glUseProgram(program);
-			GPUShader *gvs = (GPUShader *)s->vertexShader.handle;
 			char buffer[32];
 			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START; i++) {
 				sprintf_s(buffer, "uSampler%d", i);
 				GLint location = glGetUniformLocation(program, buffer);
-				if(location >= 0) {
-					glUniform1i(location, i);
-				}
 				gvs->textureSamplerLocations[i] = location;
 			}
 			for(uint32 i = 0; i < Core::RenderState::MAX_LIGHTS; i++) {
-				sprintf_s(buffer, "uShadowSampler%d", i);
+				sprintf_s(buffer, "uShadowSampler[%d]", i);
 				GLint location = glGetUniformLocation(program, buffer);
-				if(location >= 0) {
-					glUniform1i(location, i);
-				}
 				gvs->textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+i] = location;
 			}
 
@@ -542,6 +529,8 @@ failed:
 		void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
+
+			Console::Info("Deleting shader: <rid %u> <variant %d>", s->rid, s->variant);
 
 			GPUShader *gvs = (GPUShader *)s->vertexShader.handle;
 			SAFE_DELETE(gvs);

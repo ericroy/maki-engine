@@ -16,13 +16,13 @@ namespace Maki
 
 
 
-		GPUShader::GPUShader()
-			: sh(0), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
+		GPUVertexShader::GPUVertexShader()
+			: GPUShader(), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
 		{
 			memset(textureSamplerLocations, 0xff, sizeof(textureSamplerLocations));
 		}
 
-		GPUShader::~GPUShader()
+		GPUVertexShader::~GPUVertexShader()
 		{
 			glDeleteBuffers(1, &uboPerFrame);
 			glDeleteBuffers(1, &uboPerObject);
@@ -30,8 +30,6 @@ namespace Maki
 			glDeleteShader(sh);
 			SAFE_FREE(scratchBuffer);
 		}
-
-
 
 
 		GPUTexture::GPUTexture()

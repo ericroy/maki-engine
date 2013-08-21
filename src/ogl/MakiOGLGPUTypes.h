@@ -28,17 +28,29 @@ namespace Maki
 
 		struct GPUShader
 		{
-		public:
-			GPUShader();
-			~GPUShader();
+			GPUShader() : sh(0) {}
+			virtual ~GPUShader() { glDeleteShader(sh); }
 
 			GLuint sh;
+		};
+
+		struct GPUVertexShader : public GPUShader
+		{
+		public:
+			GPUVertexShader();
+			virtual ~GPUVertexShader();
+
 			GLuint uboPerFrame;
 			GLuint uboPerObject;
 			GLuint uboMaterial;
 			char *scratchBuffer;
-
 			GLint textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
+		};
+
+		struct GPUPixelShader : public GPUShader
+		{
+			GPUPixelShader() : GPUShader() {}
+			virtual ~GPUPixelShader() {}
 		};
 
 		struct GPUTexture

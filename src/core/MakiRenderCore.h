@@ -151,7 +151,7 @@ namespace Maki
 					if(shader->pixelShader.frameUniformBufferLocation != -1) {
 						derived->SetPerFramePixelShaderConstants(state, shader);
 					}
-					derived->BindShadowMaps(state);
+					derived->BindShadowMaps(shader, state);
 
 					currentMaterial = HANDLE_NONE;
 					currentTextureSet = HANDLE_NONE;
@@ -162,7 +162,7 @@ namespace Maki
 				// Get or create the input layout for this vertexformat+vertexshader combination
 				if(setLayout) {
 					if(shader->inputAttributeCount != vf->attrCount) {
-						Console::Warning("Shader takes %u input attributes, but current vertex format only has %u", shader->inputAttributeCount, vf->attrCount);
+						Console::Warning("Shader takes %u input attributes, but current vertex format has %u", shader->inputAttributeCount, vf->attrCount);
 					}
 					derived->SetInputLayout(shader, vf);
 					setLayout = false;
@@ -178,7 +178,7 @@ namespace Maki
 					}
 					currentMaterial = dc->material;
 					if(currentTextureSet != dc->textureSet) {
-						derived->BindTextures(TextureSetManager::Get(dc->textureSet));
+						derived->BindTextures(shader, TextureSetManager::Get(dc->textureSet));
 						currentTextureSet = dc->textureSet;
 					}
 				}
@@ -210,6 +210,7 @@ namespace Maki
 
 			if(currentShaderProgram != HANDLE_NONE) {
 				derived->UnbindAllTextures();
+				derived->BindShaders(nullptr);
 			}
 
 			derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);

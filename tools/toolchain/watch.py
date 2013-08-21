@@ -23,12 +23,21 @@ logger = logging.getLogger(__name__)
 
 class UDPNotifier(object):
     def __init__(self, port):
+        self._threshold = 0.2
+        self._cache = {}
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._socket.bind(('127.0.0.1', 0))
 
     def __call__(self, path):
+        now = time.clock()
+        try:
+            if now - self._cache[path] < self._threshold:
+                return
+        except KeyError:
+            pass
+        self._cache[path] = now
         print('Notify %s' % path)
         b = path.encode('utf-8')
         data = struct.pack('I%ds' % len(b), 0, b)

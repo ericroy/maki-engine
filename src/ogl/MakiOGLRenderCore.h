@@ -31,6 +31,14 @@ namespace Maki
 
 		class OGLRenderCore : public Core::RenderCore
 		{
+		private:
+			enum UniformBuffer
+			{
+				UniformBuffer_Frame = 0,
+				UniformBuffer_Object,
+				UniformBuffer_Material
+			};
+
 		public:
 			OGLRenderCore(Core::Window *window, const Core::Config *config);
 			virtual ~OGLRenderCore();
@@ -64,11 +72,11 @@ namespace Maki
 			inline void BindShaders(const Core::ShaderProgram *shader);
 			inline void SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
 			inline void SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
-			inline void BindShadowMaps(const Core::RenderState &state);
+			inline void BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state);
 			inline void SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf);
 			inline void SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
 			inline void SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
-			inline void BindTextures(const Core::TextureSet *ts);
+			inline void BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts);
 			inline void SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
 			inline void SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
 			inline void BindBuffer(void *buffer, const Core::VertexFormat *vf);
@@ -187,7 +195,9 @@ namespace Maki
 				glClearDepth(clearDepthValue);
 				clearFlags |= GL_DEPTH_BUFFER_BIT;
 			}
-			glClear(clearFlags);
+			if(clearFlags != 0) {
+				glClear(clearFlags);
+			}
 		}
 
 		inline void OGLRenderCore::SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite)
@@ -270,39 +280,49 @@ namespace Maki
 
 		inline void OGLRenderCore::BindShaders(const Core::ShaderProgram *shader)
 		{
-			glUseProgram((GLuint)shader->handle);
+			if(shader != nullptr) {
+				assert(glIsProgram((GLuint)shader->handle));
+				glUseProgram((GLuint)shader->handle);
+			} else {
+				glUseProgram(0);
+			}
 		}
 
 		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
-			SetPerFrameConstants(state, &shader->vertexShader, gs->scratchBuffer);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.frameUniformBufferLocation, gs->uboPerFrame);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+
+			SetPerFrameConstants(state, &shader->vertexShader, gvs->scratchBuffer);
+			SetPerFrameConstants(state, &shader->pixelShader, gvs->scratchBuffer);
+			
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
+			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Frame, gvs->uboPerFrame);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gvs->scratchBuffer);
 		}
 
 		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
 		{
-			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerFrame);
-			SetPerFrameConstants(state, &shader->pixelShader, gs->scratchBuffer);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineFrameUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.frameUniformBufferLocation, gs->uboPerFrame);
 		}
 
-		inline void OGLRenderCore::BindShadowMaps(const Core::RenderState &state)
+		inline void OGLRenderCore::BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state)
 		{
 			using namespace Core;
 
-			for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
-				glActiveTexture(GL_TEXTURE0+SHADOW_MAP_SLOT_INDEX_START+i);
+			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
 
-				if(state.shadowMaps[i] != HANDLE_NONE) {
-					GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
-					glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
-				} else {
-					glBindTexture(GL_TEXTURE_2D, 0);
+			for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
+				int32 sampIndex = SHADOW_MAP_SLOT_INDEX_START+i;
+				int32 location = gvs->textureSamplerLocations[sampIndex];
+				if(location >= 0) {
+					glActiveTexture(GL_TEXTURE0+sampIndex);
+					glUniform1i(gvs->textureSamplerLocations[sampIndex], sampIndex);
+					if(state.shadowMaps[i] != HANDLE_NONE) {
+						GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
+						glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+					} else {
+						glBindTexture(GL_TEXTURE_2D, 0);
+					}
 				}
 			}
 		}
@@ -323,49 +343,52 @@ namespace Maki
 
 		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-			BindMaterialConstants(&shader->vertexShader, true, gs->scratchBuffer, mat);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.materialUniformBufferLocation, gs->uboMaterial);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+
+			BindMaterialConstants(&shader->vertexShader, false, gvs->scratchBuffer, mat);
+			BindMaterialConstants(&shader->pixelShader, false, gvs->scratchBuffer, mat);
+			
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
+			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Material, gvs->uboMaterial);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gvs->scratchBuffer);
 		}
 
 		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
 		{
-			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboMaterial);
-			BindMaterialConstants(&shader->pixelShader, false, gs->scratchBuffer, mat);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.materialUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.materialUniformBufferLocation, gs->uboMaterial);
 		}
 
-		inline void OGLRenderCore::BindTextures(const Core::TextureSet *ts)
+		inline void OGLRenderCore::BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts)
 		{
 			using namespace Core;
 
+			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			
 			for(uint32 i = 0; i < ts->textureCount; i++) {
-				const GPUTexture *gtex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
-				glActiveTexture(GL_TEXTURE0+i);
-				glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+				int32 location = gvs->textureSamplerLocations[i];
+				if(location >= 0) {
+					const GPUTexture *gtex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
+					glActiveTexture(GL_TEXTURE0+i);
+					glUniform1i(location, i);
+					glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+				}
 			}
 		}
 
 		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			const GPUShader *gs = (GPUShader *)shader->vertexShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->vertexShader.objectUniformBufferLocation, gs->uboPerObject);
+			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+
+			SetPerObjectConstants(&shader->vertexShader, gvs->scratchBuffer, matrix, mv, mvp);
+			SetPerObjectConstants(&shader->pixelShader, gvs->scratchBuffer, matrix, mv, mvp);
+			
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
+			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Object, gvs->uboPerObject);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gvs->scratchBuffer);
 		}
 
 		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
 		{
-			const GPUShader *gs = (GPUShader *)shader->pixelShader.handle;
-			glBindBuffer(GL_UNIFORM_BUFFER, gs->uboPerObject);
-			SetPerObjectConstants(&shader->vertexShader, gs->scratchBuffer, matrix, mv, mvp);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->pixelShader.engineObjectUniformBytes, gs->scratchBuffer);
-			glBindBufferBase(GL_UNIFORM_BUFFER, shader->pixelShader.objectUniformBufferLocation, gs->uboPerObject);
 		}
 
 		inline void OGLRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)

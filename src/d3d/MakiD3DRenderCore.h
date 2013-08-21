@@ -65,11 +65,11 @@ namespace Maki
 			inline void BindShaders(const Core::ShaderProgram *shader);
 			inline void SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
 			inline void SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
-			inline void BindShadowMaps(const Core::RenderState &state);
+			inline void BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state);
 			inline void SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf);
 			inline void SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
 			inline void SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
-			inline void BindTextures(const Core::TextureSet *ts);
+			inline void BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts);
 			inline void SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
 			inline void SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
 			inline void BindBuffer(void *buffer, const Core::VertexFormat *vf);
@@ -231,8 +231,13 @@ namespace Maki
 
 		inline void D3DRenderCore::BindShaders(const Core::ShaderProgram *shader)
 		{
-			context->VSSetShader(((GPUVertexShader *)shader->vertexShader.handle)->vs, nullptr, 0);
-			context->PSSetShader(((GPUPixelShader *)shader->pixelShader.handle)->ps, nullptr, 0);
+			if(shader != nullptr) {
+				context->VSSetShader(((GPUVertexShader *)shader->vertexShader.handle)->vs, nullptr, 0);
+				context->PSSetShader(((GPUPixelShader *)shader->pixelShader.handle)->ps, nullptr, 0);
+			} else {
+				context->VSSetShader(nullptr, nullptr, 0);
+				context->PSSetShader(nullptr, nullptr, 0);
+			}
 		}
 
 		inline void D3DRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
@@ -255,7 +260,7 @@ namespace Maki
 			context->PSSetConstantBuffers(shader->pixelShader.frameUniformBufferLocation, 1, &gps->perFrameConstants);
 		}
 
-		inline void D3DRenderCore::BindShadowMaps(const Core::RenderState &state)
+		inline void D3DRenderCore::BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state)
 		{
 			using namespace Core;
 
@@ -301,7 +306,7 @@ namespace Maki
 			context->PSSetConstantBuffers(shader->pixelShader.materialUniformBufferLocation, 1, &gps->materialConstants);
 		}
 
-		inline void D3DRenderCore::BindTextures(const Core::TextureSet *ts)
+		inline void D3DRenderCore::BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts)
 		{
 			using namespace Core;
 
