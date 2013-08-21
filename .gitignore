@@ -34,6 +34,8 @@ desktop.ini
 *.opensdf
 *.vcxproj.user
 *.suo
+CMakeCache.txt
+CMakeFiles/
 bin/
 intermediate/
 Debug/
