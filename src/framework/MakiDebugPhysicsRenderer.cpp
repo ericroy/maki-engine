@@ -12,9 +12,10 @@ namespace Maki
 			uint8 color[4];
 		};
 
-		DebugPhysicsRenderer::DebugPhysicsRenderer(Rid matRid)
+		DebugPhysicsRenderer::DebugPhysicsRenderer(Config *config, Rid matRid)
 			: debugMode(btIDebugDraw::DBG_DrawWireframe),
 			lineIndex(0),
+			maxLines(0),
 			material(HANDLE_NONE)
 		{
 			CoreManagers *oldRes = CoreManagers::SetCurrent(&res);
@@ -31,8 +32,10 @@ namespace Maki
 			m.SetVertexAttributes(VertexFormat::AttributeFlag_Color);
 			m.SetIndexAttributes(2, 2);
 
+			maxLines = config->GetUint("engine.debug_physics_max_lines", DEFAULT_MAX_LINES);
+
 			Point p[2] = {{ 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }, { 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }};
-			for(uint32 i = 0; i < MAX_LINES; ++i) {	
+			for(uint32 i = 0; i < maxLines; ++i) {	
 				m.PushVertexData(sizeof(p), (char *)p);
 
 				uint16 line[2] = { i*2, i*2+1 };
@@ -75,7 +78,7 @@ namespace Maki
 
 		void DebugPhysicsRenderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
 		{
-			if(lineIndex >= MAX_LINES) {
+			if(lineIndex >= maxLines) {
 				Console::Warning("Debug physics rendering drew too many lines, increase hopper size");
 				return;
 			}
