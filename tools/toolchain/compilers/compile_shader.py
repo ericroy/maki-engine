@@ -252,85 +252,6 @@ def _ogl_process_includes(file_path, source, recursion_depth = 0):
             modified_source.append(line)
     return ''.join(modified_source)
 
-def _ogl_uniform_size(data_type, size, array_stride, matrix_stride):
-    if array_stride > 0:
-        return array_stride * size
-    elif matrix_stride > 0:
-        if data_type in (GL_FLOAT_MAT2, GL_FLOAT_MAT2x3, GL_FLOAT_MAT2x4, GL_DOUBLE_MAT2, GL_DOUBLE_MAT2x3, GL_DOUBLE_MAT2x4):
-            return 2 * matrix_stride
-        elif data_type in (GL_FLOAT_MAT3, GL_FLOAT_MAT3x2, GL_FLOAT_MAT3x4, GL_DOUBLE_MAT3, GL_DOUBLE_MAT3x2, GL_DOUBLE_MAT3x4):
-            return 3 * matrix_stride
-        elif data_type in (GL_FLOAT_MAT4, GL_FLOAT_MAT4x2, GL_FLOAT_MAT4x3, GL_DOUBLE_MAT4, GL_DOUBLE_MAT4x2, GL_DOUBLE_MAT4x3):
-            return 4 * matrix_stride
-        else:
-            assert False, "Don't know the size of this type %s" % data_type
-    else:
-        return GL_TYPE_BYTE_SIZES[data_type]
-
-def _ogl_get_active_uniforms(prog, indices, enum):
-    values = (c_int * len(indices))()
-    glGetActiveUniformsiv(prog, c_size_t(len(indices)), indices, enum, values)
-    _check_gl_error()
-    return values
-
-def _ogl_create_meta_node(node_name, prog, shader_type):
-    buffer_slots = {}
-    buffer_contents = {}
-    for buffer_name in BUFFERS:
-
-        bn = create_string_buffer(buffer_name.encode('utf-8'))
-        slot = glGetUniformBlockIndex(prog, bn)
-        _check_gl_error()
-        if slot == GL_INVALID_INDEX:
-            continue
-        
-        referenced = c_int(0)
-        enum = GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER if shader_type == 'vs' else GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER
-        glGetActiveUniformBlockiv(prog, slot, enum, byref(referenced))
-        _check_gl_error()
-        if referenced.value == 0:
-            continue
-
-        buffer_slots[buffer_name] = int(slot)
-
-        glBindBuffer(GL_UNIFORM_BUFFER, slot)
-        _check_gl_error()
-
-        count = c_int()
-        glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, byref(count))
-        _check_gl_error()
-
-        indices = (c_uint * count.value)()
-        glGetActiveUniformBlockiv(prog, slot, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, cast(indices, POINTER(c_int)))
-        _check_gl_error()        
-
-        offsets = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_OFFSET)
-        types = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_TYPE)
-        sizes = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_SIZE)
-        array_strides = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_ARRAY_STRIDE)
-        matrix_strides = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_MATRIX_STRIDE)
-        name_lengths = _ogl_get_active_uniforms(prog, indices, GL_UNIFORM_NAME_LENGTH)
-        byte_lengths = [_ogl_uniform_size(types[i], sizes[i], array_strides[i], matrix_strides[i]) for i in range(count.value)]
-
-        name_buffer = create_string_buffer(max(name_lengths)+1)
-        fields_seen = set()
-        for i in range(count.value):
-            size = c_int()
-            gl_type = c_int()
-            length = c_size_t(0)
-            glGetActiveUniform(prog, indices[i], len(name_buffer), byref(length), byref(size), byref(gl_type), name_buffer)
-            _check_gl_error()
-
-            name = name_buffer.value.decode('utf-8')
-            name = name.split('[', 1)[0]
-            name = name.split('.', 1)[0]
-            if name in fields_seen:
-                continue
-            fields_seen.add(name)
-            buffer_contents.setdefault(buffer_name, []).append((name, offsets[i], byte_lengths[i]))
-
-    return _meta(node_name, buffer_slots, buffer_contents)
-
 def _ogl_compile_glsl(file_name, source, shader_type):
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
     _check_gl_error()
@@ -413,8 +334,8 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
             glGetProgramiv(prog, GL_ACTIVE_ATTRIBUTES, byref(input_attr_count))
             _check_gl_error()
 
-        vs_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'vs'), _data(data_node_name, vs_final_source)]
-        ps_programs[variant] = [_ogl_create_meta_node(meta_node_name, prog, 'ps'), _data(data_node_name, ps_final_source)]
+        vs_programs[variant] = [_meta(meta_node_name, {}, {}), _data(data_node_name, vs_final_source)]
+        ps_programs[variant] = [_meta(meta_node_name, {}, {}), _data(data_node_name, ps_final_source)]
 
     return input_attr_count.value, vs_programs, ps_programs
 

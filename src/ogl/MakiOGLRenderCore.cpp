@@ -312,10 +312,13 @@ failed:
 			// Regarding the nastiness below:
 			// Most of this info is supposed to be provided in the mshad files that describe the shader.  However,
 			// since glsl shaders are not meant to be pre-compiled, we need to resolve this stuff at runtime.
+			//
+			// This is totally gross since it modifies the cpu-side shader object.
 
 			s->vertexShader.frameUniformBufferLocation = glGetUniformBlockIndex(program, "enginePerFrame");
 			if(s->vertexShader.frameUniformBufferLocation != -1) {
 				memset(s->vertexShader.engineFrameUniformLocations, 0xff, sizeof(s->vertexShader.engineFrameUniformLocations));
+				memset(s->pixelShader.engineFrameUniformLocations, 0xff, sizeof(s->pixelShader.engineFrameUniformLocations));
 
 				GLint uniformBlockSize = 0;
 				glGetActiveUniformBlockiv(program, s->vertexShader.frameUniformBufferLocation, GL_UNIFORM_BLOCK_DATA_SIZE, &uniformBlockSize);
@@ -330,12 +333,11 @@ failed:
 				glGetActiveUniformBlockiv(program, s->vertexShader.frameUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &activeUniformCount);
 
 				std::vector<GLint> indices(activeUniformCount, 0);
-				glGetActiveUniformBlockiv(program, s->vertexShader.frameUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
-
 				std::vector<GLint> offsets(activeUniformCount, 0);
-				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
-
 				std::vector<GLint> nameLengths(activeUniformCount, 0);
+
+				glGetActiveUniformBlockiv(program, s->vertexShader.frameUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
+				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
 				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_NAME_LENGTH, nameLengths.data());
 
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
@@ -344,8 +346,7 @@ failed:
 				for(int32 i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
-					GLint nameLength = 0;
-					glGetActiveUniform(program, indices[i], maxNameLength+1, &nameLength, &size, &type, nameBuffer);
+					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
 
 					char *bracket = strchr(nameBuffer, '[');
 					if(bracket != nullptr) {
@@ -355,6 +356,7 @@ failed:
 					Shader::FrameUniform uni = Shader::GetFrameUniformByName(nameBuffer);
 					if(s->vertexShader.engineFrameUniformLocations[uni] == -1) {
 						s->vertexShader.engineFrameUniformLocations[uni] = offsets[i];
+						s->pixelShader.engineFrameUniformLocations[uni] = offsets[i];
 					}
 				}
 				SAFE_DELETE(nameBuffer);
@@ -363,6 +365,7 @@ failed:
 			s->vertexShader.objectUniformBufferLocation = glGetUniformBlockIndex(program, "enginePerObject");
 			if(s->vertexShader.objectUniformBufferLocation != -1) {
 				memset(s->vertexShader.engineObjectUniformLocations, 0xff, sizeof(s->vertexShader.engineObjectUniformLocations));
+				memset(s->pixelShader.engineObjectUniformLocations, 0xff, sizeof(s->pixelShader.engineObjectUniformLocations));
 
 				GLint uniformBlockSize = 0;
 				glGetActiveUniformBlockiv(program, s->vertexShader.objectUniformBufferLocation, GL_UNIFORM_BLOCK_DATA_SIZE, &uniformBlockSize);
@@ -377,12 +380,11 @@ failed:
 				glGetActiveUniformBlockiv(program, s->vertexShader.objectUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &activeUniformCount);
 				
 				std::vector<GLint> indices(activeUniformCount, 0);
-				glGetActiveUniformBlockiv(program, s->vertexShader.objectUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
-
 				std::vector<GLint> offsets(activeUniformCount, 0);
-				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
-
 				std::vector<GLint> nameLengths(activeUniformCount, 0);
+
+				glGetActiveUniformBlockiv(program, s->vertexShader.objectUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
+				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
 				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_NAME_LENGTH, nameLengths.data());
 
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
@@ -391,8 +393,7 @@ failed:
 				for(int32 i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
-					GLint nameLength = 0;
-					glGetActiveUniform(program, indices[i], maxNameLength+1, &nameLength, &size, &type, nameBuffer);
+					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
 
 					char *bracket = strchr(nameBuffer, '[');
 					if(bracket != nullptr) {
@@ -402,6 +403,7 @@ failed:
 					Shader::ObjectUniform uni = Shader::GetObjectUniformByName(nameBuffer);
 					if(s->vertexShader.engineObjectUniformLocations[uni] == -1) {
 						s->vertexShader.engineObjectUniformLocations[uni] = offsets[i];
+						s->pixelShader.engineObjectUniformLocations[uni] = offsets[i];
 					}
 				}
 				SAFE_DELETE(nameBuffer);
@@ -410,6 +412,7 @@ failed:
 			s->vertexShader.materialUniformBufferLocation = glGetUniformBlockIndex(program, "material");
 			if(s->vertexShader.materialUniformBufferLocation != -1) {
 				s->vertexShader.materialUniformLocations.clear();
+				s->pixelShader.materialUniformLocations.clear();
 
 				GLint uniformBlockSize = 0;
 				glGetActiveUniformBlockiv(program, s->vertexShader.materialUniformBufferLocation, GL_UNIFORM_BLOCK_DATA_SIZE, &uniformBlockSize);
@@ -422,14 +425,13 @@ failed:
 				
 				GLint activeUniformCount = 0;
 				glGetActiveUniformBlockiv(program, s->vertexShader.materialUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &activeUniformCount);
-				
+
 				std::vector<GLint> indices(activeUniformCount, 0);
-				glGetActiveUniformBlockiv(program, s->vertexShader.materialUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
-
 				std::vector<GLint> offsets(activeUniformCount, 0);
-				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
-
 				std::vector<GLint> nameLengths(activeUniformCount, 0);
+
+				glGetActiveUniformBlockiv(program, s->vertexShader.materialUniformBufferLocation, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.data());
+				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_OFFSET, offsets.data());
 				glGetActiveUniformsiv(program, activeUniformCount, (GLuint *)indices.data(), GL_UNIFORM_NAME_LENGTH, nameLengths.data());
 
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
@@ -438,8 +440,7 @@ failed:
 				for(int32 i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
-					GLint nameLength = 0;
-					glGetActiveUniform(program, indices[i], maxNameLength+1, &nameLength, &size, &type, nameBuffer);
+					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
 
 					char *bracket = strchr(nameBuffer, '[');
 					if(bracket != nullptr) {
@@ -450,6 +451,7 @@ failed:
 					if(index == -1) {
 						Shader::MaterialUniformLocation uni(offsets[i], nameBuffer);
 						s->vertexShader.materialUniformLocations.push_back(uni);
+						s->pixelShader.materialUniformLocations.push_back(uni);
 					}
 				}
 				SAFE_DELETE(nameBuffer);
