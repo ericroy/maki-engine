@@ -1,8 +1,9 @@
+import platform
 from paver.easy import *
 
 DEBUG = False
 CONFIGURATION = 'Release'
-PLATFORM = 'win'
+PLATFORM = 'win' if platform.system() == 'Windows' else 'nix'
 
 KNOWN_PATHS = {
 	'sdl': {
@@ -81,21 +82,12 @@ def debug():
 	CONFIGURATION = 'Debug'
 
 @task
-def win():
-	global PLATFORM
-	PLATFORM = 'win'
-
-def nix():
-	global PLATFORM
-	PLATFORM = 'nix'
-
-@task
 def core():
 	build_dir = path('build/core')
 	try:
 		build_dir.rmtree()
 		build_dir.makedirs()
-		out = path('bin') / lib_name('Core')
+		out = path('bin') / path(CONFIGURATION) /  lib_name('MakiCore')
 		sources = path('src/core').walkfiles('*.cpp')
 		compile_lib(sources, build_dir, out, include_dirs=['src', known_path('sdl')])
 	finally:
@@ -107,7 +99,7 @@ def framework():
 	try:
 		build_dir.rmtree()
 		build_dir.makedirs()
-		out = path('bin') / lib_name('Framework')
+		out = path('bin') / path(CONFIGURATION) /  lib_name('MakiFramework')
 		sources = path('src/framework').walkfiles('*.cpp')
 		compile_lib(sources, build_dir, out, include_dirs=['src', known_path('sdl'), known_path('bullet'), known_path('lua')])
 	finally:
@@ -119,7 +111,7 @@ def d3d():
 	try:
 		build_dir.rmtree()
 		build_dir.makedirs()
-		out = path('bin') / lib_name('D3D')
+		out = path('bin') / path(CONFIGURATION) /  lib_name('MakiD3D')
 		sources = path('src/d3d').walkfiles('*.cpp')
 		compile_lib(sources, build_dir, out, include_dirs=['src', known_path('sdl')])
 	finally:
@@ -131,7 +123,7 @@ def ogl():
 	try:
 		build_dir.rmtree()
 		build_dir.makedirs()
-		out = path('bin') / lib_name('OGL')
+		out = path('bin') / path(CONFIGURATION) / lib_name('MakiOGL')
 		sources = path('src/ogl').walkfiles('*.cpp')
 		compile_lib(sources, build_dir, out, include_dirs=['src', known_path('sdl')])
 	finally:

@@ -10,7 +10,7 @@ namespace Maki
 
 		class Shader
 		{
-		private:
+		public:
 			static const uint32 UNIFORM_NAME_MAX_LENGTH = 32;
 
 			struct MaterialUniformLocation
@@ -23,8 +23,7 @@ namespace Maki
 				int32 location;
 				char name[UNIFORM_NAME_MAX_LENGTH];
 			};
-
-		public:
+					
 			enum FrameUniform
 			{
 				FrameUniform_None = -1,
