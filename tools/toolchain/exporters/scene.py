@@ -5,7 +5,7 @@ import operator
 import functools
 
 from ..compilers import compile_fbx
-from .. import doc
+from .. import doc, util
 from ..fbx.FbxCommon import *
 
 def _parse_user_props_string(s):
@@ -25,7 +25,7 @@ def _get_user_props(node):
     user_props = {}
     prop = node.GetFirstProperty()
     while prop.IsValid():
-        if prop.GetFlag(FbxPropertyAttr.eUser):
+        if prop.GetFlag(FbxPropertyAttr.eUserDefined):
             if prop.GetName() == 'UDP3DSMAX':
                 user_props = _parse_user_props_string(FbxPropertyString(prop).Get().Buffer())
                 break
@@ -65,7 +65,7 @@ class MeshLibrary(object):
             print('Exporting %s' % output_file)
             if not compile_fbx.build_node(self._manager, node, os.path.join(self._output_dir, output_file), *self._args):
                 raise RuntimeError('Failed to export mesh')
-            mesh_path = os.path.join(os.path.relpath(self._output_dir, 'assets'), output_file).replace('\\', '/').lower()
+            mesh_path = util.archive_relative_path(os.path.join(self._output_dir, output_file))
             self._map[mesh.GetUniqueID()] = mesh_path
         return mesh_path
 

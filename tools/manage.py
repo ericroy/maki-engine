@@ -4,26 +4,14 @@ import glob
 import shutil
 import traceback
 from optparse import OptionParser
-from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers
+from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers, exporters
 
 def _watch(*args):
     watch.watch_forever()
 
-def _archive_containing(file_path):
-    file_path = os.path.normpath(file_path)
-    for arc_name, conf in CONFIG['assets'].items():
-        src_path = os.path.normpath(conf['src'])
-        p = file_path
-        while len(p) > 0:
-            if os.path.samefile(src_path, p):
-                #print('Determined that file %s belongs to archive %s' % (file_path, arc_name))
-                return arc_name
-            p = os.path.split(p)[0]
-    raise RuntimeError('None of the archives specified in the project file contain %s' % file_path)
-
 def _build(src_file, arc_name=None):
     if arc_name is None:
-        arc_name = _archive_containing(src_file)
+        arc_name = util.archive_containing(src_file)
     conf = CONFIG['assets'][arc_name]
     src = util.clean_path(src_file)
     dst = os.path.join(conf['dst'], os.path.relpath(src, conf['src']))
