@@ -466,12 +466,12 @@ failed:
 			// Arbitrarily, we'll decide to store the sampler locations in the vertex shader's array
 			char buffer[32];
 			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START; i++) {
-				sprintf_s(buffer, "uSampler%d", i);
+				sprintf(buffer, "uSampler%d", i);
 				GLint location = glGetUniformLocation(program, buffer);
 				gvs->textureSamplerLocations[i] = location;
 			}
 			for(uint32 i = 0; i < Core::RenderState::MAX_LIGHTS; i++) {
-				sprintf_s(buffer, "uShadowSampler[%d]", i);
+				sprintf(buffer, "uShadowSampler[%d]", i);
 				GLint location = glGetUniformLocation(program, buffer);
 				gvs->textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+i] = location;
 			}

@@ -39,7 +39,7 @@ namespace Maki
 		Shader::MaterialUniformLocation::MaterialUniformLocation(int32 location, char *name)
 			: location(location)
 		{
-			strcpy_s(this->name, name);
+			strcpy(this->name, name);
 		}
 
 		Shader::FrameUniform Shader::GetFrameUniformByName(const char *name)

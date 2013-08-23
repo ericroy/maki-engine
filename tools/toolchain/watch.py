@@ -21,30 +21,64 @@ MANAGE_SCRIPT = os.path.expandvars('$MAKI_DIR/tools/manage.py')
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-class UDPNotifier(object):
+class UDPWorker(threading.Thread):
     def __init__(self, port):
+        threading.Thread.__init__(self)
+        self._abort = False
         self._threshold = 0.2
         self._cache = {}
         self._port = port
+        self._lock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._socket.bind(('127.0.0.1', 0))
 
-    def __call__(self, path):
-        now = time.clock()
-        try:
-            if now - self._cache[path] < self._threshold:
-                return
-        except KeyError:
-            pass
-        self._cache[path] = now
-        print('Notify %s' % path)
-        b = path.encode('utf-8')
-        data = struct.pack('I%ds' % len(b), 0, b)
-        self._socket.sendto(data, ('<broadcast>', self._port))
+    def abort(self):
+        self._abort = True
 
-    def close(self):
-        self._socket.close()
+    def add(self, path):
+        self._lock.acquire()
+        try:
+            self._cache[path] = time.clock()
+        finally:
+            self._lock.release()
+
+    def run(self):
+        try:
+            while not self._abort:
+                self._lock.acquire()
+                try:
+                    now = time.clock()
+                    removals = []
+                    for path, timestamp in self._cache.items():
+                        if now - timestamp < self._threshold:
+                            continue
+                        print('Notify %s' % path)
+                        b = path.encode('utf-8')
+                        data = struct.pack('I%ds' % len(b), 0, b)
+                        self._socket.sendto(data, ('<broadcast>', self._port))
+                        removals.append(path)
+                    for path in removals:
+                        del self._cache[path]
+                finally:
+                    self._lock.release()
+                time.sleep(0.1)
+        finally:
+            self._socket.close()
+
+class UDPNotifier(object):
+    def __init__(self, port):
+        self._worker = UDPWorker(port)
+        self._worker.start()
+
+    def __del__(self):
+        self._worker.abort()
+        self._worker.join()
+
+    def __call__(self, path):
+        self._worker.add(path)
+
+    
 
 class Observer(threading.Thread):
     def __init__(self, path, callback):
@@ -81,7 +115,8 @@ class Observer(threading.Thread):
                     for file in files_changed:    
                         # Created or updated
                         path = util.clean_path(os.path.join(self._path, file))
-                        self._callback(path)
+                        if os.path.isfile(path):
+                            self._callback(path)
         finally:
             win32file.CancelIo(self._handle)
             win32file.CloseHandle(self._overlapped.hEvent)
@@ -119,7 +154,6 @@ def watch_forever():
         obs1.start()
         obs2.start()
 
-    
     try:
         while True:
             time.sleep(1)
@@ -133,4 +167,3 @@ def watch_forever():
         for obs in observers:
             obs.join()
         logger.info('Done')
-        udp_notify.close()

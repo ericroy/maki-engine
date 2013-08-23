@@ -236,7 +236,7 @@ namespace Maki
 			std::stringstream mappings;
 			char controllerMappingKey[64];
 			for(uint32 i = 0; ; i++) {
-				sprintf_s(controllerMappingKey, "engine.controller_support_%d", i);
+				sprintf(controllerMappingKey, "engine.controller_support_%d", i);
 				const char *value = config->GetString(controllerMappingKey, nullptr);
 				if(value == nullptr) {
 					break;

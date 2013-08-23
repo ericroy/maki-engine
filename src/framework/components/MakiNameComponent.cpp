@@ -25,21 +25,21 @@ namespace Maki
 			{
 				const char *s = node->ResolveValue("#0");
 				assert(strlen(s) < sizeof(name) / sizeof(name[0]));
-				strcpy_s(name, s);
+				strcpy(name, s);
 				return true;
 			}
 
 			bool Name::Init(const char *s)
 			{
 				assert(strlen(s) < sizeof(name) / sizeof(name[0]));
-				strcpy_s(name, s);
+				strcpy(name, s);
 				return true;
 			}
 
 			Name *Name::Clone(bool prototype)
 			{
 				Name *c = ComponentPool<Name>::Get()->Create();
-				strcpy_s(c->name, name);
+				strcpy(c->name, name);
 				return c;
 			}
 

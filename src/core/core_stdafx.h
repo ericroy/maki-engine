@@ -1,18 +1,10 @@
 #pragma once
-
-#ifdef EXPORT_MAKI_CORE_API
-#	define MAKI_CORE_API __declspec(dllexport)
-#	define MAKI_CORE_API_EXTERN
-#else
-#	define MAKI_CORE_API __declspec(dllimport)
-#	define MAKI_CORE_API_EXTERN
-#endif
-
 #define MAKI_USE_SIMD 1
 #define MAKI_CONSOLE_OUTPUT_ENABLED 1
 #define MAKI_SORT_DRAW_COMMANDS_IN_RENDER_THREAD 0
 #define MAKI_PROFILING 0
 
+#define _CRT_SECURE_NO_WARNINGS 1
 
 #include <cstdio>
 #include <new>

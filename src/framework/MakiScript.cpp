@@ -60,7 +60,7 @@ namespace Maki
 
 			// Load and evaluate the script
 			char chunkName[32];
-			sprintf_s(chunkName, "Rid<%u>", scriptRid);
+			sprintf(chunkName, "Rid<%u>", scriptRid);
 
 			if(luaL_loadbuffer(state, data, bytesRead, chunkName) != 0) {
 				Console::LuaError(luaL_checklstring(state, 1, nullptr));

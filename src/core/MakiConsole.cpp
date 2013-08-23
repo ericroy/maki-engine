@@ -36,14 +36,14 @@ namespace Maki
 
 			char *cursor = buffer;
 			if(prefix != nullptr) {
-				strcpy_s(buffer, prefix);
+				strcpy(buffer, prefix);
 				cursor += strlen(prefix);
 			}
 
 			sprintf_safe(cursor, MAX_BUFFER_SIZE - (cursor - buffer), format, args);
 			
 			if(lineFeed) {
-				strcat_s(buffer, "\n");
+				strcat(buffer, "\n");
 			}
 
 #if MAKI_CONSOLE_OUTPUT_ENABLED

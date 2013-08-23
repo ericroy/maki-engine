@@ -159,14 +159,14 @@ def _write_mesh(manager, node, out):
         flags |= FLAG_HAS_BONEWEIGHTS
 
     # Generate tangents if necessary
-    if normals and not tangents:
-        print("Generating tangents")
-        if mesh.GenerateTangentsDataForAllUVSets():
-            tangents = mesh.GetLayer(0).GetTangents()
-            if tangents:
-                flags |= FLAG_HAS_TANGENTS
-        else:
-            raise RuntimeError('Failed to generate tangets')
+    # if normals and not tangents:
+    #     print("Generating tangents")
+    #     if mesh.GenerateTangentsDataForAllUVSets(True):
+    #         tangents = mesh.GetLayer(0).GetTangents()
+    #         if tangents:
+    #             flags |= FLAG_HAS_TANGENTS
+    #     else:
+    #         raise RuntimeError('Failed to generate tangets')
 
     print('Vertex count: %s' % vertex_count)
     print('Index count: %s' % (polygon_count * indices_per_face))

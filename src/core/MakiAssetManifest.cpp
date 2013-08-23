@@ -1,6 +1,7 @@
 #include "core/core_stdafx.h"
 #include "core/MakiAssetManifest.h"
 #include <sstream>
+#include <string.h>
 
 namespace Maki
 {
@@ -52,9 +53,9 @@ namespace Maki
 			path = fullPath.c_str();
 #endif
 
-			FILE *fp = nullptr;
-			if(fopen_s(&fp, path, "rb") != 0 || fp == nullptr) {
-				Console::Error("Failed to open resource: %s", path);
+			FILE *fp = fopen(path, "rb");
+			if(fp == nullptr) {
+				Console::Error("Failed to open resource: %s (%s)", path, strerror(errno));
 				return nullptr;
 			}
 		

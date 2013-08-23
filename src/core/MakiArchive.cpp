@@ -39,8 +39,8 @@ namespace Maki
 				return false;
 			}
 			
-			fp = nullptr;
-			if(fopen_s(&fp, archivePath, "rb") != 0 || fp == nullptr) {
+			fp = fopen(archivePath, "rb");
+			if(fp == nullptr) {
 				return false;
 			}
 
