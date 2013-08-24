@@ -47,12 +47,12 @@ function writeBezier(elem, fp, depth) {
 	if(typeof(elem) == "undefined" || elem.@enabled != "1") {
 		return;
 	}
-	fp.writePair("property", elem.@id.toLowerCase(), depth, true);
+	fp.write("\"" + elem.@id.toLowerCase() + "\"", depth);
+	
 	var keyframes = elem.Keyframe;	
 	for(var i = 0; i < keyframes.length(); i++) {
 		var kf = keyframes[i];
-		fp.write("key", depth+1);
-
+		
 		var anchor = splitIntegerPair(kf.@anchor);
 		if(anchor[0] != 0) {
 			throw "Expected anchor point x value to always be zero";
@@ -61,9 +61,11 @@ function writeBezier(elem, fp, depth) {
 		var next = splitIntegerPair(kf.@next);
 		var time = parseInt(kf.@timevalue.toString());
 		
-		fp.writePair("anchor", time + ", " + anchor[1], depth+2);
-		fp.writePair("prev", time + prev[0] + ", " + prev[1], depth+2);
-		fp.writePair("next", time + next[0] + ", " + next[1], depth+2);
+		// Time values for prev and next handles are relative to anchor time
+		prev[0] += time;
+		next[0] += time;
+
+		fp.writePair("control_point", prev[0] + ", " + prev[1] + ", " + anchor[0] + ", " + anchor[1] + ", " + next[0] + ", " + next[1], depth+1);
 	}
 }
 
@@ -74,10 +76,6 @@ function padNumber(n, length) {
 	}
 	s += n;
 	return s.slice(-length);
-}
-
-function cleanName(name) {
-	return name.toLowerCase().replace(/[\s\/\\.<>]+/g, "");
 }
 
 function exportScene(uri, debugTrace) {
@@ -114,6 +112,7 @@ function exportScene(uri, debugTrace) {
 		
 		var exportLibAssets = layer.visible && !layer.outline;
 		
+		fp.write("key_frames", 2);
 		for(var fi = 0; fi < layer.frames.length;) {
 			var frame = layer.frames[fi];
 			if(fi != frame.startFrame) {
@@ -123,27 +122,28 @@ function exportScene(uri, debugTrace) {
 			// Have the IDE select this frame
 			timeline.currentFrame = fi;
 			
-			fp.write("keyframe", 2);
-			fp.writePair("frame_start", frame.startFrame, 3);
-			fp.writePair("frame_duration", frame.duration, 3);
+			fp.write("key_frame", 3);
+			fp.writePair("frame_start", frame.startFrame, 4);
+			fp.writePair("frame_duration", frame.duration, 4);
 			
 			if(frame.isMotionObject() && frame.hasMotionPath()) {
-				fp.write("tween", 3);
+				fp.write("tween", 4);
 				//fp.writePair("type", frame.tweenType, 4, true);
 						
 				var xml = new XML(frame.getMotionObjectXML());
-				fp.writePair("time_scale", xml.@TimeScale, 4);
-				fp.writePair("time_duration", xml.@duration, 4);
-				fp.writePair("easing", xml.TimeMap.@type.toString().toLowerCase(), 4, true);
-				fp.writePair("ease_strength", xml.TimeMap.@strength, 4);
+				fp.writePair("time_scale", xml.@TimeScale, 5);
+				fp.writePair("time_duration", xml.@duration, 5);
+				fp.writePair("easing", xml.TimeMap.@type.toString().toLowerCase(), 5, true);
+				fp.writePair("ease_strength", xml.TimeMap.@strength, 5);
 				
-				writeBezier(xml..Property.(@id=="Motion_X"), fp, 4);
-				writeBezier(xml..Property.(@id=="Motion_Y"), fp, 4);
-				writeBezier(xml..Property.(@id=="Scale_X"), fp, 4);
-				writeBezier(xml..Property.(@id=="Scale_Y"), fp, 4);
+				fp.write("properties", 5);
+				writeBezier(xml..Property.(@id=="Motion_X"), fp, 6);
+				writeBezier(xml..Property.(@id=="Motion_Y"), fp, 6);
+				writeBezier(xml..Property.(@id=="Scale_X"), fp, 6);
+				writeBezier(xml..Property.(@id=="Scale_Y"), fp, 6);
 			}
 			
-			fp.write("elements", 3);
+			fp.write("elements", 4);
 			for(var ei = 0; ei < frame.elements.length; ei++) {
 				var e = frame.elements[ei];
 				if(e.elementType != "instance") {
@@ -168,15 +168,15 @@ function exportScene(uri, debugTrace) {
 					subtype = e.symbolType;
 				}
 				
-				fp.write("element", 4);
+				fp.write("element", 5);
 				if(e.name.length > 0) {
-					fp.writePair("name", e.name, 5, true);
+					fp.writePair("name", e.name, 6, true);
 				}
 				//fp.writePair("type", "\"" + e.instanceType + "\", \"" + subtype + "\"", 5);
-				fp.writePair("z_index", e.depth, 5);
-				fp.writePair("size", e.width + ", " + e.height, 5);
-				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 5);
-				fp.writePair("transform", e.transformX + ", " + e.transformY, 5);
+				fp.writePair("z_index", e.depth, 6);
+				fp.writePair("size", e.width + ", " + e.height, 6);
+				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
+				fp.writePair("transform", e.transformX + ", " + e.transformY, 6);
 				
 				var libIndex = -1;
 				if(exportLibAssets) {
@@ -188,7 +188,7 @@ function exportScene(uri, debugTrace) {
 						libraryList.push(e.libraryItem.name);
 					}
 				}
-				fp.writePair("library_index", libIndex, 5);
+				fp.writePair("library_index", libIndex, 6);
 			}
 
 			fi += frame.duration;
