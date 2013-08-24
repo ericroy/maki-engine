@@ -35,6 +35,14 @@ function fopen(uri, debugTrace) {
 	};
 }
 
+function splitIntegerPair(s) {
+	var parts = s.toString().split(",");
+	parts[0] = parseInt(parts[0]);
+	parts[1] = parseInt(parts[1]);
+	return parts;
+}
+	
+
 function writeBezier(elem, fp, depth) {
 	if(typeof(elem) == "undefined" || elem.@enabled != "1") {
 		return;
@@ -44,15 +52,32 @@ function writeBezier(elem, fp, depth) {
 	for(var i = 0; i < keyframes.length(); i++) {
 		var kf = keyframes[i];
 		fp.write("key", depth+1);
-		fp.writePair("anchor", kf.@anchor.toString().replace(",", ", "), depth+2);
-		fp.writePair("time", kf.@timevalue, depth+2);
-		fp.writePair("prev", kf.@previous.toString().replace(",", ", "), depth+2);
-		fp.writePair("next", kf.@next.toString().replace(",", ", "), depth+2);
+
+		var anchor = splitIntegerPair(kf.@anchor);
+		if(anchor[0] != 0) {
+			throw "Expected anchor point x value to always be zero";
+		}
+		var prev = splitIntegerPair(kf.@previous);
+		var next = splitIntegerPair(kf.@next);
+		var time = parseInt(kf.@timevalue.toString());
+		
+		fp.writePair("anchor", time + ", " + anchor[1], depth+2);
+		fp.writePair("prev", time + prev[0] + ", " + prev[1], depth+2);
+		fp.writePair("next", time + next[0] + ", " + next[1], depth+2);
 	}
 }
 
+function padNumber(n, length) {
+	var s = "";
+	for(var i = 0; i < length; i++) {
+		s += "0";
+	}
+	s += n;
+	return s.slice(-length);
+}
+
 function cleanName(name) {
-	return name.replace(" ", "").toLowerCase();
+	return name.toLowerCase().replace(/[\s\/\\.<>]+/g, "");
 }
 
 function exportScene(uri, debugTrace) {
@@ -70,20 +95,24 @@ function exportScene(uri, debugTrace) {
 
 	var referencedLibraryItems = {};
 	var libraryList = [];
+	var elementIds = {};
+	var nextElementId = 0;
 	
 	var fp = fopen(uri, debugTrace);
-	fp.writePair("frame_count", frameCount);
-	fp.writePair("layer_count", layerCount);
+	fp.writePair("max_frames_per_layer", frameCount);
 	fp.write("layers");
 
 	for(var li = 0; li < layerCount; li++) {
-		// Have IDE select this layer
+		// Have the IDE select this layer
 		timeline.currentLayer = li;
 		var layer = timeline.layers[li];
 		
 		fp.write("layer", 1);
 		fp.writePair("name", layer.name, 2, true);
 		fp.writePair("visible", layer.visible, 2);
+		fp.writePair("outline", layer.outline, 2);
+		
+		var exportLibAssets = layer.visible && !layer.outline;
 		
 		for(var fi = 0; fi < layer.frames.length;) {
 			var frame = layer.frames[fi];
@@ -91,7 +120,7 @@ function exportScene(uri, debugTrace) {
 				continue;
 			}
 			
-			// Have IDE select this frame
+			// Have the IDE select this frame
 			timeline.currentFrame = fi;
 			
 			fp.write("keyframe", 2);
@@ -100,12 +129,13 @@ function exportScene(uri, debugTrace) {
 			
 			if(frame.isMotionObject() && frame.hasMotionPath()) {
 				fp.write("tween", 3);
-				fp.writePair("type", frame.tweenType, 4, true);
+				//fp.writePair("type", frame.tweenType, 4, true);
 						
 				var xml = new XML(frame.getMotionObjectXML());
 				fp.writePair("time_scale", xml.@TimeScale, 4);
 				fp.writePair("time_duration", xml.@duration, 4);
-				fp.writePair("interpolation", xml.TimeMap.@type, 4, true);
+				fp.writePair("easing", xml.TimeMap.@type.toString().toLowerCase(), 4, true);
+				fp.writePair("ease_strength", xml.TimeMap.@strength, 4);
 				
 				writeBezier(xml..Property.(@id=="Motion_X"), fp, 4);
 				writeBezier(xml..Property.(@id=="Motion_Y"), fp, 4);
@@ -114,81 +144,92 @@ function exportScene(uri, debugTrace) {
 			}
 			
 			fp.write("elements", 3);
-			frame.elements.forEach(function(e) {
-				fp.write("element", 4);
-				fp.writePair("type", e.elementType, 5, true);
-				fp.writePair("instance_type", e.instanceType, 5, true);
-				
-				if(e.elementType == "instance") {
-					if(e.instanceType == "bitmap") {
-						fp.writePair("pixel_size", e.hPixels + ", " + e.vPixels, 5);
-					} else if(e.instanceType == "symbol") {
-						fp.writePair("symbol_type", e.symbolType, 5, true);
-					} else {
-						fl.trace("Unsupported instance type: " + e.instanceType);
-						return;
-					}
-				} else {
+			for(var ei = 0; ei < frame.elements.length; ei++) {
+				var e = frame.elements[ei];
+				if(e.elementType != "instance") {
 					fl.trace("Unsupported element type: " + e.elementType);
-					return;
+					continue;
+				}
+				if(e.instanceType != "symbol" && e.instanceType != "bitmap") {
+					fl.trace("Unsupported instance type: " + e.instanceType);
+					continue;
+				}
+				/*
+				var id = elementIds[e];
+				if(typeof(id) == "undefined") {
+					fl.trace("Generating new element id");
+					id = nextElementId++;
+					elementIds[e] = id;
+				}
+				*/
+				
+				var subtype = "";
+				if(e.instanceType == "symbol") {
+					subtype = e.symbolType;
 				}
 				
-				fp.writePair("name", e.name, 5, true);
+				fp.write("element", 4);
+				if(e.name.length > 0) {
+					fp.writePair("name", e.name, 5, true);
+				}
+				//fp.writePair("type", "\"" + e.instanceType + "\", \"" + subtype + "\"", 5);
 				fp.writePair("z_index", e.depth, 5);
 				fp.writePair("size", e.width + ", " + e.height, 5);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 5);
 				fp.writePair("transform", e.transformX + ", " + e.transformY, 5);
-				fp.writePair("rotation", e.rotation, 5);
-				fp.writePair("scale", e.scaleX + ", " + e.scaleY, 5);
-				fp.writePair("registration_point", e.x + ", " + e.y, 5);
-								
-				var index = 0;
-				if(e.libraryItem.name in referencedLibraryItems) {
-					index = referencedLibraryItems[e.libraryItem.name];
-				} else {
-					index = libraryList.length;
-					referencedLibraryItems[e.libraryItem.name] = index;
-					libraryList.push(e.libraryItem.name);
+				
+				var libIndex = -1;
+				if(exportLibAssets) {
+					if(e.libraryItem.name in referencedLibraryItems) {
+						libIndex = referencedLibraryItems[e.libraryItem.name];
+					} else {
+						libIndex = libraryList.length;
+						referencedLibraryItems[e.libraryItem.name] = libIndex;
+						libraryList.push(e.libraryItem.name);
+					}
 				}
-				fp.writePair("library_index", index, 5);
-			});
-			
+				fp.writePair("library_index", libIndex, 5);
+			}
+
 			fi += frame.duration;
 		}
 	}
 
 	var lib = document.library;
+
+	var sheet = new SpriteSheetExporter();
+	sheet.layoutFormat = "JSON";
+	var sheetUri = exportDir + "/" + pathChunks[pathChunks.length-1].split(".")[0];
+	libraryList.forEach(function(itemName) {
+		var item = lib.items[lib.findItemIndex(itemName)];
+		sheet.addSymbol(item);
+	});
+	var meta = sheet.exportSpriteSheet(sheetUri, {format: "png", bitDepth:32, backgroundColor: "#00000000"});
+	meta = eval("(" + meta + ")");
+	FLfile.remove(sheetUri + ".json");
+	
+	fp.write("sprite_sheet");
+	fp.writePair("size", meta.meta.size.w + ", " + meta.meta.size.h, 1);
+	fp.writePair("format", meta.meta.format, 1, true);
+	
 	fp.write("library");
 	libraryList.forEach(function(itemName) {
 		var item = lib.items[lib.findItemIndex(itemName)];
 		fp.write("item", 1);
-		fp.writePair("name", cleanName(item.name), 2, true);		
+		fp.writePair("name", item.name, 2, true);		
 		fp.writePair("type", item.itemType, 2, true);
-		
-		var uri = exportDir + "/" + cleanName(item.name);
-		fp.writePair("path", FLfile.uriToPlatformPath(uri), 2, true);
-		
-		lib.selectItem(itemName, true, true);
-		
-		var sheet = new SpriteSheetExporter();
-		sheet.layoutFormat = "JSON";
-		sheet.addSymbol(item);
-		
-		var meta = sheet.exportSpriteSheet(uri, {format: "png", bitDepth:32, backgroundColor: "#00000000"});
-		meta = eval("(" + meta + ")");
-		
-		var frames = [];
-		for(var key in meta.frames) {
-			frames.push(meta.frames[key])
-		}
-		fp.writePair("sheet_size", meta.meta.size.w + ", " + meta.meta.size.h, 2);
 		fp.write("frames", 2);
-		frames.forEach(function(f) {
-			var o = f.frame;
+		
+		for(var i = 0; i < 9999; i++) {
+			var key = item.name + padNumber(i, 4);
+			if(!(key in meta.frames)) {
+				break;
+			}
+			var o = meta.frames[key].frame;
 			fp.writePair("frame", o.x + ", " + o.y + ", " + o.w + ", " + o.h, 3);
-		});
+		}
 	});
-	
+
 	fp.close();
 
 	timeline.currentFrame = originalFrame;
