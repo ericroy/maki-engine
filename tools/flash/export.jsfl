@@ -85,6 +85,7 @@ function exportScene(uri, debugTrace) {
 	
 	var dom = fl.getDocumentDOM();
 	var timeline = dom.getTimeline();
+	var maxFrameCount = timeline.frameCount;
 	var layerCount = timeline.layerCount;
 
 	var originalFrame = timeline.currentFrame;
@@ -96,6 +97,7 @@ function exportScene(uri, debugTrace) {
 	var nextElementId = 0;
 	
 	var fp = fopen(uri, debugTrace);
+	fp.writePair("max_frame_count", maxFrameCount);
 	fp.write("layers");
 
 	for(var li = 0; li < layerCount; li++) {
