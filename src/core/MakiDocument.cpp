@@ -419,6 +419,7 @@ namespace Maki
 
 					// We give ownership of the buffer we allocated to the node
 					if(!AddNode(new Document::Node(buffer, newLength, false), indentLevel, &previous, previousIndentLevel, cleanLine, appendSibling)) {
+						Console::Error("Parse error near line %d, char %d", line, character);
 						return false;
 					}
 				} else {
@@ -428,6 +429,7 @@ namespace Maki
 						p++; character++; length++;
 					}
 					if(!AddNode(new Document::Node(start, length, true), indentLevel, &previous, previousIndentLevel, cleanLine, appendSibling)) {
+						Console::Error("Parse error near line %d, char %d", line, character);
 						return false;
 					}
 				}

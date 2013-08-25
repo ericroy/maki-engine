@@ -28,7 +28,8 @@
     <ClInclude Include="src\framework\MakiComponentPoolBase.h" />
     <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
     <ClInclude Include="src\framework\MakiEntityPool.h" />
-    <ClInclude Include="src\framework\MakiFlash.h" />
+    <ClInclude Include="src\framework\MakiFlashMovie.h" />
+    <ClInclude Include="src\framework\MakiFlashMovieManager.h" />
     <ClInclude Include="src\framework\MakiFrameworkManagers.h" />
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
     <ClInclude Include="src\framework\MakiEntity.h" />
@@ -104,7 +105,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\framework\MakiFlash.cpp" />
+    <ClCompile Include="src\framework\MakiFlashMovie.cpp" />
+    <ClCompile Include="src\framework\MakiFlashMovieManager.cpp" />
     <ClCompile Include="src\framework\MakiFrameworkManagers.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

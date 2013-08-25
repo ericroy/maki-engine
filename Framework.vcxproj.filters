@@ -77,7 +77,8 @@
     <ClInclude Include="src\framework\components\MakiNavMeshComponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\framework\MakiFlash.h" />
+    <ClInclude Include="src\framework\MakiFlashMovieManager.h" />
+    <ClInclude Include="src\framework\MakiFlashMovie.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -148,7 +149,8 @@
     <ClCompile Include="src\framework\components\MakiNavMeshComponent.cpp">
       <Filter>components</Filter>
     </ClCompile>
-    <ClCompile Include="src\framework\MakiFlash.cpp" />
+    <ClCompile Include="src\framework\MakiFlashMovieManager.cpp" />
+    <ClCompile Include="src\framework\MakiFlashMovie.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

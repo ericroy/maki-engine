@@ -1,5 +1,5 @@
 #include "framework/framework_stdafx.h"
-#include "framework/MakiFlash.h"
+#include "framework/MakiFlashMovie.h"
 
 
 namespace Maki

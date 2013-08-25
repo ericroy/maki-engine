@@ -14,7 +14,7 @@ function fopen(uri, debugTrace) {
 			if(this.debugTrace) {
 				fl.trace("<<<<" + indent + s);
 			}
-			this.buffer += indent + s + "\n";
+			this.buffer += indent + s + "\r\n";
 		},
 		writePair: function(key, value, depth, quote) {
 			var addQuotes = false;
@@ -85,7 +85,6 @@ function exportScene(uri, debugTrace) {
 	
 	var dom = fl.getDocumentDOM();
 	var timeline = dom.getTimeline();
-	var frameCount = timeline.frameCount;
 	var layerCount = timeline.layerCount;
 
 	var originalFrame = timeline.currentFrame;
@@ -97,7 +96,6 @@ function exportScene(uri, debugTrace) {
 	var nextElementId = 0;
 	
 	var fp = fopen(uri, debugTrace);
-	fp.writePair("max_frames_per_layer", frameCount);
 	fp.write("layers");
 
 	for(var li = 0; li < layerCount; li++) {
@@ -154,15 +152,7 @@ function exportScene(uri, debugTrace) {
 					fl.trace("Unsupported instance type: " + e.instanceType);
 					continue;
 				}
-				/*
-				var id = elementIds[e];
-				if(typeof(id) == "undefined") {
-					fl.trace("Generating new element id");
-					id = nextElementId++;
-					elementIds[e] = id;
-				}
-				*/
-				
+
 				var subtype = "";
 				if(e.instanceType == "symbol") {
 					subtype = e.symbolType;
@@ -208,9 +198,11 @@ function exportScene(uri, debugTrace) {
 	meta = eval("(" + meta + ")");
 	FLfile.remove(sheetUri + ".json");
 	
-	fp.write("sprite_sheet");
-	fp.writePair("size", meta.meta.size.w + ", " + meta.meta.size.h, 1);
-	fp.writePair("format", meta.meta.format, 1, true);
+	fp.write("sprite_sheets");
+	fp.write("sheet", 1);
+	fp.writePair("size", meta.meta.size.w + ", " + meta.meta.size.h, 2);
+	//fp.writePair("format", meta.meta.format, 2, true);
+	fp.writePair("path", FLfile.uriToPlatformPath(sheetUri+".png"), 2, true);
 	
 	fp.write("library");
 	libraryList.forEach(function(itemName) {

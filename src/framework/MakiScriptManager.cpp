@@ -44,7 +44,7 @@ namespace Maki
 				Rid rid = s->rid;
 				if(rid != RID_NONE) {
 					s->~Script();
-					new(s) SkeletonAnimation();
+					new(s) Script();
 					s->Load(rid);
 				}
 			}
@@ -61,7 +61,7 @@ namespace Maki
 
 			if(rid != RID_NONE) {
 				s->~Script();
-				new(s) SkeletonAnimation();
+				new(s) Script();
 				return s->Load(rid);
 			}
 			return true;

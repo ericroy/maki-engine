@@ -12,6 +12,7 @@ namespace Maki
 	namespace Framework
 	{
 		class ScriptManager;
+		class FlashMovieManager;
 
 		class FrameworkManagers : public Core::PseudoSingleton<FrameworkManagers>
 		{
@@ -25,6 +26,7 @@ namespace Maki
 
 		public:
 			ScriptManager *scriptManager;
+			FlashMovieManager *flashMovieManager;
 		};
 
 	} // namespace Core

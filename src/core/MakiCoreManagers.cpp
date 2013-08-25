@@ -115,16 +115,17 @@ namespace Maki
 				eng->renderer->SyncWithCore();
 			}
 
-			if(textureManager->ReloadAsset(rid)) {
-			} else if(shaderProgramManager->ReloadAsset(rid)) {
-			} else if(materialManager->ReloadAsset(rid)) {
-			} else if(meshManager->ReloadAsset(rid)) {
-			} else if(skeletonManager->ReloadAsset(rid)) {
-			} else if(skeletonAnimationManager->ReloadAsset(rid)) {
-			} else {
-				return false;
+			// Caution, relies on short-circuit evaluation
+			if(	textureManager->ReloadAsset(rid) ||
+				shaderProgramManager->ReloadAsset(rid) ||
+				materialManager->ReloadAsset(rid) ||
+				meshManager->ReloadAsset(rid) ||
+				skeletonManager->ReloadAsset(rid) ||
+				skeletonAnimationManager->ReloadAsset(rid)
+			) {
+				return true;
 			}
-			return true;
+			return false;
 		}
 
 	} // namespace Core

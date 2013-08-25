@@ -7,7 +7,7 @@ namespace Maki
 	namespace Framework
 	{
 		
-		class FlashMovie
+		class FlashMovie : public Resource
 		{
 			enum TweenProperty
 			{
@@ -30,6 +30,46 @@ namespace Maki
 			static const char *easingMethodNames[EasingMethodCount];
 			static EasingMethod GetEasingMethodByName(const char *methodName);
 
+			struct SpriteSheet
+			{
+				SpriteSheet() : tex(HANDLE_NONE) {}
+				~SpriteSheet() { TextureManager::Free(tex); }
+
+				Vector2 size;
+				Handle tex;
+			};
+
+			struct SpriteSequence
+			{
+				SpriteSequence(uint32 sheetIndex, Document::Node *libItemNode)
+					: sheetIndex(sheetIndex)
+				{
+					strncpy(name, libItemNode->ResolveValue("name.#0"), sizeof(name));
+					strncpy(type, libItemNode->ResolveValue("type.#0"), sizeof(type));
+
+					Document::Node *framesNode = libItemNode->Resolve("frames");
+					spriteRects.SetSize(framesNode->count);
+					spriteRects.Zero();
+
+					for(uint32 i = 0; i < framesNode->count; i++) {
+						float buffer[4];
+						framesNode->children[i]->ResolveAsVectorN("", 4, buffer);
+						Rect &r = spriteRects[i];
+						r.left = buffer[0];
+						r.top = buffer[1];
+						r.right = r.left + buffer[2];
+						r.bottom = r.top + buffer[3];
+					}
+				}
+
+				~SpriteSequence() {}
+				
+				char name[32];
+				char type[32];
+				uint32 sheetIndex;
+				Array<Rect> spriteRects;
+			};
+
 			struct ControlPoint
 			{
 				Vector2 prev;
@@ -40,6 +80,7 @@ namespace Maki
 			struct Curve
 			{
 				Curve() : active(false) {}
+				~Curve() {}
 
 				bool active;
 				Array<ControlPoint> controlPoints;
@@ -66,7 +107,7 @@ namespace Maki
 						easing = GetEasingMethodByName(tweenNode->ResolveValue("easing.#0"));
 						easeStrength = tweenNode->ResolveAsFloat("ease_strength.#0");
 
-						Document::Node *propertiesNode = node->Resolve("properties");
+						Document::Node *propertiesNode = tweenNode->Resolve("properties");
 						for(uint32 i = 0; i < propertiesNode->count; i++) {
 							Document::Node *propertyNode = propertiesNode->children[i];
 							TweenProperty prop = GetTweenPropertyByName(propertyNode->value);
@@ -75,6 +116,8 @@ namespace Maki
 								continue;
 							}
 
+
+							new(&curves[prop]) Curve();
 							Curve &c = curves[prop];
 							c.active = true;
 							c.controlPoints.SetSize(propertyNode->count);
@@ -82,7 +125,7 @@ namespace Maki
 
 							for(uint32 j = 0; j < propertyNode->count; j++) {
 								Document::Node *cpNode = propertyNode->children[j];
-								ControlPoint &cp = c.controlPoints.data[j];
+								ControlPoint &cp = c.controlPoints[j];
 
 								float buffer[6];
 								cpNode->ResolveAsVectorN("", 6, buffer);
@@ -101,6 +144,15 @@ namespace Maki
 						Document::Node *elemNode = elementsNode->children[i];
 
 
+					}
+				}
+
+				~KeyFrame()
+				{
+					for(uint32 i = 0; i < TweenPropertyCount; i++) {
+						if(curves[i].active) {
+							curves[i].~Curve();
+						}
 					}
 				}
 
@@ -134,7 +186,7 @@ namespace Maki
 					}
 				}
 				
-				virtual ~Layer()
+				~Layer()
 				{
 					for(uint32 i = 0; i < keyFrames.count; i++) {
 						keyFrames[i].~KeyFrame();
@@ -148,11 +200,74 @@ namespace Maki
 			};
 
 		public:
-			FlashMovie() {}
-			virtual ~FlashMovie() {}
+			FlashMovie()
+				: Resource()
+			{
+			}
+
+		private:
+			FlashMovie(const FlashMovie &other) {}
 
 		public:
+			bool Load(Rid rid)
+			{
+				Document doc;
+				if(!doc.Load(rid)) {
+					Console::Error("Failed to load flash movie <rid %u>", rid);
+					return false;
+				}
 
+				Document::Node *layersNode = doc.root->Resolve("layers");
+				layers.SetSize(layersNode->count);
+				for(uint32 i = 0; i < layersNode->count; i++) {
+					Document::Node *layerNode = layersNode->children[i];
+					new(&layers[i]) Layer(layerNode);
+				}
+
+				Document::Node *sheetsNode = doc.root->Resolve("sprite_sheets");
+				sheets.SetSize(sheetsNode->count);
+				for(uint32 i = 0; i < sheetsNode->count; i++) {
+					new(&sheets[i]) SpriteSheet();
+					SpriteSheet &sheet = sheets[i];
+					
+					sheetsNode->children[i]->ResolveAsVectorN("size", 2, sheet.size.vals);
+
+					// TODO: Load texture
+					//const char *path = sheetsNode->children[i]->ResolveValue("path.#0");
+					//sheets[i].tex = 
+				}
+
+				Document::Node *libraryNode = doc.root->Resolve("library");
+				library.SetSize(libraryNode->count);
+				for(uint32 i = 0; i < libraryNode->count; i++) {
+					Document::Node *libItemNode = libraryNode->children[i];
+
+					// Todo: make sheet index dynamic someday when export script supports multiple sheets
+					new(&library[i]) SpriteSequence(0, libItemNode);
+				}
+
+				this->rid = rid;
+				return true;
+			}
+
+			virtual ~FlashMovie()
+			{
+				for(uint32 i = 0; i < layers.count; i++) {
+					layers[i].~Layer();
+				}
+				for(uint32 i = 0; i < library.count; i++) {
+					library[i].~SpriteSequence();
+				}
+				for(uint32 i = 0; i < sheets.count; i++) {
+					sheets[i].~SpriteSheet();
+				}
+			}
+
+
+		public:
+			Array<Layer> layers;
+			Array<SpriteSheet> sheets;
+			Array<SpriteSequence> library;
 		};
 
 		
