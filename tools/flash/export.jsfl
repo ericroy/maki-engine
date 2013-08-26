@@ -97,6 +97,7 @@ function exportScene(uri, debugTrace) {
 	var nextElementId = 0;
 	
 	var fp = fopen(uri, debugTrace);
+	fp.writePair("frame_rate", dom.frameRate);
 	fp.writePair("max_frame_count", maxFrameCount);
 	fp.write("layers");
 
@@ -164,11 +165,15 @@ function exportScene(uri, debugTrace) {
 				if(e.name.length > 0) {
 					fp.writePair("name", e.name, 6, true);
 				}
+				
 				//fp.writePair("type", "\"" + e.instanceType + "\", \"" + subtype + "\"", 5);
 				fp.writePair("z_index", e.depth, 6);
 				fp.writePair("size", e.width + ", " + e.height, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
-				fp.writePair("transform", e.transformX + ", " + e.transformY, 6);
+				
+				var transPoint = e.getTransformationPoint();
+				fp.writePair("local_offset", -transPoint.x + ", " + -transPoint.y, 6);
+				//fp.writePair("transform", e.transformX + ", " + e.transformY, 6);
 				
 				var libIndex = -1;
 				if(exportLibAssets) {
@@ -214,7 +219,7 @@ function exportScene(uri, debugTrace) {
 		fp.writePair("type", item.itemType, 2, true);
 		fp.write("frames", 2);
 		
-		for(var i = 0; i < 9999; i++) {
+		for(var i = 0; i <= 9999; i++) {
 			var key = item.name + padNumber(i, 4);
 			if(!(key in meta.frames)) {
 				break;
@@ -233,7 +238,7 @@ function exportScene(uri, debugTrace) {
 
 
 fl.outputPanel.clear();
-var uri = fl.browseForFileURL("save", "Save file as", "Maki Document (*.mdoc)", "mdoc");
+var uri = fl.browseForFileURL("save", "Save file as", "Maki Document (*.mflas)", "mflas");
 if(uri) {
 	fl.trace("Export scene to: " + uri);
 	exportScene(uri, true);

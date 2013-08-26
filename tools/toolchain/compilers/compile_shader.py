@@ -351,7 +351,7 @@ def compile(arc_name, src, dst):
     variants_node = root.resolve('variants')
     if variants_node:
         for variant in variants_node.children():
-            variants.setdefault(variant.get_value(), []).append((variant[0].get_value(), variant[0][0].get_value()))
+            variants.setdefault(variant.value, []).append((variant[0].value, variant[0][0].value))
 
     vs_defines = []
     try:
@@ -360,7 +360,7 @@ def compile(arc_name, src, dst):
         pass
     else:
         for define in defines_node.children():
-            vs_defines.append((define.get_value(), define[0].get_value()))
+            vs_defines.append((define.value, define[0].value))
 
     ps_defines = []
     try:
@@ -369,12 +369,12 @@ def compile(arc_name, src, dst):
         pass
     else:
         for define in defines_node.children():
-            ps_defines.append((define.get_value(), define[0].get_value()))
+            ps_defines.append((define.value, define[0].value))
     
-    vs_entry_point = root.resolve('vertex_shader.entry_point.#0').get_value()
-    ps_entry_point = root.resolve('pixel_shader.entry_point.#0').get_value()
-    vs_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('vertex_shader.file_name.#0').get_value())
-    ps_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('pixel_shader.file_name.#0').get_value())
+    vs_entry_point = root.resolve('vertex_shader.entry_point.#0').value
+    ps_entry_point = root.resolve('pixel_shader.entry_point.#0').value
+    vs_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('vertex_shader.file_name.#0').value)
+    ps_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('pixel_shader.file_name.#0').value)
 
     conf = CONFIG['assets'][arc_name]
     try:

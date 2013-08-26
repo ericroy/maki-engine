@@ -153,7 +153,9 @@ namespace Maki
 			}
 			assert(vertexInsertionIndex+sizeInBytes <= vertexDataSize);
 
-			memcpy(&vertexData[vertexInsertionIndex], data, sizeInBytes);
+			if(data != nullptr) {
+				memcpy(&vertexData[vertexInsertionIndex], data, sizeInBytes);
+			}
 			vertexInsertionIndex += sizeInBytes;
 			vertexCount += sizeInBytes / vertexStride;
 		}
@@ -172,7 +174,9 @@ namespace Maki
 			}
 			assert(indexInsertionIndex+sizeInBytes <= indexDataSize);
 
-			memcpy(&indexData[indexInsertionIndex], data, sizeInBytes);
+			if(data != nullptr) {
+				memcpy(&indexData[indexInsertionIndex], data, sizeInBytes);
+			}
 			indexInsertionIndex += sizeInBytes;
 			faceCount += sizeInBytes / (indicesPerFace * bytesPerIndex);
 		}

@@ -10,23 +10,23 @@ def _watch(*args):
     watch.watch_forever()
 
 def _build(src_file, arc_name=None):
-    if arc_name is None:
-        arc_name = util.archive_containing(src_file)
-    conf = CONFIG['assets'][arc_name]
     src = util.clean_path(src_file)
-    dst = os.path.join(conf['dst'], os.path.relpath(src, conf['src']))
     ext = os.path.splitext(src)[1]
     ext = ext.strip('.')
     try:
         compiler = compilers.COMPILERS[ext]
     except KeyError as e:
         print('Skipping file, no compiler for extension: %s' % ext)
-    else:
-        print('%s => %s' % (src, dst))
-        dest_dir = os.path.dirname(dst)
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        compiler(arc_name, src, dst)
+        return
+    if arc_name is None:
+        arc_name = util.archive_containing(src_file)
+    conf = CONFIG['assets'][arc_name]
+    dst = os.path.join(conf['dst'], os.path.relpath(src, conf['src']))
+    print('%s => %s' % (src, dst))
+    dest_dir = os.path.dirname(dst)
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    compiler(arc_name, src, dst)
 
 def _build_all():
     for arc_name, conf in CONFIG['assets'].items():

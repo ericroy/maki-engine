@@ -3,6 +3,7 @@
 #include "framework/MakiScene.h"
 #include "framework/MakiScript.h"
 #include "framework/MakiFlashMovie.h"
+#include "framework/MakiFlashMovieState.h"
 #include "framework/MakiSceneLoader.h"
 #include "framework/MakiCascadeHelper.h"
 #include "framework/MakiDebugNetListener.h"

@@ -49,8 +49,11 @@ namespace Maki
 			// Populate object directly using these
 			void SetVertexAttributes(uint32 vertexAttributeFlags);
 			void SetIndexAttributes(uint8 indicesPerFace, uint8 bytesPerIndex);
+			
+			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
 			void PushVertexData(uint32 sizeInBytes, char *data);
 			void PushIndexData(uint32 sizeInBytes, char *data);
+			
 			void ClearData();
 
 			inline uint8 GetMeshFlag(MeshFlag flag) const { return (meshFlags & flag) != 0; }

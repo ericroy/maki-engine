@@ -3,8 +3,8 @@ from io import StringIO
 
 class Node(object):
     def __init__(self, value):
-        self._value = value
-        self._parent = None
+        self.value = value
+        self.parent = None
         self._children = []
 
     def __len__(self):
@@ -12,24 +12,18 @@ class Node(object):
 
     def __contains__(self, item):
         for c in self._children:
-            if c._value == item:
+            if c.value == item:
                 return True
         return False
 
     def __str__(self):
-        return self._value
-
-    def get_parent(self):
-        return self._parent
-
-    def get_value(self):
-        return self._value
+        return self.value
 
     def __getitem__(self, key):
         if isinstance(key, int):
             return self._children[key]
         for c in iter(self._children):
-            if c._value == key:
+            if c.value == key:
                 return c
         raise KeyError('Node has no child with value "%s"' % key)
 
@@ -47,7 +41,7 @@ class Node(object):
 
     def index_of(self, item):
         for i, c in enumerate(self._children):
-            if c._value == item:
+            if c.value == item:
                 return i
         return -1
 
@@ -55,7 +49,7 @@ class Node(object):
         if not isinstance(child, Node):
             child = Node(str(child))
         self._children.append(child)
-        child._parent = self
+        child.parent = self
         return self._children[-1]
 
     def add_children(self, children):
@@ -68,12 +62,16 @@ class Node(object):
                 return '"%s"' % value.replace('"', '\\"')
         return value
 
-    def serialize(self, out, indent_level=0, stacking=False):
+    def serialize(self, out, max_stack=4):
+        for child in self.children():
+            child._serialize(out, max_stack)
+
+    def _serialize(self, out, max_stack, indent_level=0, stacking=False):
         if not stacking:
             out.write('\t'*indent_level)
-        out.write(self._quote(self._value))
+        out.write(self._quote(self.value))
         
-        should_stack = len(self._children) <= 4
+        should_stack = len(self._children) <= max_stack
         for c in self._children:
             if len(c._children) != 0:
                 should_stack = False
@@ -83,14 +81,14 @@ class Node(object):
             if should_stack:
                 out.write(' ')
                 for c in self._children[:-1]:
-                    c.serialize(out, indent_level, True)
+                    c._serialize(out, max_stack, indent_level, True)
                     out.write(', ')
-                self._children[-1].serialize(out, indent_level, True)
+                self._children[-1]._serialize(out, max_stack, indent_level, True)
                 out.write('\n')
             else:
                 out.write('\n')
                 for c in self._children:
-                    c.serialize(out, indent_level+1, False)
+                    c._serialize(out, max_stack, indent_level+1, False)
         elif not stacking:
             out.write('\n')
 
@@ -100,14 +98,14 @@ class Node(object):
 TOKEN_INDENT = 0
 TOKEN_EOL = 1
 TOKEN_COMMA = 2
-TOKEN_VALUE = 3
+TOKENvalue = 3
 TOKEN_COMMENT = 4
 
 TOKEN_NAMES = {
     TOKEN_INDENT: 'INDENT',
     TOKEN_EOL: 'EOL',
     TOKEN_COMMA: 'COMMA',
-    TOKEN_VALUE: 'VALUE',
+    TOKENvalue: 'VALUE',
     TOKEN_COMMENT: 'COMMENT',
 }
 
@@ -145,8 +143,8 @@ def _tokens(source):
                 while not (c == '"' and token[-1] != '\\'):
                     token.append(c)
                     c = next(source)
-                yield TOKEN_VALUE, ''.join(token)
-                prev_token_type = TOKEN_VALUE
+                yield TOKENvalue, ''.join(token)
+                prev_token_type = TOKENvalue
                 c = next(source)
             elif c in ('\r', '\n'):
                 while c in ('\r', '\n'):
@@ -162,12 +160,12 @@ def _tokens(source):
                     c = next(source)
                 while c == ' ':
                     c = next(source)
-                yield TOKEN_VALUE, ''.join(token)
-                prev_token_type = TOKEN_VALUE
+                yield TOKENvalue, ''.join(token)
+                prev_token_type = TOKENvalue
     except StopIteration:
-        token_value = ''.join(token)
-        if token_value.strip():
-            yield TOKEN_VALUE, token_value
+        tokenvalue = ''.join(token)
+        if tokenvalue.strip():
+            yield TOKENvalue, tokenvalue
         raise
 
 def deserialize(s):
@@ -179,7 +177,7 @@ def deserialize(s):
     indent_format = None
     for tok_type, tok in _tokens(it):
         #print(TOKEN_NAMES[tok_type], repr(tok))
-        if tok_type == TOKEN_VALUE:
+        if tok_type == TOKENvalue:
             indent += 1
             n = Node(tok)
             parent.add_child(n)
@@ -198,12 +196,12 @@ def deserialize(s):
             steps = indent - old_indent
             if steps < 0:
                 for i in range(0, -steps):
-                    parent = parent.get_parent()
+                    parent = parent.parent
         elif tok_type == TOKEN_EOL:
             pass
         elif tok_type == TOKEN_COMMA:
             indent -= 1
-            parent = last_node.get_parent()
+            parent = last_node.parent
     return root
 
 
