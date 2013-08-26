@@ -27,8 +27,9 @@ namespace Maki
 			void Draw(Renderer *renderer, const Matrix44 &m);
 
 		public:
-			Array<ElementGroup> groups;
 			float playhead;
+			bool finished;
+			Array<ElementGroup> groups;
 			Array<uint32> currentKeyFrames;
 
 		private:

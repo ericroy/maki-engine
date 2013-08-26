@@ -1,4 +1,6 @@
 ﻿
+var PI = 3.1415926535897932384626433832795;
+
 function fopen(uri, debugTrace) {
 	return {
 		uri: uri,
@@ -78,7 +80,7 @@ function padNumber(n, length) {
 	return s.slice(-length);
 }
 
-function exportScene(uri, debugTrace) {
+function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	var pathChunks = uri.split("/");
 	var exportDir = pathChunks.slice(0, pathChunks.length-1).join("/");
 	fl.trace(exportDir);
@@ -144,7 +146,7 @@ function exportScene(uri, debugTrace) {
 				writeBezier(xml..Property.(@id=="Scale_Y"), fp, 6);
 			}
 			
-			fp.write("elements", 4);
+			fp.write("elements", 4);			
 			for(var ei = 0; ei < frame.elements.length; ei++) {
 				var e = frame.elements[ei];
 				if(e.elementType != "instance") {
@@ -169,11 +171,10 @@ function exportScene(uri, debugTrace) {
 				//fp.writePair("type", "\"" + e.instanceType + "\", \"" + subtype + "\"", 5);
 				fp.writePair("z_index", e.depth, 6);
 				fp.writePair("size", e.width + ", " + e.height, 6);
+				fp.writePair("theta", -e.rotation * PI / 180.0, 6);
+				fp.writePair("reg_point", e.x + ", " + e.y, 6);
+				fp.writePair("trans_point", e.transformX + ", " + e.transformY, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
-				
-				var transPoint = e.getTransformationPoint();
-				fp.writePair("local_offset", -transPoint.x + ", " + -transPoint.y, 6);
-				//fp.writePair("transform", e.transformX + ", " + e.transformY, 6);
 				
 				var libIndex = -1;
 				if(exportLibAssets) {
@@ -196,14 +197,19 @@ function exportScene(uri, debugTrace) {
 
 	var sheet = new SpriteSheetExporter();
 	sheet.layoutFormat = "JSON";
+	sheet.borderPadding = 2;	
+	sheet.shapePadding = 2;
+	sheet.stackDuplicateFrames = true;
 	var sheetUri = exportDir + "/" + pathChunks[pathChunks.length-1].split(".")[0];
 	libraryList.forEach(function(itemName) {
 		var item = lib.items[lib.findItemIndex(itemName)];
 		sheet.addSymbol(item);
 	});
-	var meta = sheet.exportSpriteSheet(sheetUri, {format: "png", bitDepth:32, backgroundColor: "#00000000"});
+	var meta = sheet.exportSpriteSheet(sheetUri, {format: "png", bitDepth:32, backgroundColor: "#00000000"}, leaveMetaDataOnDisk);
 	meta = eval("(" + meta + ")");
-	FLfile.remove(sheetUri + ".json");
+	if(!leaveMetaDataOnDisk) {
+		FLfile.remove(sheetUri + ".json");
+	}
 	
 	fp.write("sprite_sheets");
 	fp.write("sheet", 1);
@@ -236,12 +242,14 @@ function exportScene(uri, debugTrace) {
 }
 
 
+var debugTrace = true;
+var leaveMetaDataOnDisk = true;
 
 fl.outputPanel.clear();
 var uri = fl.browseForFileURL("save", "Save file as", "Maki Document (*.mflas)", "mflas");
 if(uri) {
 	fl.trace("Export scene to: " + uri);
-	exportScene(uri, true);
+	exportScene(uri, debugTrace, leaveMetaDataOnDisk);
 	fl.trace("Export complete");
 } else {
 	fl.trace("User cancelled");

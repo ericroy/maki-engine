@@ -63,8 +63,11 @@ class Node(object):
         return value
 
     def serialize(self, out, max_stack=4):
-        for child in self.children():
-            child._serialize(out, max_stack)
+        if self.value == "<root>":
+            for child in self.children():
+                child._serialize(out, max_stack)
+        else:
+            self._serialize(out, max_stack)
 
     def _serialize(self, out, max_stack, indent_level=0, stacking=False):
         if not stacking:

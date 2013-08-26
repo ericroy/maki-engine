@@ -21,7 +21,8 @@ namespace Maki
 
 		FlashMovieState::FlashMovieState(Handle movie)
 			:	movie(HANDLE_NONE),
-				playhead(0.0f)
+				playhead(0.0f),
+				finished(false)
 		{
 			// Hold a reference to the movie
 			FlashMovieManager::AddRef(movie);
@@ -36,18 +37,17 @@ namespace Maki
 				Mesh m(true);
 				m.SetIndexAttributes(3, 2);
 				m.SetVertexAttributes(VertexFormat::AttributeFlag_TexCoord);
+				m.SetMeshFlag(Mesh::MeshFlag_HasTranslucency);
 					
 				uint32 maxElems = mov->sheets[i].maxElementsInSingleFrame;
-					
-				// Vertex format: 3 floats for position, 2 floats for uv coords
-				m.PushVertexData(maxElems * 4 * (3 * sizeof(float) + 2 * sizeof(float)), nullptr);
-				
+				m.PushVertexData(sizeof(FlashMovie::Vertex) * 4 * maxElems, nullptr);
+				m.PushIndexData(maxElems * 6, nullptr);
+
 				// We can initialize the indices now, since they are constants, regardless of the quad
 				// data being rendered
-				m.PushIndexData(maxElems * 6, nullptr);
 				uint16 *indices = (uint16 *)m.GetIndexData();
 				for(uint32 k = 0; k < maxElems; k++) {
-					uint16 base = k * 6;
+					uint16 base = k * 4;
 					*indices++ = base;
 					*indices++ = base+1;
 					*indices++ = base+2;
@@ -56,11 +56,11 @@ namespace Maki
 					*indices++ = base+3;
 				}
 
-				// Must upload so that the mesh gets a vertex format
+				// Must upload before adding this mesh to the DrawCommand because the DC requires the
+				// vertex format of the mesh to be known
 				m.Upload();
 
 				g.mesh = CoreManagers::Get()->meshManager->Add(Move(m));
-				
 				g.dc.SetMesh(g.mesh);
 				g.dc.SetMaterial(mov->sheets[i].material);
 			}

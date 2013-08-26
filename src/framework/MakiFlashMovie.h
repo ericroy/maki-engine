@@ -38,9 +38,11 @@ namespace Maki
 			struct Element
 			{
 				Matrix44 m;
-				int32 zIndex;
 				Vector2 size;
-				Vector2 localOffset;
+				Vector2 regPoint;
+				Vector2 transPoint;
+				uint32 zIndex;
+				float theta;
 				int32 libraryIndex;
 			};
 
@@ -126,6 +128,13 @@ namespace Maki
 			
 				// Value
 				int32 drawCommandIndex;
+			};
+
+		public:
+			struct Vertex
+			{
+				Vector3 pos;
+				Vector2 uv;
 			};
 
 		public:

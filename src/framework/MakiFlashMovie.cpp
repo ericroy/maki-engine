@@ -155,13 +155,18 @@ namespace Maki
 				Document::Node *elemNode = elementsNode->children[i];
 				Element &e = elements[i];
 
-				e.zIndex = elemNode->ResolveAsInt("z_index");
+				e.zIndex = elemNode->ResolveAsUInt("z_index.#0");
 				
+				e.theta = elemNode->ResolveAsFloat("theta.#0");
+
 				elemNode->ResolveAsVectorN("size", 2, e.size.vals);
 				e.size /= PPU;
 
-				elemNode->ResolveAsVectorN("local_offset", 2, e.localOffset.vals);
-				e.localOffset /= PPU;
+				elemNode->ResolveAsVectorN("reg_point", 2, e.regPoint.vals);
+				e.regPoint /= PPU;
+
+				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
+				e.transPoint /= PPU;
 
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
@@ -173,7 +178,7 @@ namespace Maki
 				e.m.cols[3][0] = buffer[4] / PPU;
 				e.m.cols[3][1] = buffer[5] / PPU;
 
-				e.libraryIndex = elemNode->ResolveAsInt("library_index");
+				e.libraryIndex = elemNode->ResolveAsInt("library_index.#0");
 			}
 		}
 
@@ -262,10 +267,8 @@ namespace Maki
 			Document::Node *libraryNode = doc.root->Resolve("library");
 			library.SetSize(libraryNode->count);
 			for(uint32 i = 0; i < libraryNode->count; i++) {
-				Document::Node *libItemNode = libraryNode->children[i];
-
 				// TODO: make sheet index dynamic someday when export script supports multiple sheets
-				new(&library[i]) SpriteSequence(0, libItemNode);
+				new(&library[i]) SpriteSequence(0, libraryNode->children[i]);
 			}
 								
 			// Create a material for each sheet
@@ -291,7 +294,9 @@ namespace Maki
 						KeyFrame &kf = layer.keyFrames[ki];
 						for(uint32 ei = 0; ei < kf.elements.count; ei++) {
 							Element e = kf.elements[ei];
-							sheetFrameMaximums[library[e.libraryIndex].sheetIndex]++;
+							if(e.libraryIndex >= 0) {
+								sheetFrameMaximums[library[e.libraryIndex].sheetIndex]++;
+							}
 						}
 					}
 				}
@@ -305,22 +310,26 @@ namespace Maki
 			return true;
 		}
 
-		static Vector2 unitQuad[4] = {
-			Vector2(-0.5f, -0.5f),
-			Vector2(0.5f, -0.5f),
-			Vector2(0.5f, 0.5f),
-			Vector2(-0.5f, 0.5f)
+		static Vector2 unitQuadCoeffs[4] = {
+			Vector2(0.0f, 0.0f),
+			Vector2(0.0f, -1.0f),
+			Vector2(1.0f, -1.0f),
+			Vector2(1.0f, 0.0f)
 		};
 
-		static Vector2 unitTexCoords[4] = {
+		static Vector2 unitQuadTexRectCoeff[4] = {
 			Vector2(0.0f, 0.0f),
-			Vector2(1.0f, 0.0f),
+			Vector2(0.0f, 1.0f),
 			Vector2(1.0f, 1.0f),
-			Vector2(0.0f, 1.0f)
+			Vector2(1.0f, 0.0f)
 		};
 
 		void FlashMovie::AdvanceState(float timeDelta, float rateCoeff, bool loop, FlashMovieState &state)
 		{
+			if(state.finished) {
+				return;
+			}
+
 			// Set each element group to have no active elements.
 			// We will activate elements below, depending on how many we need to represent the current frame.
 			for(uint32 i = 0; i < state.groups.count; i++) {
@@ -332,10 +341,14 @@ namespace Maki
 
 			// Advance the playhead.
 			// This is the floating point frame position of the overall movie
-			state.playhead += timeDelta * frameRate;
+			state.playhead += timeDelta * rateCoeff * frameRate;
 			if(state.playhead >= maxFrameCount) {
+				if(!loop) {
+					state.finished = true;
+					return;
+				}
 				state.playhead = (float)std::fmod(state.playhead, maxFrameCount);
-				state.currentKeyFrames.Zero();	
+				state.currentKeyFrames.Zero();
 			}
 
 			
@@ -350,7 +363,7 @@ namespace Maki
 					if(kfi >= layer.keyFrames.count) {
 						break;
 					}
-					kf = &layer.keyFrames[++kfi];
+					kf = &layer.keyFrames[kfi];
 				}
 				state.currentKeyFrames[li] = kfi;
 
@@ -359,46 +372,51 @@ namespace Maki
 					kf = &layer.keyFrames[kfi];
 					for(uint32 ei = 0; ei < kf->elements.count; ei++) {
 						Element &e = kf->elements[ei];
+
+						if(e.libraryIndex < 0) {
+							// A 'meta-element' that doesn't have a sprite representation.
+							// Probably a hitbox or a helper or something like that.
+							continue;
+						}
 						
 						SpriteSequence &seq = library[e.libraryIndex];
 						FlashMovieState::ElementGroup &group = state.groups[seq.sheetIndex];
-						Mesh *m = MeshManager::Get(group.mesh);
+						assert(group.activeElementCount < sheets[seq.sheetIndex].maxElementsInSingleFrame);
 						
-						const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
-
 						uint32 seqFrame = 0;
 						if(seq.spriteRects.count > 1) {
 							// TODO: Not just a simple graphic, must decide what frame we should show
 						}
 						const Rect &region = seq.spriteRects[seqFrame];
-						
+						const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
 
-						// Set the geometry for this quad.
-						struct V
-						{
-							Vector3 pos;
-							Vector2 uv;
-						} *v = (V *)m->GetVertexData();
-						v += group.activeElementCount * 4;
+						// Get mesh data as an array of vertices
+						// Offset the pointer to the quad we want to set
+						Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
+
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
-							v->pos.x = unitQuad[i].x * e.size.x + e.localOffset.x;
-							v->pos.y = unitQuad[i].y * e.size.y + e.localOffset.y;
+							v->pos.x = unitQuadCoeffs[i].x * e.size.x;
+							v->pos.y = unitQuadCoeffs[i].y * e.size.y;
 							v->pos.z = 0.0f;
 
-							// Transform corner by element's matrix
-							v->pos = e.m * v->pos;
+							Matrix44 rot(true);
+							Matrix44::RotationZ(e.theta, rot);
+							v->pos = rot * v->pos;
+
+							v->pos.x += e.regPoint.x;
+							v->pos.y += -e.regPoint.y;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.
-							v->uv.x = (region.left + unitTexCoords[i].x * region.GetWidth()) / sheetSize.x;
-							v->uv.y = 1.0f - (region.bottom + unitTexCoords[i].y * region.GetHeight()) / sheetSize.y;
+							v->uv.x = (region.left + unitQuadTexRectCoeff[i].x * region.GetWidth()) / sheetSize.x;
+							v->uv.y = (region.top + unitQuadTexRectCoeff[i].y * region.GetHeight()) / sheetSize.y;
 
 							v++;
 						}
 
 						// This group now has one more quad in it that will need to be drawn
-						group.activeElementCount++;						
+						group.activeElementCount++;
 					}
 				}
 			}
