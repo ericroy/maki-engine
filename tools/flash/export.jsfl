@@ -119,6 +119,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		for(var fi = 0; fi < layer.frames.length;) {
 			var frame = layer.frames[fi];
 			if(fi != frame.startFrame) {
+				fi++;
 				continue;
 			}
 			

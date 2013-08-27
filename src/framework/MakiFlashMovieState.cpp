@@ -39,14 +39,14 @@ namespace Maki
 				m.SetVertexAttributes(VertexFormat::AttributeFlag_TexCoord);
 				m.SetMeshFlag(Mesh::MeshFlag_HasTranslucency);
 					
-				uint32 maxElems = mov->sheets[i].maxElementsInSingleFrame;
-				m.PushVertexData(sizeof(FlashMovie::Vertex) * 4 * maxElems, nullptr);
-				m.PushIndexData(maxElems * 6, nullptr);
+				uint32 maxQuads = mov->sheets[i].maxElementsInSingleFrame;
+				m.PushVertexData(sizeof(FlashMovie::Vertex) * 4 * maxQuads, nullptr);
+				m.PushIndexData(maxQuads * 6 * sizeof(uint16), nullptr);
 
 				// We can initialize the indices now, since they are constants, regardless of the quad
 				// data being rendered
 				uint16 *indices = (uint16 *)m.GetIndexData();
-				for(uint32 k = 0; k < maxElems; k++) {
+				for(uint32 k = 0; k < maxQuads; k++) {
 					uint16 base = k * 4;
 					*indices++ = base;
 					*indices++ = base+1;
