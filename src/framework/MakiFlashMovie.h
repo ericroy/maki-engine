@@ -38,13 +38,6 @@ namespace Maki
 			struct Element
 			{
 				Matrix44 m;
-				Vector2 size;
-				Vector2 regPoint;
-				Vector2 leftTop;
-				Vector2 transPoint;
-				Vector2 transPointLocal;
-				uint32 zIndex;
-				float theta;
 				int32 libraryIndex;
 			};
 
@@ -61,6 +54,12 @@ namespace Maki
 
 			struct SpriteSequence
 			{
+				struct Cell
+				{
+					Rect texRect;
+					Rect stageRect;
+				};
+
 				SpriteSequence(uint32 sheetIndex, Document::Node *libItemNode);
 				~SpriteSequence();
 				
@@ -68,7 +67,7 @@ namespace Maki
 				char type[32];
 				Vector2 pos;
 				uint32 sheetIndex;
-				Array<Rect> spriteRects;
+				Array<Cell> cells;
 			};
 
 			struct ControlPoint
@@ -118,19 +117,6 @@ namespace Maki
 				bool visible;
 				bool outline;
 				std::string name;
-			};
-
-			struct ElementDescriptor
-			{
-				ElementDescriptor(const Element &e);
-				inline bool operator==(const ElementDescriptor &other) const { return libraryIndex == other.libraryIndex && size.x == other.size.x && size.y == other.size.y; }
-
-				// Key
-				Vector2 size;
-				int32 libraryIndex;
-			
-				// Value
-				int32 drawCommandIndex;
 			};
 
 		public:

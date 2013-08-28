@@ -67,17 +67,28 @@ namespace Maki
 			pos /= PPU;
 
 			Document::Node *framesNode = libItemNode->Resolve("frames");
-			spriteRects.SetSize(framesNode->count);
-			spriteRects.Zero();
+			cells.SetSize(framesNode->count);
+			cells.Zero();
 
 			for(uint32 i = 0; i < framesNode->count; i++) {
+				Document::Node *frameNode = framesNode->children[i];
+
 				float buffer[4];
-				framesNode->children[i]->ResolveAsVectorN("", 4, buffer);
-				Rect &r = spriteRects[i];
-				r.left = buffer[0];
-				r.top = buffer[1];
-				r.right = r.left + buffer[2];
-				r.bottom = r.top + buffer[3];
+				frameNode->ResolveAsVectorN("tex_rect", 4, buffer);
+				
+				Rect *r = &cells[i].texRect;
+				r->left = buffer[0];
+				r->top = buffer[1];
+				r->right = r->left + buffer[2];
+				r->bottom = r->top + buffer[3];
+
+				frameNode->ResolveAsVectorN("stage_rect", 4, buffer);
+				
+				r = &cells[i].stageRect;
+				r->left = buffer[0] / PPU;
+				r->top = buffer[1] / PPU;
+				r->right = r->left + buffer[2] / PPU;
+				r->bottom = r->top + buffer[3] / PPU;
 			}
 		}
 
@@ -158,27 +169,6 @@ namespace Maki
 				Document::Node *elemNode = elementsNode->children[i];
 				Element &e = elements[i];
 
-				e.zIndex = elemNode->ResolveAsUInt("z_index.#0");
-				
-				e.theta = elemNode->ResolveAsFloat("theta.#0");
-
-				elemNode->ResolveAsVectorN("size", 2, e.size.vals);
-				e.size /= PPU;
-
-				elemNode->ResolveAsVectorN("left_top", 2, e.leftTop.vals);
-				e.leftTop /= PPU;
-
-				elemNode->ResolveAsVectorN("reg_point", 2, e.regPoint.vals);
-				e.regPoint /= PPU;
-
-				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
-				e.transPoint /= PPU;
-
-
-
-				elemNode->ResolveAsVectorN("trans_point_local", 2, e.transPointLocal.vals);
-				e.transPointLocal /= PPU;
-
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
 				e.m.SetIdentity();
@@ -225,13 +215,6 @@ namespace Maki
 			for(uint32 i = 0; i < keyFrames.count; i++) {
 				keyFrames[i].~KeyFrame();
 			}
-		}
-
-
-
-		FlashMovie::ElementDescriptor::ElementDescriptor(const Element &e)
-		:	size(e.size), libraryIndex(e.libraryIndex)
-		{
 		}
 
 
@@ -396,10 +379,10 @@ namespace Maki
 						assert(group.activeElementCount < sheets[seq.sheetIndex].maxElementsInSingleFrame);
 						
 						uint32 seqFrame = 0;
-						if(seq.spriteRects.count > 1) {
+						if(seq.cells.count > 1) {
 							// TODO: Not just a simple graphic, must decide what frame we should show
 						}
-						const Rect &region = seq.spriteRects[seqFrame];
+						const SpriteSequence::Cell &cell = seq.cells[seqFrame];
 						const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
 
 						// Get mesh data as an array of vertices
@@ -408,15 +391,15 @@ namespace Maki
 
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
-							v->pos.x = unitQuadCoeffs[i].x * e.size.x + seq.pos.x;
-							v->pos.y = unitQuadCoeffs[i].y * e.size.y - seq.pos.y;
+							v->pos.x = unitQuadCoeffs[i].x * cell.stageRect.GetWidth() + cell.stageRect.left;
+							v->pos.y = unitQuadCoeffs[i].y * cell.stageRect.GetHeight() - cell.stageRect.top;
 							v->pos.z = 0.0f;
 							v->pos = e.m * v->pos;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.
-							v->uv.x = (region.left + unitQuadTexRectCoeff[i].x * region.GetWidth()) / sheetSize.x;
-							v->uv.y = (region.top + unitQuadTexRectCoeff[i].y * region.GetHeight()) / sheetSize.y;
+							v->uv.x = (cell.texRect.left + unitQuadTexRectCoeff[i].x * cell.texRect.GetWidth()) / sheetSize.x;
+							v->uv.y = (cell.texRect.top + unitQuadTexRectCoeff[i].y * cell.texRect.GetHeight()) / sheetSize.y;
 
 							v++;
 						}

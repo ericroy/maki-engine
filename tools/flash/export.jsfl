@@ -170,15 +170,8 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 					fp.writePair("name", e.name, 6, true);
 				}
 				
-				//fp.writePair("type", "\"" + e.instanceType + "\", \"" + subtype + "\"", 5);
-				fp.writePair("z_index", e.depth, 6);
-				fp.writePair("size", e.width + ", " + e.height, 6);
-				fp.writePair("theta", -e.rotation * PI / 180.0, 6);
-				fp.writePair("reg_point", e.x + ", " + e.y, 6);
-				fp.writePair("left_top", e.left + ", " + e.top, 6);
-				fp.writePair("trans_point", e.transformX + ", " + e.transformY, 6);
-				var tpl = e.getTransformationPoint();
-				fp.writePair("trans_point_local", tpl.x + ", " + tpl.y, 6);
+				// Don't need to export z index, the elements are already listed in draw-order
+				//fp.writePair("z_index", e.depth, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
 				
 				var libIndex = -1;
@@ -229,23 +222,39 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		fp.writePair("name", item.name, 2, true);		
 		fp.writePair("type", item.itemType, 2, true);
 		
-		var itemPos = {x: INT_MAX, y: INT_MAX};
+		var stageRects = {};
+		
+		// Determine the bounding rect within the library item's stage
 		lib.editItem(itemName);
 		var itemDom = fl.getDocumentDOM();
 		var itemTimeline = itemDom.getTimeline();
-		for(var li = 0; li < itemTimeline.layerCount; li++) {
-			itemTimeline.currentLayer = li;
-			var layer = itemTimeline.layers[li];
-			if(itemTimeline.currentFrame < layer.frames.length) {
-				var frame = layer.frames[itemTimeline.currentFrame];
+		
+		for(var fi = 0; fi < itemTimeline.frameCount; fi++) {
+			// Have the IDE select this frame
+			timeline.currentFrame = fi;
+			
+			var sr = {left: INT_MAX, top: INT_MAX, right: -INT_MAX, bottom: -INT_MAX};
+			for(var li = 0; li < itemTimeline.layerCount; li++) {
+				// Have the IDE select this layer
+				itemTimeline.currentLayer = li;
+				
+				var layer = itemTimeline.layers[li];
+				if(fi >= layer.frames.length)
+				{
+					continue;
+				}
+				
+				var frame = layer.frames[fi];
 				for(var ei = 0; ei < frame.elements.length; ei++) {
 					var e = frame.elements[ei];
-					itemPos.x = Math.min(itemPos.x, e.left);
-					itemPos.y = Math.min(itemPos.y, e.top);
+					sr.left = Math.min(sr.left, e.left);
+					sr.top = Math.min(sr.top, e.top);
+					sr.right = Math.max(sr.right, e.left+e.width);
+					sr.bottom = Math.max(sr.bottom, e.top+e.height);
 				}
 			}
+			stageRects[fi] = {x: sr.left, y: sr.top, w: sr.right-sr.left, h: sr.bottom-sr.top};
 		}
-		fp.writePair("pos", itemPos.x + ", " + itemPos.y, 2);
 		
 		fp.write("frames", 2);
 		for(var i = 0; i <= 9999; i++) {
@@ -254,7 +263,11 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				break;
 			}
 			var o = meta.frames[key].frame;
-			fp.writePair("frame", o.x + ", " + o.y + ", " + o.w + ", " + o.h, 3);
+			var sr = stageRects[i];
+			
+			fp.write("frame", 3);
+			fp.writePair("tex_rect", o.x + ", " + o.y + ", " + o.w + ", " + o.h, 4);
+			fp.writePair("stage_rect", sr.x + ", " + sr.y + ", " + sr.w + ", " + sr.h, 4);
 		}
 	});
 	
@@ -269,7 +282,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 
 
 var debugTrace = true;
-var leaveMetaDataOnDisk = true;
+var leaveMetaDataOnDisk = false;
 
 fl.outputPanel.clear();
 var uri = fl.browseForFileURL("save", "Save file as", "Maki Document (*.mflas)", "mflas");
