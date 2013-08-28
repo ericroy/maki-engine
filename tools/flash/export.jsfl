@@ -1,6 +1,11 @@
 ﻿
+
+var DEBUG_TRACE = false;
+var LEAVE_META_DATA_ON_DISK = false;
+
 var PI = 3.1415926535897932384626433832795;
-var INT_MAX = Math.pow(2,32) - 1;
+
+fl.showIdleMessage(false);
 
 function fopen(uri, debugTrace) {
 	return {
@@ -87,6 +92,8 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	fl.trace(exportDir);
 	
 	var dom = fl.getDocumentDOM();
+	dom.selectNone();	
+	
 	var timeline = dom.getTimeline();
 	var maxFrameCount = timeline.frameCount;
 	var layerCount = timeline.layerCount;
@@ -184,7 +191,18 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 						libraryList.push(e.libraryItem.name);
 					}
 				}
-				fp.writePair("library_index", libIndex, 6);
+				
+				dom.selectNone();
+				dom.selection = [e];
+				if(dom.selection.length == 1) {
+					dom.enterEditMode("inPlace");				
+					fp.writePair("lib_item", libIndex + ", " + e.libraryItem.timeline.currentFrame, 6);
+					dom.exitEditMode();
+				} else {
+					fp.writePair("lib_item", libIndex + ", 0", 6);
+					fl.trace("WARNING: selection size should have been 1, but it was " + dom.selection.length + " instead!");
+				}
+				dom.selectNone();
 			}
 
 			fi += frame.duration;
@@ -222,7 +240,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		fp.writePair("name", item.name, 2, true);		
 		fp.writePair("type", item.itemType, 2, true);
 		
-		var stageRects = {};
+		var stageRects = [];
 		
 		// Determine the bounding rect within the library item's stage
 		lib.editItem(itemName);
@@ -233,19 +251,28 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			// Have the IDE select this frame
 			timeline.currentFrame = fi;
 			
-			var sr = {left: INT_MAX, top: INT_MAX, right: -INT_MAX, bottom: -INT_MAX};
+			var sr = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: Number.MIN_VALUE, bottom: Number.MIN_VALUE};
+			var any = false;
+			
 			for(var li = 0; li < itemTimeline.layerCount; li++) {
 				// Have the IDE select this layer
 				itemTimeline.currentLayer = li;
 				
 				var layer = itemTimeline.layers[li];
-				if(fi >= layer.frames.length)
-				{
+				if(fi >= layer.frames.length) {
 					continue;
 				}
 				
+				
 				var frame = layer.frames[fi];
+				/*				
+				if(frame.startFrame != fi) {
+					continue;
+				}
+				*/
+				
 				for(var ei = 0; ei < frame.elements.length; ei++) {
+					any = true;
 					var e = frame.elements[ei];
 					sr.left = Math.min(sr.left, e.left);
 					sr.top = Math.min(sr.top, e.top);
@@ -253,7 +280,20 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 					sr.bottom = Math.max(sr.bottom, e.top+e.height);
 				}
 			}
-			stageRects[fi] = {x: sr.left, y: sr.top, w: sr.right-sr.left, h: sr.bottom-sr.top};
+			
+			if(any) {
+				stageRects[fi] = {x: sr.left, y: sr.top, w: sr.right-sr.left, h: sr.bottom-sr.top};
+			}
+		}
+		
+		// Propagate the rects fowards to fill the gaps
+		var last = {x: 0, y: 0, w: 0, h: 0};
+		for(var i = 0; i < itemTimeline.frameCount; i++) {
+			if(typeof(stageRects[i]) == "undefined") {
+				stageRects[i] = last;
+			} else {
+				last = stageRects[i];
+			}
 		}
 		
 		fp.write("frames", 2);
@@ -280,15 +320,11 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	timeline.currentLayer = originalLayer;
 }
 
-
-var debugTrace = true;
-var leaveMetaDataOnDisk = false;
-
 fl.outputPanel.clear();
 var uri = fl.browseForFileURL("save", "Save file as", "Maki Document (*.mflas)", "mflas");
 if(uri) {
 	fl.trace("Export scene to: " + uri);
-	exportScene(uri, debugTrace, leaveMetaDataOnDisk);
+	exportScene(uri, DEBUG_TRACE, LEAVE_META_DATA_ON_DISK);
 	fl.trace("Export complete");
 } else {
 	fl.trace("User cancelled");

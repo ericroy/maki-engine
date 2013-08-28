@@ -96,7 +96,7 @@ namespace Maki
 
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1,
 				D3D11_SDK_VERSION, &scd, &swapChain, &device, nullptr, &context);
-			if(MAKI_D3D_FAILED(ret)) {
+			if(_Failed(ret)) {
 				Console::Error("Failed to create device and swap chain");
 			}
 		}
@@ -151,28 +151,28 @@ namespace Maki
 			rasterizerDesc.ScissorEnable = false;
 			rasterizerDesc.MultisampleEnable = false;
 			rasterizerDesc.AntialiasedLineEnable = false;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerState))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerState))) {
 				Console::Error("Failed to create rasterizer state");
 			}
 			rasterizerDesc.CullMode = D3D11_CULL_BACK;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullBack))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullBack))) {
 				Console::Error("Failed to create rasterizer state (cull back)");
 			}
 			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullFront))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullFront))) {
 				Console::Error("Failed to create rasterizer state (cull front)");
 			}
 			rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 			rasterizerDesc.CullMode = D3D11_CULL_NONE;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrame))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrame))) {
 				Console::Error("Failed to create rasterizer state (wire frame)");
 			}
 			rasterizerDesc.CullMode = D3D11_CULL_BACK;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullBack))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullBack))) {
 				Console::Error("Failed to create rasterizer state (wire frame, cull back)");
 			}
 			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-			if(MAKI_D3D_FAILED(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullFront))) {
+			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullFront))) {
 				Console::Error("Failed to create rasterizer state (wire frame, cull front)");
 			}
 
@@ -183,40 +183,40 @@ namespace Maki
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_NEVER;
 			depthDesc.StencilEnable = false;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthState))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthState))) {
+				Console::Error("Failed to create depth stencil state A");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateWrite))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateWrite))) {
+				Console::Error("Failed to create depth stencil state B");
 			}
 			depthDesc.DepthEnable = true;
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_LESS;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateLess))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLess))) {
+				Console::Error("Failed to create depth stencil state C");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateLessWrite))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessWrite))) {
+				Console::Error("Failed to create depth stencil state D");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_EQUAL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateEqual))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateEqual))) {
+				Console::Error("Failed to create depth stencil state E");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateEqualWrite))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateEqualWrite))) {
+				Console::Error("Failed to create depth stencil state F");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqual))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqual))) {
+				Console::Error("Failed to create depth stencil state G");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqualWrite))) {
-				Console::Error("Failed to create depth stencil state");
+			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqualWrite))) {
+				Console::Error("Failed to create depth stencil state H");
 			}
 
 
@@ -231,11 +231,11 @@ namespace Maki
 			blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 			blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
-			if(MAKI_D3D_FAILED(device->CreateBlendState(&blendDesc, &blendEnabled))) {
+			if(_Failed(device->CreateBlendState(&blendDesc, &blendEnabled))) {
 				Console::Error("Failed to create blend state (enabled)");
 			}
 			blendDesc.RenderTarget[0].BlendEnable = false;
-			if(MAKI_D3D_FAILED(device->CreateBlendState(&blendDesc, &blendDisabled))) {
+			if(_Failed(device->CreateBlendState(&blendDesc, &blendDisabled))) {
 				Console::Error("Failed to create blend state (disabled)");
 			}
 		

@@ -180,7 +180,9 @@ namespace Maki
 				// Negation here because flash has origin in top left, and we have origin in bottom left
 				e.m.cols[3][1] = -buffer[5] / PPU;
 
-				e.libraryIndex = elemNode->ResolveAsInt("library_index.#0");
+				Document::Node *libItemNode = elemNode->Resolve("lib_item");
+				e.libraryIndex = libItemNode->children[0]->ValueAsInt(0);
+				e.cellIndex = libItemNode->children[1]->ValueAsInt(0);
 			}
 		}
 
@@ -378,11 +380,7 @@ namespace Maki
 						FlashMovieState::ElementGroup &group = state.groups[seq.sheetIndex];
 						assert(group.activeElementCount < sheets[seq.sheetIndex].maxElementsInSingleFrame);
 						
-						uint32 seqFrame = 0;
-						if(seq.cells.count > 1) {
-							// TODO: Not just a simple graphic, must decide what frame we should show
-						}
-						const SpriteSequence::Cell &cell = seq.cells[seqFrame];
+						const SpriteSequence::Cell &cell = seq.cells[e.cellIndex];
 						const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
 
 						// Get mesh data as an array of vertices

@@ -85,7 +85,7 @@ namespace Maki
 			DefineGLFunctions();
 
 			debugOutput = config->GetBool("ogl.debug_messages", false);
-			if(debugOutput) {
+			if(debugOutput && glDebugMessageCallback != nullptr) {
 				Console::Info("Registering for OpenGL debug messages");
 				// Register debug callback for main thread's context
 				glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
@@ -112,7 +112,7 @@ namespace Maki
 
 			SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 
-			if(debugOutput) {
+			if(debugOutput && glDebugMessageCallback != nullptr) {
 				// Register debug callback for render thread's context
 				glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
 				glEnable(GL_DEBUG_OUTPUT);

@@ -39,6 +39,7 @@ namespace Maki
 			{
 				Matrix44 m;
 				int32 libraryIndex;
+				int32 cellIndex;
 			};
 
 			struct SpriteSheet
