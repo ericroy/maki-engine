@@ -849,6 +849,8 @@ failed:
 
 		bool D3DRenderCore::IsModeSupported(uint32 windowWidth, uint32 windowHeight, uint32 *refreshNumerOut, uint32 *refreshDenomOut)
 		{
+			bool found = false;
+
 			IDXGIFactory *factory = nullptr;
 			IDXGIAdapter *adapter = nullptr;
 			IDXGIOutput *adapterOutput = nullptr;
@@ -879,16 +881,17 @@ failed:
 				goto done;
 			}
 				
-			bool found = false;
+			
 			for(uint32 i = 0; i < modeCount; i++) {
-				found = modeList[i].Width == windowWidth && modeList[i].Height == windowHeight;
+				bool resMatch = modeList[i].Width == windowWidth && modeList[i].Height == windowHeight;
 
 				Console::Info("Supported mode: %dx%d @ %f Hz %s",
 					modeList[i].Width,
 					modeList[i].Height,
 					modeList[i].RefreshRate.Denominator != 0 ? modeList[i].RefreshRate.Numerator / (float)modeList[i].RefreshRate.Denominator : 0.0f,
-					found ? "<<< Found!" : "");
-				if(found)
+					resMatch ? "<<< Found!" : "");
+				
+				if(resMatch)
 				{
 					if(refreshNumerOut != nullptr) {
 						*refreshNumerOut = modeList[i].RefreshRate.Numerator;
@@ -926,7 +929,7 @@ failed:
 			SAFE_RELEASE(adapterOutput);
 			SAFE_RELEASE(adapter);
 			SAFE_RELEASE(factory);
-			return false;
+			return found;
 		}
 
 
