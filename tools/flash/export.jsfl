@@ -104,7 +104,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	fp.writePair("max_frame_count", maxFrameCount);
 	fp.write("layers");
 
-	for(var li = 0; li < layerCount; li++) {
+	for(var li = layerCount-1; li >= 0; li--) {
 		// Have the IDE select this layer
 		timeline.currentLayer = li;
 		var layer = timeline.layers[li];
