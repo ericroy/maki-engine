@@ -1,11 +1,9 @@
-﻿
+﻿fl.showIdleMessage(false);
 
 var DEBUG_TRACE = false;
 var LEAVE_META_DATA_ON_DISK = false;
 
 var PI = 3.1415926535897932384626433832795;
-
-fl.showIdleMessage(false);
 
 function fopen(uri, debugTrace) {
 	return {
@@ -69,7 +67,8 @@ function writeBezier(elem, fp, depth) {
 		var next = splitIntegerPair(kf.@next);
 		var time = parseInt(kf.@timevalue.toString());
 		
-		// Time values for prev and next handles are relative to anchor time
+		// Time values for anchor and handles are relative to anchor time
+		anchor[0] += time;
 		prev[0] += time;
 		next[0] += time;
 
@@ -137,18 +136,16 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			fp.write("key_frame", 3);
 			fp.writePair("frame_start", frame.startFrame, 4);
 			fp.writePair("frame_duration", frame.duration, 4);
-			
 			if(frame.isMotionObject() && frame.hasMotionPath()) {
 				fp.write("tween", 4);
-				//fp.writePair("type", frame.tweenType, 4, true);
-						
+
 				var xml = new XML(frame.getMotionObjectXML());
 				fp.writePair("time_scale", xml.@TimeScale, 5);
 				fp.writePair("time_duration", xml.@duration, 5);
 				fp.writePair("easing", xml.TimeMap.@type.toString().toLowerCase(), 5, true);
 				fp.writePair("ease_strength", xml.TimeMap.@strength, 5);
 				
-				fp.write("properties", 5);
+				fp.write("curves", 5);
 				writeBezier(xml..Property.(@id=="Motion_X"), fp, 6);
 				writeBezier(xml..Property.(@id=="Motion_Y"), fp, 6);
 				writeBezier(xml..Property.(@id=="Scale_X"), fp, 6);

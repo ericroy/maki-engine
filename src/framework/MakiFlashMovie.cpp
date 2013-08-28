@@ -109,6 +109,7 @@ namespace Maki
 		FlashMovie::KeyFrame::KeyFrame(Document::Node *node)
 			:	frameStart(0),
 				frameDuration(1),
+				tween(false),
 				timeScale(0),
 				timeDuration(0),
 				easing(EasingMethod_None),
@@ -119,18 +120,18 @@ namespace Maki
 
 			Document::Node *tweenNode = node->Resolve("tween");
 			if(tweenNode != nullptr) {
-
-				timeScale = tweenNode->ResolveAsUInt("time_scale.#0");
-				timeDuration = tweenNode->ResolveAsUInt("frame_duration.#0");
+				tween = true;
+				timeScale = tweenNode->ResolveAsFloat("time_scale.#0") / 1000.0f;
+				timeDuration = tweenNode->ResolveAsFloat("time_duration.#0") / 1000.0f;
 				easing = GetEasingMethodByName(tweenNode->ResolveValue("easing.#0"));
 				easeStrength = tweenNode->ResolveAsFloat("ease_strength.#0");
 
-				Document::Node *propertiesNode = tweenNode->Resolve("properties");
-				for(uint32 i = 0; i < propertiesNode->count; i++) {
-					Document::Node *propertyNode = propertiesNode->children[i];
-					TweenProperty prop = GetTweenPropertyByName(propertyNode->value);
+				Document::Node *curvesNode = tweenNode->Resolve("curves");
+				for(uint32 i = 0; i < curvesNode->count; i++) {
+					Document::Node *curveNode = curvesNode->children[i];
+					TweenProperty prop = GetTweenPropertyByName(curveNode->value);
 					if(prop == TweenProperty_None) {
-						Console::Warning("Warning, unrecognized tween property: %s", propertyNode->value);
+						Console::Warning("Warning, unrecognized tween property: %s", curveNode->value);
 						continue;
 					}
 
@@ -138,20 +139,20 @@ namespace Maki
 					new(&curves[prop]) Curve();
 					Curve &c = curves[prop];
 					c.active = true;
-					c.controlPoints.SetSize(propertyNode->count);
+					c.controlPoints.SetSize(curveNode->count);
 					c.controlPoints.Zero();
 
-					for(uint32 j = 0; j < propertyNode->count; j++) {
-						Document::Node *cpNode = propertyNode->children[j];
+					for(uint32 j = 0; j < curveNode->count; j++) {
+						Document::Node *cpNode = curveNode->children[j];
 						ControlPoint &cp = c.controlPoints[j];
 
 						float buffer[6];
 						cpNode->ResolveAsVectorN("", 6, buffer);
-						cp.prev.x = buffer[0];
+						cp.prev.x = buffer[0] / 1000.0f;
 						cp.prev.y = buffer[1];
-						cp.anchor.x = buffer[2];
+						cp.anchor.x = buffer[2] / 1000.0f;
 						cp.anchor.y = buffer[3];
-						cp.next.x = buffer[4];
+						cp.next.x = buffer[4] / 1000.0f;
 						cp.next.y = buffer[5];
 					}
 				}
@@ -362,6 +363,7 @@ namespace Maki
 				// If playhead is still in range of this layer's frame span, then we need to update this layer
 				if(kfi < layer.keyFrames.count) {
 					kf = &layer.keyFrames[kfi];
+
 					for(uint32 ei = 0; ei < kf->elements.count; ei++) {
 						Element &e = kf->elements[ei];
 
@@ -382,12 +384,37 @@ namespace Maki
 						// Offset the pointer to the quad we want to set
 						Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
 
+						Matrix44 transMat(true);
+						Matrix44 scaleMat(true);
+
+						if(kf->tween) {
+							Vector4 trans(0.0f);
+							if(kf->curves[TweenProperty::TweenProperty_MotionX].active) {
+								trans.x = kf->curves[TweenProperty::TweenProperty_MotionX].Evaluate(state.playhead) / PPU;
+							}
+							if(kf->curves[TweenProperty::TweenProperty_MotionY].active) {
+								trans.y = -kf->curves[TweenProperty::TweenProperty_MotionY].Evaluate(state.playhead) / PPU;
+							}
+							Matrix44::Translation(trans, transMat);
+
+							Vector4 scale(1.0f);
+							if(kf->curves[TweenProperty::TweenProperty_ScaleX].active) {
+								scale.x = kf->curves[TweenProperty::TweenProperty_ScaleX].Evaluate(state.playhead) / 100.0f;
+							}
+							if(kf->curves[TweenProperty::TweenProperty_ScaleY].active) {
+								scale.y = kf->curves[TweenProperty::TweenProperty_ScaleY].Evaluate(state.playhead) / 100.0f;
+							}
+							Matrix44::Scale(scale, scaleMat);
+						}
+
+						Matrix44 total = transMat * e.m * scaleMat;
+
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
 							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + cell.stagePos.x;
 							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - cell.stagePos.y;
 							v->pos.z = 0.0f;
-							v->pos = e.m * v->pos;
+							v->pos = total * v->pos;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.

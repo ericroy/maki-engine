@@ -83,6 +83,22 @@ namespace Maki
 				Curve();
 				~Curve();
 
+				inline float Evaluate(float playhead)
+				{
+					for(uint32 cpi = 0; cpi < controlPoints.count-1; cpi++) {
+						ControlPoint &a = controlPoints[cpi];
+						ControlPoint &b = controlPoints[cpi+1];
+						if(playhead >= a.anchor.x && playhead <= b.anchor.x) {	
+							float cy = 3 * (a.next.y - a.anchor.y);
+							float by = 3 * (b.prev.y - a.next.y) - cy;
+							float ay = b.anchor.y - a.anchor.y - cy - by;
+							float t = (playhead - a.anchor.x) / (b.anchor.x - a.anchor.x);
+							return ay * t*t*t + by * t*t + cy * t + a.anchor.y;
+						}
+					}
+					return controlPoints[0].anchor.y;
+				}
+
 				bool active;
 				Array<ControlPoint> controlPoints;
 			};
@@ -98,15 +114,17 @@ namespace Maki
 				// The duration of this sequence, in frames
 				uint32 frameDuration;
 
-				// Units are ms
-				uint32 timeScale;
-				uint32 timeDuration;
+				// The items on the stage for this frame
+				Array<Element> elements;				
 
+
+				// Everything below here is only available if tween == true
+				bool tween;
+				float timeScale;
+				float timeDuration;
 				EasingMethod easing;
 				float easeStrength;
 				Curve curves[TweenPropertyCount];
-
-				Array<Element> elements;
 			};
 
 			struct Layer
