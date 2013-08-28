@@ -39,6 +39,7 @@ namespace Maki
 			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) { GenericDraw<D3DRenderCore>(state, commands); }
 			void Present();
 			void Resized(uint32 width, uint32 height);
+			bool IsModeSupported(uint32 windowWidth, uint32 windowHeight, uint32 *refreshNumerOut, uint32 *refreshDenomOut);
 
 			// GPU resource creation / destruction
 			void *UploadBuffer(void *buffer, Core::VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged);

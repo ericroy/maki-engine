@@ -43,6 +43,14 @@ namespace Maki
 			vsync = config->GetBool("engine.vsync", false);
 			maxVertexFormatsPerVertexShader = config->GetUint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
+			// Check supported resolutions
+			uint32 refreshNumer = 0;
+			uint32 refreshDenom = 0;
+			if(!IsModeSupported(window->width, window->height, &refreshNumer, &refreshDenom))
+			{
+				Console::Warning("Mode not supported: %dx%d", window->width, window->height);
+			}
+
 			// Get hwnd from SDL window
 			SDL_SysWMinfo sdlInfo;
 			SDL_version sdlVer;
@@ -838,8 +846,9 @@ failed:
 
 
 
-	#if 0
-		void D3DRenderCore::GetAdapterInfo(uint32 windowWidth, uint32 windowHeight) {
+
+		bool D3DRenderCore::IsModeSupported(uint32 windowWidth, uint32 windowHeight, uint32 *refreshNumerOut, uint32 *refreshDenomOut)
+		{
 			IDXGIFactory *factory = nullptr;
 			IDXGIAdapter *adapter = nullptr;
 			IDXGIOutput *adapterOutput = nullptr;
@@ -872,11 +881,21 @@ failed:
 				
 			bool found = false;
 			for(uint32 i = 0; i < modeCount; i++) {
-				if(modeList[i].Width == windowWidth && modeList[i].Height == windowHeight)
+				found = modeList[i].Width == windowWidth && modeList[i].Height == windowHeight;
+
+				Console::Info("Supported mode: %dx%d @ %f Hz %s",
+					modeList[i].Width,
+					modeList[i].Height,
+					modeList[i].RefreshRate.Denominator != 0 ? modeList[i].RefreshRate.Numerator / (float)modeList[i].RefreshRate.Denominator : 0.0f,
+					found ? "<<< Found!" : "");
+				if(found)
 				{
-					refreshNumer = modeList[i].RefreshRate.Numerator;
-					refreshDenom = modeList[i].RefreshRate.Denominator;
-					Console::Info("Supported mode: %dx%d @ %f Hz", windowWidth, windowHeight, refreshDenom != 0 ? refreshNumer / (float)refreshDenom : 0.0f); 
+					if(refreshNumerOut != nullptr) {
+						*refreshNumerOut = modeList[i].RefreshRate.Numerator;
+					}
+					if(refreshDenomOut != nullptr) {
+						*refreshDenomOut = modeList[i].RefreshRate.Denominator;
+					}
 					found = true;
 				}
 			}
@@ -900,14 +919,16 @@ failed:
 			}
 
 			Console::Info("Adapter: %s", cardDescription);
+			return found;
 
 		done:
 			SAFE_DELETE_ARRAY(modeList);
 			SAFE_RELEASE(adapterOutput);
 			SAFE_RELEASE(adapter);
 			SAFE_RELEASE(factory);
+			return false;
 		}
-	#endif
+
 
 	} // namespace D3D
 	
