@@ -58,7 +58,7 @@ namespace Maki
 				struct Cell
 				{
 					Rect texRect;
-					Rect stageRect;
+					Vector2 stagePos;
 				};
 
 				SpriteSequence(uint32 sheetIndex, Document::Node *libItemNode);

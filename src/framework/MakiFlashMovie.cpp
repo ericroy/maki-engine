@@ -76,19 +76,14 @@ namespace Maki
 				float buffer[4];
 				frameNode->ResolveAsVectorN("tex_rect", 4, buffer);
 				
-				Rect *r = &cells[i].texRect;
-				r->left = buffer[0];
-				r->top = buffer[1];
-				r->right = r->left + buffer[2];
-				r->bottom = r->top + buffer[3];
+				Rect &r = cells[i].texRect;
+				r.left = buffer[0];
+				r.top = buffer[1];
+				r.right = r.left + buffer[2];
+				r.bottom = r.top + buffer[3];
 
-				frameNode->ResolveAsVectorN("stage_rect", 4, buffer);
-				
-				r = &cells[i].stageRect;
-				r->left = buffer[0] / PPU;
-				r->top = buffer[1] / PPU;
-				r->right = r->left + buffer[2] / PPU;
-				r->bottom = r->top + buffer[3] / PPU;
+				frameNode->ResolveAsVectorN("stage_pos", 2, cells[i].stagePos.vals);
+				cells[i].stagePos /= PPU;
 			}
 		}
 
@@ -389,8 +384,8 @@ namespace Maki
 
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
-							v->pos.x = unitQuadCoeffs[i].x * cell.stageRect.GetWidth() + cell.stageRect.left;
-							v->pos.y = unitQuadCoeffs[i].y * cell.stageRect.GetHeight() - cell.stageRect.top;
+							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + cell.stagePos.x;
+							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - cell.stagePos.y;
 							v->pos.z = 0.0f;
 							v->pos = e.m * v->pos;
 

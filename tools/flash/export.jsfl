@@ -240,62 +240,43 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		fp.writePair("name", item.name, 2, true);		
 		fp.writePair("type", item.itemType, 2, true);
 		
-		var stageRects = [];
-		
-		// Determine the bounding rect within the library item's stage
-		lib.editItem(itemName);
-		var itemDom = fl.getDocumentDOM();
-		var itemTimeline = itemDom.getTimeline();
-		
-		for(var fi = 0; fi < itemTimeline.frameCount; fi++) {
+		var stagePositions = [];
+		for(var fi = 0; fi < item.timeline.frameCount; fi++) {
 			// Have the IDE select this frame
-			timeline.currentFrame = fi;
+			//timeline.currentFrame = fi;
 			
-			var sr = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: Number.MIN_VALUE, bottom: Number.MIN_VALUE};
+			var pos = {left: Number.MAX_VALUE, top: Number.MAX_VALUE};
 			var any = false;
 			
-			for(var li = 0; li < itemTimeline.layerCount; li++) {
+			for(var li = 0; li < item.timeline.layerCount; li++) {
 				// Have the IDE select this layer
-				itemTimeline.currentLayer = li;
+				//item.timeline.currentLayer = li;
 				
-				var layer = itemTimeline.layers[li];
+				var layer = item.timeline.layers[li];
 				if(fi >= layer.frames.length) {
 					continue;
 				}
 				
-				
 				var frame = layer.frames[fi];
-				/*				
-				if(frame.startFrame != fi) {
+				if(frame.isEmpty) {
 					continue;
 				}
-				*/
-				
+
+				any = true;
 				for(var ei = 0; ei < frame.elements.length; ei++) {
-					any = true;
 					var e = frame.elements[ei];
-					sr.left = Math.min(sr.left, e.left);
-					sr.top = Math.min(sr.top, e.top);
-					sr.right = Math.max(sr.right, e.left+e.width);
-					sr.bottom = Math.max(sr.bottom, e.top+e.height);
+					if(e.left < pos.left) pos.left = e.left;
+					if(e.top < pos.top) pos.top = e.top;
 				}
 			}
 			
 			if(any) {
-				stageRects[fi] = {x: sr.left, y: sr.top, w: sr.right-sr.left, h: sr.bottom-sr.top};
-			}
-		}
-		
-		// Propagate the rects fowards to fill the gaps
-		var last = {x: 0, y: 0, w: 0, h: 0};
-		for(var i = 0; i < itemTimeline.frameCount; i++) {
-			if(typeof(stageRects[i]) == "undefined") {
-				stageRects[i] = last;
+				stagePositions.push({x: pos.left, y: pos.top});
 			} else {
-				last = stageRects[i];
+				stagePositions.push({x: 0, y: 0});
 			}
 		}
-		
+
 		fp.write("frames", 2);
 		for(var i = 0; i <= 9999; i++) {
 			var key = item.name + padNumber(i, 4);
@@ -303,16 +284,13 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				break;
 			}
 			var o = meta.frames[key].frame;
-			var sr = stageRects[i];
+			var stagePos = stagePositions[i];
 			
 			fp.write("frame", 3);
 			fp.writePair("tex_rect", o.x + ", " + o.y + ", " + o.w + ", " + o.h, 4);
-			fp.writePair("stage_rect", sr.x + ", " + sr.y + ", " + sr.w + ", " + sr.h, 4);
+			fp.writePair("stage_pos", stagePos.x + ", " + stagePos.y, 4);
 		}
 	});
-	
-	lib.selectNone();
-	lib.editItem();
 
 	fp.close();
 
