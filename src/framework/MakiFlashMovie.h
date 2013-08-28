@@ -40,7 +40,9 @@ namespace Maki
 				Matrix44 m;
 				Vector2 size;
 				Vector2 regPoint;
+				Vector2 leftTop;
 				Vector2 transPoint;
+				Vector2 transPointLocal;
 				uint32 zIndex;
 				float theta;
 				int32 libraryIndex;
@@ -64,6 +66,7 @@ namespace Maki
 				
 				char name[32];
 				char type[32];
+				Vector2 pos;
 				uint32 sheetIndex;
 				Array<Rect> spriteRects;
 			};

@@ -142,9 +142,12 @@ namespace Maki
 
 			inline Vector3 operator*(const Vector3 &v) const
 			{
-				return Vector3(cols[0][0]*v.x + cols[1][0]*v.y + cols[2][0]*v.z,
-					cols[0][1]*v.x + cols[1][1]*v.y + cols[2][1]*v.z,
-					cols[0][2]*v.x + cols[1][2]*v.y + cols[2][2]*v.z);
+				// Cheating:
+				// This operation doesn't really exist in a mathematical sense.  Pretend that the vector
+				// has a 1 in the fourth component, so it picks up the translation part of the matrix.
+				return Vector3(cols[0][0]*v.x + cols[1][0]*v.y + cols[2][0]*v.z + cols[3][0],
+					cols[0][1]*v.x + cols[1][1]*v.y + cols[2][1]*v.z + cols[3][1],
+					cols[0][2]*v.x + cols[1][2]*v.y + cols[2][2]*v.z + cols[3][2]);
 			}
 
 			inline Matrix44 operator*(const Matrix44 &v) const

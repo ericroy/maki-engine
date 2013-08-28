@@ -1,5 +1,6 @@
 ﻿
 var PI = 3.1415926535897932384626433832795;
+var INT_MAX = Math.pow(2,32) - 1;
 
 function fopen(uri, debugTrace) {
 	return {
@@ -174,7 +175,10 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				fp.writePair("size", e.width + ", " + e.height, 6);
 				fp.writePair("theta", -e.rotation * PI / 180.0, 6);
 				fp.writePair("reg_point", e.x + ", " + e.y, 6);
+				fp.writePair("left_top", e.left + ", " + e.top, 6);
 				fp.writePair("trans_point", e.transformX + ", " + e.transformY, 6);
+				var tpl = e.getTransformationPoint();
+				fp.writePair("trans_point_local", tpl.x + ", " + tpl.y, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
 				
 				var libIndex = -1;
@@ -224,8 +228,26 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		fp.write("item", 1);
 		fp.writePair("name", item.name, 2, true);		
 		fp.writePair("type", item.itemType, 2, true);
-		fp.write("frames", 2);
 		
+		var itemPos = {x: INT_MAX, y: INT_MAX};
+		lib.editItem(itemName);
+		var itemDom = fl.getDocumentDOM();
+		var itemTimeline = itemDom.getTimeline();
+		for(var li = 0; li < itemTimeline.layerCount; li++) {
+			itemTimeline.currentLayer = li;
+			var layer = itemTimeline.layers[li];
+			if(itemTimeline.currentFrame < layer.frames.length) {
+				var frame = layer.frames[itemTimeline.currentFrame];
+				for(var ei = 0; ei < frame.elements.length; ei++) {
+					var e = frame.elements[ei];
+					itemPos.x = Math.min(itemPos.x, e.left);
+					itemPos.y = Math.min(itemPos.y, e.top);
+				}
+			}
+		}
+		fp.writePair("pos", itemPos.x + ", " + itemPos.y, 2);
+		
+		fp.write("frames", 2);
 		for(var i = 0; i <= 9999; i++) {
 			var key = item.name + padNumber(i, 4);
 			if(!(key in meta.frames)) {
@@ -235,6 +257,9 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			fp.writePair("frame", o.x + ", " + o.y + ", " + o.w + ", " + o.h, 3);
 		}
 	});
+	
+	lib.selectNone();
+	lib.editItem();
 
 	fp.close();
 

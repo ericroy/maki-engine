@@ -63,6 +63,9 @@ namespace Maki
 			strncpy(name, libItemNode->ResolveValue("name.#0"), sizeof(name));
 			strncpy(type, libItemNode->ResolveValue("type.#0"), sizeof(type));
 
+			libItemNode->ResolveAsVectorN("pos", 2, pos.vals);
+			pos /= PPU;
+
 			Document::Node *framesNode = libItemNode->Resolve("frames");
 			spriteRects.SetSize(framesNode->count);
 			spriteRects.Zero();
@@ -162,11 +165,19 @@ namespace Maki
 				elemNode->ResolveAsVectorN("size", 2, e.size.vals);
 				e.size /= PPU;
 
+				elemNode->ResolveAsVectorN("left_top", 2, e.leftTop.vals);
+				e.leftTop /= PPU;
+
 				elemNode->ResolveAsVectorN("reg_point", 2, e.regPoint.vals);
 				e.regPoint /= PPU;
 
 				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
 				e.transPoint /= PPU;
+
+
+
+				elemNode->ResolveAsVectorN("trans_point_local", 2, e.transPointLocal.vals);
+				e.transPointLocal /= PPU;
 
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
@@ -176,7 +187,8 @@ namespace Maki
 				e.m.cols[0][1] = buffer[2];
 				e.m.cols[1][1] = buffer[3];
 				e.m.cols[3][0] = buffer[4] / PPU;
-				e.m.cols[3][1] = buffer[5] / PPU;
+				// Negation here because flash has origin in top left, and we have origin in bottom left
+				e.m.cols[3][1] = -buffer[5] / PPU;
 
 				e.libraryIndex = elemNode->ResolveAsInt("library_index.#0");
 			}
@@ -396,16 +408,10 @@ namespace Maki
 
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
-							v->pos.x = unitQuadCoeffs[i].x * e.size.x;
-							v->pos.y = unitQuadCoeffs[i].y * e.size.y;
+							v->pos.x = unitQuadCoeffs[i].x * e.size.x + seq.pos.x;
+							v->pos.y = unitQuadCoeffs[i].y * e.size.y - seq.pos.y;
 							v->pos.z = 0.0f;
-
-							Matrix44 rot(true);
-							Matrix44::RotationZ(e.theta, rot);
-							v->pos = rot * v->pos;
-
-							v->pos.x += e.regPoint.x;
-							v->pos.y += -e.regPoint.y;
+							v->pos = e.m * v->pos;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.
