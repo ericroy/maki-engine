@@ -156,7 +156,19 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				writeBezier(xml..Property.(@id=="Scale_Y"), fp, 6);
 				writeBezier(xml..Property.(@id=="Skew_X"), fp, 6);
 				writeBezier(xml..Property.(@id=="Skew_Y"), fp, 6);
+				
+				// Alpha effect
 				writeBezier(xml..Property.(@id=="Alpha_Amount"), fp, 6);
+				
+				// Advanced color effect
+				writeBezier(xml..Property.(@id=="AdvClr_R_Pct"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_R_Offset"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_G_Pct"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_G_Offset"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_B_Pct"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_B_Offset"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_A_Pct"), fp, 6);
+				writeBezier(xml..Property.(@id=="AdvClr_A_Offset"), fp, 6);
 			}
 			
 			fp.write("elements", 4);			

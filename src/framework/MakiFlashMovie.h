@@ -25,11 +25,39 @@ namespace Maki
 				TweenProperty_SkewX,
 				TweenProperty_SkewY,
 				TweenProperty_Alpha,
+				TweenProperty_AdvancedRedPercent,
+				TweenProperty_AdvancedRedOffset,
+				TweenProperty_AdvancedGreenPercent,
+				TweenProperty_AdvancedGreenOffset,
+				TweenProperty_AdvancedBluePercent,
+				TweenProperty_AdvancedBlueOffset,
+				TweenProperty_AdvancedAlphaPercent,
+				TweenProperty_AdvancedAlphaOffset,
 				TweenPropertyCount
 			};
+			enum TweenPropertyFlag
+			{
+				TweenPropertyFlag_MotionX = 1u << TweenProperty_MotionX,
+				TweenPropertyFlag_MotionY = 1u << TweenProperty_MotionY,
+				TweenPropertyFlag_RotationZ = 1u << TweenProperty_RotationZ,
+				TweenPropertyFlag_ScaleX = 1u << TweenProperty_ScaleX,
+				TweenPropertyFlag_ScaleY = 1u << TweenProperty_ScaleY,
+				TweenPropertyFlag_SkewX = 1u << TweenProperty_SkewX,
+				TweenPropertyFlag_SkewY = 1u << TweenProperty_SkewY,
+				TweenPropertyFlag_Alpha = 1u << TweenProperty_Alpha,
+				TweenPropertyFlag_AdvancedRedPercent = 1u << TweenProperty_AdvancedRedPercent,
+				TweenPropertyFlag_AdvancedRedOffset = 1u << TweenProperty_AdvancedRedOffset,
+				TweenPropertyFlag_AdvancedGreenPercent = 1u << TweenProperty_AdvancedGreenPercent,
+				TweenPropertyFlag_AdvancedGreenOffset = 1u << TweenProperty_AdvancedGreenOffset,
+				TweenPropertyFlag_AdvancedBluePercent = 1u << TweenProperty_AdvancedBluePercent,
+				TweenPropertyFlag_AdvancedBlueOffset = 1u << TweenProperty_AdvancedBlueOffset,
+				TweenPropertyFlag_AdvancedAlphaPercent = 1u << TweenProperty_AdvancedAlphaPercent,
+				TweenPropertyFlag_AdvancedAlphaOffset = 1u << TweenProperty_AdvancedAlphaOffset,
+			};
+			
 			static const char *tweenPropertyNames[TweenPropertyCount];
 			static TweenProperty GetTweenPropertyByName(const char *tweenPropertyName);
-
+			
 			enum EasingMethod
 			{
 				EasingMethod_None = 0,
@@ -107,7 +135,6 @@ namespace Maki
 					return controlPoints[controlPoints.count-1].anchor.y;
 				}
 
-				bool active;
 				Array<ControlPoint> controlPoints;
 			};
 
@@ -132,6 +159,7 @@ namespace Maki
 				float timeDuration;
 				EasingMethod easing;
 				float easeStrength;
+				uint32 curveFlags;
 				Curve curves[TweenPropertyCount];
 			};
 

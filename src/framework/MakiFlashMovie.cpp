@@ -20,7 +20,15 @@ namespace Maki
 			"scale_y",
 			"skew_x",
 			"skew_y",
-			"alpha_amount"
+			"alpha_amount",
+			"advclr_r_pct",
+			"advclr_r_offset",
+			"advclr_g_pct",
+			"advclr_g_offset",
+			"advclr_b_pct",
+			"advclr_b_offset",
+			"advclr_a_pct",
+			"advclr_a_offset",
 		};
 
 		FlashMovie::TweenProperty FlashMovie::GetTweenPropertyByName(const char *tweenPropertyName)
@@ -100,7 +108,6 @@ namespace Maki
 
 
 		FlashMovie::Curve::Curve()
-			:	active(false)
 		{
 		}
 
@@ -118,7 +125,8 @@ namespace Maki
 				timeScale(0),
 				timeDuration(0),
 				easing(EasingMethod_None),
-				easeStrength(0)
+				easeStrength(0),
+				curveFlags(0)
 		{
 			frameStart = node->ResolveAsUInt("frame_start.#0");
 			frameDuration = node->ResolveAsUInt("frame_duration.#0");
@@ -140,10 +148,9 @@ namespace Maki
 						continue;
 					}
 
-
+					curveFlags |= (1u << prop);
 					new(&curves[prop]) Curve();
 					Curve &c = curves[prop];
-					c.active = true;
 					c.controlPoints.SetSize(curveNode->count);
 					c.controlPoints.Zero();
 
@@ -209,7 +216,7 @@ namespace Maki
 		FlashMovie::KeyFrame::~KeyFrame()
 		{
 			for(uint32 i = 0; i < TweenPropertyCount; i++) {
-				if(curves[i].active) {
+				if(curveFlags & (1u << i)) {
 					curves[i].~Curve();
 				}
 			}
@@ -440,47 +447,96 @@ namespace Maki
 						// Offset the pointer to the quad we want to set
 						Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
 
-						Matrix44 transMat(true);
-						Matrix44 scaleMat(true);
-						float alpha = 1.0f;
+						// By default, we'll use the transform defined by the element
+						Matrix44 *xForm = &e.m;
+						
+						uint8 r = 0xff;
+						uint8 g = 0xff;
+						uint8 b = 0xff;
+						uint8 a = 0xff;
+						Matrix44 tweenXForm;
 
 						if(kf->tween) {
-							Vector4 trans(0.0f);
-							if(kf->curves[TweenProperty::TweenProperty_MotionX].active) {
-								trans.x = kf->curves[TweenProperty::TweenProperty_MotionX].Evaluate(t) / PPU;
-							}
-							if(kf->curves[TweenProperty::TweenProperty_MotionY].active) {
-								trans.y = -kf->curves[TweenProperty::TweenProperty_MotionY].Evaluate(t) / PPU;
-							}
-							Matrix44::Translation(trans, transMat);
+							tweenXForm = e.m;
 
-							Vector4 scale(1.0f);
-							if(kf->curves[TweenProperty::TweenProperty_ScaleX].active) {
-								scale.x = kf->curves[TweenProperty::TweenProperty_ScaleX].Evaluate(t) / 100.0f;
+							if(kf->curveFlags & (TweenPropertyFlag_MotionX|TweenPropertyFlag_MotionY)) {
+								xForm = &tweenXForm;
+								Matrix44 transMat(true);
+								Vector4 trans(0.0f);
+								if(kf->curveFlags & TweenPropertyFlag_MotionX) {
+									trans.x = kf->curves[TweenProperty_MotionX].Evaluate(t) / PPU;
+								}
+								if(kf->curveFlags & TweenPropertyFlag_MotionY) {
+									trans.y = -kf->curves[TweenProperty_MotionY].Evaluate(t) / PPU;
+								}
+								Matrix44::Translation(trans, transMat);
+								tweenXForm = transMat * tweenXForm;
 							}
-							if(kf->curves[TweenProperty::TweenProperty_ScaleY].active) {
-								scale.y = kf->curves[TweenProperty::TweenProperty_ScaleY].Evaluate(t) / 100.0f;
-							}
-							Matrix44::Scale(scale, scaleMat);
 
-							if(kf->curves[TweenProperty::TweenProperty_Alpha].active) {
-								alpha = kf->curves[TweenProperty::TweenProperty_Alpha].Evaluate(t) / 100.0f;
+							if(kf->curveFlags & (TweenPropertyFlag_ScaleX|TweenPropertyFlag_ScaleY)) {
+								xForm = &tweenXForm;
+								Matrix44 scaleMat(true);
+								Vector4 scale(1.0f);
+								if(kf->curveFlags & TweenPropertyFlag_ScaleX) {
+									scale.x = kf->curves[TweenProperty_ScaleX].Evaluate(t) / 100.0f;
+								}
+								if(kf->curveFlags & TweenPropertyFlag_ScaleY) {
+									scale.y = kf->curves[TweenProperty_ScaleY].Evaluate(t) / 100.0f;
+								}
+								Matrix44::Scale(scale, scaleMat);
+								tweenXForm = tweenXForm * scaleMat;
+							}
+
+							// Alpha effect, and advanced colour effects are mutally exclusive
+							if(kf->curveFlags & TweenPropertyFlag_Alpha) {
+								a = (uint8)(kf->curves[TweenProperty_Alpha].Evaluate(t) / 100.0f * 255.0f);
+							} else if(kf->curveFlags & (
+								TweenPropertyFlag_AdvancedRedPercent|TweenPropertyFlag_AdvancedRedOffset|
+								TweenPropertyFlag_AdvancedGreenPercent|TweenPropertyFlag_AdvancedGreenOffset|
+								TweenPropertyFlag_AdvancedBluePercent|TweenPropertyFlag_AdvancedBlueOffset|
+								TweenPropertyFlag_AdvancedAlphaPercent|TweenPropertyFlag_AdvancedAlphaOffset)) {
+
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedPercent) {
+									r = (uint8)Clamp(r * kf->curves[TweenProperty_AdvancedRedPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedOffset) {
+									r = (uint8)Clamp(r + kf->curves[TweenProperty_AdvancedRedOffset].Evaluate(t), 0.0f, 255.0f);
+								}
+
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenPercent) {
+									g = (uint8)Clamp(g * kf->curves[TweenProperty_AdvancedGreenPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenOffset) {
+									g = (uint8)Clamp(g + kf->curves[TweenProperty_AdvancedGreenOffset].Evaluate(t), 0.0f, 255.0f);
+								}
+
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedBluePercent) {
+									b = (uint8)Clamp(b * kf->curves[TweenProperty_AdvancedBluePercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedBlueOffset) {
+									b = (uint8)Clamp(b + kf->curves[TweenProperty_AdvancedBlueOffset].Evaluate(t), 0.0f, 255.0f);
+								}
+
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaPercent) {
+									a = (uint8)Clamp(a * kf->curves[TweenProperty_AdvancedAlphaPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaOffset) {
+									a = (uint8)Clamp(a + kf->curves[TweenProperty_AdvancedAlphaOffset].Evaluate(t), 0.0f, 255.0f);
+								}
 							}
 						}
-
-						Matrix44 total = transMat * e.m * scaleMat;
 
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
 							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + cell.stagePos.x;
 							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - cell.stagePos.y;
 							v->pos.z = 0.0f;
-							v->pos = total * v->pos;
+							v->pos = *xForm * v->pos;
 
-							v->color[0] = 0xff;
-							v->color[1] = 0xff;
-							v->color[2] = 0xff;
-							v->color[3] = (uint8)(alpha * 255.0f);
+							v->color[0] = r;
+							v->color[1] = g;
+							v->color[2] = b;
+							v->color[3] = a;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.
