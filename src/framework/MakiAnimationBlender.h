@@ -14,7 +14,7 @@ namespace Maki
 			public:
 				Node(float rate);
 				virtual ~Node();
-				virtual void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose) = 0;
+				virtual void AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate) = 0;
 
 			public:
 				uint32 boneCount;
@@ -26,7 +26,7 @@ namespace Maki
 			public:
 				Anim(float rate, bool loop, HandleOrRid animId);
 				virtual ~Anim();
-				void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+				void AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate);
 				void SetFrame(float frame);
 
 			public:
@@ -40,7 +40,7 @@ namespace Maki
 			public:
 				Blend(float rate, float balance, Node *first, Node *second);			
 				virtual ~Blend();
-				void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+				void AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate);
 			
 			public:
 				Tween<float> balance;
@@ -53,7 +53,7 @@ namespace Maki
 			AnimationBlender();
 			~AnimationBlender();
 			bool Load(Rid rid);
-			void AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose);
+			void AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate);
 
 		private:
 			Node *LoadRecursive(Document::Node *n);

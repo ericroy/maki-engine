@@ -16,6 +16,7 @@ namespace Maki
 				Attribute_Normal,
 				Attribute_Tangent,
 				Attribute_Color,
+				Attribute_Color1,
 				Attribute_TexCoord,
 				Attribute_BoneWeight,
 				AttributeCount
@@ -27,8 +28,9 @@ namespace Maki
 				AttributeFlag_Normal = 1<<0,
 				AttributeFlag_Tangent = 1<<1,
 				AttributeFlag_Color = 1<<2,
-				AttributeFlag_TexCoord = 1<<3,
-				AttributeFlag_BoneWeight = 1<<4
+				AttributeFlag_Color1 = 1<<3,
+				AttributeFlag_TexCoord = 1<<4,
+				AttributeFlag_BoneWeight = 1<<5
 			};
 		
 			enum DataType

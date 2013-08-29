@@ -41,7 +41,7 @@ namespace Maki
 			SkeletonAnimation(const SkeletonAnimation &) { assert(false && "SkeletonAnimation copy construction not allowed"); }
 			~SkeletonAnimation();
 			bool Load(Rid rid);
-			void AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose);
+			void AdvanceState(float timeDelta, State &state, Array<Skeleton::Joint> &pose, bool loop, float rateCoeff);
 			inline uint32 GetBoneCount() const;
 
 		public:

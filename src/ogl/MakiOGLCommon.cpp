@@ -136,6 +136,7 @@ namespace Maki
 			"Normal",
 			"Tangent",
 			"Color",
+			"Color1",
 			"TexCoord",
 			"BoneWeights"
 		};
@@ -144,6 +145,7 @@ namespace Maki
 			GL_FALSE,
 			GL_FALSE,
 			GL_FALSE,
+			GL_TRUE,
 			GL_TRUE,
 			GL_FALSE,
 			GL_FALSE

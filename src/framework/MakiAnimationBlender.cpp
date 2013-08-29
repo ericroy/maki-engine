@@ -39,9 +39,9 @@ namespace Maki
 			SkeletonAnimationManager::Free(animation);
 		}
 
-		void AnimationBlender::Anim::AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose)
+		void AnimationBlender::Anim::AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate)
 		{
-			SkeletonAnimationManager::Get(animation)->AdvanceState(dt, this->rate * rate, loop, state, pose);
+			SkeletonAnimationManager::Get(animation)->AdvanceState(dt, state, pose, loop, this->rate * rate);
 		}
 
 		void AnimationBlender::Anim::SetFrame(float frame)
@@ -70,15 +70,15 @@ namespace Maki
 			SAFE_DELETE(second);
 		}
 
-		void AnimationBlender::Blend::AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose)
+		void AnimationBlender::Blend::AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate)
 		{
 			if(balance.Get() == 0.0f) {
-				first->AdvanceState(dt, this->rate * rate, pose);
+				first->AdvanceState(dt, pose, this->rate * rate);
 			} else if(balance.Get() == 1.0f) {
-				second->AdvanceState(dt, this->rate * rate, pose);
+				second->AdvanceState(dt, pose, this->rate * rate);
 			} else {
-				first->AdvanceState(dt, this->rate * rate, tempPose);
-				second->AdvanceState(dt, this->rate * rate, pose);
+				first->AdvanceState(dt, tempPose, this->rate * rate);
+				second->AdvanceState(dt, pose, this->rate * rate);
 				const float oneMinusBalance = 1.0f - balance.Get();
 				for(uint32 i = 0; i < boneCount; i++) {
 					pose[i].offset = pose[i].offset * balance.Get() + tempPose[i].offset * oneMinusBalance;
@@ -120,7 +120,7 @@ namespace Maki
 			return root != nullptr;
 		}
 
-		void AnimationBlender::AdvanceState(float dt, float rate, Array<Skeleton::Joint> &pose)
+		void AnimationBlender::AdvanceState(float dt, Array<Skeleton::Joint> &pose, float rate)
 		{
 			if(root == nullptr) {
 				return;
@@ -136,7 +136,7 @@ namespace Maki
 			if(pose.count != root->boneCount) {
 				pose.SetSize(root->boneCount);
 			}
-			root->AdvanceState(dt, rate, pose);
+			root->AdvanceState(dt, pose, rate);
 		}
 
 

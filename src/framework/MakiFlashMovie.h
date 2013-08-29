@@ -179,6 +179,7 @@ namespace Maki
 			{
 				Vector3 pos;
 				uint8 color[4];
+				uint8 colorAdd[4];
 				Vector2 uv;
 			};
 
@@ -191,7 +192,7 @@ namespace Maki
 		public:
 			virtual ~FlashMovie();
 			bool Load(Rid movieRid, Rid materialRid);
-			void AdvanceState(float timeDelta, float rateCoeff, bool loop, FlashMovieState &state);
+			void AdvanceState(float timeDelta, FlashMovieState &state, bool loop, float rateCoeff);
 			
 		public:
 			Rid materialRid;

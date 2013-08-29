@@ -284,6 +284,9 @@ namespace Maki
 			if((vertexAttributeFlags & VertexFormat::AttributeFlag_Color) != 0) {
 				vertexStride += 4*sizeof(uint8);
 			}
+			if((vertexAttributeFlags & VertexFormat::AttributeFlag_Color1) != 0) {
+				vertexStride += 4*sizeof(uint8);
+			}
 			if((vertexAttributeFlags & VertexFormat::AttributeFlag_TexCoord) != 0) {
 				vertexStride += 2*sizeof(float);
 			}
@@ -327,6 +330,13 @@ namespace Maki
 				offset += sizeof(uint8)*4;
 			}
 
+			if((vertexAttributeFlags & VertexFormat::AttributeFlag_Color1) != 0) {
+				if(attr == VertexFormat::Attribute_Color1) {
+					return offset;
+				}
+				offset += sizeof(uint8)*4;
+			}
+
 			if((vertexAttributeFlags & VertexFormat::AttributeFlag_TexCoord) != 0) {
 				if(attr == VertexFormat::Attribute_TexCoord) {
 					return offset;
@@ -356,6 +366,9 @@ namespace Maki
 			}
 			if((vertexAttributeFlags & VertexFormat::AttributeFlag_Color) != 0) {
 				vf.PushAttribute(VertexFormat::Attribute_Color, VertexFormat::DataType_UnsignedInt8, 4);
+			}
+			if((vertexAttributeFlags & VertexFormat::AttributeFlag_Color1) != 0) {
+				vf.PushAttribute(VertexFormat::Attribute_Color1, VertexFormat::DataType_UnsignedInt8, 4);
 			}
 			if((vertexAttributeFlags & VertexFormat::AttributeFlag_TexCoord) != 0) {
 				vf.PushAttribute(VertexFormat::Attribute_TexCoord, VertexFormat::DataType_Float, 2);

@@ -26,12 +26,12 @@ namespace Maki
 		}
 
 		const char *attrToSemanticString[VertexFormat::AttributeCount] = {
-			"POSITION", "NORMAL", "TANGENT", "COLOR", "TEXCOORD", "TEXCOORD"
+			"POSITION", "NORMAL", "TANGENT", "COLOR", "COLOR", "TEXCOORD", "TEXCOORD"
 		};
 
-		uint32 attrToSemanticIndex[VertexFormat::AttributeCount] = { 0, 0, 0, 0, 0, 1 };
+		uint32 attrToSemanticIndex[VertexFormat::AttributeCount] = { 0, 0, 0, 0, 1, 0, 1 };
 
-		uint8 normalizeAttribute[Core::VertexFormat::AttributeCount] = { 0, 0, 0, 1, 0, 0 };
+		uint8 normalizeAttribute[Core::VertexFormat::AttributeCount] = { 0, 0, 0, 1, 1, 0, 0 };
 
 		// First index is type, second index is component count
 		const DXGI_FORMAT typeAndCountAndNormToFormat[VertexFormat::DataTypeCount][5][2] = {

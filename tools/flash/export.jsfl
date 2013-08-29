@@ -140,7 +140,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				fp.write("tween", 4);
 
 				var motionXMLDesc = frame.getMotionObjectXML();
-				fl.trace(motionXMLDesc);
+				//fl.trace(motionXMLDesc);
 				
 				var xml = new XML(motionXMLDesc);
 				fp.writePair("time_scale", xml.@TimeScale, 5);

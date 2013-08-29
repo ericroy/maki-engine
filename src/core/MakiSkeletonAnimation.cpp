@@ -101,7 +101,7 @@ namespace Maki
 			return true;
 		}
 
-		void SkeletonAnimation::AdvanceState(float timeDelta, float rateCoeff, bool loop, State &state, Array<Skeleton::Joint> &pose)
+		void SkeletonAnimation::AdvanceState(float timeDelta, State &state, Array<Skeleton::Joint> &pose, bool loop, float rateCoeff)
 		{
 			state.currentFrame += timeDelta * rateCoeff * debugRateCoeff * frameRate;
 			if(state.currentFrame >= frameCount) {

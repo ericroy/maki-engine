@@ -348,7 +348,7 @@ namespace Maki
 			Vector2(1.0f, 0.0f)
 		};
 
-		void FlashMovie::AdvanceState(float timeDelta, float rateCoeff, bool loop, FlashMovieState &state)
+		void FlashMovie::AdvanceState(float timeDelta, FlashMovieState &state, bool loop, float rateCoeff)
 		{
 			if(state.finished) {
 				return;
@@ -454,13 +454,19 @@ namespace Maki
 						uint8 g = 0xff;
 						uint8 b = 0xff;
 						uint8 a = 0xff;
+
+						uint8 rAdd = 0x0;
+						uint8 gAdd = 0x0;
+						uint8 bAdd = 0x0;
+						uint8 aAdd = 0x0;
+
 						Matrix44 tweenXForm;
 
 						if(kf->tween) {
 							tweenXForm = e.m;
+							xForm = &tweenXForm;
 
 							if(kf->curveFlags & (TweenPropertyFlag_MotionX|TweenPropertyFlag_MotionY)) {
-								xForm = &tweenXForm;
 								Matrix44 transMat(true);
 								Vector4 trans(0.0f);
 								if(kf->curveFlags & TweenPropertyFlag_MotionX) {
@@ -474,7 +480,6 @@ namespace Maki
 							}
 
 							if(kf->curveFlags & (TweenPropertyFlag_ScaleX|TweenPropertyFlag_ScaleY)) {
-								xForm = &tweenXForm;
 								Matrix44 scaleMat(true);
 								Vector4 scale(1.0f);
 								if(kf->curveFlags & TweenPropertyFlag_ScaleX) {
@@ -499,29 +504,27 @@ namespace Maki
 								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedPercent) {
 									r = (uint8)Clamp(r * kf->curves[TweenProperty_AdvancedRedPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
 								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedOffset) {
-									r = (uint8)Clamp(r + kf->curves[TweenProperty_AdvancedRedOffset].Evaluate(t), 0.0f, 255.0f);
-								}
-
 								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenPercent) {
 									g = (uint8)Clamp(g * kf->curves[TweenProperty_AdvancedGreenPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
 								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenOffset) {
-									g = (uint8)Clamp(g + kf->curves[TweenProperty_AdvancedGreenOffset].Evaluate(t), 0.0f, 255.0f);
-								}
-
 								if(kf->curveFlags & TweenPropertyFlag_AdvancedBluePercent) {
 									b = (uint8)Clamp(b * kf->curves[TweenProperty_AdvancedBluePercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
 								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedBlueOffset) {
-									b = (uint8)Clamp(b + kf->curves[TweenProperty_AdvancedBlueOffset].Evaluate(t), 0.0f, 255.0f);
-								}
-
 								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaPercent) {
 									a = (uint8)Clamp(a * kf->curves[TweenProperty_AdvancedAlphaPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
 								}
+								
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedOffset) {
+									rAdd = (uint8)kf->curves[TweenProperty_AdvancedRedOffset].Evaluate(t);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenOffset) {
+									gAdd = (uint8)kf->curves[TweenProperty_AdvancedGreenOffset].Evaluate(t);
+								}
+								if(kf->curveFlags & TweenPropertyFlag_AdvancedBlueOffset) {
+									bAdd = (uint8)kf->curves[TweenProperty_AdvancedBlueOffset].Evaluate(t);
+								}
 								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaOffset) {
-									a = (uint8)Clamp(a + kf->curves[TweenProperty_AdvancedAlphaOffset].Evaluate(t), 0.0f, 255.0f);
+									aAdd = (uint8)kf->curves[TweenProperty_AdvancedAlphaOffset].Evaluate(t);
 								}
 							}
 						}
@@ -537,6 +540,11 @@ namespace Maki
 							v->color[1] = g;
 							v->color[2] = b;
 							v->color[3] = a;
+
+							v->colorAdd[0] = rAdd;
+							v->colorAdd[1] = gAdd;
+							v->colorAdd[2] = bAdd;
+							v->colorAdd[3] = aAdd;
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.
