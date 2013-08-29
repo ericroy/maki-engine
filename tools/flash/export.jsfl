@@ -3,8 +3,6 @@
 var DEBUG_TRACE = false;
 var LEAVE_META_DATA_ON_DISK = false;
 
-var PI = 3.1415926535897932384626433832795;
-
 function fopen(uri, debugTrace) {
 	return {
 		uri: uri,
@@ -136,7 +134,7 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			fp.write("key_frame", 3);
 			fp.writePair("frame_start", frame.startFrame, 4);
 			fp.writePair("frame_duration", frame.duration, 4);
-			if(frame.isMotionObject() && frame.hasMotionPath()) {
+			if(frame.isMotionObject()) {
 				fp.write("tween", 4);
 
 				var motionXMLDesc = frame.getMotionObjectXML();
@@ -196,6 +194,9 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				// Don't need to export z index, the elements are already listed in draw-order
 				//fp.writePair("z_index", e.depth, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
+				
+				var tp = e.getTransformationPoint();
+				fp.writePair("trans_point", tp.x + ", " + tp.y, 6);
 				
 				var libIndex = -1;
 				if(exportLibAssets) {

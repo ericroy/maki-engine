@@ -196,6 +196,9 @@ namespace Maki
 				Document::Node *elemNode = elementsNode->children[i];
 				Element &e = elements[i];
 
+				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
+				e.transPoint /= PPU;
+
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
 				e.m.SetIdentity();
@@ -447,36 +450,23 @@ namespace Maki
 						// Offset the pointer to the quad we want to set
 						Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
 
-						// By default, we'll use the transform defined by the element
-						Matrix44 *xForm = &e.m;
-						
-						uint8 r = 0xff;
-						uint8 g = 0xff;
-						uint8 b = 0xff;
-						uint8 a = 0xff;
-
-						uint8 rAdd = 0x0;
-						uint8 gAdd = 0x0;
-						uint8 bAdd = 0x0;
-						uint8 aAdd = 0x0;
-
-						Matrix44 tweenXForm;
+						uint8 r = 0xff, g = 0xff, b = 0xff, a = 0xff;
+						uint8 rAdd = 0x0, gAdd = 0x0, bAdd = 0x0, aAdd = 0x0;
+						Matrix44 tweenRotScale(true);
+						Vector2 tweenTrans(0.0f);
 
 						if(kf->tween) {
-							tweenXForm = e.m;
-							xForm = &tweenXForm;
+							
+							if(kf->curveFlags & TweenPropertyFlag_MotionX) {
+								tweenTrans.x = kf->curves[TweenProperty_MotionX].Evaluate(t) / PPU;
+							}
+							if(kf->curveFlags & TweenPropertyFlag_MotionY) {
+								tweenTrans.y = -kf->curves[TweenProperty_MotionY].Evaluate(t) / PPU;
+							}
 
-							if(kf->curveFlags & (TweenPropertyFlag_MotionX|TweenPropertyFlag_MotionY)) {
-								Matrix44 transMat(true);
-								Vector4 trans(0.0f);
-								if(kf->curveFlags & TweenPropertyFlag_MotionX) {
-									trans.x = kf->curves[TweenProperty_MotionX].Evaluate(t) / PPU;
-								}
-								if(kf->curveFlags & TweenPropertyFlag_MotionY) {
-									trans.y = -kf->curves[TweenProperty_MotionY].Evaluate(t) / PPU;
-								}
-								Matrix44::Translation(trans, transMat);
-								tweenXForm = transMat * tweenXForm;
+							if(kf->curveFlags & TweenPropertyFlag_RotationZ) {
+								float rads = -kf->curves[TweenProperty_RotationZ].Evaluate(t) * MAKI_PI / 180.0f;
+								Matrix44::RotationZ(rads, tweenRotScale);
 							}
 
 							if(kf->curveFlags & (TweenPropertyFlag_ScaleX|TweenPropertyFlag_ScaleY)) {
@@ -489,7 +479,7 @@ namespace Maki
 									scale.y = kf->curves[TweenProperty_ScaleY].Evaluate(t) / 100.0f;
 								}
 								Matrix44::Scale(scale, scaleMat);
-								tweenXForm = tweenXForm * scaleMat;
+								tweenRotScale = tweenRotScale * scaleMat;
 							}
 
 							// Alpha effect, and advanced colour effects are mutally exclusive
@@ -531,10 +521,17 @@ namespace Maki
 
 						for(uint32 i = 0; i < 4; i++) {
 							// Position corner of the quad
-							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + cell.stagePos.x;
-							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - cell.stagePos.y;
+							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + (cell.stagePos.x - e.transPoint.x);
+							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - (cell.stagePos.y - e.transPoint.y);
 							v->pos.z = 0.0f;
-							v->pos = *xForm * v->pos;
+							v->pos = tweenRotScale * v->pos;
+							
+							v->pos.x += e.transPoint.x;
+							v->pos.y += -e.transPoint.y;
+
+							v->pos = e.m * v->pos;
+							v->pos.x += tweenTrans.x;
+							v->pos.y += tweenTrans.y;
 
 							v->color[0] = r;
 							v->color[1] = g;

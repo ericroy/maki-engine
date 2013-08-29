@@ -70,6 +70,7 @@ namespace Maki
 			struct Element
 			{
 				Matrix44 m;
+				Vector2 transPoint;
 				int32 libraryIndex;
 				int32 cellIndex;
 			};
