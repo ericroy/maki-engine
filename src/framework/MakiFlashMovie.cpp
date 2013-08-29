@@ -42,6 +42,7 @@ namespace Maki
 
 
 
+
 		FlashMovie::SpriteSheet::SpriteSheet()
 			:	material(HANDLE_NONE),
 				textureRid(RID_NONE),
@@ -124,7 +125,7 @@ namespace Maki
 				timeScale = tweenNode->ResolveAsFloat("time_scale.#0") / 1000.0f;
 				timeDuration = tweenNode->ResolveAsFloat("time_duration.#0") / 1000.0f;
 				easing = GetEasingMethodByName(tweenNode->ResolveValue("easing.#0"));
-				easeStrength = tweenNode->ResolveAsFloat("ease_strength.#0");
+				easeStrength = tweenNode->ResolveAsFloat("ease_strength.#0") / 100.0f;
 
 				Document::Node *curvesNode = tweenNode->Resolve("curves");
 				for(uint32 i = 0; i < curvesNode->count; i++) {
@@ -154,6 +155,25 @@ namespace Maki
 						cp.anchor.y = buffer[3];
 						cp.next.x = buffer[4] / 1000.0f;
 						cp.next.y = buffer[5];
+					}
+
+					// If a handle has the same position as the anchor, then it shouldn't effect the spline at all.
+					// In order to prevent its effects, we'll move it so it falls 1/3 of the way along the linear line between
+					// this anchor and the next (or previous) anchor. Eg:
+					//
+					// 0------------o------------o------------0
+					// ^a.anchor    ^a.next      ^b.prev      ^b.anchor
+					//
+					// A spline that has it's handles distributed evenly like this has the property that, as the parameter
+					// varies constantly, the position will vary constantly as well.  In other words, there is no easing effect.
+					for(uint32 j = 0; j < c.controlPoints.count; j++) {
+						ControlPoint &cp = c.controlPoints[j];
+						if(j > 0 && (cp.prev - cp.anchor).LengthSquared() < 1e-6f) {
+							cp.prev = cp.anchor + (c.controlPoints[j-1].anchor - cp.anchor) / 3.0f;
+						}
+						if(j < c.controlPoints.count-1 && (cp.next - cp.anchor).LengthSquared() < 1e-6f) {
+							cp.next = cp.anchor + (c.controlPoints[j+1].anchor - cp.anchor) / 3.0f;
+						}
 					}
 				}
 			}
@@ -363,6 +383,38 @@ namespace Maki
 				// If playhead is still in range of this layer's frame span, then we need to update this layer
 				if(kfi < layer.keyFrames.count) {
 					kf = &layer.keyFrames[kfi];
+					
+					// Find playhead position within this keyframe
+					float t = state.playhead - kf->frameStart;
+
+					// Normalize param to [0, 1] range
+					t /= kf->timeDuration;
+							
+					// Ease it
+					float easedT = t;
+					switch(kf->easing) {
+					case EasingMethod_None:
+						break;
+					case EasingMethod_Quadratic:
+						if(kf->easeStrength > 0.0f) {
+							// Ease out
+							easedT = -(t-1.0f)*(t-1.0f) + 1.0f;
+						} else {
+							// Ease in
+							easedT = t*t;
+						}
+						break;
+					default:
+						assert(false && "Unhandled easing method");
+					}
+
+					// Adjust "strength" of ease by doing linear combination of linear and eased value
+					float absStrength = fabs(kf->easeStrength);
+					t = (1.0f - absStrength) * t + absStrength * easedT;
+
+					// Convert param back to full keyframe range
+					t *= kf->timeDuration;
+
 
 					for(uint32 ei = 0; ei < kf->elements.count; ei++) {
 						Element &e = kf->elements[ei];
@@ -390,19 +442,19 @@ namespace Maki
 						if(kf->tween) {
 							Vector4 trans(0.0f);
 							if(kf->curves[TweenProperty::TweenProperty_MotionX].active) {
-								trans.x = kf->curves[TweenProperty::TweenProperty_MotionX].Evaluate(state.playhead) / PPU;
+								trans.x = kf->curves[TweenProperty::TweenProperty_MotionX].Evaluate(t) / PPU;
 							}
 							if(kf->curves[TweenProperty::TweenProperty_MotionY].active) {
-								trans.y = -kf->curves[TweenProperty::TweenProperty_MotionY].Evaluate(state.playhead) / PPU;
+								trans.y = -kf->curves[TweenProperty::TweenProperty_MotionY].Evaluate(t) / PPU;
 							}
 							Matrix44::Translation(trans, transMat);
 
 							Vector4 scale(1.0f);
 							if(kf->curves[TweenProperty::TweenProperty_ScaleX].active) {
-								scale.x = kf->curves[TweenProperty::TweenProperty_ScaleX].Evaluate(state.playhead) / 100.0f;
+								scale.x = kf->curves[TweenProperty::TweenProperty_ScaleX].Evaluate(t) / 100.0f;
 							}
 							if(kf->curves[TweenProperty::TweenProperty_ScaleY].active) {
-								scale.y = kf->curves[TweenProperty::TweenProperty_ScaleY].Evaluate(state.playhead) / 100.0f;
+								scale.y = kf->curves[TweenProperty::TweenProperty_ScaleY].Evaluate(t) / 100.0f;
 							}
 							Matrix44::Scale(scale, scaleMat);
 						}

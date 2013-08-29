@@ -139,7 +139,10 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			if(frame.isMotionObject() && frame.hasMotionPath()) {
 				fp.write("tween", 4);
 
-				var xml = new XML(frame.getMotionObjectXML());
+				var motionXMLDesc = frame.getMotionObjectXML();
+				fl.trace(motionXMLDesc);
+				
+				var xml = new XML(motionXMLDesc);
 				fp.writePair("time_scale", xml.@TimeScale, 5);
 				fp.writePair("time_duration", xml.@duration, 5);
 				fp.writePair("easing", xml.TimeMap.@type.toString().toLowerCase(), 5, true);

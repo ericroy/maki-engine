@@ -88,11 +88,15 @@ namespace Maki
 					for(uint32 cpi = 0; cpi < controlPoints.count-1; cpi++) {
 						ControlPoint &a = controlPoints[cpi];
 						ControlPoint &b = controlPoints[cpi+1];
-						if(playhead >= a.anchor.x && playhead <= b.anchor.x) {	
+						if(playhead >= a.anchor.x && playhead <= b.anchor.x) {
 							float cy = 3 * (a.next.y - a.anchor.y);
 							float by = 3 * (b.prev.y - a.next.y) - cy;
 							float ay = b.anchor.y - a.anchor.y - cy - by;
+							
+							// Convert playhead position to parameter t in range [0, 1]
 							float t = (playhead - a.anchor.x) / (b.anchor.x - a.anchor.x);
+							
+							// Evaluate y coordinate of spline
 							return ay * t*t*t + by * t*t + cy * t + a.anchor.y;
 						}
 					}
