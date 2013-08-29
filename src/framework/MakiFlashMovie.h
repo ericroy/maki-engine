@@ -19,8 +19,12 @@ namespace Maki
 				TweenProperty_None = -1,
 				TweenProperty_MotionX = 0,
 				TweenProperty_MotionY,
+				TweenProperty_RotationZ,
 				TweenProperty_ScaleX,
 				TweenProperty_ScaleY,
+				TweenProperty_SkewX,
+				TweenProperty_SkewY,
+				TweenProperty_Alpha,
 				TweenPropertyCount
 			};
 			static const char *tweenPropertyNames[TweenPropertyCount];
@@ -100,7 +104,7 @@ namespace Maki
 							return ay * t*t*t + by * t*t + cy * t + a.anchor.y;
 						}
 					}
-					return controlPoints[0].anchor.y;
+					return controlPoints[controlPoints.count-1].anchor.y;
 				}
 
 				bool active;
@@ -146,6 +150,7 @@ namespace Maki
 			struct Vertex
 			{
 				Vector3 pos;
+				uint8 color[4];
 				Vector2 uv;
 			};
 

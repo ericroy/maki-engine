@@ -36,7 +36,7 @@ namespace Maki
 
 				Mesh m(true);
 				m.SetIndexAttributes(3, 2);
-				m.SetVertexAttributes(VertexFormat::AttributeFlag_TexCoord);
+				m.SetVertexAttributes(VertexFormat::AttributeFlag_Color|VertexFormat::AttributeFlag_TexCoord);
 				m.SetMeshFlag(Mesh::MeshFlag_HasTranslucency);
 					
 				uint32 maxQuads = mov->sheets[i].maxElementsInSingleFrame;

@@ -15,8 +15,12 @@ namespace Maki
 		const char *FlashMovie::tweenPropertyNames[FlashMovie::TweenPropertyCount] = {
 			"motion_x",
 			"motion_y",
+			"rotation_z",
 			"scale_x",
 			"scale_y",
+			"skew_x",
+			"skew_y",
+			"alpha_amount"
 		};
 
 		FlashMovie::TweenProperty FlashMovie::GetTweenPropertyByName(const char *tweenPropertyName)
@@ -438,6 +442,7 @@ namespace Maki
 
 						Matrix44 transMat(true);
 						Matrix44 scaleMat(true);
+						float alpha = 1.0f;
 
 						if(kf->tween) {
 							Vector4 trans(0.0f);
@@ -457,6 +462,10 @@ namespace Maki
 								scale.y = kf->curves[TweenProperty::TweenProperty_ScaleY].Evaluate(t) / 100.0f;
 							}
 							Matrix44::Scale(scale, scaleMat);
+
+							if(kf->curves[TweenProperty::TweenProperty_Alpha].active) {
+								alpha = kf->curves[TweenProperty::TweenProperty_Alpha].Evaluate(t) / 100.0f;
+							}
 						}
 
 						Matrix44 total = transMat * e.m * scaleMat;
@@ -467,6 +476,11 @@ namespace Maki
 							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - cell.stagePos.y;
 							v->pos.z = 0.0f;
 							v->pos = total * v->pos;
+
+							v->color[0] = 0xff;
+							v->color[1] = 0xff;
+							v->color[2] = 0xff;
+							v->color[3] = (uint8)(alpha * 255.0f);
 
 							// Decide on uv coords for this corner, such that the quad will show
 							// the appropriate part of the spritesheet.

@@ -151,8 +151,12 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 				fp.write("curves", 5);
 				writeBezier(xml..Property.(@id=="Motion_X"), fp, 6);
 				writeBezier(xml..Property.(@id=="Motion_Y"), fp, 6);
+				writeBezier(xml..Property.(@id=="Rotation_Z"), fp, 6);
 				writeBezier(xml..Property.(@id=="Scale_X"), fp, 6);
 				writeBezier(xml..Property.(@id=="Scale_Y"), fp, 6);
+				writeBezier(xml..Property.(@id=="Skew_X"), fp, 6);
+				writeBezier(xml..Property.(@id=="Skew_Y"), fp, 6);
+				writeBezier(xml..Property.(@id=="Alpha_Amount"), fp, 6);
 			}
 			
 			fp.write("elements", 4);			
