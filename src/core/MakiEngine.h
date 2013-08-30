@@ -47,7 +47,7 @@ namespace Maki
 		private:
 			TimeSource *timeSource;
 			int64 nextUpdate;
-			uint32 millisPerUpdate;
+			uint32 microsPerUpdate;
 			uint32 maxSkippedFrames;
 		};
 

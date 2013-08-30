@@ -186,17 +186,26 @@ namespace Maki
 		{
 			using namespace Core;
 
+			bool tempEnableDepthWrite = false;
+
 			GLuint clearFlags = 0;
 			if(clearRenderTarget && currentRenderTargetType != RenderState::RenderTarget_Null) {
 				glClearColor(clearColorValues[0], clearColorValues[1], clearColorValues[2], clearColorValues[3]);
 				clearFlags |= GL_COLOR_BUFFER_BIT;
 			}
 			if(clearDepthStencil && currentDepthStencilType != RenderState::DepthStencil_Null) {
+				tempEnableDepthWrite = !depthWriteEnabled;
 				glClearDepth(clearDepthValue);
 				clearFlags |= GL_DEPTH_BUFFER_BIT;
 			}
 			if(clearFlags != 0) {
-				glClear(clearFlags);
+				if(tempEnableDepthWrite) {
+					glDepthMask(GL_TRUE);
+					glClear(clearFlags);
+					glDepthMask(GL_FALSE);
+				} else {
+					glClear(clearFlags);
+				}
 			}
 		}
 

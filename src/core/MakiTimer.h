@@ -20,17 +20,17 @@ namespace Maki
 			void UpdateHistory();
 
 		public:
-			int64 deltaMillis;
+			uint64 deltaMicros;
 			float deltaSeconds;
 
 			double elapsedSeconds;
-			int64 elapsedMillis;
+			uint64 elapsedMicros;
 
 			float averageFps;
 
 		private:
-			int64 lastTime;
-			int64 updateCount;
+			uint64 lastTime;
+			uint64 updateCount;
 			float deltaHistory[N_FRAME_AVERAGE];
 			TimeSource *source;
 		};

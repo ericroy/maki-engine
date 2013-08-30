@@ -10,16 +10,16 @@ namespace Maki
 		Timer::Timer(TimeSource *source)
 			: source(source)
 		{
-			lastTime = source->GetTimeMillis();
+			lastTime = source->GetTimeMicro();
 
 			updateCount = 0;
 			averageFps = 0.0f;
 
 			deltaSeconds = 0.0f;
-			deltaMillis = 0;
+			deltaMicros = 0;
 
 			elapsedSeconds = 0.0;
-			elapsedMillis = 0;
+			elapsedMicros = 0;
 		}
 
 		void Timer::UpdateHistory()
@@ -43,16 +43,16 @@ namespace Maki
 		void Timer::Tick() {
 			updateCount++;
 
-			int64 now = source->GetTimeMillis();
+			uint64 now = source->GetTimeMicro();
 			if(now < lastTime) {
 				now = lastTime;
 			}
 
-			deltaMillis = now - lastTime;
-			elapsedMillis += deltaMillis;
+			deltaMicros = now - lastTime;
+			elapsedMicros += deltaMicros;
 
-			deltaSeconds = (now - lastTime) / 1000.0f;
-			elapsedSeconds = elapsedMillis / 1000.0f;
+			deltaSeconds = (now - lastTime) / 1e6f;
+			elapsedSeconds = elapsedMicros / 1e6f;
 		
 			lastTime = now;
 			UpdateHistory();

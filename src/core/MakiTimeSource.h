@@ -12,7 +12,7 @@ namespace Maki
 			TimeSource();
 			virtual ~TimeSource();
 
-			uint64 GetTimeMillis();
+			uint64 GetTimeMicro();
 
 		private:
 			double frequency;

@@ -26,10 +26,10 @@ namespace Maki
 			inputState = new InputState();
 			renderer = new Renderer(window, core, config);
 		
-			millisPerUpdate = 1000 / config->GetUint("engine.updates_per_second", DEFAULT_UPDATES_PER_SECOND);
+			microsPerUpdate = 1000000u / config->GetUint("engine.updates_per_second", DEFAULT_UPDATES_PER_SECOND);
 			maxSkippedFrames = config->GetUint("engine.max_skipped_frames", DEFAULT_MAX_SKIPPED_FRAMES);
 
-			nextUpdate = timeSource->GetTimeMillis() + millisPerUpdate;
+			nextUpdate = timeSource->GetTimeMicro() + microsPerUpdate;
 		}
 
 		Engine::~Engine()
@@ -43,22 +43,21 @@ namespace Maki
 			// While we are overdue for the next update...
 			int64 now = 0;
 			uint32 skippedFrames = 0;
-			while((now = timeSource->GetTimeMillis()) > nextUpdate && skippedFrames < maxSkippedFrames) {
-						
+			while((now = timeSource->GetTimeMicro()) > nextUpdate && skippedFrames < maxSkippedFrames) {
 				updateTimer.Tick();
-				//Console::Info("Update tick: %f", updateTimer.averageFps);
-
+				
 				window->PollInput(inputState);
 				if(FrameUpdate != nullptr) {
-					FrameUpdate(millisPerUpdate / 1000.0f);
+					FrameUpdate(microsPerUpdate / 1e6f);
 				}
 
-				nextUpdate = now + millisPerUpdate;
+				nextUpdate = now + microsPerUpdate;
 				skippedFrames++;
 			}
 
 			renderTimer.Tick();
-			//Console::Info("Render tick: %f", renderTimer.averageFps);
+			Console::Info("R:%0.02f  U:%0.02f", renderTimer.averageFps, updateTimer.averageFps);
+
 			if(FrameDraw != nullptr) {
 				FrameDraw();
 			}

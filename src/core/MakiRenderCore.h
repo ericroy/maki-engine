@@ -80,15 +80,16 @@ namespace Maki
 
 			derived->SetRenderTargetAndDepthStencil(state.renderTargetType, state.renderTarget, state.depthStencilType, state.depthStencil);
 			derived->SetViewport(state.viewPortRect);
-			derived->Clear(state.clearRenderTarget, state.renderTargetClearValue.vals, state.clearDepthStencil, state.depthClearValue);
 			derived->SetDepthState(state.depthTest, state.depthWrite);
 			derived->SetRasterizerState(state.cullMode, state.wireFrame);
 
-			void *currentBuffer = nullptr;
-			uint32 currentLayer = 0;
-		
+			derived->Clear(state.clearRenderTarget, state.renderTargetClearValue.vals, state.clearDepthStencil, state.depthClearValue);
+						
 			uint32 currentTranslucencyType = DrawCommand::TranslucencyType_Opaque;
 			derived->SetBlendState(false);
+
+			void *currentBuffer = nullptr;
+			uint32 currentLayer = 0;
 			
 			Handle currentVertexFormat = HANDLE_NONE;
 			Handle currentShaderProgram = HANDLE_NONE;		
