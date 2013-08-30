@@ -56,7 +56,7 @@ namespace Maki
 			}
 
 			renderTimer.Tick();
-			Console::Info("R:%0.02f  U:%0.02f", renderTimer.averageFps, updateTimer.averageFps);
+			//Console::Info("R:%0.02f  U:%0.02f", renderTimer.averageFps, updateTimer.averageFps);
 
 			if(FrameDraw != nullptr) {
 				FrameDraw();

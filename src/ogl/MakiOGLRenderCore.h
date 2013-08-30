@@ -8,6 +8,8 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 
+#define MAKI_USE_OGL_MUTEX 0
+
 namespace Maki
 {
 	namespace Core
@@ -125,12 +127,16 @@ namespace Maki
 
 		inline void OGLRenderCore::AcquireContext()
 		{
+#if MAKI_USE_OGL_MUTEX
 			mutex.lock();
+#endif
 		}
 
 		inline void OGLRenderCore::ReleaseContext()
 		{
+#if MAKI_USE_OGL_MUTEX
 			mutex.unlock();
+#endif
 		}
 
 		inline void OGLRenderCore::SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil)

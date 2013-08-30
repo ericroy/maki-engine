@@ -6,6 +6,12 @@
 
 using namespace Maki::Core;
 
+#if MAKI_USE_OGL_MUTEX
+#define MAKI_ACQUIRE_OGL_MUTEX std::lock_guard<std::mutex> lock(mutex);
+#else
+#define MAKI_ACQUIRE_OGL_MUTEX
+#endif
+
 namespace Maki
 {
 	namespace OGL
@@ -35,6 +41,23 @@ namespace Maki
 			currentCullMode(RenderState::CullMode_Back),
 			debugOutput(false)
 		{
+			int32 displayIndex = SDL_GetWindowDisplayIndex(window->window);
+			int32 modeCount = SDL_GetNumDisplayModes(displayIndex);
+			SDL_DisplayMode mode;
+			bool found = false;
+			for(int32 i = 0; i < modeCount; i++) {
+				SDL_GetDisplayMode(displayIndex, i, &mode);
+				bool resMatch = mode.w == window->width && mode.h == window->height;
+				Console::Info("Supported mode: %dx%d @ %d Hz %s", mode.w, mode.h, mode.refresh_rate, resMatch ? "<<< Found!" : "");
+				if(resMatch) {
+					found = true;
+				}
+			}
+			if(!found)
+			{
+				Console::Warning("Mode not supported: %dx%d", window->width, window->height);
+			}
+			
 			vsync = config->GetBool("engine.vsync", false);
 
 			int32 major = config->GetInt("ogl.major_version", 3);
@@ -104,7 +127,7 @@ namespace Maki
 
 		void OGLRenderCore::Init()
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 			if(SDL_GL_MakeCurrent(window->window, renderThreadContext) != 0) {
 				Console::Error("Failed to make ogl render context current: %s", SDL_GetError());
 				SDL_ClearError();
@@ -154,7 +177,7 @@ namespace Maki
 
 		void OGLRenderCore::Present()
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 			SDL_GL_SwapWindow(window->window);
 		}
 
@@ -164,7 +187,7 @@ namespace Maki
 
 		void *OGLRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			Buffer *b = (Buffer *)buffer;
 			bool reuse = b != nullptr;
@@ -211,7 +234,7 @@ namespace Maki
 
 		void OGLRenderCore::FreeBuffer(void *buffer)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			if(buffer != nullptr) {
 				Buffer *b = (Buffer *)buffer;
@@ -267,7 +290,7 @@ failed:
 
 		bool OGLRenderCore::CreateShaderProgram(ShaderProgram *s)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			if(!CreateShader(GL_VERTEX_SHADER, &s->vertexShader)) {
 				MAKI_OGL_FAILED();
@@ -488,7 +511,7 @@ failed:
 
 		bool OGLRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
@@ -519,7 +542,7 @@ failed:
 
 		bool OGLRenderCore::CreateRenderTarget(Texture *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
@@ -544,7 +567,7 @@ failed:
 
 		bool OGLRenderCore::CreateDepthTexture(Texture *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			GLuint tex = 0;
 			glGenRenderbuffers(1, &tex);
@@ -565,7 +588,7 @@ failed:
 
 		bool OGLRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			const void *dataOut = nullptr;
 			unsigned long dataLengthOut = 0;
@@ -627,7 +650,7 @@ failed:
 
 		void OGLRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			glBindTexture(GL_TEXTURE_2D, gtex->tex);
@@ -645,7 +668,7 @@ failed:
 
 		void OGLRenderCore::DeleteShaderProgram(ShaderProgram *s)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			Console::Info("Deleting shader: <rid %u> <variant %d>", s->rid, s->variant);
 
@@ -660,7 +683,7 @@ failed:
 
 		void OGLRenderCore::DeleteTexture(Texture *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			MAKI_ACQUIRE_OGL_MUTEX
 
 			GPUTexture *gtex = (GPUTexture *)t->handle;
 			SAFE_DELETE(gtex);
