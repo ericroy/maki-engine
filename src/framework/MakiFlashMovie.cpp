@@ -6,6 +6,9 @@ namespace Maki
 {
 	namespace Framework
 	{
+		Rid FlashMovie::materialRid = RID_NONE;
+		Rid FlashMovie::metaMaterialRid = RID_NONE;
+
 
 		const char *FlashMovie::easingMethodNames[FlashMovie::EasingMethodCount] = {
 			"",
@@ -31,6 +34,13 @@ namespace Maki
 			"advclr_a_offset",
 		};
 
+		const char *FlashMovie::metaTypeNames[MetaTypeCount] = {
+			"collision",
+			"damage",
+			"sensor",
+			"helper"
+		};
+		
 		FlashMovie::TweenProperty FlashMovie::GetTweenPropertyByName(const char *tweenPropertyName)
 		{
 			for(uint32 i = 0; i < TweenPropertyCount; i++) {
@@ -51,7 +61,15 @@ namespace Maki
 			return EasingMethod_None;
 		}
 
-
+		FlashMovie::MetaType FlashMovie::GetMetaTypeByName(const char *metaTypeName)
+		{
+			for(uint32 i = 0; i < MetaTypeCount; i++) {
+				if(strcmp(metaTypeName, metaTypeNames[i]) == 0) {
+					return (MetaType)i;
+				}
+			}
+			return MetaType_None;
+		}
 
 
 
@@ -199,6 +217,9 @@ namespace Maki
 				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
 				e.transPoint /= PPU;
 
+				elemNode->ResolveAsVectorN("size", 2, e.size.vals);
+				e.size /= PPU;
+
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
 				e.m.SetIdentity();
@@ -232,8 +253,13 @@ namespace Maki
 		FlashMovie::Layer::Layer(Document::Node *node)
 		{
 			name = node->ResolveValue("name.#0");
-			visible = node->ResolveAsBool("visible.#0");
-			outline = node->ResolveAsBool("outline.#0");
+			
+			metaType = MetaType_None;
+			size_t split = name.find_first_of(':', 0);
+			if(split != name.npos && name.substr(0, split) == "meta") {
+				metaType = GetMetaTypeByName(name.substr(split+1, name.npos).c_str());
+			}
+
 			Document::Node *framesNode = node->Resolve("key_frames");
 			keyFrames.SetSize(framesNode->count);
 			keyFrames.Zero();
@@ -253,16 +279,28 @@ namespace Maki
 
 
 		FlashMovie::FlashMovie()
-			: Resource(), materialRid(RID_NONE), maxFrameCount(0)
+			: Resource(), metaMaterial(HANDLE_NONE), maxFrameCount(0), maxMetaElementsInSingleFrame(0)
 		{
 		}
 
-		bool FlashMovie::Load(Rid movieRid, Rid materialRid)
+		bool FlashMovie::Load(Rid movieRid)
 		{
 			Document doc;
 			if(!doc.Load(movieRid)) {
 				Console::Error("Failed to load flash movie <rid %u>", movieRid);
-				return false;
+				goto failed;
+			}
+
+			Handle metaMaterial = CoreManagers::Get()->materialManager->Load(metaMaterialRid);
+			if(metaMaterial == HANDLE_NONE) {
+				Console::Error("Failed to load flash meta material <rid %u>", metaMaterialRid);
+				goto failed;
+			}
+
+			Handle material = CoreManagers::Get()->materialManager->Load(materialRid);
+			if(material == HANDLE_NONE) {
+				Console::Error("Failed to load flash material <rid %u>", materialRid);
+				goto failed;
 			}
 
 			frameRate = doc.root->ResolveAsUInt("frame_rate.#0");
@@ -287,7 +325,7 @@ namespace Maki
 				sheets[i].textureRid = Engine::Get()->assets->PathToRid(path);
 				if(sheets[i].textureRid == RID_NONE) {
 					Console::Error("Failed to find lookup RID for path: %s", path);
-					return false;
+					goto failed;
 				}
 			}
 
@@ -299,29 +337,31 @@ namespace Maki
 			}
 								
 			// Create a material for each sheet
-			Handle material = CoreManagers::Get()->materialManager->Load(materialRid);
-			if(material == HANDLE_NONE) {
-				return false;
-			}
 			for(uint32 i = 0; i < sheets.count; i++) {
 				SpriteSheet &sheet = sheets[i];
 				MaterialManager::AddRef(material);
 				sheet.material = MaterialManager::DuplicateIfShared(material);
 				MaterialManager::Get(sheet.material)->SetTextures(1, &sheet.textureRid);
 			}
+
+			// Done with the base material handle now
 			MaterialManager::Free(material);
 				
 			// Determine the maximum number of elements from each sprite sheet that are drawn in a single frame
 			// This will help the FlashMovieState (that uses this FlashMovie) to know how big to make it's meshes.
 			for(uint32 ki = 0; ki < maxFrameCount; ki++) {
+				uint32 maxMetaElements = 0;
 				std::vector<uint32> sheetFrameMaximums(sheets.count, 0);
+
 				for(uint32 li = 0; li < layers.count; li++) {
 					Layer &layer = layers[li];
 					if(ki < layer.keyFrames.count) {
 						KeyFrame &kf = layer.keyFrames[ki];
 						for(uint32 ei = 0; ei < kf.elements.count; ei++) {
 							Element e = kf.elements[ei];
-							if(e.libraryIndex >= 0) {
+							if(layer.metaType != MetaType_None) {
+								maxMetaElements++;
+							} else if(e.libraryIndex >= 0) {
 								sheetFrameMaximums[library[e.libraryIndex].sheetIndex]++;
 							}
 						}
@@ -330,11 +370,17 @@ namespace Maki
 				for(uint32 i = 0; i < sheets.count; i++) {
 					sheets[i].maxElementsInSingleFrame = std::max<uint32>(sheets[i].maxElementsInSingleFrame, sheetFrameMaximums[i]);
 				}
+				maxMetaElementsInSingleFrame = std::max(maxMetaElementsInSingleFrame, maxMetaElements);
 			}
 
-			this->materialRid = materialRid;
+			this->metaMaterial = metaMaterial;
 			this->rid = rid;
 			return true;
+
+failed:
+			MaterialManager::Free(material);
+			MaterialManager::Free(metaMaterial);
+			return false;
 		}
 
 		static Vector2 unitQuadCoeffs[4] = {
@@ -365,6 +411,7 @@ namespace Maki
 				char *p = m->GetVertexData();
 				memset(p, 0, m->GetVertexCount() * m->GetVertexStride());
 			}
+			state.metaGroup.activeElementCount = 0;
 
 			// Advance the playhead.
 			// This is the floating point frame position of the overall movie
@@ -432,23 +479,6 @@ namespace Maki
 
 					for(uint32 ei = 0; ei < kf->elements.count; ei++) {
 						Element &e = kf->elements[ei];
-
-						if(e.libraryIndex < 0) {
-							// A 'meta-element' that doesn't have a sprite representation.
-							// Probably a hitbox or a helper or something like that.
-							continue;
-						}
-						
-						SpriteSequence &seq = library[e.libraryIndex];
-						FlashMovieState::ElementGroup &group = state.groups[seq.sheetIndex];
-						assert(group.activeElementCount < sheets[seq.sheetIndex].maxElementsInSingleFrame);
-						
-						const SpriteSequence::Cell &cell = seq.cells[e.cellIndex];
-						const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
-
-						// Get mesh data as an array of vertices
-						// Offset the pointer to the quad we want to set
-						Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
 
 						uint8 r = 0xff, g = 0xff, b = 0xff, a = 0xff;
 						uint8 rAdd = 0x0, gAdd = 0x0, bAdd = 0x0, aAdd = 0x0;
@@ -519,46 +549,103 @@ namespace Maki
 							}
 						}
 
-						for(uint32 i = 0; i < 4; i++) {
-							// Position corner of the quad
-							v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + (cell.stagePos.x - e.transPoint.x);
-							v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - (cell.stagePos.y - e.transPoint.y);
-							v->pos.z = 0.0f;
-							v->pos = tweenRotScale * v->pos;
+						if(layer.metaType != MetaType_None) {
+
+							// A 'meta-element' that doesn't have a sprite representation.
+							// Probably a hitbox or a helper or something like that.
+
+							// Get mesh data as an array of vertices
+							// Offset the pointer to the quad we want to set
+							MetaVertex *v = (MetaVertex *)MeshManager::Get(state.metaGroup.mesh)->GetVertexData() + state.metaGroup.activeElementCount * 4;
+
+							for(uint32 i = 0; i < 4; i++) {
+								// Position corner of the quad
+								v->pos.x = unitQuadCoeffs[i].x * e.size.x + (0.0f - e.transPoint.x);
+								v->pos.y = unitQuadCoeffs[i].y * e.size.y - (0.0f - e.transPoint.y);
+								v->pos.z = 0.0f;
+								v->pos = tweenRotScale * v->pos;
 							
-							v->pos.x += e.transPoint.x;
-							v->pos.y += -e.transPoint.y;
+								v->pos.x += e.transPoint.x;
+								v->pos.y += -e.transPoint.y;
 
-							v->pos = e.m * v->pos;
-							v->pos.x += tweenTrans.x;
-							v->pos.y += tweenTrans.y;
+								v->pos = e.m * v->pos;
+								v->pos.x += tweenTrans.x;
+								v->pos.y += tweenTrans.y;
 
-							v->color[0] = r;
-							v->color[1] = g;
-							v->color[2] = b;
-							v->color[3] = a;
+								v->color[0] = 255;
+								v->color[1] = 0;
+								v->color[2] = 0;
+								v->color[3] = 100;
 
-							v->colorAdd[0] = rAdd;
-							v->colorAdd[1] = gAdd;
-							v->colorAdd[2] = bAdd;
-							v->colorAdd[3] = aAdd;
+								v++;
+							}
 
-							// Decide on uv coords for this corner, such that the quad will show
-							// the appropriate part of the spritesheet.
-							v->uv.x = (cell.texRect.left + unitQuadTexRectCoeff[i].x * cell.texRect.GetWidth()) / sheetSize.x;
-							v->uv.y = (cell.texRect.top + unitQuadTexRectCoeff[i].y * cell.texRect.GetHeight()) / sheetSize.y;
+							// This group now has one more quad in it that will need to be drawn
+							state.metaGroup.activeElementCount++;
 
-							v++;
+						} else {
+
+							// This shouldn't normally happen, but if you have an unrecognized meta layer in the document, it might.
+							if(e.libraryIndex < 0) {
+								continue;
+							}
+
+							SpriteSequence &seq = library[e.libraryIndex];
+							FlashMovieState::ElementGroup &group = state.groups[seq.sheetIndex];
+							assert(group.activeElementCount < sheets[seq.sheetIndex].maxElementsInSingleFrame);
+						
+							const SpriteSequence::Cell &cell = seq.cells[e.cellIndex];
+							const Vector2 &sheetSize = sheets[seq.sheetIndex].textureSize;
+
+							// Get mesh data as an array of vertices
+							// Offset the pointer to the quad we want to set
+							Vertex *v = (Vertex *)MeshManager::Get(group.mesh)->GetVertexData() + group.activeElementCount * 4;
+
+							for(uint32 i = 0; i < 4; i++) {
+								// Position corner of the quad
+								v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + (cell.stagePos.x - e.transPoint.x);
+								v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - (cell.stagePos.y - e.transPoint.y);
+								v->pos.z = 0.0f;
+								v->pos = tweenRotScale * v->pos;
+							
+								v->pos.x += e.transPoint.x;
+								v->pos.y += -e.transPoint.y;
+
+								v->pos = e.m * v->pos;
+								v->pos.x += tweenTrans.x;
+								v->pos.y += tweenTrans.y;
+
+								v->color[0] = r;
+								v->color[1] = g;
+								v->color[2] = b;
+								v->color[3] = a;
+
+								v->colorAdd[0] = rAdd;
+								v->colorAdd[1] = gAdd;
+								v->colorAdd[2] = bAdd;
+								v->colorAdd[3] = aAdd;
+
+								// Decide on uv coords for this corner, such that the quad will show
+								// the appropriate part of the spritesheet.
+								v->uv.x = (cell.texRect.left + unitQuadTexRectCoeff[i].x * cell.texRect.GetWidth()) / sheetSize.x;
+								v->uv.y = (cell.texRect.top + unitQuadTexRectCoeff[i].y * cell.texRect.GetHeight()) / sheetSize.y;
+
+								v++;
+							}
+
+							// This group now has one more quad in it that will need to be drawn
+							group.activeElementCount++;
+
 						}
-
-						// This group now has one more quad in it that will need to be drawn
-						group.activeElementCount++;
 					}
 				}
 			}
 
 			for(uint32 i = 0; i < state.groups.count; i++) {
 				MeshManager::Get(state.groups[i].mesh)->Upload();
+			}
+			if(state.metaGroup.mesh != HANDLE_NONE) {
+				MeshManager::Get(state.metaGroup.mesh)->Upload();
 			}
 		}
 

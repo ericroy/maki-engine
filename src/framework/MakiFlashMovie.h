@@ -11,9 +11,6 @@ namespace Maki
 		
 		class FlashMovie : public Resource
 		{
-			// Number of pixels per world unit
-			static const uint32 PPU = 150;
-
 			enum TweenProperty
 			{
 				TweenProperty_None = -1,
@@ -67,10 +64,24 @@ namespace Maki
 			static const char *easingMethodNames[EasingMethodCount];
 			static EasingMethod GetEasingMethodByName(const char *methodName);
 
+			enum MetaType
+			{
+				MetaType_None = -1,
+				MetaType_Collision = 0,
+				MetaType_Damage,
+				MetaType_Sensor,
+				MetaType_Helper,
+				MetaTypeCount
+			};
+			static const char *metaTypeNames[MetaTypeCount];
+			static MetaType GetMetaTypeByName(const char *metaTypeName);
+
+
 			struct Element
 			{
 				Matrix44 m;
 				Vector2 transPoint;
+				Vector2 size;
 				int32 libraryIndex;
 				int32 cellIndex;
 			};
@@ -170,8 +181,7 @@ namespace Maki
 				~Layer();
 
 				Array<KeyFrame> keyFrames;
-				bool visible;
-				bool outline;
+				MetaType metaType;
 				std::string name;
 			};
 
@@ -184,6 +194,20 @@ namespace Maki
 				Vector2 uv;
 			};
 
+			struct MetaVertex
+			{
+				Vector3 pos;
+				uint8 color[4];
+			};
+
+		public:
+			// Number of pixels per world unit
+			static const uint32 PPU = 150;
+
+			// Materials that all flash movies will use to render their elements
+			static Rid materialRid;
+			static Rid metaMaterialRid;
+
 		public:
 			FlashMovie();
 
@@ -192,17 +216,18 @@ namespace Maki
 
 		public:
 			virtual ~FlashMovie();
-			bool Load(Rid movieRid, Rid materialRid);
+			bool Load(Rid movieRid);
 			void AdvanceState(float timeDelta, FlashMovieState &state, bool loop, float rateCoeff);
 			
 		public:
-			Rid materialRid;
+			Handle metaMaterial;
 			Array<Layer> layers;
 			Array<SpriteSheet> sheets;
 			Array<SpriteSequence> library;
 			uint32 frameRate;
 			// The largest number of frames found in any layer
 			uint32 maxFrameCount;
+			uint32 maxMetaElementsInSingleFrame;
 		};
 		
 	} // namespace Framework

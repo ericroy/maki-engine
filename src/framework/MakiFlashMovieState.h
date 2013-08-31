@@ -5,6 +5,7 @@ namespace Maki
 {
 	namespace Framework
 	{
+		class FlashMovie;
 
 		class FlashMovieState
 		{
@@ -26,10 +27,15 @@ namespace Maki
 			virtual ~FlashMovieState();
 			void Draw(Renderer *renderer, const Matrix44 &m);
 
+		private:
+			void PrepareGroup(ElementGroup &g, FlashMovie *mov, uint32 sheetIndex);
+			void PrepareMetaGroup(FlashMovie *mov);
+
 		public:
 			float playhead;
 			bool finished;
 			Array<ElementGroup> groups;
+			ElementGroup metaGroup;
 			Array<uint32> currentKeyFrames;
 
 		private:

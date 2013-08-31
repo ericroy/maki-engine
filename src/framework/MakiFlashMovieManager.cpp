@@ -17,9 +17,9 @@ namespace Maki
 		{
 		}
 
-		Handle FlashMovieManager::Load(Rid movieRid, Rid materialRid)
+		Handle FlashMovieManager::Load(Rid rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<FlashMovie>(movieRid)) | managerId;
+			Handle handle = resPool->Match(Resource::FindPredicate<FlashMovie>(rid)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
@@ -27,7 +27,7 @@ namespace Maki
 			handle = resPool->Alloc() | managerId;
 			FlashMovie *m = resPool->Get(handle & HANDLE_VALUE_MASK);
 			new(m) FlashMovie();
-			if(!m->Load(movieRid, materialRid)) {
+			if(!m->Load(rid)) {
 				resPool->Free(handle & HANDLE_VALUE_MASK);
 				return HANDLE_NONE;
 			}
@@ -42,11 +42,10 @@ namespace Maki
 			for(ResourcePool<FlashMovie>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 				FlashMovie *m = iter.Ptr();
 				Rid rid = m->rid;
-				Rid materialRid = m->materialRid;
 				if(rid != RID_NONE) {
 					m->~FlashMovie();
 					new(m) FlashMovie();
-					m->Load(rid, materialRid);
+					m->Load(rid);
 				}
 			}
 		}
@@ -61,10 +60,9 @@ namespace Maki
 			resPool->Free(handle & HANDLE_VALUE_MASK);
 
 			if(rid != RID_NONE) {
-				Rid materialRid = m->materialRid;
 				m->~FlashMovie();
 				new(m) FlashMovie();
-				return m->Load(rid, materialRid);
+				return m->Load(rid);
 			}
 			return true;
 		}

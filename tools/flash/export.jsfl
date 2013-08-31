@@ -115,11 +115,9 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 		
 		fp.write("layer", 1);
 		fp.writePair("name", layer.name, 2, true);
-		fp.writePair("visible", layer.visible, 2);
-		fp.writePair("outline", layer.outline, 2);
 		
-		var exportLibAssets = layer.visible && !layer.outline;
-		
+		var meta = layer.name.slice(0, 4) == "meta";
+
 		fp.write("key_frames", 2);
 		for(var fi = 0; fi < layer.frames.length;) {
 			var frame = layer.frames[fi];
@@ -172,34 +170,32 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 			fp.write("elements", 4);			
 			for(var ei = 0; ei < frame.elements.length; ei++) {
 				var e = frame.elements[ei];
+
 				if(e.elementType != "instance") {
 					fl.trace("Unsupported element type: " + e.elementType);
 					continue;
 				}
+				
 				if(e.instanceType != "symbol" && e.instanceType != "bitmap") {
 					fl.trace("Unsupported instance type: " + e.instanceType);
 					continue;
 				}
 
-				var subtype = "";
-				if(e.instanceType == "symbol") {
-					subtype = e.symbolType;
-				}
-				
 				fp.write("element", 5);
 				if(e.name.length > 0) {
 					fp.writePair("name", e.name, 6, true);
 				}
 				
-				// Don't need to export z index, the elements are already listed in draw-order
-				//fp.writePair("z_index", e.depth, 6);
 				fp.writePair("matrix", e.matrix.a + ", " + e.matrix.b + ", " + e.matrix.c + ", " + e.matrix.d + ", " + e.matrix.tx + ", " + e.matrix.ty, 6);
 				
 				var tp = e.getTransformationPoint();
 				fp.writePair("trans_point", tp.x + ", " + tp.y, 6);
 				
+				fp.writePair("size", e.width + ", " + e.height, 6);
+				
 				var libIndex = -1;
-				if(exportLibAssets) {
+				var libFrameIndex = -1;
+				if(!meta) {
 					if(e.libraryItem.name in referencedLibraryItems) {
 						libIndex = referencedLibraryItems[e.libraryItem.name];
 					} else {
@@ -207,19 +203,19 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 						referencedLibraryItems[e.libraryItem.name] = libIndex;
 						libraryList.push(e.libraryItem.name);
 					}
+					dom.selectNone();
+					dom.selection = [e];
+					if(dom.selection.length == 1) {
+						dom.enterEditMode("inPlace");
+						libFrameIndex = e.libraryItem.timeline.currentFrame;
+						dom.exitEditMode();
+					} else {
+						libFrameIndex = 0;
+						fl.trace("WARNING: selection size should have been 1, but it was " + dom.selection.length + " instead!");
+					}
+					dom.selectNone();
 				}
-				
-				dom.selectNone();
-				dom.selection = [e];
-				if(dom.selection.length == 1) {
-					dom.enterEditMode("inPlace");				
-					fp.writePair("lib_item", libIndex + ", " + e.libraryItem.timeline.currentFrame, 6);
-					dom.exitEditMode();
-				} else {
-					fp.writePair("lib_item", libIndex + ", 0", 6);
-					fl.trace("WARNING: selection size should have been 1, but it was " + dom.selection.length + " instead!");
-				}
-				dom.selectNone();
+				fp.writePair("lib_item", libIndex + ", " + libFrameIndex, 6);
 			}
 
 			fi += frame.duration;
