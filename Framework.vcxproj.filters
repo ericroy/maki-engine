@@ -80,6 +80,9 @@
     <ClInclude Include="src\framework\MakiFlashMovieManager.h" />
     <ClInclude Include="src\framework\MakiFlashMovie.h" />
     <ClInclude Include="src\framework\MakiFlashMovieState.h" />
+    <ClInclude Include="src\framework\hash\fnv.h">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -153,6 +156,9 @@
     <ClCompile Include="src\framework\MakiFlashMovieManager.cpp" />
     <ClCompile Include="src\framework\MakiFlashMovie.cpp" />
     <ClCompile Include="src\framework\MakiFlashMovieState.cpp" />
+    <ClCompile Include="src\framework\hash\hash_32a.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
@@ -160,6 +166,9 @@
     </Filter>
     <Filter Include="systems">
       <UniqueIdentifier>{fc8c85ff-cb42-4b3f-b599-549038b5483c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hash">
+      <UniqueIdentifier>{97dbf159-4666-4d4f-818d-0973fe1eca2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
