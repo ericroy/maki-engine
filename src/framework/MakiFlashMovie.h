@@ -74,6 +74,7 @@ namespace Maki
 				MetaTypeCount
 			};
 			static const char *metaTypeNames[MetaTypeCount];
+			static uint32 metaTypeColors[MetaTypeCount];
 			static MetaType GetMetaTypeByName(const char *metaTypeName);
 
 

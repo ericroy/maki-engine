@@ -40,6 +40,13 @@ namespace Maki
 			"sensor",
 			"helper"
 		};
+
+		uint32 FlashMovie::metaTypeColors[MetaTypeCount] = {
+			0x44ff4444,
+			0x444444ff,
+			0x44ffff44,
+			0x4444ffff,
+		};
 		
 		FlashMovie::TweenProperty FlashMovie::GetTweenPropertyByName(const char *tweenPropertyName)
 		{
@@ -428,6 +435,8 @@ failed:
 			
 			for(uint32 li = 0; li < layers.count; li++) {
 				Layer &layer = layers[li];
+				bool isMeta = layer.metaType != MetaType_None;
+				uint32 layerColor = isMeta ? metaTypeColors[layer.metaType] : 0xffffffff;
 				
 				// Advance the key frame index for this layer
 				uint32 kfi = state.currentKeyFrames[li];
@@ -512,44 +521,49 @@ failed:
 								tweenRotScale = tweenRotScale * scaleMat;
 							}
 
-							// Alpha effect, and advanced colour effects are mutally exclusive
-							if(kf->curveFlags & TweenPropertyFlag_Alpha) {
-								a = (uint8)(kf->curves[TweenProperty_Alpha].Evaluate(t) / 100.0f * 255.0f);
-							} else if(kf->curveFlags & (
-								TweenPropertyFlag_AdvancedRedPercent|TweenPropertyFlag_AdvancedRedOffset|
-								TweenPropertyFlag_AdvancedGreenPercent|TweenPropertyFlag_AdvancedGreenOffset|
-								TweenPropertyFlag_AdvancedBluePercent|TweenPropertyFlag_AdvancedBlueOffset|
-								TweenPropertyFlag_AdvancedAlphaPercent|TweenPropertyFlag_AdvancedAlphaOffset)) {
+							// Meta layers will never have color tweens
+							if(!isMeta) {
 
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedPercent) {
-									r = (uint8)Clamp(r * kf->curves[TweenProperty_AdvancedRedPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
-								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenPercent) {
-									g = (uint8)Clamp(g * kf->curves[TweenProperty_AdvancedGreenPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
-								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedBluePercent) {
-									b = (uint8)Clamp(b * kf->curves[TweenProperty_AdvancedBluePercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
-								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaPercent) {
-									a = (uint8)Clamp(a * kf->curves[TweenProperty_AdvancedAlphaPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
-								}
+								// Alpha effect, and advanced colour effects are mutally exclusive
+								if(kf->curveFlags & TweenPropertyFlag_Alpha) {
+									a = (uint8)(kf->curves[TweenProperty_Alpha].Evaluate(t) / 100.0f * 255.0f);
+								} else if(kf->curveFlags & (
+									TweenPropertyFlag_AdvancedRedPercent|TweenPropertyFlag_AdvancedRedOffset|
+									TweenPropertyFlag_AdvancedGreenPercent|TweenPropertyFlag_AdvancedGreenOffset|
+									TweenPropertyFlag_AdvancedBluePercent|TweenPropertyFlag_AdvancedBlueOffset|
+									TweenPropertyFlag_AdvancedAlphaPercent|TweenPropertyFlag_AdvancedAlphaOffset)) {
+
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedRedPercent) {
+										r = (uint8)Clamp(r * kf->curves[TweenProperty_AdvancedRedPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenPercent) {
+										g = (uint8)Clamp(g * kf->curves[TweenProperty_AdvancedGreenPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedBluePercent) {
+										b = (uint8)Clamp(b * kf->curves[TweenProperty_AdvancedBluePercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaPercent) {
+										a = (uint8)Clamp(a * kf->curves[TweenProperty_AdvancedAlphaPercent].Evaluate(t) / 100.0f, 0.0f, 255.0f);
+									}
 								
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedRedOffset) {
-									rAdd = (uint8)kf->curves[TweenProperty_AdvancedRedOffset].Evaluate(t);
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedRedOffset) {
+										rAdd = (uint8)kf->curves[TweenProperty_AdvancedRedOffset].Evaluate(t);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenOffset) {
+										gAdd = (uint8)kf->curves[TweenProperty_AdvancedGreenOffset].Evaluate(t);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedBlueOffset) {
+										bAdd = (uint8)kf->curves[TweenProperty_AdvancedBlueOffset].Evaluate(t);
+									}
+									if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaOffset) {
+										aAdd = (uint8)kf->curves[TweenProperty_AdvancedAlphaOffset].Evaluate(t);
+									}
 								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedGreenOffset) {
-									gAdd = (uint8)kf->curves[TweenProperty_AdvancedGreenOffset].Evaluate(t);
-								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedBlueOffset) {
-									bAdd = (uint8)kf->curves[TweenProperty_AdvancedBlueOffset].Evaluate(t);
-								}
-								if(kf->curveFlags & TweenPropertyFlag_AdvancedAlphaOffset) {
-									aAdd = (uint8)kf->curves[TweenProperty_AdvancedAlphaOffset].Evaluate(t);
-								}
+
 							}
 						}
 
-						if(layer.metaType != MetaType_None) {
+						if(isMeta) {
 
 							// A 'meta-element' that doesn't have a sprite representation.
 							// Probably a hitbox or a helper or something like that.
@@ -572,11 +586,7 @@ failed:
 								v->pos.x += tweenTrans.x;
 								v->pos.y += tweenTrans.y;
 
-								v->color[0] = 255;
-								v->color[1] = 0;
-								v->color[2] = 0;
-								v->color[3] = 100;
-
+								*(uint32 *)v->color = layerColor;
 								v++;
 							}
 
