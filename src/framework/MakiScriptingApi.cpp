@@ -36,6 +36,7 @@ namespace Maki
 		{
 			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -5);
 			Component::Message msg = (Component::Message)lua_tointeger(state, -4);
+			// TODO: Determine if this is handling 64 bit numbers properly
 			uint64 to = (uint64)lua_tointeger(state, -3);
 			uintptr_t arg1 = (uintptr_t)lua_topointer(state, -2);
 			uintptr_t arg2 = (uintptr_t)lua_topointer(state, -1);
@@ -57,6 +58,7 @@ namespace Maki
 			assert(index >= 0 && (uint32)index < hub->GetMessageCount());
 			const Message &m = hub->GetMessages()[index];
 			
+			// TODO: Determine if this is handling 64 bit numbers properly
 			lua_pushinteger(state, m.from);
 			lua_pushinteger(state, m.msg);
 			lua_pushinteger(state, m.arg1);
