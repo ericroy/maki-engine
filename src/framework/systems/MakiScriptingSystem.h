@@ -30,11 +30,11 @@ namespace Maki
 				};
 
 			public:
-				ScriptingSystem();
+				ScriptingSystem(uint32 messageQueueSize);
 				virtual ~ScriptingSystem();
 		
 				void Update(float dt);
-				void ProcessMessages(const std::vector<Message> &messages);
+				void ProcessMessages();
 
 			protected:
 				void Add(Entity *e);
@@ -42,7 +42,6 @@ namespace Maki
 
 			private:
 				std::vector<Node> nodes;
-				const std::vector<Message> *currentlyProcessingQueue;
 			};
 
 		} // namespace Systems

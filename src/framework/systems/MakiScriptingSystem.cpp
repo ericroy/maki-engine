@@ -5,6 +5,7 @@
 #include "framework/MakiScriptManager.h"
 #include "framework/MakiScriptUtils.h"
 #include "framework/MakiScript.h"
+#include "framework/MakiMessageHub.h"
 #include "framework/components/MakiScriptComponent.h"
 #include <sstream>
 
@@ -22,9 +23,8 @@ namespace Maki
 		namespace Systems
 		{
 
-			ScriptingSystem::ScriptingSystem()
-				: System(Component::TypeFlag_Script),
-				currentlyProcessingQueue(nullptr)
+			ScriptingSystem::ScriptingSystem(uint32 messageQueueSize)
+				: System(Component::TypeFlag_Script, messageQueueSize, "ScriptingSystem")
 			{
 			}
 
@@ -82,11 +82,9 @@ namespace Maki
 				}
 			}
 
-			void ScriptingSystem::ProcessMessages(const std::vector<Message> &messages)
+			void ScriptingSystem::ProcessMessages()
 			{
-				currentlyProcessingQueue = &messages;
-
-				const uint32 messageCount = messages.size();
+				const uint32 messageCount = MessageHub::Get()->GetMessageCount();
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
 					const Node &n = nodes[i];
@@ -104,8 +102,6 @@ namespace Maki
 						lua_pcall(state, 2, 0, 0);
 					}
 				}
-
-				currentlyProcessingQueue = nullptr;
 			}
 
 			void ScriptingSystem::Add(Entity *e)

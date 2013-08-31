@@ -17,7 +17,7 @@ namespace Maki
 			class SceneGraphSystem : public System
 			{
 			public:
-				SceneGraphSystem();
+				SceneGraphSystem(uint32 messageQueueSize);
 				virtual ~SceneGraphSystem();
 
 			protected:

@@ -2,6 +2,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiScriptingApi.h"
 #include "framework/MakiSystem.h"
+#include "framework/MakiMessageHub.h"
 #include "framework/systems/MakiScriptingSystem.h"
 #include "framework/components/MakiScriptComponent.h"
 
@@ -33,14 +34,15 @@ namespace Maki
 
 		int32 ScriptingApi::PostMessage(lua_State *state)
 		{
-			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -4);
-			Component::Message msg = (Component::Message)lua_tointeger(state, -3);
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -5);
+			Component::Message msg = (Component::Message)lua_tointeger(state, -4);
+			uint64 to = (uint64)lua_tointeger(state, -3);
 			uintptr_t arg1 = (uintptr_t)lua_topointer(state, -2);
 			uintptr_t arg2 = (uintptr_t)lua_topointer(state, -1);
 			lua_pop(state, 4);
 			assert(lua_gettop(state) == 0);
 
-			context->scriptSys->PostMessage(System::Message(context->scriptComp, msg, (void *)arg1, (void *)arg2));
+			context->scriptSys->PostMessage(Message(context->scriptComp->owner->GetUid(), to, msg, (void *)arg1, (void *)arg2));
 			return 0;
 		}
 
@@ -51,11 +53,12 @@ namespace Maki
 			lua_pop(state, 2);
 			assert(lua_gettop(state) == 0);
 
-			assert(index >= 0 && (uint32)index < context->scriptSys->currentlyProcessingQueue->size());
-			const System::Message &m = (*context->scriptSys->currentlyProcessingQueue)[index];
+			MessageHub *hub = MessageHub::Get();
+			assert(index >= 0 && (uint32)index < hub->GetMessageCount());
+			const Message &m = hub->GetMessages()[index];
 			
-			lua_pushlightuserdata(state, m.from);
-			lua_pushinteger(state, (uint32)m.msg);
+			lua_pushinteger(state, m.from);
+			lua_pushinteger(state, m.msg);
 			lua_pushinteger(state, m.arg1);
 			lua_pushinteger(state, m.arg2);
 			return 4;

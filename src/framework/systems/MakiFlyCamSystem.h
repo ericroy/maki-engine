@@ -29,7 +29,7 @@ namespace Maki
 				};
 
 			public:
-				FlyCamSystem();
+				FlyCamSystem(uint32 messageQueueSize);
 				virtual ~FlyCamSystem();
 		
 				void Update(float dt);

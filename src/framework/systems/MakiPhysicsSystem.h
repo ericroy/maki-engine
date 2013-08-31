@@ -27,7 +27,7 @@ namespace Maki
 				};
 
 			public:
-				PhysicsSystem();
+				PhysicsSystem(uint32 messageQueueSize);
 				~PhysicsSystem();
 				void Update(float dt);
 

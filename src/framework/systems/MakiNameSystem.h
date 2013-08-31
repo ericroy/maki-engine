@@ -19,7 +19,7 @@ namespace Maki
 			class NameSystem : public System
 			{
 			public:
-				NameSystem() : System(Component::TypeFlag_Name) {}
+				NameSystem(uint32 messageQueueSize) : System(Component::TypeFlag_Name, messageQueueSize, "NameSystem") {}
 				virtual ~NameSystem() {}
 		
 				inline Entity *GetEntityByName(const char *name) const

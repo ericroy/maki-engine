@@ -29,7 +29,7 @@ namespace Maki
 				};
 
 			public:
-				LightingSystem();
+				LightingSystem(uint32 messageQueueSize);
 				virtual ~LightingSystem();
 		
 				inline uint32 GetLightCount() const { return nodes.size(); }

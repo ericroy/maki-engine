@@ -11,8 +11,8 @@ namespace Maki
 		namespace Systems
 		{
 
-			RenderSystem::RenderSystem()
-				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Transform)
+			RenderSystem::RenderSystem(uint32 messageQueueSize)
+				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Transform, messageQueueSize, "RenderSystem")
 			{
 			}
 

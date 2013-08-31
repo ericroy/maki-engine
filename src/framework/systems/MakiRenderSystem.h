@@ -27,7 +27,7 @@ namespace Maki
 				};
 
 			public:
-				RenderSystem();
+				RenderSystem(uint32 messageQueueSize);
 				virtual ~RenderSystem();
 		
 				void Draw(Core::Renderer *renderer, uint32 requiredFlags = 0, uint32 disallowedFlags = 0, const Frustum *cullingFrustum = nullptr, const Matrix44 *view = nullptr);

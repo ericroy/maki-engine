@@ -10,8 +10,8 @@ namespace Maki
 		namespace Systems
 		{
 
-			FlyCamSystem::FlyCamSystem()
-				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform)
+			FlyCamSystem::FlyCamSystem(uint32 messageQueueSize)
+				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform, messageQueueSize, "FlyCamSystem")
 			{
 			}
 

@@ -11,8 +11,8 @@ namespace Maki
 		namespace Systems
 		{
 
-			SkeletonSystem::SkeletonSystem()
-				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton)
+			SkeletonSystem::SkeletonSystem(uint32 messageQueueSize)
+				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, messageQueueSize, "SkeletonSystem")
 			{
 			}
 

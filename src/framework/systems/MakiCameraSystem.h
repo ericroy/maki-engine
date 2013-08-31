@@ -29,7 +29,7 @@ namespace Maki
 				};
 
 			public:
-				CameraSystem();
+				CameraSystem(uint32 messageQueueSize);
 				virtual ~CameraSystem();
 		
 				inline uint32 GetCameraCount() const { return nodes.size(); }

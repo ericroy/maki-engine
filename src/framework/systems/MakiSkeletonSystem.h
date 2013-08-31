@@ -27,7 +27,7 @@ namespace Maki
 				};
 
 			public:
-				SkeletonSystem();
+				SkeletonSystem(uint32 messageQueueSize);
 				virtual ~SkeletonSystem();
 		
 				void Update();

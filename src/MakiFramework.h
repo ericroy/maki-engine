@@ -13,6 +13,8 @@
 #include "framework/MakiFlashMovieManager.h"
 #include "framework/MakiFrameworkManagers.h"
 #include "framework/MakiEntityPool.h"
+#include "framework/MakiMessage.h"
+#include "framework/MakiMessageHub.h"
 #include "framework/components/MakiMeshComponent.h"
 #include "framework/components/MakiNameComponent.h"
 #include "framework/components/MakiPhysicsComponent.h"

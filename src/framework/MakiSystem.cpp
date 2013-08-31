@@ -1,15 +1,19 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiSystem.h"
+#include "framework/MakiMessageHub.h"
 
 namespace Maki
 {
 	namespace Framework
 	{
 
-		std::vector<System *> System::systems;
-		std::vector<System::Message> System::messages;
-	
+		std::vector<System *> System::systems;	
+
+		uint32 System::GetSystemCount()
+		{
+			return systems.size();
+		}
 
 		void System::ComponentMakeupChanged(Entity *e, uint64 oldFlags, uint64 newFlags)
 		{
@@ -30,37 +34,37 @@ namespace Maki
 			}
 		}
 
-		void System::ProcessMessages()
+		void System::DispatchMessages()
 		{
 			const uint32 count = systems.size();
 			uint32 iterations = 0;
 			bool done = false;
 
+			MessageHub *hub = MessageHub::Get();
+
 			while(!done) {
 				done = true;
 
-				// Amalgamate messages from all systems into global queue
+				// Amalgamate messages from all systems into global hub
 				for(uint32 i = 0; i < count; i++) {
-					uint32 outgoingCount = systems[i]->outgoingMessages.size();
-					if(outgoingCount > 0) {
-						messages.reserve(messages.size() + outgoingCount);
-						std::copy(std::begin(systems[i]->outgoingMessages), std::end(systems[i]->outgoingMessages), std::back_inserter(messages));
-						systems[i]->outgoingMessages.clear();
+					if(systems[i]->outgoingMessageCount > 0) {
+						hub->Put(systems[i]->outgoingMessages.data, systems[i]->outgoingMessageCount);
+						systems[i]->outgoingMessageCount = 0;
 					}
 				}
 				
-				// Allow each system to process the global queue
-				if(messages.size()) {
+				// Tell each system to process the messages in the hub
+				if(hub->GetMessageCount() > 0) {
 					for(uint32 i = 0; i < count; i++) {
-						systems[i]->ProcessMessages(messages);
+						systems[i]->ProcessMessages();
 
 						// Processing the message queue could actually result in more messages being dispatched
 						// If this is the case, we'll have to run another iteration
-						if(systems[i]->outgoingMessages.size()) {
+						if(systems[i]->outgoingMessageCount > 0) {
 							done = false;
 						}
 					}
-					messages.clear();
+					hub->Clear();
 				}
 								
 				iterations++;
@@ -73,9 +77,10 @@ namespace Maki
 
 
 
-		System::System(uint64 componentMask)
-			: componentMask(componentMask)
+		System::System(uint64 componentMask, uint32 messageQueueSize, const char *typeName)
+			: typeName(typeName), componentMask(componentMask), outgoingMessageCount(0)
 		{
+			outgoingMessages.SetSize(messageQueueSize);
 			systems.push_back(this);
 		}
 
