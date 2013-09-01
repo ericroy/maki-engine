@@ -12,7 +12,7 @@ namespace Maki
 		public:
 			enum
 			{
-				Message_Ping = 0u,
+				Message_Ping = 0,
 				Message_Pong,
 				MessageCount
 			};
