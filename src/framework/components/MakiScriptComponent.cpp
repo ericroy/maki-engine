@@ -18,7 +18,8 @@ namespace Maki
 				sleepTime(0),
 				state(nullptr),
 				coroutine(nullptr),
-				messageHandler(nullptr)
+				messageHandler(nullptr),
+				nextMessageIndex(0)
 			{
 			}
 

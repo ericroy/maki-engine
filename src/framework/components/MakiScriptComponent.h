@@ -46,6 +46,10 @@ namespace Maki
 				
 				// Lua message handling function (or null if one is not registered)
 				void *messageHandler;
+
+				// When processing messages, this bookmarks the message that should be returned when 
+				// the script asks for the next message
+				uint32 nextMessageIndex;
 				
 				// The execution context for the coroutine that was launched via run
 				// Shares state with the main context belonging to the script

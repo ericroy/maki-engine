@@ -92,21 +92,25 @@ namespace Maki
 			void ScriptingSystem::ProcessMessages()
 			{
 				const uint32 messageCount = MessageHub::Get()->GetMessageCount();
+				if(messageCount == 0) {
+					return;
+				}
+
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
 					const Node &n = nodes[i];
-
 					lua_State *state = n.scriptComp->state;
 
 					if(n.scriptComp->messageHandler != nullptr) {
+						n.scriptComp->nextMessageIndex = 0;
+
 						// Load the message handler func onto the top of the stack
 						lua_pushlightuserdata(state, n.scriptComp->messageHandler);
 						lua_gettable(state, LUA_REGISTRYINDEX);
 
 						// Push the args and call it
 						lua_pushlightuserdata(state, (void *)&n);
-						lua_pushinteger(state, messageCount);
-						lua_pcall(state, 2, 0, 0);
+						lua_pcall(state, 1, 0, 0);
 					}
 				}
 			}
