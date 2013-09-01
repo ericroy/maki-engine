@@ -35,9 +35,8 @@ namespace Maki
 		int32 ScriptingApi::PostMessage(lua_State *state)
 		{
 			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -5);
-			// TODO: Determine if this is handling 64 bit numbers properly
 			uint64 to = static_cast<uint64>(lua_tonumber(state, -4));
-			Component::Message msg = (Component::Message)lua_tointeger(state, -3);
+			int32 msg = lua_tointeger(state, -3);
 			uintptr_t arg1 = (uintptr_t)lua_topointer(state, -2);
 			uintptr_t arg2 = (uintptr_t)lua_topointer(state, -1);
 			lua_pop(state, 5);
@@ -69,7 +68,6 @@ namespace Maki
 			}
 			
 			if(m != nullptr) {
-				// TODO: Determine if this is handling 64 bit numbers properly
 				lua_pushnumber(state, static_cast<double>(m->from));
 				lua_pushnumber(state, static_cast<double>(m->to));
 				lua_pushinteger(state, m->msg);

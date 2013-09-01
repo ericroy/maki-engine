@@ -611,8 +611,6 @@ failed:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			if(MAKI_OGL_FAILED()) { goto failed; }
 
-			// TODO:
-			// Need to determine internal format here - probably need to borrow code from directx dds loader
 			switch(format)
 			{
 			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:

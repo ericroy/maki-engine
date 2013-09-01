@@ -38,13 +38,6 @@ namespace Maki
 			static const TypeFlag TypeFlag_Skeleton = 1ULL << Type_Skeleton;
 			static const TypeFlag TypeFlag_UserType = 1ULL << Type_UserType;
 
-			enum Message
-			{
-				Message_Test1 = 0,
-				Message_Test2,
-				Message_UserMessage,
-			};
-			
 			class Comparator
 			{
 			public:

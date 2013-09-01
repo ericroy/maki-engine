@@ -10,8 +10,16 @@ namespace Maki
 		struct  Message
 		{
 		public:
+			enum
+			{
+				Message_Ping = 0u,
+				Message_Pong,
+				MessageCount
+			};
+
+		public:
 			template<class T, class U>
-			Message(const uint64 &from, const uint64 &to, Component::Message msg, T *arg1, U *arg2)
+			Message(const uint64 &from, const uint64 &to, int32 msg, T *arg1, U *arg2)
 				: from(from), to(to), msg(msg)
 			{
 				this->arg1 = reinterpret_cast<uintptr_t>(arg1);
@@ -19,18 +27,18 @@ namespace Maki
 			}
 
 			template<class T>
-			Message(const uint64 &from, const uint64 &to, Component::Message msg, T *arg1)
+			Message(const uint64 &from, const uint64 &to, int32 msg, T *arg1)
 				: from(from), to(to), msg(msg), arg2(0)
 			{
 				this->arg1 = reinterpret_cast<uintptr_t>(arg1);
 			}
 
-			Message(const uint64 &from, const uint64 &to, Component::Message msg)
+			Message(const uint64 &from, const uint64 &to, int32 msg)
 				: from(from), to(to), msg(msg), arg1(0), arg2(0)
 			{
 			}
 
-			Message(const uint64 &from, Component::Message msg)
+			Message(const uint64 &from, int32 msg)
 				: from(from), to(0), msg(msg), arg1(0), arg2(0)
 			{
 			}
@@ -38,15 +46,6 @@ namespace Maki
 			Message(const Message &other)
 				: from(other.from), to(other.to), msg(other.msg), arg1(other.arg1), arg2(other.arg2)
 			{
-			}
-
-			inline void operator=(const Message &other)
-			{
-				from = other.from;
-				to = other.to;
-				msg = other.msg;
-				arg1 = other.arg1;
-				arg2 = other.arg2;
 			}
 
 			template<class T>
@@ -58,9 +57,9 @@ namespace Maki
 		public:
 			uint64 from;
 			uint64 to;
-			Component::Message msg;
 			uintptr_t arg1;
 			uintptr_t arg2;
+			int32 msg;
 		};
 		
 

@@ -82,13 +82,6 @@ namespace Maki
 				}
 			}
 
-			// TODO:
-			// Rework the message retrieval api, so it doesn't rely on knowing the total number of messages.
-			// Have the scripts do something like:
-			//
-			// while(get_message(m)) {
-			//     // do stuff
-			// }
 			void ScriptingSystem::ProcessMessages()
 			{
 				const uint32 messageCount = MessageHub::Get()->GetMessageCount();

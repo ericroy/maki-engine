@@ -19,7 +19,7 @@ namespace Maki
 		bool MessageHub::Put(const Message *msgs, uint32 count)
 		{
 			if(messageCount + count <= messages.count) {
-				std::copy(msgs, &msgs[count], &messages[messageCount]);
+				memcpy(&messages.data[messageCount], msgs, sizeof(Message) * count);
 				messageCount += count;
 				return true;
 			}
