@@ -3,6 +3,7 @@ import platform
 from . import compile_fbx
 from . import compile_shader
 from . import compile_flash
+from . import compile_photoshop
 from . import compile_lua
 from . import doc_toucher
 from .. import CONFIG
@@ -14,6 +15,7 @@ COMPILERS = {
     'mdoc': _copy,    
     'mshad': compile_shader.compile,
     'mflas': compile_flash.compile,
+    'mphot': compile_photoshop.compile,
     'fbx': compile_fbx.compile,
     'mskel': _copy,
     'manim': _copy,

@@ -9,24 +9,16 @@ function nextPowerOf2(n) {
     return Math.pow(2, Math.ceil(Math.log(n) / Math.LN2));
 }
 
-function write(file, s, depth) {
+function Buffer() {
+    this.buffer = "";
+}
+
+function write(buf, s, depth) {
     indent = "";
     for(var i = 0; i < depth; i++) {
         indent += "\t";
     }
-    file.writeln(indent + s);
-}
-
-function pasteInto() {
-    var idpast = charIDToTypeID( "past" );
-    var desc557 = new ActionDescriptor();
-    var idinPlace = stringIDToTypeID( "inPlace" );
-    desc557.putBoolean( idinPlace, true );
-    var idAntA = charIDToTypeID( "AntA" );
-    var idAnnt = charIDToTypeID( "Annt" );
-    var idAnno = charIDToTypeID( "Anno" );
-    desc557.putEnumerated( idAntA, idAnnt, idAnno );
-    executeAction( idpast, desc557, DialogModes.NO );
+    buf.buffer += indent + s + "\n";
 }
 
 function exportLevel(file) {
@@ -37,12 +29,11 @@ function exportLevel(file) {
     }
     var baseName = metaFile.fsName.slice(0, dot);
 
-    var xMax = Math.ceil(doc.width / PAGE_SIZE);
-    var yMax = Math.ceil(doc.height / PAGE_SIZE);    
-    
-    write(file, "size " + doc.width.as("px") + ", " + doc.height.as("px"), 0);
-    write(file, "layers", 0);
-    
+    var docWidthPx = doc.width.as("px");
+    var docHeightPx = doc.height.as("px");
+
+    var buffer = new Buffer();
+
     // Record layer visibilities at start
     var oldVisibilities = [];
     for(var li = 0; li < doc.layers.length; li++) {
@@ -56,17 +47,29 @@ function exportLevel(file) {
         doc.activeLayer = layer;
         layer.visible = true;
         
-        write(file, "layer", 1);
-        write(file, "name \"" + layer.name + "\"", 2);
-        write(file, "tiles", 2);
+        // Find tight bounds on the contents of this layer
+        var lb = layer.bounds;
+        var layerBounds = [Math.max(lb[0].as("px"), 0), Math.max(lb[1].as("px"), 0), Math.min(lb[2].as("px"), docWidthPx), Math.min(lb[3].as("px"), docHeightPx)];
+        var layerWidth = layerBounds[2] - layerBounds[0];
+        var layerHeight = layerBounds[3] - layerBounds[1];
+    
+        var xMax = Math.ceil(layerWidth / PAGE_SIZE);
+        var yMax = Math.ceil(layerHeight / PAGE_SIZE);
+    
+        write(buffer, "layer", 0);
+        write(buffer, "name \"" + layer.name + "\"", 1);
+        
+        // This layer rect is relative to the stage
+        write(buffer, "pos " + layerBounds[0] + ", " + layerBounds[1], 1);
+        write(buffer, "tiles", 1);
         
         for(var x = 0; x < xMax; x++) {
             for(var y = 0; y < yMax; y++) {
                     
-                    var left = x*PAGE_SIZE;
-                    var top = y*PAGE_SIZE;
-                    var right = left+PAGE_SIZE;
-                    var bottom = top+PAGE_SIZE;
+                    var left = layerBounds[0] + x*PAGE_SIZE;
+                    var top = layerBounds[1] + y*PAGE_SIZE;
+                    var right = Math.min(left+PAGE_SIZE, layerBounds[2]);
+                    var bottom = Math.min(top+PAGE_SIZE, layerBounds[3]);
                     var w = right - left;
                     var h = bottom - top;
                     
@@ -93,34 +96,32 @@ function exportLevel(file) {
                     l.kind = LayerKind.NORMAL;
                     scratchDoc.backgroundLayer.remove();
                     scratchDoc.selection.select([[0, 0], [0, h], [w, h], [w, 0]]);
-                    pasteInto();
+                    scratchDoc.paste(true);
 
                     // Trim transparent pixels, and figure out how many we trimmed off the left and top,
                     // since we'll have to offset the final rect by that amount
+                    scratchDoc.trim(TrimType.TRANSPARENT, false, false, true, true);
                     var oldWidth = scratchDoc.width.as("px");
-                    var oldHeight = scratchDoc.height.as("px");
+                    var oldHeight = scratchDoc.height.as("px");                    
                     scratchDoc.trim(TrimType.TRANSPARENT, true, true, false, false);
                     var trimmedWidth = scratchDoc.width.as("px");
                     var trimmedHeight = scratchDoc.height.as("px");
+                    
                     left += oldWidth - trimmedWidth;
                     top += oldHeight - trimmedHeight;
-                    scratchDoc.trim(TrimType.TRANSPARENT, false, false, true, true);
-                    
-                    trimmedWidth = scratchDoc.width.as("px");
-                    trimmedHeight = scratchDoc.height.as("px");
-                    var texWidth = nextPowerOf2(trimmedWidth);
-                    var texHeight = nextPowerOf2(trimmedHeight);
-                    scratchDoc.resizeCanvas(texWidth, texHeight, AnchorPosition.TOPLEFT);
+
+                    scratchDoc.resizeCanvas(nextPowerOf2(trimmedWidth), nextPowerOf2(trimmedHeight), AnchorPosition.TOPLEFT);
                     
                     var f = new File(fileName);
                     scratchDoc.exportDocument(f, ExportType.SAVEFORWEB, SAVE_OPTS);
                     f.close();
                     scratchDoc.close(SaveOptions.DONOTSAVECHANGES);
                     
-                    write(file, "tile", 3);
-                    write(file, "path \"" + fileName + "\"", 4);
-                    write(file, "size " + texWidth + ", " + texHeight, 4);
-                    write(file, "rect " + left + ", " + top + ", " + trimmedWidth + ", " + trimmedHeight, 4);
+                    write(buffer, "tile", 2);
+                    write(buffer, "path \"" + fileName + "\"", 3);
+
+                    // This rectangle is relative to the layer rect
+                    write(buffer, "rect " + (left - layerBounds[0]) + ", " + (top - layerBounds[1]) + ", " + trimmedWidth + ", " + trimmedHeight, 3);
             }
         }
     
@@ -132,6 +133,15 @@ function exportLevel(file) {
         var layer = doc.layers[li];
         layer.visible = oldVisibilities[li];
     }
+
+
+    if(file.open("w")) {
+        file.write(buffer.buffer);
+        file.close();
+        return "Ok";
+    } else {
+        return "Failed to open output file";
+    }
 }
 
 
@@ -140,12 +150,6 @@ var metaFile = File.saveDialog("Save level as", "Maki Level:*.mphot");
 if(metaFile == null) {
     "User cancelled";
 } else {
-    if(metaFile.open("w")) {
-        $.writeln("Exporting to: " + metaFile.fullName);
-        exportLevel(metaFile);
-        metaFile.close();
-        "Ok";
-    } else {
-        throw "Failed to open output file";
-    }
+    $.writeln("Exporting to: " + metaFile.fullName);
+    exportLevel(metaFile);
 }
