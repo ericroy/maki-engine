@@ -36,7 +36,8 @@ def compile(arc_name, src, dst):
             image_path_src = val.value
             image_path_dst = os.path.splitext(image_path_src)[0] + '.dds'
             texture_path = util.clean_path(os.path.relpath(image_path_dst, conf['src']))
-            subprocess.check_call([NVDXT, '-file', image_path_src, '-output', image_path_dst, '-dxt5'])
+
+            subprocess.check_call([NVDXT, '-file', image_path_src, '-output', os.path.join(conf['dst'], texture_path), '-dxt5'])
 
             rectNode = tile.resolve('rect')
             tileRect = [int(rectNode.resolve('#%s' % i).value) for i in range(4)]
