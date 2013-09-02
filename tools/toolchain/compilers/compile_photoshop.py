@@ -46,11 +46,12 @@ def compile(arc_name, src, dst):
             out_tile.add_child('transform').add_child('pos').add_children(
                 map(str, [tileRect[0] / PPU, -tileRect[1] / PPU, 0])
                 )
-            out_sprite = out_tile.add_child('sprite')
-            out_sprite.add_child('texture').add_child(texture_path)
-            out_sprite.add_child('region').add_children(
-                    map(str, [0, 0, tileRect[2], tileRect[3]])
-                )
+            out_sprite = out_tile.add_child('mesh')
+            out_sprite.add_child('material').add_child("materials/sprite.mdoc")
+            out_sprite_props = out_sprite.add_child('sprite')
+
+            out_sprite_props.add_child('texture').add_child(texture_path)
+            out_sprite_props.add_child('rect').add_children(map(str, [0, 0, tileRect[2], tileRect[3]]))
 
     with open(dst, 'w') as file:
         out_root.serialize(file, max_stack=6)

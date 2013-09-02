@@ -42,7 +42,7 @@ function exportLevel(file) {
         layer.visible = false;
     }
     
-    for(var li = 0; li < doc.layers.length; li++) {
+    for(var li = doc.layers.length-1; li >= 0; li--) {
         var layer = doc.layers[li];
         doc.activeLayer = layer;
         layer.visible = true;

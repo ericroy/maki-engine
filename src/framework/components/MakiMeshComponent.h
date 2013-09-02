@@ -36,6 +36,8 @@ namespace Maki
 				virtual ~Mesh();
 				bool Init(Document::Node *props);
 				bool Init(HandleOrRid meshId, HandleOrRid matId);
+				bool InitSprite(HandleOrRid matId, HandleOrRid texId, const Rect &rect);
+				
 				Mesh *Clone(bool prototype);
 				void SetMeshScale(float scale);
 

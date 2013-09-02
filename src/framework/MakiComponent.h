@@ -15,6 +15,7 @@ namespace Maki
 				Type_Transform = 0,
 				Type_SceneNode,
 				Type_Mesh,
+				Type_Sprite,
 				Type_Physics,
 				Type_Script,
 				Type_Name,
@@ -29,6 +30,7 @@ namespace Maki
 			static const TypeFlag TypeFlag_Transform = 1ULL << Type_Transform;
 			static const TypeFlag TypeFlag_SceneNode = 1ULL << Type_SceneNode;
 			static const TypeFlag TypeFlag_Mesh = 1ULL << Type_Mesh;
+			static const TypeFlag TypeFlag_Sprite = 1ULL << Type_Sprite;
 			static const TypeFlag TypeFlag_Physics = 1ULL << Type_Physics;
 			static const TypeFlag TypeFlag_Script = 1ULL << Type_Script;
 			static const TypeFlag TypeFlag_Name = 1ULL << Type_Name;
