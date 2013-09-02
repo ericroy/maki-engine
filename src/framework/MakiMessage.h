@@ -19,27 +19,22 @@ namespace Maki
 
 		public:
 			template<class T, class U>
-			Message(const uint64 &from, const uint64 &to, int32 msg, T *arg1, U *arg2)
-				: from(from), to(to), msg(msg)
+			Message(const uint64 &from, const uint64 &to, int32 msg, T &arg1, U &arg2)
+				: from(from), to(to), msg(msg), arg1(arg1), arg2(arg2)
 			{
-				this->arg1 = reinterpret_cast<uintptr_t>(arg1);
-				this->arg2 = reinterpret_cast<uintptr_t>(arg2);
+				this->arg1 = static_cast<uintptr_t>(arg1);
+				this->arg2 = static_cast<uintptr_t>(arg2);
 			}
 
 			template<class T>
-			Message(const uint64 &from, const uint64 &to, int32 msg, T *arg1)
+			Message(const uint64 &from, const uint64 &to, int32 msg, T &arg1)
 				: from(from), to(to), msg(msg), arg2(0)
 			{
-				this->arg1 = reinterpret_cast<uintptr_t>(arg1);
+				this->arg1 = static_cast<uintptr_t>(arg1);
 			}
 
 			Message(const uint64 &from, const uint64 &to, int32 msg)
 				: from(from), to(to), msg(msg), arg1(0), arg2(0)
-			{
-			}
-
-			Message(const uint64 &from, int32 msg)
-				: from(from), to(0), msg(msg), arg1(0), arg2(0)
 			{
 			}
 
@@ -49,10 +44,10 @@ namespace Maki
 			}
 
 			template<class T>
-			inline T *GetArg1() const { return reinterpret_cast<T *>(arg1); }
+			inline T GetArg1() const { return reinterpret_cast<T>(arg1); }
 
 			template<class T>
-			inline T *GetArg2() const { return reinterpret_cast<T *>(arg2); }
+			inline T GetArg2() const { return reinterpret_cast<T>(arg2); }
 
 		public:
 			uint64 from;

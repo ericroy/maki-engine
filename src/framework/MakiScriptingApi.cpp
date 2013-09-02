@@ -4,6 +4,7 @@
 #include "framework/MakiSystem.h"
 #include "framework/MakiMessageHub.h"
 #include "framework/systems/MakiScriptingSystem.h"
+#include "framework/systems/MakiNameSystem.h"
 #include "framework/components/MakiScriptComponent.h"
 
 namespace Maki
@@ -16,7 +17,7 @@ namespace Maki
 		const ScriptingApi::ApiFunction ScriptingApi::apiFunctions[] = {
 			{ "post_message", &PostMessage },
 			{ "get_message", &GetMessage },
-			{ "get_self", &GetSelf },
+			{ "get_entity", &GetEntity },
 			{ "set_message_handler", &SetMessageHandler },
 		};
 		
@@ -35,14 +36,21 @@ namespace Maki
 		int32 ScriptingApi::PostMessage(lua_State *state)
 		{
 			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -5);
+
+			if(!lua_isnumber(state, -4)) {
+				lua_pushstring(state, "Failed to send message from lua, <to> argument must be a number");
+				lua_error(state);
+				return 0;
+			}
 			uint64 to = static_cast<uint64>(lua_tonumber(state, -4));
+			
 			int32 msg = lua_tointeger(state, -3);
-			uintptr_t arg1 = (uintptr_t)lua_topointer(state, -2);
-			uintptr_t arg2 = (uintptr_t)lua_topointer(state, -1);
+			uintptr_t arg1 = static_cast<uintptr_t>(lua_tonumber(state, -2));
+			uintptr_t arg2 = static_cast<uintptr_t>(lua_tonumber(state, -1));
 			lua_pop(state, 5);
 			assert(lua_gettop(state) == 0);
 
-			context->scriptSys->PostMessage(Message(context->scriptComp->owner->GetUid(), to, msg, (void *)arg1, (void *)arg2));
+			context->scriptSys->PostMessage(Message(context->scriptComp->owner->GetUid(), to, msg, arg1, arg2));
 			return 0;
 		}
 
@@ -71,8 +79,8 @@ namespace Maki
 				lua_pushnumber(state, static_cast<double>(m->from));
 				lua_pushnumber(state, static_cast<double>(m->to));
 				lua_pushinteger(state, m->msg);
-				lua_pushinteger(state, m->arg1);
-				lua_pushinteger(state, m->arg2);
+				lua_pushnumber(state, static_cast<double>(m->arg1));
+				lua_pushnumber(state, static_cast<double>(m->arg2));
 				return 5;
 			} else {
 				lua_pushnil(state);
@@ -80,13 +88,22 @@ namespace Maki
 			}			
 		}
 
-		int32 ScriptingApi::GetSelf(lua_State *state)
+		int32 ScriptingApi::GetEntity(lua_State *state)
 		{
-			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -1);
-			lua_pop(state, 1);
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -2);
+			
+			const char *entityName = lua_tostring(state, -1);
+			Systems::NameSystem *nameSys = Systems::NameSystem::Get();
+			Entity *ent = nameSys->GetEntityByName(entityName);
+			
+			lua_pop(state, 2);
 			assert(lua_gettop(state) == 0);
 
-			lua_pushlightuserdata(state, context->scriptComp);
+			if(ent != nullptr) {
+				lua_pushnumber(state, static_cast<double>(ent->GetUid()));
+			} else {
+				lua_pushnil(state);
+			}			
 			return 1;
 		}
 

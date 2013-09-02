@@ -22,7 +22,7 @@ namespace Maki
 		private:
 			static int32 PostMessage(lua_State *state);
 			static int32 GetMessage(lua_State *state);
-			static int32 GetSelf(lua_State *state);
+			static int32 GetEntity(lua_State *state);
 			static int32 SetMessageHandler(lua_State *state);
 
 		private:
