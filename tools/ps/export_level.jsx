@@ -12,13 +12,24 @@ function nextPowerOf2(n) {
 function Buffer() {
     this.buffer = "";
 }
-
-function write(buf, s, depth) {
+Buffer.prototype.write = function(s, depth) {
     indent = "";
     for(var i = 0; i < depth; i++) {
         indent += "\t";
     }
-    buf.buffer += indent + s + "\n";
+    this.buffer += indent + s + "\n";
+};
+
+function pasteInPlace() {
+    var idpast = charIDToTypeID( "past" );
+    var desc557 = new ActionDescriptor();
+    var idinPlace = stringIDToTypeID( "inPlace" );
+    desc557.putBoolean( idinPlace, true );
+    var idAntA = charIDToTypeID( "AntA" );
+    var idAnnt = charIDToTypeID( "Annt" );
+    var idAnno = charIDToTypeID( "Anno" );
+    desc557.putEnumerated( idAntA, idAnnt, idAnno );
+    executeAction( idpast, desc557, DialogModes.NO );
 }
 
 function exportLevel(file) {
@@ -56,12 +67,16 @@ function exportLevel(file) {
         var xMax = Math.ceil(layerWidth / PAGE_SIZE);
         var yMax = Math.ceil(layerHeight / PAGE_SIZE);
     
-        write(buffer, "layer", 0);
-        write(buffer, "name \"" + layer.name + "\"", 1);
+        buffer.write("layer", 0);
+        buffer.write("name \"" + layer.name + "\"", 1);
         
         // This layer rect is relative to the stage
-        write(buffer, "pos " + layerBounds[0] + ", " + layerBounds[1], 1);
-        write(buffer, "tiles", 1);
+        buffer.write("pos " + layerBounds[0] + ", " + layerBounds[1], 1);
+        buffer.write("tiles", 1);
+        
+        if(li == 1) {
+            var kkkk = 0;
+        }
         
         for(var x = 0; x < xMax; x++) {
             for(var y = 0; y < yMax; y++) {
@@ -91,12 +106,15 @@ function exportLevel(file) {
                     var fileName = baseName + "_" + li + "_" + x + "_" + y + ".png";
                     $.writeln("Saving: " + fileName);
                     
-                    var scratchDoc = app.documents.add(PAGE_SIZE, PAGE_SIZE);
+                    var scratchDoc = app.documents.add(w, h);
                     var l = scratchDoc.artLayers.add();
                     l.kind = LayerKind.NORMAL;
                     scratchDoc.backgroundLayer.remove();
-                    scratchDoc.selection.select([[0, 0], [0, h], [w, h], [w, 0]]);
-                    scratchDoc.paste(true);
+                    //scratchDoc.selection.select([[0, 0], [0, h], [w, h], [w, 0]]);
+                    //scratchDoc.selection.selectAll();
+                    //scratchDoc.paste(true);
+                    pasteInPlace();
+                    
 
                     // Trim transparent pixels, and figure out how many we trimmed off the left and top,
                     // since we'll have to offset the final rect by that amount
@@ -117,11 +135,11 @@ function exportLevel(file) {
                     f.close();
                     scratchDoc.close(SaveOptions.DONOTSAVECHANGES);
                     
-                    write(buffer, "tile", 2);
-                    write(buffer, "path \"" + fileName + "\"", 3);
+                    buffer.write("tile", 2);
+                    buffer.write("path \"" + fileName + "\"", 3);
 
                     // This rectangle is relative to the layer rect
-                    write(buffer, "rect " + (left - layerBounds[0]) + ", " + (top - layerBounds[1]) + ", " + trimmedWidth + ", " + trimmedHeight, 3);
+                    buffer.write("rect " + (left - layerBounds[0]) + ", " + (top - layerBounds[1]) + ", " + trimmedWidth + ", " + trimmedHeight, 3);
             }
         }
     

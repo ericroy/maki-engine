@@ -18,7 +18,7 @@ def compile(arc_name, src, dst):
     out.add_child('transform').add_child('pos').add_children(['0']*3)
     out = out.add_child('children')
 
-    for layer in root.children():
+    for layer_index, layer in enumerate(root.children()):
         name = layer.resolve('name.#0').value
         rectNode = layer.resolve('pos')
         layer_pos = int(rectNode.resolve('#0').value), int(rectNode.resolve('#1').value)
@@ -26,7 +26,7 @@ def compile(arc_name, src, dst):
         out_layer = out.add_child('entity')
         out_layer.add_child('name').add_child(name)
         out_layer.add_child('transform').add_child('pos').add_children(
-            map(str, [layer_pos[0] / PPU, -layer_pos[1] / PPU, 0])
+            map(str, [layer_pos[0] / PPU, -layer_pos[1] / PPU, 0.5*layer_index])
             )
         out_layer = out_layer.add_child('children')
 

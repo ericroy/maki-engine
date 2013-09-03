@@ -11,21 +11,6 @@ namespace Maki
 		{
 			const float PPU = 150.0f;
 
-			Vector2 unitQuadCoeffs[4] = {
-				Vector2(0.0f, 0.0f),
-				Vector2(0.0f, -1.0f),
-				Vector2(1.0f, -1.0f),
-				Vector2(1.0f, 0.0f)
-			};
-
-			Vector2 unitQuadTexRectCoeff[4] = {
-				Vector2(0.0f, 0.0f),
-				Vector2(0.0f, 1.0f),
-				Vector2(1.0f, 1.0f),
-				Vector2(1.0f, 0.0f)
-			};
-
-
 			Mesh::Mesh()
 				: Component(TYPE, DEPENDENCIES),
 				flags(DEFAULT_FLAGS),
@@ -156,15 +141,34 @@ namespace Maki
 				m.SetVertexAttributes(VertexFormat::AttributeFlag_Color|VertexFormat::AttributeFlag_TexCoord);
 				m.SetMeshFlag(Core::Mesh::MeshFlag_HasTranslucency);
 
-				float w = rect.GetWidth();
-				float h = rect.GetHeight();
+				float pw = rect.GetWidth();
+				float w = pw / PPU;
+				float ph = rect.GetHeight();
+				float h = ph / PPU;
 
-				for(int32 i = 0; i < 4; i++) {
-					verts[i].pos = Vector3(unitQuadCoeffs[i].x * w / PPU, unitQuadCoeffs[i].y * h / PPU, 0);
-					verts[i].color = 0xffffffff;
-					verts[i].uv.x = (rect.left + unitQuadTexRectCoeff[i].x * w) / tex->width;
-					verts[i].uv.y = (rect.top + unitQuadTexRectCoeff[i].y * h) / tex->height;
-				}
+				float du = 0.5f / tex->width;
+				float dv = 0.5f / tex->height;
+
+				verts[0].pos = Vector3(0.0f, 0.0f, 0.0f);
+				verts[0].color = 0xffffffff;
+				verts[0].uv.x = rect.left / tex->width + du;
+				verts[0].uv.y = rect.top / tex->height;
+
+				verts[1].pos = Vector3(0.0f, -h, 0.0f);
+				verts[1].color = 0xffffffff;
+				verts[1].uv.x = rect.left / tex->width + du;
+				verts[1].uv.y = (rect.top + ph) / tex->height;
+
+				verts[2].pos = Vector3(w, -h, 0.0f);
+				verts[2].color = 0xffffffff;
+				verts[2].uv.x = (rect.left + pw) / tex->width - du;
+				verts[2].uv.y = (rect.top + ph) / tex->height;
+
+				verts[3].pos = Vector3(w, 0.0f, 0.0f);
+				verts[3].color = 0xffffffff;
+				verts[3].uv.x = (rect.left + pw) / tex->width - du;
+				verts[3].uv.y = rect.top / tex->height;
+
 				m.PushVertexData(sizeof(verts), (char *)verts);
 
 				uint16 indices[6] = { 0, 1, 2, 0, 2, 3 };
