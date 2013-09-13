@@ -31,8 +31,8 @@
 				CSInterface.instance.autoThemeColorChange = true;
 				
 				// We can provide comma delimited list of event ids if we want (as a string)
-				CSInterface.instance.evalScript("PhotoshopRegisterEvent", ""+SELECT);
-				ExternalInterface.addCallback("PhotoshopCallback"+extensionId, photoshopCallback);
+				CSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT.toString());
+				ExternalInterface.addCallback("PhotoshopCallback"+root.loaderInfo.parameters["extID"].toString(), photoshopCallback);
 				
 				if(Photoshop.app.activeDocument != null) {
 					currentLayer = Photoshop.app.activeDocument.activeLayer;

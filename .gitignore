@@ -37,6 +37,7 @@ desktop.ini
 CMakeCache.txt
 CMakeFiles/
 bin/
+bin-debug/
 intermediate/
 Debug/
 Release/
