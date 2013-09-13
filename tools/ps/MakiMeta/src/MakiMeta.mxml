@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="652" height="360" close="windowedapplication1_closeHandler(event)"
+					   creationComplete="windowedapplication1_creationCompleteHandler(event)"
+					   focusIn="windowedapplication1_focusInHandler(event)"
+					   focusOut="windowedapplication1_focusOutHandler(event)">
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.csawlib.photoshop.Photoshop;
+			import com.adobe.csxs.core.CSInterface;
+			import com.adobe.photoshop.Layer;
+			import com.adobe.xmp.core.XMPMeta;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.events.TextOperationEvent;
+			
+			private const CURRENT_LAYER:int = Photoshop.app.charIDToTypeID("CrrL");
+			
+			private var maki:Namespace = new Namespace("maki", "http://makiengine.com/");
+			private var currentLayer:Layer = null;			
+			
+			protected function metaTextArea_changeHandler(event:TextOperationEvent):void
+			{
+			}
+			
+			protected function applyButton_clickHandler(event:MouseEvent):void
+			{
+				saveData(Photoshop.app.activeDocument.activeLayer);
+			}
+			
+			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			{
+				CSInterface.instance.addEventListener("documentAfterActivate", eventHandler);
+				CSInterface.instance.addEventListener("documentAfterDeactivate", eventHandler);
+				
+				// We can provide comma delimited list of event ids if we want
+				CSInterface.instance.evalScript("PhotoshopRegisterEvent", CURRENT_LAYER);
+				
+				ExternalInterface.addCallback("PhotoshopCallback", PhotoshopCallback);
+			}
+			
+			protected function windowedapplication1_closeHandler(event:Event):void
+			{			
+			}
+			
+			protected function windowedapplication1_focusInHandler(event:FocusEvent):void
+			{			
+			}
+			
+			protected function windowedapplication1_focusOutHandler(event:FocusEvent):void
+			{			
+			}
+			
+			
+			private function updateTextBox(layer:Layer):void
+			{
+				var xmp:XMPMeta = new XMPMeta(layer.xmpMetadata.rawData);
+				metaTextArea.text = xmp.maki::data;
+			}
+			
+			private function saveData(layer:Layer):void
+			{
+				var xmp:XMPMeta = new XMPMeta(Photoshop.app.activeDocument.activeLayer.xmpMetadata.rawData);
+				xmp.maki::data = metaTextArea.text;
+				Photoshop.app.activeDocument.activeLayer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
+			}
+			
+			public function PhotoshopCallback(param1:Number, param2:Number):void
+			{
+				if(param1 == CURRENT_LAYER) {
+					// Save previously selected layer
+					if(currentLayer != null) {
+						saveData(currentLayer);
+					}
+					currentLayer = Photoshop.app.activeDocument.activeLayer;		
+					updateTextBox(currentLayer);
+				}
+			}
+			
+			private function eventHandler(event:Event):void
+			{
+				if(event.type == "documentAfterActivate") {
+					currentLayer = Photoshop.app.activeDocument.activeLayer;
+					updateTextBox(currentLayer);
+				} else if(event.type == "documentAfterDeactivate") {
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="applyButton" right="12" bottom="14" label="Apply"
+			  click="applyButton_clickHandler(event)"/>
+	<s:TextArea id="metaTextArea" left="10" right="10" top="10" bottom="43"
+				change="metaTextArea_changeHandler(event)" fontFamily="Courier New"/>
+</s:WindowedApplication>

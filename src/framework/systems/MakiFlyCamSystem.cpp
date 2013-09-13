@@ -53,12 +53,12 @@ namespace Maki
 					Vector3 angles;
 					n.transComp->GetOrientation().ToEulerAngles(angles);			
 			
-					angles.z += dt * -c->GetFloat(InputState::Button_RightThumbX) * 2.0f;
+					angles.y += dt * -c->GetFloat(InputState::Button_RightThumbX) * 2.0f;
 					angles.x += dt * -c->GetFloat(InputState::Button_RightThumbY) * 2.0f;
-					if(angles.x > MAKI_PI - 0.001f) {
-						angles.x = MAKI_PI - 0.001f;
-					} else if(angles.x < 0.001f) {
-						angles.x = 0.001f;
+					if(angles.x > MAKI_PI/2.0f - 0.001f) {
+						angles.x = MAKI_PI/2.0f - 0.001f;
+					} else if(angles.x < -MAKI_PI/2.0f + 0.001f) {
+						angles.x = -MAKI_PI/2.0f + 0.001f;
 					}
 			
 					n.transComp->SetMatrix(pos, Quaternion(angles));

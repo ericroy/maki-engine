@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<gpc defaultLocale="en_US" version="4" keySequence="43" currentLocale="en_US">
+<gpc defaultLocale="en_US" version="4" keySequence="64" currentLocale="en_US">
   <product appid="PHSP" version="14" name="Photoshop CC"/>
   <target id="PHSP-14"/>
   <ConfiguratorPanel name="MakiMeta" width="220" height="220" minWidth="220" minHeight="120" init="doInit" close="doClose" persistent="false" extensionId="com.configurator.MakiMeta" extensionVersion="1.0.0" menuName="MakiMeta" flyoutMenuAbout="$$$/Configurator/FlyoutMenu/about" maxWidth="1000" maxHeight="1000">
-    <onInit><![CDATA[alert('Hello');]]></onInit>
+    <onInit><![CDATA[]]></onInit>
     <aboutBox><![CDATA[]]></aboutBox>
     <extensionDescription><![CDATA[]]></extensionDescription>
     <extensionAuthor><![CDATA[Maki]]></extensionAuthor>
@@ -16,18 +16,16 @@
         <param id="onClose"/>
       </function>
     </eventListeners>
-    <canvas _itemId="container_canvas" toolTip="$$$/Configurator/Container/Canvas/desc" label="$$$/Configurator/key_###28" width="200" height="200" cfgVisible="$$$/Configurator/Attribute/visible/value###29" top="0" bottom="0" left="0" right="0" x="10" y="10">
-      <text _itemId="widget_text" toolTip="$$$/Configurator/Widget/Text/desc###30" styleName="scopeTextArea" width="200" height="170" backgroundAlpha="0" cfgVisible="$$$/Configurator/Attribute/visible/value###31" fontFamily="Consolas" fontSize="10" fontWeight="normal" fontStyle="normal" textDecoration="none" textAlign="left" backgroundColor="0xffffff" borderColor="12040892" borderStyle="solid" top="10" bottom="40" left="10" right="10" x="10" y="10" borderThickness="1" dropShadowEnabled="false">
-        <text><![CDATA[$$$/Configurator/key_###32]]></text>
-      </text>
-      <ps_action _itemId="ps_actionscript_action" label="$$$/Configurator/ActionScript/Action/name###33" toolTip="$$$/Configurator/ActionScript/Action/desc###34" cfgVisible="$$$/Configurator/Attribute/visible/value###35" click="onClick" icon="ps_action" iconx2="ps_actionx2" overIcon="ps_action_D" overIconx2="ps_actionx2_D" actionSet="$$$/Configurator/key_###36" actionName="$$$/Configurator/key_###37" showIcon="true" iconWidth="18" iconHeight="18" bottom="10" right="10" x="153" y="189" width="57" height="21">
-        <eventListeners>
-          <function id="onClick" actionType="jsfunction" jsFunctionName="ps_invoke_action">
-            <param id="actionSet"/>
-            <param id="actionName"/>
-          </function>
-        </eventListeners>
-      </ps_action>
-    </canvas>
+    <text _itemId="widget_text" toolTip="$$$/Configurator/Widget/Text/desc" styleName="scopeTextArea" width="200" height="170" backgroundAlpha="0" cfgVisible="$$$/Configurator/Attribute/visible/value###60" fontSize="10" fontWeight="normal" fontStyle="normal" textDecoration="none" textAlign="left" backgroundColor="16777215" borderColor="12040892" borderStyle="solid" top="10" bottom="38" left="10" right="10" x="10" y="10">
+      <text><![CDATA[$$$/Configurator/key_###61]]></text>
+    </text>
+    <ps_script _itemId="ps_actionscript_script" label="$$$/Configurator/ActionScript/Script/name###62" toolTip="$$$/Configurator/ActionScript/Script/desc###63" cfgVisible="$$$/Configurator/Attribute/visible/value###64" click="onClick" icon="ps_script" iconx2="ps_scriptx2" overIcon="ps_script_r" showIcon="false" iconWidth="18" iconHeight="18" bottom="10" right="10" x="156" y="189">
+      <script><![CDATA[apply();]]></script>
+      <eventListeners>
+        <function id="onClick" actionType="jsfunction" jsFunctionName="ps_invoke_script">
+          <param id="script"/>
+        </function>
+      </eventListeners>
+    </ps_script>
   </ConfiguratorPanel>
 </gpc>

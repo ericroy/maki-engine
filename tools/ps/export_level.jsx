@@ -1,4 +1,5 @@
 ﻿var PAGE_SIZE = 512;
+var OVERLAP = 1;
 
 var SAVE_OPTS = new ExportOptionsSaveForWeb();
 SAVE_OPTS.format = SaveDocumentType.PNG;
@@ -64,8 +65,8 @@ function exportLevel(file) {
         var layerWidth = layerBounds[2] - layerBounds[0];
         var layerHeight = layerBounds[3] - layerBounds[1];
     
-        var xMax = Math.ceil(layerWidth / PAGE_SIZE);
-        var yMax = Math.ceil(layerHeight / PAGE_SIZE);
+        var xMax = Math.ceil(layerWidth / (PAGE_SIZE-OVERLAP));
+        var yMax = Math.ceil(layerHeight / (PAGE_SIZE-OVERLAP));
     
         buffer.write("layer", 0);
         buffer.write("name \"" + layer.name + "\"", 1);
@@ -74,15 +75,11 @@ function exportLevel(file) {
         buffer.write("pos " + layerBounds[0] + ", " + layerBounds[1], 1);
         buffer.write("tiles", 1);
         
-        if(li == 1) {
-            var kkkk = 0;
-        }
-        
         for(var x = 0; x < xMax; x++) {
             for(var y = 0; y < yMax; y++) {
                     
-                    var left = layerBounds[0] + x*PAGE_SIZE;
-                    var top = layerBounds[1] + y*PAGE_SIZE;
+                    var left = layerBounds[0] + x*(PAGE_SIZE-OVERLAP);
+                    var top = layerBounds[1] + y*(PAGE_SIZE-OVERLAP);
                     var right = Math.min(left+PAGE_SIZE, layerBounds[2]);
                     var bottom = Math.min(top+PAGE_SIZE, layerBounds[3]);
                     var w = right - left;

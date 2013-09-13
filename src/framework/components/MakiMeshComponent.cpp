@@ -141,10 +141,14 @@ namespace Maki
 				m.SetVertexAttributes(VertexFormat::AttributeFlag_Color|VertexFormat::AttributeFlag_TexCoord);
 				m.SetMeshFlag(Core::Mesh::MeshFlag_HasTranslucency);
 
+				// Draw a quad that is 1 pixel smaller than the sprite area would suggest.
+				// Shrink the uv's by a half a texel on each side.
+				// These two adjustments will let us put sprites next to eachother without
+				// having visible seams between them (as long as you don't use mipmaps).
 				float pw = rect.GetWidth();
-				float w = pw / PPU;
+				float w = (pw-1) / PPU;
 				float ph = rect.GetHeight();
-				float h = ph / PPU;
+				float h = (ph-1) / PPU;
 
 				float du = 0.5f / tex->width;
 				float dv = 0.5f / tex->height;
@@ -152,22 +156,22 @@ namespace Maki
 				verts[0].pos = Vector3(0.0f, 0.0f, 0.0f);
 				verts[0].color = 0xffffffff;
 				verts[0].uv.x = rect.left / tex->width + du;
-				verts[0].uv.y = rect.top / tex->height;
+				verts[0].uv.y = rect.top / tex->height + dv;
 
 				verts[1].pos = Vector3(0.0f, -h, 0.0f);
 				verts[1].color = 0xffffffff;
 				verts[1].uv.x = rect.left / tex->width + du;
-				verts[1].uv.y = (rect.top + ph) / tex->height;
+				verts[1].uv.y = (rect.top + ph) / tex->height - dv;
 
 				verts[2].pos = Vector3(w, -h, 0.0f);
 				verts[2].color = 0xffffffff;
 				verts[2].uv.x = (rect.left + pw) / tex->width - du;
-				verts[2].uv.y = (rect.top + ph) / tex->height;
+				verts[2].uv.y = (rect.top + ph) / tex->height - dv;
 
 				verts[3].pos = Vector3(w, 0.0f, 0.0f);
 				verts[3].color = 0xffffffff;
 				verts[3].uv.x = (rect.left + pw) / tex->width - du;
-				verts[3].uv.y = rect.top / tex->height;
+				verts[3].uv.y = rect.top / tex->height + dv;
 
 				m.PushVertexData(sizeof(verts), (char *)verts);
 
