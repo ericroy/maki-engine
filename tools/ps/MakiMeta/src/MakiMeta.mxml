@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
-					   xmlns:s="library://ns.adobe.com/flex/spark"
-					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   height="360" close="windowedapplication1_closeHandler(event)"
-					   creationComplete="windowedapplication1_creationCompleteHandler(event)"
-					   focusIn="windowedapplication1_focusInHandler(event)"
-					   focusOut="windowedapplication1_focusOutHandler(event)">
-	<s:layout>
-		<s:BasicLayout/>
-	</s:layout>
+<csxs:CSExtension xmlns:fx="http://ns.adobe.com/mxml/2009"
+				  xmlns:s="library://ns.adobe.com/flex/spark"
+				  xmlns:csxs="com.adobe.csxs.core.*"
+				  close="csextension1_closeHandler(event)"
+				  initialize="csextension1_initializeHandler(event)" showStatusBar="false">
+	
 	<fx:Script>
 		<![CDATA[
+		
 			import com.adobe.csawlib.photoshop.Photoshop;
+			import com.adobe.photoshop.*;
 			import com.adobe.csxs.core.CSInterface;
 			import com.adobe.photoshop.Layer;
 			import com.adobe.xmp.core.XMPMeta;
@@ -19,48 +17,71 @@
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
-			private const CURRENT_LAYER:int = Photoshop.app.charIDToTypeID("CrrL");
+			//private const CURRENT_LAYER:int = Photoshop.app.stringIDToTypeID("currentLayer");
+			//private const COPY:int = Photoshop.app.stringIDToTypeID("copy");
+			private const SELECT:int = Photoshop.app.stringIDToTypeID("selectionEnum");
+			private const NULL:int = Photoshop.app.stringIDToTypeID("null");
+			private const LAYER:int = Photoshop.app.stringIDToTypeID("layer");
 			
 			private var maki:Namespace = new Namespace("maki", "http://makiengine.com/");
 			private var currentLayer:Layer = null;			
-
-			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			
+			protected function csextension1_initializeHandler(event:FlexEvent):void
 			{
-				// We can provide comma delimited list of event ids if we want
-				CSInterface.instance.evalScript("PhotoshopRegisterEvent", CURRENT_LAYER);
+				CSInterface.instance.autoThemeColorChange = true;
 				
-				ExternalInterface.addCallback("PhotoshopCallback", photoshopCallback);
+				// We can provide comma delimited list of event ids if we want (as a string)
+				CSInterface.instance.evalScript("PhotoshopRegisterEvent", ""+SELECT);
+				ExternalInterface.addCallback("PhotoshopCallback"+extensionId, photoshopCallback);
 				
-				currentLayer = Photoshop.app.activeDocument.activeLayer;
+				if(Photoshop.app.activeDocument != null) {
+					currentLayer = Photoshop.app.activeDocument.activeLayer;
+				}
 				updateTextBox();
+			}
+			
+			protected function csextension1_closeHandler(event:Event):void
+			{
+				saveData(currentLayer);
 			}
 			
 			protected function applyButton_clickHandler(event:MouseEvent):void
 			{
-				Alert.show("Apply click");
 				saveData(currentLayer);
 			}
 			
-			
-			protected function windowedapplication1_closeHandler(event:Event):void
+			protected function metaTextArea_keyFocusChangeHandler(event:FocusEvent):void
 			{
-				saveData(currentLayer);
+				// Prevent tab presses from switching focus
+				event.preventDefault();
+				event.target.insertText("\t");
 			}
 			
-			protected function windowedapplication1_focusInHandler(event:FocusEvent):void
+			public function photoshopCallback(eventID:Number, descID:Number):void
 			{
+				Alert.show("photoshop event");
+				switch(eventID) {
+					case SELECT:
+						var desc:ActionDescriptor = new ActionDescriptor();
+						desc.fromID(descID);
+						var ref:ActionReference = desc.getReference(NULL);
+						if(ref.getDesiredClass() == LAYER) {
+							layerSelectionChanged();
+						}						
+						break;
+					default:
+						break;
+				}
 			}
 			
-			protected function windowedapplication1_focusOutHandler(event:FocusEvent):void
-			{
-			}
-						
 			private function updateTextBox():void
 			{
 				if(currentLayer != null) {
+					metaTextArea.enabled = true;
 					var xmp:XMPMeta = new XMPMeta(currentLayer.xmpMetadata.rawData);
 					metaTextArea.text = xmp.maki::data;
 				} else {
+					metaTextArea.enabled = false;
 					metaTextArea.text = "";
 				}
 			}
@@ -74,26 +95,26 @@
 				}
 			}
 			
-			public function photoshopCallback(param1:Number, param2:Number):void
+			private function layerSelectionChanged():void
 			{
-				Alert.show("photoshop event");
-				if(param1 == CURRENT_LAYER) {
-					// Save previously selected layer
-					if(currentLayer != null) {
-						saveData(currentLayer);
-					}
-					currentLayer = Photoshop.app.activeDocument.activeLayer;		
-					updateTextBox();
+				// Save previously selected layer
+				if(currentLayer != null) {
+					saveData(currentLayer);
 				}
+				
+				if(Photoshop.app.activeDocument != null) {
+					currentLayer = Photoshop.app.activeDocument.activeLayer;
+				}		
+				updateTextBox();
 			}
 
 		]]>
 	</fx:Script>
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	<s:Button id="applyButton" right="12" bottom="14" label="Apply"
-			  click="applyButton_clickHandler(event)"/>
-	<s:TextArea id="metaTextArea" left="10" right="10" top="10" bottom="43"
-				fontFamily="Courier New"/>
-</s:WindowedApplication>
+	<s:Group height="100%" width="100%">
+		<s:Button id="applyButton" right="16" bottom="2" label="Apply" click="applyButton_clickHandler(event)"/>
+		<s:TextArea id="metaTextArea" left="3" right="3" top="3" bottom="26"
+					fontFamily="Courier New" horizontalScrollPolicy="auto"
+					keyFocusChange="metaTextArea_keyFocusChangeHandler(event)" lineBreak="explicit"
+					verticalScrollPolicy="auto"/>
+	</s:Group>
+</csxs:CSExtension>

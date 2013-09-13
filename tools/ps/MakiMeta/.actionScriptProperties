@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="MakiMeta.mxml" projectUUID="e908b8a0-ff2c-4ae7-84f3-12892f6195f5" version="10">
-  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+<actionScriptProperties analytics="false" mainApplicationPath="MakiMeta.mxml" version="10">
+  <compiler additionalCompilerArguments="-locale en_US -includes=mx.managers.systemClasses.MarshallingSupport" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Extension Builder 4.5" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="false" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="false" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
-    <libraryPath defaultLinkType="0">
-      <libraryPathEntry kind="4" path="">
-        <excludedEntries>
-          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
-          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/core.swc" useDefaultLinkType="false"/>
-        </excludedEntries>
-      </libraryPathEntry>
-      <libraryPathEntry kind="1" linkType="1" path="libs"/>
+    <libraryPath defaultLinkType="1">
+      <libraryPathEntry kind="4" path=""/>
+      <libraryPathEntry kind="3" linkType="2" path="${CSLIBS}/2.0/4.5/release/apedelta.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/CSXSLibrary-3.0-sdk-4.5-public.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${CSLIBS}/2.0/4.5/release/csaw_photoshop.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/ps_host_adapter.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/XMPCore.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
-  <theme themeIsDefault="false" themeIsSDK="true" themeLocation="${SDK_THEMES_DIR}/samples/themes/zen"/>
+  <theme themeIsDefault="false" themeIsSDK="true" themeLocation="${SDK_THEMES_DIR}/samples/themes/spark_cobalt"/>
   <applications>
-    <application path="MakiMeta.mxml">
-      <airExcludes/>
-    </application>
+    <application path="MakiMeta.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
-  <buildTargets>
-    <buildTarget buildTargetName="default">
-      <airSettings airCertificatePath="" airTimestamp="true" anePathSet="false" version="1">
-        <airExcludes/>
-        <anePaths/>
-      </airSettings>
-      <actionScriptSettings version="1"/>
-    </buildTarget>
-  </buildTargets>
 </actionScriptProperties>

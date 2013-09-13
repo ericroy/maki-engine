@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<macromedia-extension id="com.makiengine.tools.MakiMeta" name="com.makiengine.tools.MakiMeta" requires-restart="true" version="1.0.0">
+  <author name="Unknown"/>
+  <description/>
+  <license-agreement/>
+  <products>
+    <product familyname="Photoshop" maxversion="14.9" primary="true" version="13.0"/>
+  </products>
+  <files>
+    <file destination="" file-type="CSXS" products="" source="MakiMeta.zxp"/>
+    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="win" products="Photoshop32" shared="true" source="csadapters-2.0/ps_host_adapter/win32/PSHostAdapter.8li"/>
+    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="win" products="Photoshop64" shared="true" source="csadapters-2.0/ps_host_adapter/win64/PSHostAdapter.8li"/>
+    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="mac" products="Photoshop" shared="true" source="csadapters-2.0/ps_host_adapter/mac/PSHostAdapter.plugin"/>
+    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="win" products="Photoshop32" shared="true" source="csadapters-3.0/ps_host_adapter/win32/PSHostAdapter.8li"/>
+    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="win" products="Photoshop64" shared="true" source="csadapters-3.0/ps_host_adapter/win64/PSHostAdapter.8li"/>
+    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="mac" products="Photoshop" shared="true" source="csadapters-3.0/ps_host_adapter/mac/PSHostAdapter.plugin"/>
+  </files>
+</macromedia-extension>
