@@ -8,11 +8,5 @@
   </products>
   <files>
     <file destination="" file-type="CSXS" products="" source="MakiMeta.zxp"/>
-    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="win" products="Photoshop32" shared="true" source="csadapters-2.0/ps_host_adapter/win32/PSHostAdapter.8li"/>
-    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="win" products="Photoshop64" shared="true" source="csadapters-2.0/ps_host_adapter/win64/PSHostAdapter.8li"/>
-    <file destination="$automate" maxVersion="13.9" minVersion="13.0" platform="mac" products="Photoshop" shared="true" source="csadapters-2.0/ps_host_adapter/mac/PSHostAdapter.plugin"/>
-    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="win" products="Photoshop32" shared="true" source="csadapters-3.0/ps_host_adapter/win32/PSHostAdapter.8li"/>
-    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="win" products="Photoshop64" shared="true" source="csadapters-3.0/ps_host_adapter/win64/PSHostAdapter.8li"/>
-    <file destination="$automate" maxVersion="14.9" minVersion="14.0" platform="mac" products="Photoshop" shared="true" source="csadapters-3.0/ps_host_adapter/mac/PSHostAdapter.plugin"/>
-  </files>
+    </files>
 </macromedia-extension>

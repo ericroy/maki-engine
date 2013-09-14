@@ -3,36 +3,42 @@
 				  xmlns:s="library://ns.adobe.com/flex/spark"
 				  xmlns:csxs="com.adobe.csxs.core.*"
 				  close="csextension1_closeHandler(event)"
-				  initialize="csextension1_initializeHandler(event)" showStatusBar="false">
+				  creationComplete="csextension1_creationCompleteHandler(event)"
+				  showStatusBar="false">
 	
 	<fx:Script>
 		<![CDATA[
-		
 			import com.adobe.csawlib.photoshop.Photoshop;
-			import com.adobe.photoshop.*;
 			import com.adobe.csxs.core.CSInterface;
-			import com.adobe.photoshop.Layer;
+			import com.adobe.csxs.core.CSXSInterface;
+			import com.adobe.photoshop.*;
 			import com.adobe.xmp.core.XMPMeta;
 			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
-			//private const CURRENT_LAYER:int = Photoshop.app.stringIDToTypeID("currentLayer");
-			//private const COPY:int = Photoshop.app.stringIDToTypeID("copy");
-			private const SELECT:int = Photoshop.app.stringIDToTypeID("selectionEnum");
+			private const SELECT:int = Photoshop.app.stringIDToTypeID("select");
+			private const SELECT_STR:String = SELECT.toString();
+			
 			private const NULL:int = Photoshop.app.stringIDToTypeID("null");
 			private const LAYER:int = Photoshop.app.stringIDToTypeID("layer");
 			
 			private var maki:Namespace = new Namespace("maki", "http://makiengine.com/");
 			private var currentLayer:Layer = null;			
 			
-			protected function csextension1_initializeHandler(event:FlexEvent):void
+			protected function csextension1_creationCompleteHandler(event:FlexEvent):void
 			{
 				CSInterface.instance.autoThemeColorChange = true;
 				
-				// We can provide comma delimited list of event ids if we want (as a string)
-				CSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT.toString());
-				ExternalInterface.addCallback("PhotoshopCallback"+root.loaderInfo.parameters["extID"].toString(), photoshopCallback);
+				// EXTRA SPECIAL NOTE OF PARAMOUNT IMPORTANCE:
+				// CSXSInterface is deprecated, but evalScript("PhotoshopRegisterEvent"... doesn't work
+				// with the newer CSInterface!
+				try {
+					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT.toString());
+					ExternalInterface.addCallback("PhotoshopCallback" + extensionId, photoshopCallback);
+				} catch(ex) {
+					Alert.show(ex);
+				}
 				
 				if(Photoshop.app.activeDocument != null) {
 					currentLayer = Photoshop.app.activeDocument.activeLayer;
@@ -57,15 +63,15 @@
 				event.target.insertText("\t");
 			}
 			
-			public function photoshopCallback(eventID:Number, descID:Number):void
+			private function photoshopCallback(eventID:Number, descID:Number):void
 			{
-				Alert.show("photoshop event");
 				switch(eventID) {
 					case SELECT:
-						var desc:ActionDescriptor = new ActionDescriptor();
-						desc.fromID(descID);
-						var ref:ActionReference = desc.getReference(NULL);
-						if(ref.getDesiredClass() == LAYER) {
+						//Alert.show("descID: "+descID);
+						var actionDesc:ActionDescriptor = new ActionDescriptor();
+						var ref:ActionReference = actionDesc.getReference(NULL);
+						var cls:int = ref.getDesiredClass();
+						if(cls == LAYER) {
 							layerSelectionChanged();
 						}						
 						break;
@@ -79,7 +85,12 @@
 				if(currentLayer != null) {
 					metaTextArea.enabled = true;
 					var xmp:XMPMeta = new XMPMeta(currentLayer.xmpMetadata.rawData);
-					metaTextArea.text = xmp.maki::data;
+					var s:String = xmp.maki::data;
+					if(s != null) {
+						metaTextArea.text = s;
+					} else {
+						metaTextArea.text = "";
+					}
 				} else {
 					metaTextArea.enabled = false;
 					metaTextArea.text = "";
@@ -107,7 +118,7 @@
 				}		
 				updateTextBox();
 			}
-
+			
 		]]>
 	</fx:Script>
 	<s:Group height="100%" width="100%">

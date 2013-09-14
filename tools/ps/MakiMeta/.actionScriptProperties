@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="MakiMeta.mxml" version="10">
+<actionScriptProperties analytics="false" mainApplicationPath="MakiMeta.mxml" projectUUID="fe045db6-391d-49c5-b8b8-2477ef452089" version="10">
   <compiler additionalCompilerArguments="-locale en_US -includes=mx.managers.systemClasses.MarshallingSupport" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Extension Builder 4.5" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="false" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="false" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
       <libraryPathEntry kind="4" path=""/>
-      <libraryPathEntry kind="3" linkType="2" path="${CSLIBS}/2.0/4.5/release/apedelta.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="2" path="${CSLIBS}/1.0/3.4/release/apedelta.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/CSXSLibrary-3.0-sdk-4.5-public.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${CSLIBS}/2.0/4.5/release/csaw_photoshop.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/ps_host_adapter.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/XMPCore.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
