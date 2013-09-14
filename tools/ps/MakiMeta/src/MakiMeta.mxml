@@ -13,12 +13,14 @@
 			import com.adobe.csxs.core.CSXSInterface;
 			import com.adobe.photoshop.*;
 			import com.adobe.xmp.core.XMPMeta;
+			import com.adobe.xmp.core.XMPProperty;
 			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
 			private const SELECT:int = Photoshop.app.stringIDToTypeID("select");
-			private const SELECT_STR:String = SELECT.toString();
+			private const NEW:int = Photoshop.app.stringIDToTypeID("new");
+			private const DELETE:int = Photoshop.app.stringIDToTypeID("delete");
 			
 			private const NULL:int = Photoshop.app.stringIDToTypeID("null");
 			private const LAYER:int = Photoshop.app.stringIDToTypeID("layer");
@@ -34,9 +36,9 @@
 				// CSXSInterface is deprecated, but evalScript("PhotoshopRegisterEvent"... doesn't work
 				// with the newer CSInterface!
 				try {
-					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT.toString());
+					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT+", "+NEW+", "+DELETE);
 					ExternalInterface.addCallback("PhotoshopCallback" + extensionId, photoshopCallback);
-				} catch(ex) {
+				} catch(ex:*) {
 					Alert.show(ex);
 				}
 				
@@ -65,15 +67,48 @@
 			
 			private function photoshopCallback(eventID:Number, descID:Number):void
 			{
+				var actionDesc:ActionDescriptor = new ActionDescriptor();
+				var ref:ActionReference;
+				var cls:int;
+				
 				switch(eventID) {
 					case SELECT:
-						//Alert.show("descID: "+descID);
-						var actionDesc:ActionDescriptor = new ActionDescriptor();
-						var ref:ActionReference = actionDesc.getReference(NULL);
-						var cls:int = ref.getDesiredClass();
-						if(cls == LAYER) {
-							layerSelectionChanged();
-						}						
+						try {
+							actionDesc.fromID(descID);
+							ref = actionDesc.getReference(NULL);
+							cls = ref.getDesiredClass();
+							if(cls == LAYER) {
+								layerSelectionChanged();
+							}
+						} catch(ex:*) {
+							Alert.show(ex, "Error SELECT callback");
+						}
+						break;
+					case NEW:
+						Alert("NEW");
+						try {
+							actionDesc.fromID(descID);
+							ref = actionDesc.getReference(NULL);
+							cls = ref.getDesiredClass();
+							if(cls == LAYER) {
+								layerSelectionChanged();
+							}
+						} catch(ex:*) {
+							Alert.show(ex, "Error in NEW callback");
+						}
+						break;
+					case DELETE:
+						Alert("DELETE");
+						try {
+							actionDesc.fromID(descID);
+							ref = actionDesc.getReference(NULL);
+							cls = ref.getDesiredClass();
+							if(cls == LAYER) {
+								layerSelectionChanged();
+							}
+						} catch(ex:*) {
+							Alert.show(ex, "Error in DELETE callback");
+						}
 						break;
 					default:
 						break;
@@ -85,9 +120,9 @@
 				if(currentLayer != null) {
 					metaTextArea.enabled = true;
 					var xmp:XMPMeta = new XMPMeta(currentLayer.xmpMetadata.rawData);
-					var s:String = xmp.maki::data;
-					if(s != null) {
-						metaTextArea.text = s;
+					var prop:XMPProperty = xmp.maki::data;
+					if(prop.exists()) {
+						metaTextArea.text = prop.value;
 					} else {
 						metaTextArea.text = "";
 					}
@@ -99,10 +134,14 @@
 			
 			private function saveData(layer:Layer):void
 			{
-				if(layer != null) {
-					var xmp:XMPMeta = new XMPMeta(layer.xmpMetadata.rawData);
-					xmp.maki::data = metaTextArea.text;
-					layer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
+				try {
+					if(layer != null) {
+						var xmp:XMPMeta = new XMPMeta(layer.xmpMetadata.rawData);
+						xmp.maki::data = metaTextArea.text;
+						layer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
+					}
+				} catch(ex:*) {
+					Alert.show(ex);
 				}
 			}
 			
@@ -113,9 +152,12 @@
 					saveData(currentLayer);
 				}
 				
+				// Get a ref to the now selected layer
 				if(Photoshop.app.activeDocument != null) {
 					currentLayer = Photoshop.app.activeDocument.activeLayer;
-				}		
+				}
+				
+				// Show contents of current layer in textbox
 				updateTextBox();
 			}
 			
