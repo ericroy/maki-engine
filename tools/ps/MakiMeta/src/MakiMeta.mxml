@@ -12,18 +12,18 @@
 			import com.adobe.csxs.core.CSInterface;
 			import com.adobe.csxs.core.CSXSInterface;
 			import com.adobe.photoshop.*;
-			import com.adobe.xmp.core.XMPMeta;
-			import com.adobe.xmp.core.XMPProperty;
+			import com.adobe.xmp.core.*;
 			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
 			private const SELECT:int = Photoshop.app.stringIDToTypeID("select");
-			private const NEW:int = Photoshop.app.stringIDToTypeID("new");
+			private const MAKE:int = Photoshop.app.stringIDToTypeID("make");
 			private const DELETE:int = Photoshop.app.stringIDToTypeID("delete");
 			
 			private const NULL:int = Photoshop.app.stringIDToTypeID("null");
 			private const LAYER:int = Photoshop.app.stringIDToTypeID("layer");
+			private const ORDINAL:int = Photoshop.app.stringIDToTypeID("ordinal");
 			
 			private var maki:Namespace = new Namespace("maki", "http://makiengine.com/");
 			private var currentLayer:Layer = null;			
@@ -36,7 +36,9 @@
 				// CSXSInterface is deprecated, but evalScript("PhotoshopRegisterEvent"... doesn't work
 				// with the newer CSInterface!
 				try {
-					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT+", "+NEW+", "+DELETE);
+					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", SELECT.toString());
+					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", MAKE.toString());
+					CSXSInterface.instance.evalScript("PhotoshopRegisterEvent", DELETE.toString());
 					ExternalInterface.addCallback("PhotoshopCallback" + extensionId, photoshopCallback);
 				} catch(ex:*) {
 					Alert.show(ex);
@@ -84,8 +86,7 @@
 							Alert.show(ex, "Error SELECT callback");
 						}
 						break;
-					case NEW:
-						Alert("NEW");
+					case MAKE:
 						try {
 							actionDesc.fromID(descID);
 							ref = actionDesc.getReference(NULL);
@@ -94,20 +95,23 @@
 								layerSelectionChanged();
 							}
 						} catch(ex:*) {
-							Alert.show(ex, "Error in NEW callback");
+							Alert.show(ex, "Error in MAKE callback");
 						}
 						break;
 					case DELETE:
-						Alert("DELETE");
-						try {
-							actionDesc.fromID(descID);
-							ref = actionDesc.getReference(NULL);
-							cls = ref.getDesiredClass();
-							if(cls == LAYER) {
-								layerSelectionChanged();
+						actionDesc.fromID(descID);
+						ref = actionDesc.getReference(NULL);
+						cls = ref.getDesiredClass();
+						if(cls == LAYER) {
+							if(ref.getEnumeratedType() == ORDINAL) {
+								// This means we are deleting the currently selected layer
+								currentLayer = null;
 							}
-						} catch(ex:*) {
-							Alert.show(ex, "Error in DELETE callback");
+							try {
+								layerSelectionChanged();
+							} catch(ex:*) {
+								Alert.show(ex, "Error in DELETE callback");
+							}
 						}
 						break;
 					default:
@@ -120,12 +124,19 @@
 				if(currentLayer != null) {
 					metaTextArea.enabled = true;
 					var xmp:XMPMeta = new XMPMeta(currentLayer.xmpMetadata.rawData);
-					var prop:XMPProperty = xmp.maki::data;
-					if(prop.exists()) {
-						metaTextArea.text = prop.value;
-					} else {
+					
+					try {
+						var prop:XMPProperty = xmp.maki::data;
+						if(prop.exists()) {
+							metaTextArea.text = prop.value;
+						} else {
+							metaTextArea.text = "";
+						}
+					} catch(ex) {
+						// Catch type coersion errors (sometimes we get an XMPStruct instead
+						// of an XMPProperty)
 						metaTextArea.text = "";
-					}
+					}					
 				} else {
 					metaTextArea.enabled = false;
 					metaTextArea.text = "";
