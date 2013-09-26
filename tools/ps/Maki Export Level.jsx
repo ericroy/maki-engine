@@ -1,10 +1,26 @@
 ﻿var PAGE_SIZE = 512;
 var OVERLAP = 1;
 
-var SAVE_OPTS = new ExportOptionsSaveForWeb();
+var SAVE_OPTS = new ExportOptionsSaveForWeb;
 SAVE_OPTS.format = SaveDocumentType.PNG;
 SAVE_OPTS.PNG8 = false;
 SAVE_OPTS.quality = 100;
+
+function trim(s) {
+    return s.replace(/^\s+/, '').replace(/\s+$/, '');
+}
+
+function loadXMPLibrary() {
+    if(!ExternalObject.AdobeXMPScript) {
+        try {
+            ExternalObject.AdobeXMPScript = new ExternalObject('lib:AdobeXMPScript');
+        } catch (e) {
+            alert("Can't load XMP Script Library");
+            return false;
+        }
+    }
+    return true;
+}
 
 function nextPowerOf2(n) {
     return Math.pow(2, Math.ceil(Math.log(n) / Math.LN2));
@@ -70,6 +86,20 @@ function exportLevel(file) {
     
         buffer.write("layer", 0);
         buffer.write("name \"" + layer.name + "\"", 1);
+        
+        // Parse metadata
+        try {
+            xmp = new XMPMeta(layer.xmpMetadata.rawData);
+        } catch(e) {
+            xmp = new XMPMeta();
+        }
+        //var metaDoc = xmp.maki::data;
+        buffer.write("meta", 1);
+        //buffer.write(metaDoc, 2);
+        var metaDoc = trim(xmp.getProperty("http://makiengine.com/", "data", XMPConst.STRING).toString());
+        if(metaDoc.length > 0) {
+            buffer.write(metaDoc, 2);
+        }      
         
         // This layer rect is relative to the stage
         buffer.write("pos " + layerBounds[0] + ", " + layerBounds[1], 1);
@@ -161,6 +191,7 @@ function exportLevel(file) {
 
 
 
+loadXMPLibrary();
 var metaFile = File.saveDialog("Save level as", "Maki Level:*.mphot");
 if(metaFile == null) {
     "User cancelled";
