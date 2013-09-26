@@ -18,6 +18,8 @@ FILE_NOTIFY_CHANGE_LAST_WRITE = 0x00000010
 
 MANAGE_SCRIPT = os.path.expandvars('$MAKI_DIR/tools/manage.py')
 
+IGNORE_EXTENSIONS = ('', '.tmp')
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -115,7 +117,7 @@ class Observer(threading.Thread):
                     for file in files_changed:    
                         # Created or updated
                         path = util.clean_path(os.path.join(self._path, file))
-                        if os.path.isfile(path):
+                        if os.path.isfile(path) and os.path.splitext(path)[1].lower() not in IGNORE_EXTENSIONS:
                             self._callback(path)
         finally:
             win32file.CancelIo(self._handle)
@@ -131,7 +133,7 @@ class Observer(threading.Thread):
 def _builder(path):
     if os.path.isdir(path):
         return
-    if os.path.splitext(path)[1].lower() == '.tmp':
+    if os.path.splitext(path)[1].lower() in IGNORE_EXTENSIONS:
         return
     cmd = ['python', MANAGE_SCRIPT, 'build', path]
     if CONFIG_PATH is not None:

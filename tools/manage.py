@@ -4,7 +4,7 @@ import glob
 import shutil
 import traceback
 from optparse import OptionParser
-from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers, exporters
+from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers, exporters, install_scripts
 
 def _watch(*args):
     watch.watch_forever()
@@ -85,6 +85,9 @@ def _export_skeleton(*args):
     assert len(args) >= 2, 'export_skeleton command expects src and dst files'
     exporters.export_skeleton(args[0], args[1], *args[2:])
 
+def _install_scripts(*args):
+    install_scripts.install_scripts()
+
 COMMANDS = {
     'watch': _watch,
     'build': _build,
@@ -96,6 +99,7 @@ COMMANDS = {
     'export_scene': _export_scene,
     'export_skeleton': _export_skeleton,
     'export_animation': _export_animation,
+    'install_scripts': _install_scripts,
 }
 
 def main(command, *args, **kwargs):
