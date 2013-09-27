@@ -11,46 +11,51 @@ namespace Maki
 
 			class Meta : public Component
 			{
+			public:
 				class Property
 				{
 				public:
 					enum Type
 					{
+						Type_Undefined = -1,
 						Type_String = 0,
 						Type_Number = 1
 					};
 
 				public:
-					Property() : type(Type_String) { key[0] = stringValue[0] = 0; }
+					Property() : type(Type_String) { name[0] = value.string[0] = 0; }
 					
-					inline void Set(float f)
+					inline void SetName(const char *name)
 					{
-						floatValue = f;
-						type = Type_Number;
+						if(strlen(name) >= sizeof(this->name)) {
+							Console::Warning("Meta variable name is too long: %s", name);
+						}
+						strncpy(this->name, name, sizeof(this->name));
 					}
 
-					inline void Set(const char *s)
+					inline void SetValue(float v) { value.number = v; type = Type_Number; }
+
+					inline void SetValue(const char *v)
 					{
-#if _DEBUG
-						if(strlen(s) >= sizeof(stringValue)) {
-							Console::Warning("Meta property value exceeded buffer size: %s", key);
+						if(strlen(v) >= sizeof(value.string)) {
+							Console::Warning("Meta property value exceeded buffer size: %s", name);
 							return;
 						}
-#endif
-						strncpy(stringValue, s, sizeof(stringValue));
+						strncpy(value.string, v, sizeof(value.string));
 						type = Type_String;
 					}
 
 				public:
 					Type type;
-					char key[16];
+					char name[16];
 					union {
-						char stringValue[16];
-						float floatValue;
-					};
+						char string[16];
+						float number;
+					} value;
 				};
 
-			public:
+				template<class T> struct PropertyTraits {};
+
 				static const Type TYPE = Type_Meta;
 				static const TypeFlag DEPENDENCIES = 0;
 
@@ -60,35 +65,72 @@ namespace Maki
 				bool Init(Document::Node *props);
 				Meta *Clone(bool prototype);
 
-				inline const char *GetString(const char *name, const char *defaultValue = nullptr) const {
-					const uint32 count = properties.size();
-					for(uint32 i = 0; i < count; i++) {
-						if(strcmp(properties[i].key, name) == 0) {
-							if(properties[i].type == Property::Type_String) {
-								return properties[i].stringValue;
+				template<class T>
+				inline bool GetProperty(const char *name, T *valueOut = nullptr) {
+					Property *prop = FindProperty(name);
+					if(prop != nullptr) {
+						if(prop->type == PropertyTraits<T>::PROPERTY_TYPE) {
+							if(valueOut != nullptr) {
+								*valueOut = PropertyTraits<T>::ToValueType(*reinterpret_cast<PropertyTraits<T>::ELEMENT_TYPE *>(&prop->value));
 							}
-							return defaultValue;
+							return true;
 						}
 					}
-					return defaultValue;
+					return false;
 				}
 
-				static_assert(std::numeric_limits<float>::has_quiet_NaN, "Doesn't have QNAN");
-				inline float GetNumber(const char *name, float defaultValue = std::numeric_limits<float>::quiet_NaN()) const {
+				template<class T>
+				inline void SetProperty(const char *name, T value) {
+					Property *prop = FindProperty(name);
+					if(prop != nullptr) {
+						prop->SetValue(value);
+					} else {
+						Property p;
+						p.SetName(name);
+						p.SetValue(value);
+						properties.push_back(p);
+					}
+				}
+
+				inline void DeleteProperty(const char *name) {
 					const uint32 count = properties.size();
 					for(uint32 i = 0; i < count; i++) {
-						if(strcmp(properties[i].key, name) == 0) {
-							if(properties[i].type == Property::Type_Number) {
-								return properties[i].floatValue;
-							}
-							return defaultValue;
+						if(strcmp(properties[i].name, name) == 0) {
+							properties.erase(properties.begin() + i);
+							return;
 						}
 					}
-					return defaultValue;
+				}
+
+				inline Property *FindProperty(const char *name) {
+					const uint32 count = properties.size();
+					for(uint32 i = 0; i < count; i++) {
+						if(strcmp(properties[i].name, name) == 0) {
+							return &properties[i];
+						}
+					}
+					return nullptr;
 				}
 
 			public:
 				std::vector<Property> properties;
+			};
+
+
+			template<> struct Meta::PropertyTraits<float>
+			{
+				static const Property::Type PROPERTY_TYPE = Property::Type_Number;
+				typedef float ELEMENT_TYPE;
+				typedef float VALUE_TYPE;
+				static VALUE_TYPE ToValueType(ELEMENT_TYPE &p) { return p; }
+			};
+
+			template<> struct Meta::PropertyTraits<const char *>
+			{
+				static const Property::Type PROPERTY_TYPE = Property::Type_String;
+				typedef char ELEMENT_TYPE;
+				typedef const char *VALUE_TYPE;
+				static VALUE_TYPE ToValueType(ELEMENT_TYPE &p) { return &p; }
 			};
 
 

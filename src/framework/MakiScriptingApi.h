@@ -14,12 +14,6 @@ namespace Maki
 		class ScriptingApi
 		{
 		private:
-			enum MetaType
-			{
-				MetaType_String = 0,
-				MetaType_Number
-			};
-
 			struct  ApiFunction { const char *name; lua_CFunction func; };
 
 		public:
@@ -29,7 +23,8 @@ namespace Maki
 			static int32 PostMessage(lua_State *state);
 			static int32 GetMessage(lua_State *state);
 			static int32 GetEntity(lua_State *state);
-			static int32 GetMeta(lua_State *state);
+			static int32 GetProperty(lua_State *state);
+			static int32 SetProperty(lua_State *state);
 			static int32 SetMessageHandler(lua_State *state);
 
 		private:

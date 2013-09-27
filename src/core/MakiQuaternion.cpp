@@ -143,6 +143,61 @@ namespace Maki
 			z = cx*cy*sz - sx*sy*cz;
 		}
 
+
+		/*
+		http://www.blitzbasic.com/Community/posts.php?topic=24769
+		; -------------------------------------------------------------------------------------------------------------------
+		; This function converts a quaternion to a set of Euler angles.
+		;
+		;
+		; Parameters:
+		;
+		;	Qx#, Qy#, Qz#, Qw#:
+		;		Quaternion to convert to Euler angles.
+		;
+		; -------------------------------------------------------------------------------------------------------------------
+		Function QuatToEuler(Qx#, Qy#, Qz#, Qw#)
+
+			Qx2# = Qx# * 2.0
+			Qy2# = Qy# * 2.0
+			Qz2# = Qz# * 2.0
+	
+			Sin_T# = (Qy2# * Qw#) - (Qx2# * Qz#)
+			Cos_T# = 1.0 - (Sin_T# * Sin_T#)
+
+
+			If Abs(Cos_T#) > QuatToEuler_Epsilon#
+				Cos_T# = Sqr(Cos_T#)	
+			Else
+				Cos_T# = 0
+			EndIf
+		
+		
+			If Abs(Cos_T#) > QuatToEuler_Epsilon#
+
+				Sin_V# = (      (Qy2# * Qz#) + (Qx2# * Qw#)) / Cos_T#
+				Cos_V# = (1.0 - (Qx2# * Qx#) - (Qy2# * Qy#)) / Cos_T#
+				Sin_F# = (      (Qx2# * Qy#) + (Qz2# * Qw#)) / Cos_T#
+				Cos_F# = (1.0 - (Qy2# * Qy#) - (Qz2# * Qz#)) / Cos_T#
+
+			Else
+
+				Sin_V# =       (Qx2# * Qw#) - (Qy2# * Qz#)
+				Cos_V# = 1.0 - (Qx2# * Qx#) - (Qz2# * Qz#)
+				Sin_F# = 0
+				Cos_F# = 1.0
+
+			EndIf
+
+			QuatLib_Pitch# =  ATan2(Sin_T#, Cos_T#)
+			QuatLib_Yaw#   =  ATan2(Sin_F#, Cos_F#)
+			QuatLib_Roll#  = -ATan2(Sin_V#, Cos_V#)
+
+		End Function
+
+		*/
+
+		
 		void Quaternion::ToEulerAngles(Vector3 &angles) const
 		{
 			// Adapted from code found here:
@@ -171,6 +226,7 @@ namespace Maki
 				angles.z = atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (yy + zz) );
 			}
 		}
+		
 
 		void Quaternion::FromAngleAxis(float theta, const Vector3 &axis)
 		{

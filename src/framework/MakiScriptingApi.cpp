@@ -20,7 +20,8 @@ namespace Maki
 			{ "post_message", &PostMessage },
 			{ "get_message", &GetMessage },
 			{ "get_entity", &GetEntity },
-			{ "get_meta", &GetMeta },
+			{ "get_property", &GetProperty },
+			{ "set_property", &SetProperty },
 			{ "set_message_handler", &SetMessageHandler },
 		};
 		
@@ -110,52 +111,73 @@ namespace Maki
 			return 1;
 		}
 
-		int32 ScriptingApi::GetMeta(lua_State *state)
+		int32 ScriptingApi::GetProperty(lua_State *state)
+		{
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -3);			
+			uint64 uid = static_cast<uint64>(lua_tonumber(state, -2));
+			const char *name = lua_tostring(state, -1);
+
+			Components::Meta::Property *prop = nullptr;
+
+			Entity *entity = EntityPool::Get()->GetEntity(uid);
+			if(entity != nullptr) {
+				Components::Meta *meta = entity->Get<Components::Meta>();
+				if(meta != nullptr) {
+					prop = meta->FindProperty(name);
+				}
+			}
+		
+			lua_pop(state, 3);
+			assert(lua_gettop(state) == 0);
+
+			if(prop != nullptr) {
+				if(prop->type == Components::Meta::Property::Type_String) {
+					lua_pushstring(state, prop->value.string);
+					return 1;
+				} else if(prop->type == Components::Meta::Property::Type_Number) {
+					lua_pushnumber(state, prop->value.number);
+					return 1;
+				}
+			}
+
+			lua_pushnil(state);
+			return 1;
+		}
+
+		int32 ScriptingApi::SetProperty(lua_State *state)
 		{
 			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -4);			
 			uint64 uid = static_cast<uint64>(lua_tonumber(state, -3));
 			const char *name = lua_tostring(state, -2);
-			int32 metaValueType = lua_tointeger(state, -1);
-
-			Components::Meta *meta = nullptr;
-
-			static_assert(std::numeric_limits<float>::has_quiet_NaN, "Doesn't have QNAN");
-			float floatValue = std::numeric_limits<float>::quiet_NaN();
-			const char *stringValue = nullptr;
-
+			
 			Entity *entity = EntityPool::Get()->GetEntity(uid);
 			if(entity != nullptr) {
-				meta = entity->Get<Components::Meta>();
+				Components::Meta *meta = entity->Get<Components::Meta>();
 				if(meta != nullptr) {
-					if(metaValueType == MetaType_String) {
-						stringValue = meta->GetString(name);
+					if(lua_isstring(state, -1)) {
+						meta->SetProperty(name, lua_tostring(state, -1));
+					} else if(lua_isnumber(state, -1)) {
+						meta->SetProperty(name, (float)lua_tonumber(state, -1));
+					} else if(lua_isnil(state, -1)) {
+						meta->DeleteProperty(name);
 					} else {
-						floatValue = meta->GetNumber(name);
+						lua_pushstring(state, "Cannot set meta property, invalid lua type");
+						lua_error(state);
+						return 0;
 					}
+				} else {
+					char buffer[128];
+					sprintf(buffer, "Cannot set meta property, entity had no meta component: %llu", uid);
+					lua_pushstring(state, buffer);
+					lua_error(state);
+					return 0;
 				}
 			}
-		
+
 			lua_pop(state, 4);
 			assert(lua_gettop(state) == 0);
 
-			switch(metaValueType) {
-			case MetaType_String:
-				if(stringValue != nullptr) {
-					lua_pushstring(state, stringValue);
-				} else {
-					lua_pushnil(state);
-				}
-				break;
-			case MetaType_Number:
-				if(floatValue != std::numeric_limits<float>::quiet_NaN()) {
-					lua_pushnumber(state, floatValue);
-				} else {
-					lua_pushnil(state);
-				}
-				break;
-			default:
-				lua_pushnil(state);
-			}
+			lua_pushnil(state);
 			return 1;
 		}
 

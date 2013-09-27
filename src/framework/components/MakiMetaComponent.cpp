@@ -27,29 +27,19 @@ namespace Maki
 						Console::Error("Meta variable must have exactly one value: %s", n->value);
 						return false;
 					}
-					const char *key = n->value;
+					const char *name = n->value;
 					const char *value = n->children[0]->value;
 
 					Property prop;
-					if(strlen(key) >= sizeof(prop.key)) {
-						Console::Error("Meta variable name is too long: %s", key);
-						return false;
-					}
-					strncpy(prop.key, key, sizeof(prop.key));
-
+					prop.SetName(name);
+					
 					// Load value.  If it can be converted to a float, then assume that it is, otherwise treat it as a string
 					char *end;
 					double f = strtod(value, &end);
 					if(*end == '\0') {
-						prop.floatValue = (float)f;
-						prop.type = Property::Type_Number;
+						prop.SetValue((float)f);
 					} else {
-						if(strlen(value) >= sizeof(prop.stringValue)) {
-							Console::Error("Meta variable value is too long: %s", value);
-							return false;
-						}
-						strncpy(prop.stringValue, value, sizeof(prop.stringValue));
-						prop.type = Property::Type_String;
+						prop.SetValue(value);
 					}
 					properties.push_back(prop);
 				}
