@@ -3,9 +3,11 @@
 #include "framework/MakiScriptingApi.h"
 #include "framework/MakiSystem.h"
 #include "framework/MakiMessageHub.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/systems/MakiScriptingSystem.h"
 #include "framework/systems/MakiNameSystem.h"
 #include "framework/components/MakiScriptComponent.h"
+#include "framework/components/MakiMetaComponent.h"
 
 namespace Maki
 {
@@ -18,6 +20,7 @@ namespace Maki
 			{ "post_message", &PostMessage },
 			{ "get_message", &GetMessage },
 			{ "get_entity", &GetEntity },
+			{ "get_meta", &GetMeta },
 			{ "set_message_handler", &SetMessageHandler },
 		};
 		
@@ -104,6 +107,55 @@ namespace Maki
 			} else {
 				lua_pushnil(state);
 			}			
+			return 1;
+		}
+
+		int32 ScriptingApi::GetMeta(lua_State *state)
+		{
+			ScriptingSystem::Node *context = (ScriptingSystem::Node *)lua_topointer(state, -4);			
+			uint64 uid = static_cast<uint64>(lua_tonumber(state, -3));
+			const char *name = lua_tostring(state, -2);
+			int32 metaValueType = lua_tointeger(state, -1);
+
+			Components::Meta *meta = nullptr;
+
+			static_assert(std::numeric_limits<float>::has_quiet_NaN, "Doesn't have QNAN");
+			float floatValue = std::numeric_limits<float>::quiet_NaN();
+			const char *stringValue = nullptr;
+
+			Entity *entity = EntityPool::Get()->GetEntity(uid);
+			if(entity != nullptr) {
+				meta = entity->Get<Components::Meta>();
+				if(meta != nullptr) {
+					if(metaValueType == MetaType_String) {
+						stringValue = meta->GetString(name);
+					} else {
+						floatValue = meta->GetNumber(name);
+					}
+				}
+			}
+		
+			lua_pop(state, 4);
+			assert(lua_gettop(state) == 0);
+
+			switch(metaValueType) {
+			case MetaType_String:
+				if(stringValue != nullptr) {
+					lua_pushstring(state, stringValue);
+				} else {
+					lua_pushnil(state);
+				}
+				break;
+			case MetaType_Number:
+				if(floatValue != std::numeric_limits<float>::quiet_NaN()) {
+					lua_pushnumber(state, floatValue);
+				} else {
+					lua_pushnil(state);
+				}
+				break;
+			default:
+				lua_pushnil(state);
+			}
 			return 1;
 		}
 

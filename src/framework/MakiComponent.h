@@ -16,13 +16,14 @@ namespace Maki
 				Type_SceneNode,
 				Type_Mesh,
 				Type_Sprite,
+				Type_Meta,
 				Type_Physics,
 				Type_Script,
 				Type_Name,
 				Type_NavMesh,
 				Type_Light,
 				Type_Camera,
-				Type_Skeleton,		
+				Type_Skeleton,
 				Type_UserType,
 			};
 

@@ -128,7 +128,12 @@
 					try {
 						var prop:XMPProperty = xmp.maki::data;
 						if(prop.exists()) {
-							metaTextArea.text = prop.value;
+							var encodedNewLines = prop.value;
+							encodedNewLines = encodedNewLines.replace(/%0d/g, '\r');
+							encodedNewLines = encodedNewLines.replace(/%0a/g, '\n');
+							encodedNewLines = encodedNewLines.replace(/%09/g, '\t');
+							encodedNewLines = encodedNewLines.replace(/%25/g, '%');
+							metaTextArea.text = encodedNewLines;
 						} else {
 							metaTextArea.text = "";
 						}
@@ -148,7 +153,12 @@
 				try {
 					if(layer != null) {
 						var xmp:XMPMeta = new XMPMeta(layer.xmpMetadata.rawData);
-						xmp.maki::data = metaTextArea.text;
+						var encodedNewLines = metaTextArea.text;
+						encodedNewLines = encodedNewLines.replace(/%/g, '%25');
+						encodedNewLines = encodedNewLines.replace(/\r/g, '%0d');
+						encodedNewLines = encodedNewLines.replace(/\n/g, '%0a');
+						encodedNewLines = encodedNewLines.replace(/\t/g, '%09');
+						xmp.maki::data = encodedNewLines;
 						layer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
 					}
 				} catch(ex:*) {

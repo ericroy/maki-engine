@@ -6,9 +6,16 @@ SAVE_OPTS.format = SaveDocumentType.PNG;
 SAVE_OPTS.PNG8 = false;
 SAVE_OPTS.quality = 100;
 
-function trim(s) {
-    return s.replace(/^\s+/, '').replace(/\s+$/, '');
+function ltrim(s) {
+    return s.replace(/^\s+/, '');
 }
+function rtrim(s) {
+    return s.replace(/\s+$/, '')
+}
+function trim(s) {
+    return ltrim(rtrim(s));
+}
+
 
 function loadXMPLibrary() {
     if(!ExternalObject.AdobeXMPScript) {
@@ -87,18 +94,26 @@ function exportLevel(file) {
         buffer.write("layer", 0);
         buffer.write("name \"" + layer.name + "\"", 1);
         
-        // Parse metadata
+        // Parse layer metadata
         try {
             xmp = new XMPMeta(layer.xmpMetadata.rawData);
         } catch(e) {
             xmp = new XMPMeta();
         }
-        //var metaDoc = xmp.maki::data;
-        buffer.write("meta", 1);
-        //buffer.write(metaDoc, 2);
         var metaDoc = trim(xmp.getProperty("http://makiengine.com/", "data", XMPConst.STRING).toString());
+        metaDoc = metaDoc.replace(/%0d/g, '\r');
+        metaDoc = metaDoc.replace(/%0a/g, '\n');
+        metaDoc = metaDoc.replace(/%09/g, '\t');
+        metaDoc = metaDoc.replace(/%25/g, '%');
         if(metaDoc.length > 0) {
-            buffer.write(metaDoc, 2);
+            buffer.write("meta", 1);
+            var lines = metaDoc.split('\n');
+            for(var i = 0; i < lines.length; i++) {
+                var s = rtrim(lines[i]);
+                if(s.length > 0) {
+                    buffer.write(s, 2);
+                }
+            }
         }      
         
         // This layer rect is relative to the stage

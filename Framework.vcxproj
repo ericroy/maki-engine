@@ -14,6 +14,7 @@
     <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
+    <ClInclude Include="src\framework\components\MakiMetaComponent.h" />
     <ClInclude Include="src\framework\components\MakiNameComponent.h" />
     <ClInclude Include="src\framework\components\MakiNavMeshComponent.h" />
     <ClInclude Include="src\framework\components\MakiPhysicsComponent.h" />
@@ -69,6 +70,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\framework\components\MakiMetaComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiNameComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

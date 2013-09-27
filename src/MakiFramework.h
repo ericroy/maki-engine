@@ -17,6 +17,7 @@
 #include "framework/MakiMessageHub.h"
 #include "framework/components/MakiMeshComponent.h"
 #include "framework/components/MakiNameComponent.h"
+#include "framework/components/MakiMetaComponent.h"
 #include "framework/components/MakiPhysicsComponent.h"
 #include "framework/components/MakiSceneNodeComponent.h"
 #include "framework/components/MakiTransformComponent.h"

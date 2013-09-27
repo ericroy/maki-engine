@@ -8,6 +8,12 @@ NVDXT = os.path.expandvars('$MAKI_DIR/tools/nvdxt.exe')
 
 PPU = 150
 
+def try_get_value(node, key, default):
+    try:
+        return node.resolve(key).value
+    except KeyError:
+        return default
+
 def compile(arc_name, src, dst):
     conf = CONFIG['assets'][arc_name]
     with open(src) as file:
@@ -25,8 +31,17 @@ def compile(arc_name, src, dst):
 
         out_layer = out.add_child('entity')
         out_layer.add_child('name').add_child(name)
+        
+        #depth = 0.5*layer_index
+        try:
+            meta = layer.resolve('meta')
+            out_layer.add_child(meta)
+        except KeyError:
+            meta = doc.Node()
+        depth = float(try_get_value(meta, 'depth.#0', 0))
+
         out_layer.add_child('transform').add_child('pos').add_children(
-            map(str, [layer_pos[0] / PPU, -layer_pos[1] / PPU, 0.5*layer_index])
+            map(str, [layer_pos[0] / PPU, -layer_pos[1] / PPU, depth])
             )
         out_layer = out_layer.add_child('children')
 

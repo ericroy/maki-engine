@@ -85,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="src\framework\MakiMessage.h" />
     <ClInclude Include="src\framework\MakiMessageHub.h" />
+    <ClInclude Include="src\framework\components\MakiMetaComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -162,6 +165,9 @@
       <Filter>hash</Filter>
     </ClCompile>
     <ClCompile Include="src\framework\MakiMessageHub.cpp" />
+    <ClCompile Include="src\framework\components\MakiMetaComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
