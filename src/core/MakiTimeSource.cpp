@@ -31,7 +31,7 @@ namespace Maki
 			if(now < start) {
 				now = start;
 			}
-			return (now - start) / frequency;
+			return (uint64)((now - start) / frequency);
 		}
 
 

@@ -17,9 +17,8 @@ namespace Maki
 				public:
 					enum Type
 					{
-						Type_Undefined = -1,
 						Type_String = 0,
-						Type_Number = 1
+						Type_Number,
 					};
 
 				public:
