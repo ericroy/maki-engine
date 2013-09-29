@@ -235,6 +235,7 @@ namespace Maki
 			Array<SpriteSheet> sheets;
 			Array<SpriteSequence> library;
 			uint32 frameRate;
+			Vector2 size;
 			// The largest number of frames found in any layer
 			uint32 maxFrameCount;
 			uint32 maxMetaElementsInSingleFrame;

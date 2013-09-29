@@ -12,12 +12,9 @@ namespace Maki
 			const float PPU = 150.0f;
 
 			Mesh::Mesh()
-				: Component(TYPE, DEPENDENCIES),
-				flags(DEFAULT_FLAGS),
+				: RenderableComponent(TYPE, DEPENDENCIES),
 				mesh(HANDLE_NONE),
-				material(HANDLE_NONE),
-				scaleMatrix(true),
-				meshScale(1.0f)
+				material(HANDLE_NONE)
 			{
 			}
 
@@ -232,7 +229,7 @@ namespace Maki
 			{
 				Mesh *c = ComponentPool<Mesh>::Get()->Create();
 
-				c->flags = flags;
+				c->renderFlags = renderFlags;
 				
 				MeshManager::AddRef(mesh);
 				c->mesh = mesh;
@@ -253,12 +250,6 @@ namespace Maki
 				return c;
 			}
 
-			void Mesh::SetMeshScale(float scale)
-			{
-				scaleMatrix.SetIdentity();
-				Matrix44::Scale(scale, scale, scale, scaleMatrix);
-				meshScale = scale;
-			}
 
 		} // namespace Components
 

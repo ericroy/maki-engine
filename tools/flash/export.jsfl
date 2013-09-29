@@ -106,7 +106,8 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	var fp = fopen(uri, debugTrace);
 	fp.writePair("frame_rate", dom.frameRate);
 	fp.writePair("max_frame_count", maxFrameCount);
-
+	fp.writePair("size", dom.width + ", " + dom.height); 
+	
 	fp.write("tracks");
 	for(var li = layerCount-1; li >= 0; li--) {
 		var layer = timeline.layers[li];

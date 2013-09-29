@@ -43,7 +43,7 @@ namespace Maki
 			Array<ElementGroup> groups;
 			ElementGroup metaGroup;
 			Array<uint32> currentKeyFrames;
-		
+
 		private:
 			Handle movie;
 			float playhead;

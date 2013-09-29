@@ -94,6 +94,7 @@
     <ClInclude Include="src\framework\systems\MakiFlashSystem.h">
       <Filter>systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\framework\MakiRenderableComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />

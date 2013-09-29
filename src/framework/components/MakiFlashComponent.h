@@ -1,6 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
-#include "framework/MakiComponent.h"
+#include "framework/MakiRenderableComponent.h"
 #include "framework/MakiFlashMovieState.h"
 
 namespace Maki
@@ -10,7 +10,7 @@ namespace Maki
 		namespace Components
 		{
 
-			class Flash : public Component
+			class Flash : public RenderableComponent
 			{
 			public:
 				static const Type TYPE = Type_Flash;

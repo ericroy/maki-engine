@@ -58,7 +58,6 @@ namespace Maki
 			if(mov->tracks.count > 0) {
 				trackIndex = 0;
 			}
-
 			return true;
 		}
 

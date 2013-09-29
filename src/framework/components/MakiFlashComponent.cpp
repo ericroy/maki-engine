@@ -14,7 +14,7 @@ namespace Maki
 		{
 
 			Flash::Flash()
-				: Component(TYPE, DEPENDENCIES),
+				: RenderableComponent(TYPE, DEPENDENCIES),
 				movie(HANDLE_NONE)
 			{
 			}
@@ -61,6 +61,9 @@ namespace Maki
 					Console::Error("Flash movie state init failed");
 					return false;
 				}
+
+				FlashMovie *mov = res->flashMovieManager->Get(movie);
+				bounds = BoundingBox(Vector4(mov->size.x / 2.0f, mov->size.y / 2.0f, 0.0f, 1.0f), Vector4(mov->size.x / 2.0f, mov->size.y / 2.0f, 0.0f, 1.0f)); 
 				return true;
 			}
 

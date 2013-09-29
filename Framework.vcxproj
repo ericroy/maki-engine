@@ -39,6 +39,7 @@
     <ClInclude Include="src\framework\MakiEntity.h" />
     <ClInclude Include="src\framework\MakiMessage.h" />
     <ClInclude Include="src\framework\MakiMessageHub.h" />
+    <ClInclude Include="src\framework\MakiRenderableComponent.h" />
     <ClInclude Include="src\framework\MakiScene.h" />
     <ClInclude Include="src\framework\MakiSceneLoader.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />

@@ -33,44 +33,41 @@ namespace Maki
 				for(uint32 i = 0; i < count; i++) {
 					const Node &n = nodes[i];
 
-					// Only consider rendering meshes that are compatible with the provided masks
-					bool eligible = false;
+					RenderableComponent *renderComp;
 					if(n.meshComp != nullptr) {
-						eligible = (n.meshComp->flags & requiredFlags) == requiredFlags && (n.meshComp->flags & disallowedFlags) == 0;
-					} else if(n.flashComp != nullptr) {
-						eligible = true;
+						renderComp = static_cast<RenderableComponent *>(n.meshComp);
+					} else {
+						renderComp = static_cast<RenderableComponent *>(n.flashComp);
 					}
-
-					if(!eligible) {
+					
+					// Only consider rendering meshes that are compatible with the provided masks
+					if((renderComp->renderFlags & requiredFlags) != requiredFlags || (renderComp->renderFlags & disallowedFlags) != 0) {
 						continue;
 					}
 
 					const Matrix44 &world = n.transComp->GetWorldMatrix();
 
+					// Perform culling if necessary
+					if(cullingFrustum != nullptr && !renderComp->bounds.empty) {
+						BoundingSphere worldBounds(world * (renderComp->bounds.pos * renderComp->meshScale), renderComp->bounds.GetRadius() * renderComp->meshScale);
 
-					if(n.meshComp != nullptr) {
-						// Perform culling if necessary
-						if(cullingFrustum != nullptr && !n.meshComp->bounds.empty) {
-							BoundingSphere worldBounds(world * (n.meshComp->bounds.pos * n.meshComp->meshScale), n.meshComp->bounds.GetRadius() * n.meshComp->meshScale);
-
-							bool cull = false;
-							for(uint32 i = 0; i < 6; i++) {
-								float d = worldBounds.pos.x * frustumPlanes[i].x + worldBounds.pos.y * frustumPlanes[i].y + worldBounds.pos.z * frustumPlanes[i].z;
-								if(d - frustumPlanes[i].w > worldBounds.radius) {
-									cull = true;
-									break;
-								}
+						bool cull = false;
+						for(uint32 i = 0; i < 6; i++) {
+							float d = worldBounds.pos.x * frustumPlanes[i].x + worldBounds.pos.y * frustumPlanes[i].y + worldBounds.pos.z * frustumPlanes[i].z;
+							if(d - frustumPlanes[i].w > worldBounds.radius) {
+								cull = true;
+								break;
 							}
-							if(cull) {
-								continue;
-							}
+						}
+						if(cull) {
+							continue;
 						}
 					}
 				
-				
-					if(n.meshComp != nullptr) {
-						Matrix44 m = world * n.meshComp->scaleMatrix;
+									
+					Matrix44 m = world * renderComp->scaleMatrix;
 
+					if(n.meshComp != nullptr) {
 						// Submit all the draw commands for this mesh
 						const uint32 count = n.meshComp->drawCommands.count;
 						for(uint32 i = 0; i < count; i++) {
@@ -83,8 +80,7 @@ namespace Maki
 							renderer->Draw(n.meshComp->drawCommands[i], m);
 						}
 
-					} else if(n.flashComp != nullptr) {
-						const Matrix44 &m = world;
+					} else {
 
 						const FlashMovieState &state = n.flashComp->state;
 						for(uint32 i = 0; i < state.groups.count; i++) {

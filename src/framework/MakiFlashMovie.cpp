@@ -312,6 +312,7 @@ namespace Maki
 
 			frameRate = doc.root->ResolveAsUInt("frame_rate.#0");
 			maxFrameCount = doc.root->ResolveAsUInt("max_frame_count.#0");
+			doc.root->ResolveAsVectorN("size", 2, size.vals);
 
 			Document::Node *tracksNode = doc.root->Resolve("tracks");
 			tracks.SetSize(tracksNode->count);
