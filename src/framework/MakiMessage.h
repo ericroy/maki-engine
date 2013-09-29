@@ -1,22 +1,24 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/hash/hash.h"
 
 namespace Maki
 {
 	namespace Framework
 	{
+
+#define MAKI_DECLARE_MESSAGE(_VAR_NAME) extern const uint32 _VAR_NAME;
+#define MAKI_DEFINE_MESSAGE(_VAR_NAME, _STRING) const uint32 _VAR_NAME = Hash(_STRING);
+
+		MAKI_DECLARE_MESSAGE(Message_Ping);
+		MAKI_DECLARE_MESSAGE(Message_Pong);
+		MAKI_DECLARE_MESSAGE(Message_PlayTrack);
+
+
 		// Message from one Entity to another.  The <to> field can be omitted (or you can use zero) if you want
 		// to broadcast the message to all entities.
 		struct  Message
 		{
-		public:
-			enum
-			{
-				Message_Ping = 0,
-				Message_Pong,
-				MessageCount
-			};
-
 		public:
 			template<class T, class U>
 			Message(const uint64 &from, const uint64 &to, int32 msg, T &arg1, U &arg2)
@@ -56,7 +58,6 @@ namespace Maki
 			uintptr_t arg2;
 			int32 msg;
 		};
-		
 
 	} // namespace Framework
 

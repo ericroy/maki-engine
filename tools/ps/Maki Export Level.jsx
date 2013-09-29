@@ -93,7 +93,7 @@ function exportLevel(file) {
     
         buffer.write("layer", 0);
         buffer.write("name \"" + layer.name + "\"", 1);
-        
+ 
         // Parse layer metadata
         var isEntityLayer = false;
         try {
@@ -101,22 +101,25 @@ function exportLevel(file) {
         } catch(e) {
             xmp = new XMPMeta();
         }
-        var metaDoc = trim(xmp.getProperty("http://makiengine.com/", "data", XMPConst.STRING).toString());
-        metaDoc = metaDoc.replace(/%0d/g, '\r');
-        metaDoc = metaDoc.replace(/%0a/g, '\n');
-        metaDoc = metaDoc.replace(/%09/g, '\t');
-        metaDoc = metaDoc.replace(/%25/g, '%');
-        if(metaDoc.length > 0) {
-            buffer.write("meta", 1);
-            var lines = metaDoc.split('\n');
-            for(var i = 0; i < lines.length; i++) {
-                var s = rtrim(lines[i]);
-                if(s.length > 0) {
-                    buffer.write(s, 2);
+        var property = xmp.getProperty("http://makiengine.com/", "data", XMPConst.STRING);
+        if(typeof(property) != "undefined") {
+            var metaDoc = trim(property.toString());
+            if(metaDoc.length > 0) {            
+                metaDoc = metaDoc.replace(/%0d/g, '\r');
+                metaDoc = metaDoc.replace(/%0a/g, '\n');
+                metaDoc = metaDoc.replace(/%09/g, '\t');
+                metaDoc = metaDoc.replace(/%25/g, '%');
+                buffer.write("meta", 1);
+                var lines = metaDoc.split('\n');
+                for(var i = 0; i < lines.length; i++) {
+                    var s = rtrim(lines[i]);
+                    if(s.length > 0) {
+                        buffer.write(s, 2);
+                    }
                 }
-            }
-            if(metaDoc.search(/^entity/) >= 1) {
-                isEntityLayer = true;
+                if(metaDoc.search(/^entity/gm) >= 0) {
+                    isEntityLayer = true;
+                }
             }
         }
     

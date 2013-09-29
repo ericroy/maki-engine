@@ -26,6 +26,7 @@ namespace Maki
 			static int32 GetProperty(lua_State *state);
 			static int32 SetProperty(lua_State *state);
 			static int32 SetMessageHandler(lua_State *state);
+			static int32 Hash(lua_State *state);
 
 		private:
 			static const ApiFunction apiFunctions[];

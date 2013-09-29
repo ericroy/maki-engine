@@ -40,7 +40,7 @@ def compile(arc_name, src, dst):
         try:
             meta = layer.resolve('meta')
         except KeyError:
-            meta = doc.Node()
+            meta = doc.Node('meta')
 
         depth = float(try_get_value(meta, 'depth.#0', 0))
 

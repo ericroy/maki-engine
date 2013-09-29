@@ -80,6 +80,7 @@ namespace Maki
 			struct Track
 			{
 				char name[16];
+				uint32 nameHash;
 				uint32 firstFrame;
 				uint32 lastFrame;
 				bool loop;
@@ -223,7 +224,8 @@ namespace Maki
 			virtual ~FlashMovie();
 			bool Load(Rid movieRid);
 			void AdvanceState(float timeDelta, FlashMovieState &state, float rateCoeff);
-			int32 GetTrackIndex(const char *trackName);
+			int32 GetTrackIndexByName(const char *trackName);
+			int32 GetTrackIndexByNameHash(uint32 hash);
 
 		public:
 			Handle metaMaterial;

@@ -1,15 +1,15 @@
 // Minor modifications made for Maki, some stuff stripped out
 
 /*
- * hash_32 - 32 bit Fowler/Noll/Vo FNV-1a hash code
+ * fnv - Fowler/Noll/Vo- hash code
  *
- * @(#) $Revision: 5.1 $
- * @(#) $Id: hash_32a.c,v 5.1 2009/06/30 09:13:32 chongo Exp $
- * @(#) $Source: /usr/local/src/cmd/fnv/RCS/hash_32a.c,v $
+ * @(#) $Revision: 5.4 $
+ * @(#) $Id: fnv.h,v 5.4 2009/07/30 22:49:13 chongo Exp $
+ * @(#) $Source: /usr/local/src/cmd/fnv/RCS/fnv.h,v $
  *
  ***
  *
- * Fowler/Noll/Vo hash
+ * Fowler/Noll/Vo- hash
  *
  * The basis of this hash algorithm was taken from an idea sent
  * as reviewer comments to the IEEE POSIX P1003.2 committee by:
@@ -32,10 +32,29 @@
  *      http://www.isthe.com/chongo/tech/comp/fnv/index.html
  *
  * for more details as well as other forms of the FNV hash.
+ *
  ***
  *
+ * NOTE: The FNV-0 historic hash is not recommended.  One should use
+ *	 the FNV-1 hash instead.
+ *
+ * To use the 32 bit FNV-0 historic hash, pass FNV0_32_INIT as the
+ * uint32 hashval argument to fnv_32_buf() or fnv_32_str().
+ *
+ * To use the 64 bit FNV-0 historic hash, pass FNV0_64_INIT as the
+ * Fnv64_t hashval argument to fnv_64_buf() or fnv_64_str().
+ *
+ * To use the recommended 32 bit FNV-1 hash, pass FNV1_32_INIT as the
+ * uint32 hashval argument to fnv_32_buf() or fnv_32_str().
+ *
+ * To use the recommended 64 bit FNV-1 hash, pass FNV1_64_INIT as the
+ * Fnv64_t hashval argument to fnv_64_buf() or fnv_64_str().
+ *
  * To use the recommended 32 bit FNV-1a hash, pass FNV1_32A_INIT as the
- * Fnv32_t hashval argument to fnv_32a_buf() or fnv_32a_str().
+ * uint32 hashval argument to fnv_32a_buf() or fnv_32a_str().
+ *
+ * To use the recommended 64 bit FNV-1a hash, pass FNV1A_64_INIT as the
+ * Fnv64_t hashval argument to fnv_64a_buf() or fnv_64a_str().
  *
  ***
  *
@@ -55,21 +74,37 @@
  *
  * Share and Enjoy!	:-)
  */
+#pragma once
+#define FNV_VERSION "5.0.2"	/* @(#) FNV Version */
 
 #include "framework/framework_stdafx.h"
-#include "framework/hash/fnv.h"
-
-
-/*
- * 32 bit magic FNV-1a prime
- */
-#define FNV_32_PRIME ((Fnv32_t)0x01000193)
-
 
 namespace Maki
 {
 	namespace Framework
 	{
+
+		/*
+		 * 32 bit FNV-1 and FNV-1a non-zero initial basis
+		 *
+		 * The FNV-1 initial basis is the FNV-0 hash of the following 32 octets:
+		 *
+		 *              chongo <Landon Curt Noll> /\../\
+		 *
+		 * NOTE: The \'s above are not back-slashing escape characters.
+		 * They are literal ASCII  backslash 0x5c characters.
+		 *
+		 * NOTE: The FNV-1a initial basis is the same value as FNV-1 by definition.
+		 */
+		#define FNV1_32_INIT ((uint32)0x811c9dc5)
+		#define FNV1_32A_INIT FNV1_32_INIT
+
+		/*
+		 * 32 bit magic FNV-1a prime
+		 */
+		#define FNV_32_PRIME ((uint32)0x01000193)
+
+
 
 		/*
 		 * fnv_32a_buf - perform a 32 bit Fowler/Noll/Vo FNV-1a hash on a buffer
@@ -85,8 +120,7 @@ namespace Maki
 		 * NOTE: To use the recommended 32 bit FNV-1a hash, use FNV1_32A_INIT as the
 		 * 	 hval arg on the first call to either fnv_32a_buf() or fnv_32a_str().
 		 */
-		Fnv32_t
-		fnv_32a_buf(const void *buf, size_t len, Fnv32_t hval)
+		inline uint32 Hash(const void *buf, size_t len, uint32 hval = FNV1_32A_INIT)
 		{
 			unsigned char *bp = (unsigned char *)buf;	/* start of buffer */
 			unsigned char *be = bp + len;		/* beyond end of buffer */
@@ -97,7 +131,7 @@ namespace Maki
 			while (bp < be) {
 
 			/* xor the bottom with the current octet */
-			hval ^= (Fnv32_t)*bp++;
+			hval ^= (uint32)*bp++;
 
 			/* multiply by the 32 bit FNV magic prime mod 2^32 */
 		#if defined(NO_FNV_GCC_OPTIMIZATION)
@@ -112,6 +146,7 @@ namespace Maki
 		}
 
 
+		
 		/*
 		 * fnv_32a_str - perform a 32 bit Fowler/Noll/Vo FNV-1a hash on a string
 		 *
@@ -125,8 +160,7 @@ namespace Maki
 		 * NOTE: To use the recommended 32 bit FNV-1a hash, use FNV1_32A_INIT as the
 		 *  	 hval arg on the first call to either fnv_32a_buf() or fnv_32a_str().
 		 */
-		Fnv32_t
-		fnv_32a_str(const char *str, Fnv32_t hval)
+		inline uint32 Hash(const char *str, uint32 hval = FNV1_32A_INIT)
 		{
 			unsigned char *s = (unsigned char *)str;	/* unsigned string */
 
@@ -136,21 +170,19 @@ namespace Maki
 			while (*s) {
 
 			/* xor the bottom with the current octet */
-			hval ^= (Fnv32_t)*s++;
+			hval ^= (uint32)*s++;
 
 			/* multiply by the 32 bit FNV magic prime mod 2^32 */
-		#if defined(NO_FNV_GCC_OPTIMIZATION)
+#if defined(NO_FNV_GCC_OPTIMIZATION)
 			hval *= FNV_32_PRIME;
-		#else
+#else
 			hval += (hval<<1) + (hval<<4) + (hval<<7) + (hval<<8) + (hval<<24);
-		#endif
+#endif
 			}
 
 			/* return our new hash value */
 			return hval;
 		}
-
-
 
 	} // namespace Framework
 

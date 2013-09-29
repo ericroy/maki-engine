@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/framework_stdafx.h"
+#include "framework/hash/hash.h"
 #include "framework/MakiScriptingApi.h"
 #include "framework/MakiSystem.h"
 #include "framework/MakiMessageHub.h"
@@ -8,6 +9,7 @@
 #include "framework/systems/MakiNameSystem.h"
 #include "framework/components/MakiScriptComponent.h"
 #include "framework/components/MakiMetaComponent.h"
+
 
 namespace Maki
 {
@@ -23,6 +25,7 @@ namespace Maki
 			{ "get_property", &GetProperty },
 			{ "set_property", &SetProperty },
 			{ "set_message_handler", &SetMessageHandler },
+			{ "hash", &Hash },
 		};
 		
 		void ScriptingApi::ExposeApiToScript(lua_State *state)
@@ -49,8 +52,22 @@ namespace Maki
 			uint64 to = static_cast<uint64>(lua_tonumber(state, -4));
 			
 			int32 msg = lua_tointeger(state, -3);
-			uintptr_t arg1 = static_cast<uintptr_t>(lua_tonumber(state, -2));
-			uintptr_t arg2 = static_cast<uintptr_t>(lua_tonumber(state, -1));
+
+
+			uintptr_t arg1;
+			if(lua_isstring(state, -2)) {
+				arg1 = static_cast<uintptr_t>(Framework::Hash(lua_tostring(state, -2)));
+			} else {
+				arg1 = static_cast<uintptr_t>(lua_tonumber(state, -2));
+			}
+
+			uintptr_t arg2;
+			if(lua_isstring(state, -1)) {
+				arg2 = static_cast<uintptr_t>(Framework::Hash(lua_tostring(state, -1)));
+			} else {
+				arg2 = static_cast<uintptr_t>(lua_tonumber(state, -1));
+			}
+			
 			lua_pop(state, 5);
 			assert(lua_gettop(state) == 0);
 
@@ -201,6 +218,16 @@ namespace Maki
 			return 0;
 		}
 
-	} // namespace Core
+		int32 ScriptingApi::Hash(lua_State *state)
+		{
+			const char *name = lua_tostring(state, -1);
+			uint32 hash = Framework::Hash(name);
+			lua_pop(state, 1);
+			assert(lua_gettop(state) == 0);
+			lua_pushinteger(state, hash);
+			return 1;
+		}
+
+	} // namespace Framework
 
 } // namespace Maki

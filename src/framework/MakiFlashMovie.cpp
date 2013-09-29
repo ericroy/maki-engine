@@ -1,5 +1,6 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiFlashMovie.h"
+#include "framework/hash/hash.h"
 
 
 namespace Maki
@@ -320,6 +321,7 @@ namespace Maki
 				Document::Node *trackNode = tracksNode->children[i];
 				memset(&tracks[i], 0, sizeof(Track));
 				strncpy(tracks[i].name, trackNode->value, sizeof(tracks[i].name)-1);
+				tracks[i].nameHash = Hash(tracks[i].name);
 				tracks[i].firstFrame = trackNode->ResolveAsInt("#0")-1;
 				tracks[i].lastFrame = trackNode->ResolveAsInt("#1")-1;
 				tracks[i].loop = trackNode->ResolveAsBool("#2");
@@ -679,10 +681,20 @@ failed:
 			}
 		}
 
-		int32 FlashMovie::GetTrackIndex(const char *trackName)
+		int32 FlashMovie::GetTrackIndexByName(const char *trackName)
 		{
 			for(uint32 i = 0; i < tracks.count; i++) {
 				if(strcmp(tracks[i].name, trackName) == 0) {
+					return (int32)i;
+				}
+			}
+			return -1;
+		}
+
+		int32 FlashMovie::GetTrackIndexByNameHash(uint32 hash)
+		{
+			for(uint32 i = 0; i < tracks.count; i++) {
+				if(tracks[i].nameHash == hash) {
 					return (int32)i;
 				}
 			}

@@ -80,9 +80,6 @@
     <ClInclude Include="src\framework\MakiFlashMovieManager.h" />
     <ClInclude Include="src\framework\MakiFlashMovie.h" />
     <ClInclude Include="src\framework\MakiFlashMovieState.h" />
-    <ClInclude Include="src\framework\hash\fnv.h">
-      <Filter>hash</Filter>
-    </ClInclude>
     <ClInclude Include="src\framework\MakiMessage.h" />
     <ClInclude Include="src\framework\MakiMessageHub.h" />
     <ClInclude Include="src\framework\components\MakiMetaComponent.h">
@@ -95,6 +92,9 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\framework\MakiRenderableComponent.h" />
+    <ClInclude Include="src\framework\hash\hash.h">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -168,9 +168,6 @@
     <ClCompile Include="src\framework\MakiFlashMovieManager.cpp" />
     <ClCompile Include="src\framework\MakiFlashMovie.cpp" />
     <ClCompile Include="src\framework\MakiFlashMovieState.cpp" />
-    <ClCompile Include="src\framework\hash\hash_32a.cpp">
-      <Filter>hash</Filter>
-    </ClCompile>
     <ClCompile Include="src\framework\MakiMessageHub.cpp" />
     <ClCompile Include="src\framework\components\MakiMetaComponent.cpp">
       <Filter>components</Filter>
@@ -181,6 +178,7 @@
     <ClCompile Include="src\framework\systems\MakiFlashSystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\framework\MakiMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

@@ -22,8 +22,8 @@ namespace Maki
 			public:
 				FlashSystem(uint32 messageQueueSize);
 				virtual ~FlashSystem();
-		
 				void Update(float dt);
+				void ProcessMessages();
 
 			protected:
 				void Add(Entity *e);
