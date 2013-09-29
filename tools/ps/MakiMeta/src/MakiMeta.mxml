@@ -26,7 +26,7 @@
 			private const ORDINAL:int = Photoshop.app.stringIDToTypeID("ordinal");
 			
 			private var maki:Namespace = new Namespace("maki", "http://makiengine.com/");
-			private var currentLayer:Layer = null;			
+			private var currentLayer:Layer = null;
 			
 			protected function csextension1_creationCompleteHandler(event:FlexEvent):void
 			{
@@ -46,18 +46,24 @@
 				
 				if(Photoshop.app.activeDocument != null) {
 					currentLayer = Photoshop.app.activeDocument.activeLayer;
+					layerName.text = currentLayer.name;
+				} else {
+					layerName.text = "<none>";
 				}
 				updateTextBox();
 			}
 			
-			protected function csextension1_closeHandler(event:Event):void
-			{
-				saveData(currentLayer);
-			}
-			
+			protected function csextension1_closeHandler(event:Event):void {}
 			protected function applyButton_clickHandler(event:MouseEvent):void
 			{
-				saveData(currentLayer);
+				try {
+					saveData(currentLayer);
+				} catch(ex:*) {
+					// Layer may not exist anymore, etc
+					currentLayer = null;
+					layerName.text = "<none>";
+					metaTextArea.text = "";
+				}
 			}
 			
 			protected function metaTextArea_keyFocusChangeHandler(event:FocusEvent):void
@@ -83,7 +89,9 @@
 								layerSelectionChanged();
 							}
 						} catch(ex:*) {
-							Alert.show(ex, "Error SELECT callback");
+							currentLayer = null;
+							layerName.text = "<none>";
+							metaTextArea.text = "";
 						}
 						break;
 					case MAKE:
@@ -95,7 +103,9 @@
 								layerSelectionChanged();
 							}
 						} catch(ex:*) {
-							Alert.show(ex, "Error in MAKE callback");
+							currentLayer = null;
+							layerName.text = "<none>";
+							metaTextArea.text = "";
 						}
 						break;
 					case DELETE:
@@ -106,11 +116,15 @@
 							if(ref.getEnumeratedType() == ORDINAL) {
 								// This means we are deleting the currently selected layer
 								currentLayer = null;
+								layerName.text = "<none>";
+								metaTextArea.text = "";
 							}
 							try {
 								layerSelectionChanged();
 							} catch(ex:*) {
-								Alert.show(ex, "Error in DELETE callback");
+								currentLayer = null;
+								layerName.text = "<none>";
+								metaTextArea.text = "";
 							}
 						}
 						break;
@@ -121,61 +135,70 @@
 			
 			private function updateTextBox():void
 			{
-				if(currentLayer != null) {
-					metaTextArea.enabled = true;
-					var xmp:XMPMeta = new XMPMeta(currentLayer.xmpMetadata.rawData);
-					
+				var xmpMeta:XmpMetadata = null;
+				try {
+					xmpMeta = currentLayer.xmpMetadata;						
+				} catch(ex:*) {
+					currentLayer = null;
+					layerName.text = "<none>";
+					metaTextArea.text = "";
+					return;
+				}
+				
+				if(xmpMeta != null) {
+					var xmp:XMPMeta = new XMPMeta(xmpMeta.rawData);
 					try {
 						var prop:XMPProperty = xmp.maki::data;
 						if(prop.exists()) {
-							var encodedNewLines = prop.value;
-							encodedNewLines = encodedNewLines.replace(/%0d/g, '\r');
-							encodedNewLines = encodedNewLines.replace(/%0a/g, '\n');
-							encodedNewLines = encodedNewLines.replace(/%09/g, '\t');
-							encodedNewLines = encodedNewLines.replace(/%25/g, '%');
-							metaTextArea.text = encodedNewLines;
-						} else {
-							metaTextArea.text = "";
+							var decoded:String = prop.value;
+							decoded = decoded.replace(/%0d/g, '\r');
+							decoded = decoded.replace(/%0a/g, '\n');
+							decoded = decoded.replace(/%09/g, '\t');
+							decoded = decoded.replace(/%25/g, '%');
+							metaTextArea.text = decoded;
+							return;
 						}
-					} catch(ex) {
+					} catch(ex:*) {
 						// Catch type coersion errors (sometimes we get an XMPStruct instead
 						// of an XMPProperty)
-						metaTextArea.text = "";
-					}					
-				} else {
-					metaTextArea.enabled = false;
-					metaTextArea.text = "";
+					}
 				}
+				metaTextArea.text = "";
 			}
 			
 			private function saveData(layer:Layer):void
 			{
+				var raw:String = null;
 				try {
-					if(layer != null) {
-						var xmp:XMPMeta = new XMPMeta(layer.xmpMetadata.rawData);
-						var encodedNewLines = metaTextArea.text;
-						encodedNewLines = encodedNewLines.replace(/%/g, '%25');
-						encodedNewLines = encodedNewLines.replace(/\r/g, '%0d');
-						encodedNewLines = encodedNewLines.replace(/\n/g, '%0a');
-						encodedNewLines = encodedNewLines.replace(/\t/g, '%09');
-						xmp.maki::data = encodedNewLines;
-						layer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
-					}
+					raw = layer.xmpMetadata.rawData;	
 				} catch(ex:*) {
-					Alert.show(ex);
+					// Layer probably doesn't exist anymore
+					return;
 				}
+				
+				var xmp:XMPMeta = null;
+				if(raw != null) {
+					xmp = new XMPMeta(raw);
+				} else {
+					xmp = new XMPMeta();
+				}
+				
+				var encoded:String = metaTextArea.text;
+				encoded = encoded.replace(/%/g, '%25');
+				encoded = encoded.replace(/\r/g, '%0d');
+				encoded = encoded.replace(/\n/g, '%0a');
+				encoded = encoded.replace(/\t/g, '%09');
+				xmp.maki::data = encoded;
+				
+				layer.xmpMetadata.rawData = new String(xmp.serializeToBuffer());
 			}
 			
 			private function layerSelectionChanged():void
 			{
-				// Save previously selected layer
-				if(currentLayer != null) {
-					saveData(currentLayer);
-				}
-				
 				// Get a ref to the now selected layer
 				if(Photoshop.app.activeDocument != null) {
 					currentLayer = Photoshop.app.activeDocument.activeLayer;
+					layerName.text = currentLayer.name;
 				}
 				
 				// Show contents of current layer in textbox
@@ -185,10 +208,11 @@
 		]]>
 	</fx:Script>
 	<s:Group height="100%" width="100%">
-		<s:Button id="applyButton" right="16" bottom="2" label="Apply" click="applyButton_clickHandler(event)"/>
+		<s:Button id="applyButton" right="16" bottom="2" label="Save" click="applyButton_clickHandler(event)"/>
 		<s:TextArea id="metaTextArea" left="3" right="3" top="3" bottom="26"
 					fontFamily="Courier New" horizontalScrollPolicy="auto"
 					keyFocusChange="metaTextArea_keyFocusChangeHandler(event)" lineBreak="explicit"
 					verticalScrollPolicy="auto"/>
+		<s:Label id="layerName" left="10" bottom="6" text="&lt;none&gt;"/>
 	</s:Group>
 </csxs:CSExtension>

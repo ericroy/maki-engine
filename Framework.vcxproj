@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
+    <ClInclude Include="src\framework\components\MakiFlashComponent.h" />
     <ClInclude Include="src\framework\components\MakiLightComponent.h" />
     <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
     <ClInclude Include="src\framework\components\MakiMetaComponent.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="src\framework\MakiScriptUtils.h" />
     <ClInclude Include="src\framework\MakiSystem.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\systems\MakiFlashSystem.h" />
     <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
     <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
     <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
@@ -62,6 +64,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\framework\components\MakiFlashComponent.cpp" />
     <ClCompile Include="src\framework\components\MakiLightComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -160,6 +163,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiFlashSystem.cpp" />
     <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

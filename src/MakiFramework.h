@@ -17,6 +17,7 @@
 #include "framework/MakiMessageHub.h"
 #include "framework/components/MakiMeshComponent.h"
 #include "framework/components/MakiNameComponent.h"
+#include "framework/components/MakiFlashComponent.h"
 #include "framework/components/MakiMetaComponent.h"
 #include "framework/components/MakiPhysicsComponent.h"
 #include "framework/components/MakiSceneNodeComponent.h"
@@ -34,4 +35,5 @@
 #include "framework/systems/MakiLightingSystem.h"
 #include "framework/systems/MakiCameraSystem.h"
 #include "framework/systems/MakiFlyCamSystem.h"
+#include "framework/systems/MakiFlashSystem.h"
 #include "framework/systems/MakiScriptingSystem.h"

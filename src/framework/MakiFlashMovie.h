@@ -77,6 +77,13 @@ namespace Maki
 			static uint32 metaTypeColors[MetaTypeCount];
 			static MetaType GetMetaTypeByName(const char *metaTypeName);
 
+			struct Track
+			{
+				char name[16];
+				uint32 firstFrame;
+				uint32 lastFrame;
+				bool loop;
+			};
 
 			struct Element
 			{
@@ -218,10 +225,12 @@ namespace Maki
 		public:
 			virtual ~FlashMovie();
 			bool Load(Rid movieRid);
-			void AdvanceState(float timeDelta, FlashMovieState &state, bool loop, float rateCoeff);
-			
+			void AdvanceState(float timeDelta, FlashMovieState &state, float rateCoeff);
+			int32 GetTrackIndex(const char *trackName);
+
 		public:
 			Handle metaMaterial;
+			Array<Track> tracks;
 			Array<Layer> layers;
 			Array<SpriteSheet> sheets;
 			Array<SpriteSequence> library;

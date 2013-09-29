@@ -16,6 +16,7 @@ namespace Maki
 				Type_SceneNode,
 				Type_Mesh,
 				Type_Sprite,
+				Type_Flash,
 				Type_Meta,
 				Type_Physics,
 				Type_Script,
@@ -32,6 +33,8 @@ namespace Maki
 			static const TypeFlag TypeFlag_SceneNode = 1ULL << Type_SceneNode;
 			static const TypeFlag TypeFlag_Mesh = 1ULL << Type_Mesh;
 			static const TypeFlag TypeFlag_Sprite = 1ULL << Type_Sprite;
+			static const TypeFlag TypeFlag_Flash = 1ULL << Type_Flash;
+			static const TypeFlag TypeFlag_Meta = 1ULL << Type_Meta;
 			static const TypeFlag TypeFlag_Physics = 1ULL << Type_Physics;
 			static const TypeFlag TypeFlag_Script = 1ULL << Type_Script;
 			static const TypeFlag TypeFlag_Name = 1ULL << Type_Name;

@@ -29,7 +29,7 @@ namespace Maki
 						if(strlen(name) >= sizeof(this->name)) {
 							Console::Warning("Meta variable name is too long: %s", name);
 						}
-						strncpy(this->name, name, sizeof(this->name));
+						strncpy(this->name, name, sizeof(this->name)-1);
 					}
 
 					inline void SetValue(float v) { value.number = v; type = Type_Number; }
@@ -40,7 +40,7 @@ namespace Maki
 							Console::Warning("Meta property value exceeded buffer size: %s", name);
 							return;
 						}
-						strncpy(value.string, v, sizeof(value.string));
+						strncpy(value.string, v, sizeof(value.string)-1);
 						type = Type_String;
 					}
 

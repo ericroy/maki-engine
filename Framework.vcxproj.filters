@@ -88,6 +88,12 @@
     <ClInclude Include="src\framework\components\MakiMetaComponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\framework\components\MakiFlashComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\systems\MakiFlashSystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\MakiEntity.cpp" />
@@ -167,6 +173,12 @@
     <ClCompile Include="src\framework\MakiMessageHub.cpp" />
     <ClCompile Include="src\framework\components\MakiMetaComponent.cpp">
       <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\components\MakiFlashComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\systems\MakiFlashSystem.cpp">
+      <Filter>systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

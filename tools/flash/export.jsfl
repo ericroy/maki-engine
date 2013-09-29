@@ -106,8 +106,22 @@ function exportScene(uri, debugTrace, leaveMetaDataOnDisk) {
 	var fp = fopen(uri, debugTrace);
 	fp.writePair("frame_rate", dom.frameRate);
 	fp.writePair("max_frame_count", maxFrameCount);
-	fp.write("layers");
 
+	fp.write("tracks");
+	for(var li = layerCount-1; li >= 0; li--) {
+		var layer = timeline.layers[li];
+		if(layer.name == "meta:tracks") {
+			var as = layer.frames[0].actionScript;
+			var pattern = /^\s*(\S+)\s+(\d+)\s+(\d+)(?:\s+(loop))?/gm;
+			var match = pattern.exec(as);
+			while(match != null) {
+				fp.writePair("\"" + match[1] + "\"", match[2] + ", " + match[3] + ", " + (match[4] == "loop" ? "true" : "false"), 1, false);
+				match = pattern.exec(as);
+			}
+		}
+	}
+	
+	fp.write("layers");
 	for(var li = layerCount-1; li >= 0; li--) {
 		// Have the IDE select this layer
 		timeline.currentLayer = li;

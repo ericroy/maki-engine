@@ -95,6 +95,7 @@ function exportLevel(file) {
         buffer.write("name \"" + layer.name + "\"", 1);
         
         // Parse layer metadata
+        var isEntityLayer = false;
         try {
             xmp = new XMPMeta(layer.xmpMetadata.rawData);
         } catch(e) {
@@ -114,12 +115,20 @@ function exportLevel(file) {
                     buffer.write(s, 2);
                 }
             }
-        }      
-        
+            if(metaDoc.search(/^entity/) >= 1) {
+                isEntityLayer = true;
+            }
+        }
+    
         // This layer rect is relative to the stage
         buffer.write("pos " + layerBounds[0] + ", " + layerBounds[1], 1);
-        buffer.write("tiles", 1);
         
+        if(isEntityLayer) {
+            layer.visible = false;
+            continue;
+        }
+        
+        buffer.write("tiles", 1);        
         for(var x = 0; x < xMax; x++) {
             for(var y = 0; y < yMax; y++) {
                     

@@ -52,6 +52,9 @@ class Node(object):
         child.parent = self
         return self._children[-1]
 
+    def remove_child(self, child):
+        self._children.remove(child)
+
     def add_children(self, children):
         for c in children:
             self.add_child(c)

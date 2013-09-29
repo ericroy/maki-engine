@@ -19,10 +19,23 @@ namespace Maki
 		}
 
 
-		FlashMovieState::FlashMovieState(Handle movie)
+		FlashMovieState::FlashMovieState()
 			:	movie(HANDLE_NONE),
 				playhead(0.0f),
-				finished(false)
+				finished(false),
+				trackIndex(-1)
+		{
+		}
+
+		FlashMovieState::~FlashMovieState()
+		{
+			for(uint32 i = 0; i < groups.count; i++) {
+				groups[i].~ElementGroup();
+			}
+			FlashMovieManager::Free(movie);
+		}
+
+		bool FlashMovieState::Init(Handle movie)
 		{
 			// Hold a reference to the movie
 			FlashMovieManager::AddRef(movie);
@@ -41,14 +54,8 @@ namespace Maki
 
 			currentKeyFrames.SetSize(mov->layers.count);
 			currentKeyFrames.Zero();
-		}
 
-		FlashMovieState::~FlashMovieState()
-		{
-			for(uint32 i = 0; i < groups.count; i++) {
-				groups[i].~ElementGroup();
-			}
-			FlashMovieManager::Free(movie);
+			return true;
 		}
 
 		void FlashMovieState::PrepareGroup(ElementGroup &g, FlashMovie *mov, uint32 sheetIndex)

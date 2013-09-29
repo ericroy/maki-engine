@@ -98,8 +98,8 @@ namespace Maki
 		FlashMovie::SpriteSequence::SpriteSequence(uint32 sheetIndex, Document::Node *libItemNode)
 			: sheetIndex(sheetIndex)
 		{
-			strncpy(name, libItemNode->ResolveValue("name.#0"), sizeof(name));
-			strncpy(type, libItemNode->ResolveValue("type.#0"), sizeof(type));
+			strncpy(name, libItemNode->ResolveValue("name.#0"), sizeof(name)-1);
+			strncpy(type, libItemNode->ResolveValue("type.#0"), sizeof(type)-1);
 
 			libItemNode->ResolveAsVectorN("pos", 2, pos.vals);
 			pos /= PPU;
@@ -313,6 +313,16 @@ namespace Maki
 			frameRate = doc.root->ResolveAsUInt("frame_rate.#0");
 			maxFrameCount = doc.root->ResolveAsUInt("max_frame_count.#0");
 
+			Document::Node *tracksNode = doc.root->Resolve("tracks");
+			tracks.SetSize(tracksNode->count);
+			for(uint32 i = 0; i < tracksNode->count; i++) {
+				Document::Node *trackNode = tracksNode->children[i];
+				memset(&tracks[i], 0, sizeof(Track));
+				strncpy(tracks[i].name, trackNode->value, sizeof(tracks[i].name)-1);
+				tracks[i].firstFrame = trackNode->ResolveAsInt("#0")-1;
+				tracks[i].lastFrame = trackNode->ResolveAsInt("#1")-1;
+			}
+
 			Document::Node *layersNode = doc.root->Resolve("layers");
 			layers.SetSize(layersNode->count);
 			for(uint32 i = 0; i < layersNode->count; i++) {
@@ -404,9 +414,9 @@ failed:
 			Vector2(1.0f, 0.0f)
 		};
 
-		void FlashMovie::AdvanceState(float timeDelta, FlashMovieState &state, bool loop, float rateCoeff)
+		void FlashMovie::AdvanceState(float timeDelta, FlashMovieState &state, float rateCoeff)
 		{
-			if(state.finished) {
+			if(state.finished || state.trackIndex < 0) {
 				return;
 			}
 
@@ -420,16 +430,24 @@ failed:
 			}
 			state.metaGroup.activeElementCount = 0;
 
-			// Advance the playhead.
-			// This is the floating point frame position of the overall movie
-			state.playhead += timeDelta * rateCoeff * frameRate;
-			if(state.playhead >= maxFrameCount) {
-				if(!loop) {
-					state.finished = true;
-					return;
-				}
-				state.playhead = (float)std::fmod(state.playhead, maxFrameCount);
+			// Handle animation track changes
+			const Track &track = tracks[state.trackIndex];
+			if(state.trackChanged) {
+				state.trackChanged = false;
+				state.playhead = (float)track.firstFrame;
 				state.currentKeyFrames.Zero();
+			} else {
+				// Advance the playhead.
+				// This is the floating point frame position of the overall movie
+				state.playhead += timeDelta * rateCoeff * frameRate;
+				if(state.playhead >= track.lastFrame) {
+					if(!track.loop) {
+						state.finished = true;
+						return;
+					}
+					state.playhead = (float)std::fmod(state.playhead, track.lastFrame) + track.firstFrame;
+					state.currentKeyFrames.Zero();
+				}
 			}
 
 			
@@ -657,6 +675,16 @@ failed:
 			if(state.metaGroup.mesh != HANDLE_NONE) {
 				MeshManager::Get(state.metaGroup.mesh)->Upload();
 			}
+		}
+
+		int32 FlashMovie::GetTrackIndex(const char *trackName)
+		{
+			for(uint32 i = 0; i < tracks.count; i++) {
+				if(strcmp(tracks[i].name, trackName) == 0) {
+					return (int32)i;
+				}
+			}
+			return -1;
 		}
 
 		FlashMovie::~FlashMovie()
