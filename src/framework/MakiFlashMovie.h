@@ -209,9 +209,6 @@ namespace Maki
 			};
 
 		public:
-			// Number of pixels per world unit
-			static const uint32 PPU = 150;
-
 			// Materials that all flash movies will use to render their elements
 			static Rid materialRid;
 			static Rid metaMaterialRid;

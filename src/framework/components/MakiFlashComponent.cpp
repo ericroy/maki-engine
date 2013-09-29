@@ -71,6 +71,9 @@ namespace Maki
 			{
 				Flash *c = ComponentPool<Flash>::Get()->Create();
 				c->Init(movie);
+				c->meshScale = meshScale;
+				c->scaleMatrix = scaleMatrix;
+				c->bounds = bounds;
 				return c;
 			}
 

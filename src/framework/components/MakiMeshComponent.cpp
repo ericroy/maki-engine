@@ -9,7 +9,6 @@ namespace Maki
 	{
 		namespace Components
 		{
-			const float PPU = 150.0f;
 
 			Mesh::Mesh()
 				: RenderableComponent(TYPE, DEPENDENCIES),
@@ -143,9 +142,9 @@ namespace Maki
 				// These two adjustments will let us put sprites next to eachother without
 				// having visible seams between them (as long as you don't use mipmaps).
 				float pw = rect.GetWidth();
-				float w = (pw-1) / PPU;
+				float w = (pw-1) / MAKI_PPU;
 				float ph = rect.GetHeight();
-				float h = (ph-1) / PPU;
+				float h = (ph-1) / MAKI_PPU;
 
 				float du = 0.5f / tex->width;
 				float dv = 0.5f / tex->height;

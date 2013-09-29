@@ -84,11 +84,11 @@ namespace Maki
 
 						const FlashMovieState &state = n.flashComp->state;
 						for(uint32 i = 0; i < state.groups.count; i++) {
-							renderer->Draw(state.groups[i].dc, Matrix44::Identity);
+							renderer->Draw(state.groups[i].dc, m);
 						}
 #if _DEBUG
 						if(state.metaGroup.mesh != HANDLE_NONE) {
-							renderer->Draw(state.metaGroup.dc, Matrix44::Identity);
+							renderer->Draw(state.metaGroup.dc, m);
 						}
 #endif
 					}

@@ -33,4 +33,9 @@ namespace Maki
 	const float MAKI_DEG_TO_RAD = MAKI_PI / 180.0f;
 	const float MAKI_RAD_TO_DEG = 180.0f / MAKI_PI;
 
+	// For 2d things like sprites and flash movies, this is the scale
+	// factor used to size the 2d art in a 3d world.  PPU stands for
+	// 'pixels per unit'.
+	const float MAKI_PPU = 150.0f;
+	
 } // namespace Maki

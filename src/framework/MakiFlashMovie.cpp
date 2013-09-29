@@ -102,7 +102,7 @@ namespace Maki
 			strncpy(type, libItemNode->ResolveValue("type.#0"), sizeof(type)-1);
 
 			libItemNode->ResolveAsVectorN("pos", 2, pos.vals);
-			pos /= PPU;
+			pos /= MAKI_PPU;
 
 			Document::Node *framesNode = libItemNode->Resolve("frames");
 			cells.SetSize(framesNode->count);
@@ -121,7 +121,7 @@ namespace Maki
 				r.bottom = r.top + buffer[3];
 
 				frameNode->ResolveAsVectorN("stage_pos", 2, cells[i].stagePos.vals);
-				cells[i].stagePos /= PPU;
+				cells[i].stagePos /= MAKI_PPU;
 			}
 		}
 
@@ -222,10 +222,10 @@ namespace Maki
 				Element &e = elements[i];
 
 				elemNode->ResolveAsVectorN("trans_point", 2, e.transPoint.vals);
-				e.transPoint /= PPU;
+				e.transPoint /= MAKI_PPU;
 
 				elemNode->ResolveAsVectorN("size", 2, e.size.vals);
-				e.size /= PPU;
+				e.size /= MAKI_PPU;
 
 				float buffer[6];
 				elemNode->ResolveAsVectorN("matrix", 6, buffer);
@@ -234,9 +234,9 @@ namespace Maki
 				e.m.cols[1][0] = buffer[1];
 				e.m.cols[0][1] = buffer[2];
 				e.m.cols[1][1] = buffer[3];
-				e.m.cols[3][0] = buffer[4] / PPU;
+				e.m.cols[3][0] = buffer[4] / MAKI_PPU;
 				// Negation here because flash has origin in top left, and we have origin in bottom left
-				e.m.cols[3][1] = -buffer[5] / PPU;
+				e.m.cols[3][1] = -buffer[5] / MAKI_PPU;
 
 				Document::Node *libItemNode = elemNode->Resolve("lib_item");
 				e.libraryIndex = libItemNode->children[0]->ValueAsInt(0);
@@ -517,10 +517,10 @@ failed:
 						if(kf->tween) {
 							
 							if(kf->curveFlags & TweenPropertyFlag_MotionX) {
-								tweenTrans.x = kf->curves[TweenProperty_MotionX].Evaluate(t) / PPU;
+								tweenTrans.x = kf->curves[TweenProperty_MotionX].Evaluate(t) / MAKI_PPU;
 							}
 							if(kf->curveFlags & TweenPropertyFlag_MotionY) {
-								tweenTrans.y = -kf->curves[TweenProperty_MotionY].Evaluate(t) / PPU;
+								tweenTrans.y = -kf->curves[TweenProperty_MotionY].Evaluate(t) / MAKI_PPU;
 							}
 
 							if(kf->curveFlags & TweenPropertyFlag_RotationZ) {
@@ -633,8 +633,8 @@ failed:
 
 							for(uint32 i = 0; i < 4; i++) {
 								// Position corner of the quad
-								v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / PPU + (cell.stagePos.x - e.transPoint.x);
-								v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / PPU - (cell.stagePos.y - e.transPoint.y);
+								v->pos.x = unitQuadCoeffs[i].x * cell.texRect.GetWidth() / MAKI_PPU + (cell.stagePos.x - e.transPoint.x);
+								v->pos.y = unitQuadCoeffs[i].y * cell.texRect.GetHeight() / MAKI_PPU - (cell.stagePos.y - e.transPoint.y);
 								v->pos.z = 0.0f;
 								v->pos = tweenRotScale * v->pos;
 							
