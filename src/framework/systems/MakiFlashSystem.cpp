@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			FlashSystem::FlashSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Flash, messageQueueSize, "FlashSystem")
+				: System(Component::TypeFlag_Flash, 0, messageQueueSize, "FlashSystem")
 			{
 			}
 
@@ -21,12 +21,9 @@ namespace Maki
 
 			void FlashSystem::Update(float dt)
 			{
-				Engine *eng = Engine::Get();
-
 				const uint32 nodeCount = nodes.size();
 				for(uint32 i = 0; i < nodeCount; i++) {
 					Components::Flash *flashComp = nodes[i];
-					
 					FlashMovie *mov = FlashMovieManager::Get(flashComp->movie);
 					mov->AdvanceState(dt, flashComp->state, 1.0f);
 				}

@@ -55,6 +55,10 @@ namespace Maki
 			currentKeyFrames.SetSize(mov->layers.count);
 			currentKeyFrames.Zero();
 
+			if(mov->tracks.count > 0) {
+				trackIndex = 0;
+			}
+
 			return true;
 		}
 
@@ -123,19 +127,6 @@ namespace Maki
 			metaGroup.dc.SetMesh(metaGroup.mesh);
 			metaGroup.dc.SetMaterial(mov->metaMaterial);
 		}
-
-		void FlashMovieState::Draw(Renderer *renderer, const Matrix44 &m)
-		{
-			for(uint32 i = 0; i < groups.count; i++) {
-				renderer->Draw(groups[i].dc, m);
-			}
-#if _DEBUG
-			if(metaGroup.mesh != HANDLE_NONE) {
-				renderer->Draw(metaGroup.dc, m);
-			}
-#endif
-		}
-
 
 	} // namespace Framework
 

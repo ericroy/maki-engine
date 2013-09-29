@@ -19,7 +19,7 @@ namespace Maki
 			class NameSystem : public System, public PseudoSingleton<NameSystem>
 			{
 			public:
-				NameSystem(uint32 messageQueueSize) : System(Component::TypeFlag_Name, messageQueueSize, "NameSystem"), PseudoSingleton<NameSystem>() {}
+				NameSystem(uint32 messageQueueSize) : System(Component::TypeFlag_Name, 0, messageQueueSize, "NameSystem"), PseudoSingleton<NameSystem>() {}
 				virtual ~NameSystem() {}
 		
 				inline Entity *GetEntityByName(const char *name) const

@@ -9,8 +9,9 @@ namespace Maki
 	{
 		namespace Components
 		{
-			class Mesh;
 			class Transform;
+			class Mesh;
+			class Flash;
 		}
 
 		namespace Systems
@@ -20,10 +21,11 @@ namespace Maki
 			{
 				struct  Node
 				{
-					Components::Mesh *meshComp;
 					Components::Transform *transComp;
+					Components::Mesh *meshComp;
+					Components::Flash *flashComp;
 
-					inline bool operator==(const Node &other) const { return meshComp == other.meshComp; }
+					inline bool operator==(const Node &other) const { return transComp == other.transComp; }
 				};
 
 			public:

@@ -20,9 +20,15 @@ namespace Maki
 			static std::vector<System *> systems;
 
 		public:
-			System(uint64 componentMask, uint32 messageQueueSize, const char *typeName);
+			System(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName);
 			virtual ~System();
-			inline bool CompatibleWith(uint64 componentFlags) const { return (componentMask & componentFlags) == componentMask; }
+			
+			inline bool CompatibleWith(uint64 componentFlags) const
+			{
+				return (requiredComponentMask & componentFlags) == requiredComponentMask &&
+					(anyOfComponentMask == 0 || (anyOfComponentMask & componentFlags) != 0);
+			}
+
 			inline void PostMessage(const Message &m)
 			{
 				if(outgoingMessageCount < outgoingMessages.count) {
@@ -40,7 +46,8 @@ namespace Maki
 			virtual void Remove(Entity *e) = 0;
 		
 		private:
-			uint64 componentMask;
+			uint64 requiredComponentMask;
+			uint64 anyOfComponentMask;
 			uint32 outgoingMessageCount;
 			Array<Message> outgoingMessages;
 			std::string typeName;

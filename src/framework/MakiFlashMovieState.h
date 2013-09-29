@@ -27,10 +27,7 @@ namespace Maki
 		public:
 			FlashMovieState();
 			virtual ~FlashMovieState();
-
 			bool Init(Handle movie);
-			void Draw(Renderer *renderer, const Matrix44 &m);
-			
 			inline void PlayTrack(int32 index)
 			{
 				trackChanged = index != trackIndex;
@@ -42,15 +39,17 @@ namespace Maki
 			void PrepareGroup(ElementGroup &g, FlashMovie *mov, uint32 sheetIndex);
 			void PrepareMetaGroup(FlashMovie *mov);
 
+		public:
+			Array<ElementGroup> groups;
+			ElementGroup metaGroup;
+			Array<uint32> currentKeyFrames;
+		
 		private:
 			Handle movie;
 			float playhead;
 			bool finished;
 			bool trackChanged;
 			int32 trackIndex;
-			Array<ElementGroup> groups;
-			ElementGroup metaGroup;
-			Array<uint32> currentKeyFrames;			
 		};
 
 		

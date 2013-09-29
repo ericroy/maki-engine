@@ -2,6 +2,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiRenderSystem.h"
 #include "framework/components/MakiMeshComponent.h"
+#include "framework/components/MakiFlashComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 
 namespace Maki
@@ -12,7 +13,7 @@ namespace Maki
 		{
 
 			RenderSystem::RenderSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Transform, messageQueueSize, "RenderSystem")
+				: System(Component::TypeFlag_Transform, Component::TypeFlag_Mesh|Component::TypeFlag_Flash, messageQueueSize, "RenderSystem")
 			{
 			}
 
@@ -33,10 +34,21 @@ namespace Maki
 					const Node &n = nodes[i];
 
 					// Only consider rendering meshes that are compatible with the provided masks
-					if((n.meshComp->flags & requiredFlags) == requiredFlags && (n.meshComp->flags & disallowedFlags) == 0) {
-				
-						const Matrix44 &world = n.transComp->GetWorldMatrix();
+					bool eligible = false;
+					if(n.meshComp != nullptr) {
+						eligible = (n.meshComp->flags & requiredFlags) == requiredFlags && (n.meshComp->flags & disallowedFlags) == 0;
+					} else if(n.flashComp != nullptr) {
+						eligible = true;
+					}
 
+					if(!eligible) {
+						continue;
+					}
+
+					const Matrix44 &world = n.transComp->GetWorldMatrix();
+
+
+					if(n.meshComp != nullptr) {
 						// Perform culling if necessary
 						if(cullingFrustum != nullptr && !n.meshComp->bounds.empty) {
 							BoundingSphere worldBounds(world * (n.meshComp->bounds.pos * n.meshComp->meshScale), n.meshComp->bounds.GetRadius() * n.meshComp->meshScale);
@@ -53,10 +65,13 @@ namespace Maki
 								continue;
 							}
 						}
+					}
 				
 				
-						// Submit all the draw commands for this mesh
+					if(n.meshComp != nullptr) {
 						Matrix44 m = world * n.meshComp->scaleMatrix;
+
+						// Submit all the draw commands for this mesh
 						const uint32 count = n.meshComp->drawCommands.count;
 						for(uint32 i = 0; i < count; i++) {
 #if _DEBUG
@@ -68,7 +83,20 @@ namespace Maki
 							renderer->Draw(n.meshComp->drawCommands[i], m);
 						}
 
+					} else if(n.flashComp != nullptr) {
+						const Matrix44 &m = world;
+
+						const FlashMovieState &state = n.flashComp->state;
+						for(uint32 i = 0; i < state.groups.count; i++) {
+							renderer->Draw(state.groups[i].dc, Matrix44::Identity);
+						}
+#if _DEBUG
+						if(state.metaGroup.mesh != HANDLE_NONE) {
+							renderer->Draw(state.metaGroup.dc, Matrix44::Identity);
+						}
+#endif
 					}
+					
 				}
 				
 			}
@@ -76,15 +104,15 @@ namespace Maki
 			void RenderSystem::Add(Entity *e)
 			{
 				Node n;
-				n.meshComp = e->Get<Components::Mesh>();
 				n.transComp = e->Get<Components::Transform>();
+				n.meshComp = e->Get<Components::Mesh>();
+				n.flashComp = e->Get<Components::Flash>();
 				nodes.push_back(n);
 			}
 
 			void RenderSystem::Remove(Entity *e)
 			{
 				Node n;
-				n.meshComp = e->Get<Components::Mesh>();
 				n.transComp = e->Get<Components::Transform>();
 				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}

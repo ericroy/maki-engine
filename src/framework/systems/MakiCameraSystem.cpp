@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			CameraSystem::CameraSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform, messageQueueSize, "CameraSystem")
+				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform, 0, messageQueueSize, "CameraSystem")
 			{
 			}
 

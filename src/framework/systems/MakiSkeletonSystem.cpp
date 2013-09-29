@@ -12,7 +12,7 @@ namespace Maki
 		{
 
 			SkeletonSystem::SkeletonSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, messageQueueSize, "SkeletonSystem")
+				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, 0, messageQueueSize, "SkeletonSystem")
 			{
 			}
 

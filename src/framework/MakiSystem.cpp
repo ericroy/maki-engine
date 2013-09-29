@@ -77,8 +77,8 @@ namespace Maki
 
 
 
-		System::System(uint64 componentMask, uint32 messageQueueSize, const char *typeName)
-			: typeName(typeName), componentMask(componentMask), outgoingMessageCount(0)
+		System::System(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
+			: typeName(typeName), requiredComponentMask(requiredComponentMask), anyOfComponentMask(anyOfComponentMask), outgoingMessageCount(0)
 		{
 			outgoingMessages.SetSize(messageQueueSize);
 			systems.push_back(this);

@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			SceneGraphSystem::SceneGraphSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_SceneNode, messageQueueSize, "SceneGraphSystem")
+				: System(Component::TypeFlag_SceneNode, 0, messageQueueSize, "SceneGraphSystem")
 			{
 			}
 

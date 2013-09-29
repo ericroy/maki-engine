@@ -321,6 +321,7 @@ namespace Maki
 				strncpy(tracks[i].name, trackNode->value, sizeof(tracks[i].name)-1);
 				tracks[i].firstFrame = trackNode->ResolveAsInt("#0")-1;
 				tracks[i].lastFrame = trackNode->ResolveAsInt("#1")-1;
+				tracks[i].loop = trackNode->ResolveAsBool("#2");
 			}
 
 			Document::Node *layersNode = doc.root->Resolve("layers");
