@@ -15,7 +15,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class PhysicsSystem : public System
+			class PhysicsSystem : public SystemBase
 			{
 			private:
 				struct  Node

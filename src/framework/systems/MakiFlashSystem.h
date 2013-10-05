@@ -17,20 +17,13 @@ namespace Maki
 		namespace Systems
 		{
 
-			class FlashSystem : public System
+			class FlashSystem : public System1<Components::Flash>
 			{
 			public:
 				FlashSystem(uint32 messageQueueSize);
 				virtual ~FlashSystem();
 				void Update(float dt);
 				void ProcessMessages();
-
-			protected:
-				void Add(Entity *e);
-				void Remove(Entity *e);
-
-			private:
-				std::vector<Components::Flash *> nodes;
 			};
 
 		} // namespace Systems

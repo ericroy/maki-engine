@@ -17,30 +17,13 @@ namespace Maki
 		namespace Systems
 		{
 
-			class CameraSystem : public System
+			class CameraSystem : public System2<Components::Transform, Components::Camera>
 			{
-			private:
-				struct  Node
-				{
-					Components::Camera *camComp;
-					Components::Transform *transComp;
-
-					inline bool operator==(const Node &other) const { return camComp == other.camComp; }
-				};
-
 			public:
 				CameraSystem(uint32 messageQueueSize);
 				virtual ~CameraSystem();
-		
 				inline uint32 GetCameraCount() const { return nodes.size(); }
-				inline Entity *GetCamera(uint32 index) { return nodes[index].camComp->owner; }
-
-			protected:
-				void Add(Entity *e);
-				void Remove(Entity *e);
-
-			private:
-				std::vector<Node> nodes;
+				inline Entity *GetCamera(uint32 index) { return nodes[index].Get<Components::Camera>()->owner; }
 			};
 
 		} // namespace Systems

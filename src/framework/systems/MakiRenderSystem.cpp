@@ -13,7 +13,7 @@ namespace Maki
 		{
 
 			RenderSystem::RenderSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Transform, Component::TypeFlag_Mesh|Component::TypeFlag_Flash, messageQueueSize, "RenderSystem")
+				: System3(Component::TypeFlag_Transform, Component::TypeFlag_Mesh|Component::TypeFlag_Flash, messageQueueSize, "RenderSystem")
 			{
 			}
 
@@ -31,13 +31,15 @@ namespace Maki
 
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
-					const Node &n = nodes[i];
+					Components::Transform *transComp = nodes[i].Get<Components::Transform>();
+					Components::Mesh *meshComp = nodes[i].Get<Components::Mesh>();
+					Components::Flash *flashComp = nodes[i].Get<Components::Flash>();
 
 					RenderableComponent *renderComp;
-					if(n.meshComp != nullptr) {
-						renderComp = static_cast<RenderableComponent *>(n.meshComp);
+					if(meshComp != nullptr) {
+						renderComp = static_cast<RenderableComponent *>(meshComp);
 					} else {
-						renderComp = static_cast<RenderableComponent *>(n.flashComp);
+						renderComp = static_cast<RenderableComponent *>(flashComp);
 					}
 					
 					// Only consider rendering meshes that are compatible with the provided masks
@@ -45,7 +47,7 @@ namespace Maki
 						continue;
 					}
 
-					const Matrix44 &world = n.transComp->GetWorldMatrix();
+					const Matrix44 &world = transComp->GetWorldMatrix();
 
 					// Perform culling if necessary
 					if(cullingFrustum != nullptr && !renderComp->bounds.empty) {
@@ -67,22 +69,22 @@ namespace Maki
 									
 					Matrix44 m = world * renderComp->scaleMatrix;
 
-					if(n.meshComp != nullptr) {
+					if(meshComp != nullptr) {
 						// Submit all the draw commands for this mesh
-						const uint32 count = n.meshComp->drawCommands.count;
+						const uint32 count = meshComp->drawCommands.count;
 						for(uint32 i = 0; i < count; i++) {
 #if _DEBUG
 							// I don't want to set this every draw call for efficiency reasons, but if we don't
 							// then hot swapping materials doesn't have any effect.  Perhaps we'll just leave this on
 							// in debug mode for now
-							n.meshComp->drawCommands[i].SetMaterial(n.meshComp->material);
+							meshComp->drawCommands[i].SetMaterial(meshComp->material);
 #endif
-							renderer->Draw(n.meshComp->drawCommands[i], m);
+							renderer->Draw(meshComp->drawCommands[i], m);
 						}
 
 					} else {
 
-						const FlashMovieState &state = n.flashComp->state;
+						const FlashMovieState &state = flashComp->state;
 						for(uint32 i = 0; i < state.groups.count; i++) {
 							renderer->Draw(state.groups[i].dc, m);
 						}
@@ -95,22 +97,6 @@ namespace Maki
 					
 				}
 				
-			}
-
-			void RenderSystem::Add(Entity *e)
-			{
-				Node n;
-				n.transComp = e->Get<Components::Transform>();
-				n.meshComp = e->Get<Components::Mesh>();
-				n.flashComp = e->Get<Components::Flash>();
-				nodes.push_back(n);
-			}
-
-			void RenderSystem::Remove(Entity *e)
-			{
-				Node n;
-				n.transComp = e->Get<Components::Transform>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}
 
 			void RenderSystem::CalculateFrustumPlanes(const Frustum *cullingFrustum, const Matrix44 *view, Vector4 frustumPlanes[6])

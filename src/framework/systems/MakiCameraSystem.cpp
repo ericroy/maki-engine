@@ -11,28 +11,12 @@ namespace Maki
 		{
 
 			CameraSystem::CameraSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Camera|Component::TypeFlag_Transform, 0, messageQueueSize, "CameraSystem")
+				: System2(Component::TypeFlag_Camera|Component::TypeFlag_Transform, 0, messageQueueSize, "CameraSystem")
 			{
 			}
 
 			CameraSystem::~CameraSystem()
 			{
-			}
-
-			void CameraSystem::Add(Entity *e)
-			{
-				Node n;
-				n.camComp = e->Get<Components::Camera>();
-				n.transComp = e->Get<Components::Transform>();
-				assert(n.camComp != nullptr && n.transComp != nullptr);
-				nodes.push_back(n);
-			}
-
-			void CameraSystem::Remove(Entity *e)
-			{
-				Node n;
-				n.camComp = e->Get<Components::Camera>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}
 
 		} // namespace Systems

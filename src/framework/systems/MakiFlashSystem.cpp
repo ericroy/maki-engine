@@ -2,6 +2,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiFlashMovieManager.h"
 #include "framework/MakiMessageHub.h"
+#include "framework/MakiEntityPool.h"
 #include "framework/systems/MakiFlashSystem.h"
 
 namespace Maki
@@ -12,7 +13,7 @@ namespace Maki
 		{
 
 			FlashSystem::FlashSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Flash, 0, messageQueueSize, "FlashSystem")
+				: System1(Component::TypeFlag_Flash, 0, messageQueueSize, "FlashSystem")
 			{
 			}
 
@@ -24,9 +25,15 @@ namespace Maki
 			{
 				const uint32 nodeCount = nodes.size();
 				for(uint32 i = 0; i < nodeCount; i++) {
-					Components::Flash *flashComp = nodes[i];
+					Components::Flash *flashComp = nodes[i].Get<Components::Flash>();
 					FlashMovie *mov = FlashMovieManager::Get(flashComp->movie);
+
+					bool wasFinished = flashComp->state.IsFinished();
 					mov->AdvanceState(dt, flashComp->state, 1.0f);
+					if(!wasFinished && flashComp->state.IsFinished()) {
+						uint32 trackNameHash = mov->tracks[flashComp->state.GetTrackIndex()].nameHash;
+						Systems::FlashSystem::PostMessage(Message(flashComp->owner->GetUid(), 0, Message_TrackComplete, trackNameHash));
+					}
 				}
 			}
 
@@ -39,33 +46,27 @@ namespace Maki
 				}
 				Message *messages = hub->GetMessages();
 
-				const uint32 count = nodes.size();
-				for(uint32 i = 0; i < count; i++) {
-					Components::Flash *flashComp = nodes[i];
-					const uint64 &uid = flashComp->owner->GetUid();
-					for(uint32 j = 0; j < messageCount; j++) {
-						const Message &msg = messages[j];
-						if(msg.from != uid && (msg.to == 0 || msg.to == uid)) {
-							if(msg.msg == Message_PlayTrack) {
+				EntityPool *pool = EntityPool::Get();
+
+				for(uint32 i = 0; i < messageCount; i++) {
+					const Message &msg = messages[i];
+					if(msg.msg == Message_PlayTrack) {
+						if(msg.to != 0) {
+							Components::Flash *flashComp = pool->GetEntity(msg.to)->Get<Components::Flash>();
+							if(flashComp != nullptr) {
+								int32 index = FlashMovieManager::Get(flashComp->movie)->GetTrackIndexByNameHash((uint32)msg.arg1);
+								flashComp->state.PlayTrack(index);
+							}
+						} else {
+							const uint32 count = nodes.size();
+							for(uint32 j = 0; j < count; j++) {
+								Components::Flash *flashComp = nodes[j].Get<Components::Flash>();
 								int32 index = FlashMovieManager::Get(flashComp->movie)->GetTrackIndexByNameHash((uint32)msg.arg1);
 								flashComp->state.PlayTrack(index);
 							}
 						}
 					}
 				}
-			}
-
-			void FlashSystem::Add(Entity *e)
-			{
-				Components::Flash *flashComp = e->Get<Components::Flash>();
-				assert(flashComp != nullptr);
-				nodes.push_back(flashComp);
-			}
-
-			void FlashSystem::Remove(Entity *e)
-			{
-				Components::Flash *flashComp = e->Get<Components::Flash>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), flashComp));
 			}
 
 		} // namespace Systems

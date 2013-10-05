@@ -7,12 +7,10 @@ namespace Maki
 	namespace Framework
 	{
 
-#define MAKI_DECLARE_MESSAGE(_VAR_NAME) extern const uint32 _VAR_NAME;
-#define MAKI_DEFINE_MESSAGE(_VAR_NAME, _STRING) const uint32 _VAR_NAME = Hash(_STRING);
-
-		MAKI_DECLARE_MESSAGE(Message_Ping);
-		MAKI_DECLARE_MESSAGE(Message_Pong);
-		MAKI_DECLARE_MESSAGE(Message_PlayTrack);
+		MAKI_DECLARE_HASH(Message_Ping);
+		MAKI_DECLARE_HASH(Message_Pong);
+		MAKI_DECLARE_HASH(Message_PlayTrack);
+		MAKI_DECLARE_HASH(Message_TrackComplete);
 
 
 		// Message from one Entity to another.  The <to> field can be omitted (or you can use zero) if you want
@@ -21,7 +19,7 @@ namespace Maki
 		{
 		public:
 			template<class T, class U>
-			Message(const uint64 &from, const uint64 &to, int32 msg, T &arg1, U &arg2)
+			Message(const uint64 &from, const uint64 &to, uint32 msg, T &arg1, U &arg2)
 				: from(from), to(to), msg(msg), arg1(arg1), arg2(arg2)
 			{
 				this->arg1 = static_cast<uintptr_t>(arg1);
@@ -29,13 +27,13 @@ namespace Maki
 			}
 
 			template<class T>
-			Message(const uint64 &from, const uint64 &to, int32 msg, T &arg1)
+			Message(const uint64 &from, const uint64 &to, uint32 msg, T &arg1)
 				: from(from), to(to), msg(msg), arg2(0)
 			{
 				this->arg1 = static_cast<uintptr_t>(arg1);
 			}
 
-			Message(const uint64 &from, const uint64 &to, int32 msg)
+			Message(const uint64 &from, const uint64 &to, uint32 msg)
 				: from(from), to(to), msg(msg), arg1(0), arg2(0)
 			{
 			}
@@ -56,7 +54,7 @@ namespace Maki
 			uint64 to;
 			uintptr_t arg1;
 			uintptr_t arg2;
-			int32 msg;
+			uint32 msg;
 		};
 
 	} // namespace Framework

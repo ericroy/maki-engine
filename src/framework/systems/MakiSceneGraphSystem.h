@@ -14,18 +14,11 @@ namespace Maki
 
 		namespace Systems
 		{
-			class SceneGraphSystem : public System
+			class SceneGraphSystem : public System1<Components::SceneNode>
 			{
 			public:
 				SceneGraphSystem(uint32 messageQueueSize);
 				virtual ~SceneGraphSystem();
-
-			protected:
-				void Add(Entity *e);
-				void Remove(Entity *e);
-
-			private:
-				std::vector<Components::SceneNode *> nodes;
 			};
 		
 		} // namespace Systems

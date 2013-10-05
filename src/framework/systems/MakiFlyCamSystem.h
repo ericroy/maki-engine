@@ -17,29 +17,12 @@ namespace Maki
 		namespace Systems
 		{
 
-			class FlyCamSystem : public System
+			class FlyCamSystem : public System2<Components::Transform, Components::Camera>
 			{
-			private:
-				struct  Node
-				{
-					Components::Camera *camComp;
-					Components::Transform *transComp;
-
-					inline bool operator==(const Node &other) const { return camComp == other.camComp; }
-				};
-
 			public:
 				FlyCamSystem(uint32 messageQueueSize);
 				virtual ~FlyCamSystem();
-		
 				void Update(float dt);
-
-			protected:
-				void Add(Entity *e);
-				void Remove(Entity *e);
-
-			private:
-				std::vector<Node> nodes;
 			};
 
 		} // namespace Systems

@@ -1,6 +1,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiFlashMovie.h"
 #include "framework/hash/hash.h"
+#include "framework/systems/MakiFlashSystem.h"
 
 
 namespace Maki

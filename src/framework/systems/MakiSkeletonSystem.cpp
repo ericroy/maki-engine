@@ -4,6 +4,7 @@
 #include "framework/components/MakiMeshComponent.h"
 #include "framework/components/MakiSkeletonComponent.h"
 
+
 namespace Maki
 {
 	namespace Framework
@@ -12,7 +13,7 @@ namespace Maki
 		{
 
 			SkeletonSystem::SkeletonSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, 0, messageQueueSize, "SkeletonSystem")
+				: System2(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, 0, messageQueueSize, "SkeletonSystem")
 			{
 			}
 
@@ -24,31 +25,32 @@ namespace Maki
 			{
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
-					const Node &n = nodes[i];
+					Components::Skeleton *skelComp = nodes[i].Get<Components::Skeleton>();
+					Components::Mesh *meshComp = nodes[i].Get<Components::Mesh>();
 			
-					Material *mat = MaterialManager::Get(n.meshComp->material);
+					Material *mat = MaterialManager::Get(meshComp->material);
 			
-					assert(n.skelComp->skeleton != HANDLE_NONE);
+					assert(skelComp->skeleton != HANDLE_NONE);
 
-					if(!n.skelComp->poseDirty) {
+					if(!skelComp->poseDirty) {
 						return;
 					}
-					n.skelComp->poseDirty = false;
+					skelComp->poseDirty = false;
 
-					Skeleton *skel = SkeletonManager::Get(n.skelComp->skeleton);
+					Skeleton *skel = SkeletonManager::Get(skelComp->skeleton);
 
-					skel->CalculateWorldPose(n.skelComp->pose.data, n.skelComp->matrixPose.data);
+					skel->CalculateWorldPose(skelComp->pose.data, skelComp->matrixPose.data);
 					/*if(item.skelComp->armature != nullptr) {
 						item.skelComp->armature->Update(skel, item.skelComp->pose.data);
 					}*/
 
 					// Combine inverse bind and world matrices
 					// Store them in the material constant buffer (as 3x4 matrices)
-					float *boneMatrices = (float *)mat->uniformValues[n.skelComp->materialSlot].data;
+					float *boneMatrices = (float *)mat->uniformValues[skelComp->materialSlot].data;
 
 					Matrix44 temp;
-					for(uint32 i = 0; i < n.skelComp->pose.count; i++) {
-						temp = n.skelComp->matrixPose[i] * skel->inverseBindPose[i];
+					for(uint32 i = 0; i < skelComp->pose.count; i++) {
+						temp = skelComp->matrixPose[i] * skel->inverseBindPose[i];
 						const uint32 base = i*12;
 						boneMatrices[base] = temp.cols[0][0];
 						boneMatrices[base+1] = temp.cols[0][1];
@@ -65,23 +67,7 @@ namespace Maki
 					}
 				}
 			}
-
-			void SkeletonSystem::Add(Entity *e)
-			{
-				Node n;
-				n.meshComp = e->Get<Components::Mesh>();
-				n.skelComp = e->Get<Components::Skeleton>();
-				nodes.push_back(n);
-			}
-
-			void SkeletonSystem::Remove(Entity *e)
-			{
-				Node n;
-				n.meshComp = e->Get<Components::Mesh>();
-				n.skelComp = e->Get<Components::Skeleton>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
-			}
-
+			
 		} // namespace Systems
 
 	} // namespace Framework

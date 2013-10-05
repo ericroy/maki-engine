@@ -84,6 +84,11 @@ namespace Maki
 	namespace Framework
 	{
 
+#define MAKI_DECLARE_HASH(_VAR_NAME) extern const uint32 _VAR_NAME;
+#define MAKI_DEFINE_HASH(_VAR_NAME, _STRING) const uint32 _VAR_NAME = Hash(_STRING);
+
+
+
 		/*
 		 * 32 bit FNV-1 and FNV-1a non-zero initial basis
 		 *

@@ -11,28 +11,12 @@ namespace Maki
 		{
 
 			LightingSystem::LightingSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Light|Component::TypeFlag_Transform, 0, messageQueueSize, "LightingSystem")
+				: System2(Component::TypeFlag_Light|Component::TypeFlag_Transform, 0, messageQueueSize, "LightingSystem")
 			{
 			}
 
 			LightingSystem::~LightingSystem()
 			{
-			}
-
-			void LightingSystem::Add(Entity *e)
-			{
-				Node n;
-				n.lightComp = e->Get<Components::Light>();
-				n.transComp = e->Get<Components::Transform>();
-				nodes.push_back(n);
-			}
-
-			void LightingSystem::Remove(Entity *e)
-			{
-				Node n;
-				n.lightComp = e->Get<Components::Light>();
-				n.transComp = e->Get<Components::Transform>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
 			}
 
 		} // namespace Systems

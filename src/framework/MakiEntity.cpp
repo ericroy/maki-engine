@@ -23,7 +23,7 @@ namespace Maki
 			// Inform systems that all our components are going away (but don't destroy the components yet,
 			// the systems need them to be available during deregistration).
 			if(!prototype) {
-				System::ComponentMakeupChanged(this, flags, 0);
+				SystemBase::ComponentMakeupChanged(this, flags, 0);
 			}
 
 			// Now that we are deregistered from the Systems, we can actually destroy our components
@@ -59,7 +59,7 @@ namespace Maki
 			component->OnAttach();
 
 			if(!prototype) {
-				System::ComponentMakeupChanged(this, oldFlags, flags);
+				SystemBase::ComponentMakeupChanged(this, oldFlags, flags);
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace Maki
 			flags &= ~(1ULL << type);
 
 			if(!prototype) {
-				System::ComponentMakeupChanged(this, oldFlags, flags);
+				SystemBase::ComponentMakeupChanged(this, oldFlags, flags);
 			}
 
 			c->OnDetach();

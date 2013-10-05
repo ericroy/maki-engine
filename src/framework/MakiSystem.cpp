@@ -8,18 +8,18 @@ namespace Maki
 	namespace Framework
 	{
 
-		std::vector<System *> System::systems;	
+		std::vector<SystemBase *> SystemBase::systems;	
 
-		uint32 System::GetSystemCount()
+		uint32 SystemBase::GetSystemCount()
 		{
 			return systems.size();
 		}
 
-		void System::ComponentMakeupChanged(Entity *e, uint64 oldFlags, uint64 newFlags)
+		void SystemBase::ComponentMakeupChanged(Entity *e, uint64 oldFlags, uint64 newFlags)
 		{
 			const uint32 count = systems.size();
 			for(uint32 i = 0; i < count; i++) {
-				System *s = systems[i];
+				SystemBase *s = systems[i];
 				if(s->CompatibleWith(newFlags)) {
 					if(!s->CompatibleWith(oldFlags)) {
 						// Became compatible
@@ -34,7 +34,7 @@ namespace Maki
 			}
 		}
 
-		void System::DispatchMessages()
+		void SystemBase::DispatchMessages()
 		{
 			const uint32 count = systems.size();
 			uint32 iterations = 0;
@@ -77,18 +77,17 @@ namespace Maki
 
 
 
-		System::System(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
+		SystemBase::SystemBase(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
 			: typeName(typeName), requiredComponentMask(requiredComponentMask), anyOfComponentMask(anyOfComponentMask), outgoingMessageCount(0)
 		{
 			outgoingMessages.SetSize(messageQueueSize);
 			systems.push_back(this);
 		}
 
-		System::~System()
+		SystemBase::~SystemBase()
 		{
 			systems.erase(std::find(std::begin(systems), std::end(systems), this));
 		}
-
 
 
 	} // namespace Framework

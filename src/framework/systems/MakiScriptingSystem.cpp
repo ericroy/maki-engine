@@ -24,7 +24,7 @@ namespace Maki
 		{
 
 			ScriptingSystem::ScriptingSystem(uint32 messageQueueSize)
-				: System(Component::TypeFlag_Script, 0, messageQueueSize, "ScriptingSystem")
+				: SystemBase(Component::TypeFlag_Script, 0, messageQueueSize, "ScriptingSystem")
 			{
 			}
 

@@ -17,7 +17,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class ScriptingSystem : public System
+			class ScriptingSystem : public SystemBase
 			{
 				friend class Framework::ScriptingApi;
 

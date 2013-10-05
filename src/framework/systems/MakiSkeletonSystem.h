@@ -16,28 +16,12 @@ namespace Maki
 		namespace Systems
 		{
 
-			class SkeletonSystem : public System
+			class SkeletonSystem : public System2<Components::Skeleton, Components::Mesh>
 			{
-				struct  Node
-				{
-					Components::Skeleton *skelComp;
-					Components::Mesh *meshComp;
-
-					inline bool operator==(const Node &other) const { return skelComp == other.skelComp; }
-				};
-
 			public:
 				SkeletonSystem(uint32 messageQueueSize);
 				virtual ~SkeletonSystem();
-		
 				void Update();
-
-			protected:
-				void Add(Entity *e);
-				void Remove(Entity *e);
-
-			private:
-				std::vector<Node> nodes;
 			};
 
 		} // namespace Systems

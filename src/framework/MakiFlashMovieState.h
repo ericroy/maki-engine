@@ -28,6 +28,8 @@ namespace Maki
 			FlashMovieState();
 			virtual ~FlashMovieState();
 			bool Init(Handle movie);
+			inline bool IsFinished() const { return finished; }
+			inline int32 GetTrackIndex() const { return trackIndex; }
 			inline void PlayTrack(int32 index)
 			{
 				trackChanged = index != trackIndex;
