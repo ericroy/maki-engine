@@ -6,6 +6,8 @@
 #include "core/MakiRenderPayload.h"
 #include "core/MakiShaderProgram.h"
 #include "core/MakiRenderState.h"
+#include "core/MakiDrawCommand.h"
+#include "core/MakiDrawCommandList.h"
 
 namespace Maki
 {

@@ -122,8 +122,8 @@ namespace Maki
 			void DumpItems()
 			{
 				Console::Info("Manager items:");
-				const ResourcePool<T>::Iterator end = resPool->End();
-				for(ResourcePool<T>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
+				const typename ResourcePool<T>::Iterator end = resPool->End();
+				for(typename ResourcePool<T>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
 					Console::Info("Item handle=%d refcount=%d", iter.Index(), iter.RefCount());
 				}
 			}

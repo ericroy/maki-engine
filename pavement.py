@@ -73,7 +73,7 @@ def compile_lib(sources, build_dir, out, include_dirs=[], libs=[], defines=[]):
 			sh('cl /MP /EHsc /c %s %s' % (include_dirs, sources))
 			sh('lib /OUT:%s %s' % (out, objects))
 		else:
-			sh('')
+			sh('clang++ -std=c++11 -fno-rtti %s %s' % (include_dirs, sources))
 
 @task
 def debug():

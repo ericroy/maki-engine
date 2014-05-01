@@ -1,4 +1,6 @@
 #pragma once
+#include <xmmintrin.h>
+#include <cstring>
 #include "core/MakiAllocator.h"
 #include "core/MakiVector4.h"
 #include "core/MakiVector3.h"
