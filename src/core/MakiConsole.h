@@ -48,13 +48,13 @@ namespace Maki
 			virtual ~Console();
 
 			inline void SetVerbosity(Level level) { verbosity = level; }
-			inline void SetPrintCallback(std::function<void(char *)> func) { printCallback = func; }
+			inline void SetPrintCallback(std::function<void(const char *)> func) { printCallback = func; }
 
 		private:
 			void Write(Level level, bool lineFeed, const char *prefix, const char *format, va_list args);
 
 		private:
-			std::function<void(char *)> printCallback;
+			std::function<void(const char *)> printCallback;
 			char buffer[MAX_BUFFER_SIZE];
 			Level verbosity;
 		};

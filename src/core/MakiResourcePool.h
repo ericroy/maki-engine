@@ -60,7 +60,7 @@ namespace Maki
 
 				capacity = maxSize;
 
-				data = (T*)_aligned_malloc(sizeof(T) * capacity, std::alignment_of<T>::value);
+				data = (T*)Allocator::Malloc(sizeof(T) * capacity, std::alignment_of<T>::value);
 				referenceCounts = new uint16[capacity];
 		
 				// Allocate one extra node as the "end" element
@@ -85,7 +85,7 @@ namespace Maki
 
 
 				assert(data && nodes && referenceCounts);	
-				memset(data, 0, capacity*sizeof(T));
+				memset(static_cast<void *>(data), 0, capacity*sizeof(T));
 				memset(referenceCounts, 0, capacity*sizeof(uint16));
 
 #if _DEBUG
@@ -103,7 +103,7 @@ namespace Maki
 				}
 	#endif
 				if(data != nullptr) {
-					_aligned_free(data);
+					Allocator::Free(data);
 				}
 				SAFE_DELETE_ARRAY(nodes);
 				SAFE_DELETE_ARRAY(referenceCounts);

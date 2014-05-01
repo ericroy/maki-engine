@@ -121,6 +121,7 @@ namespace Maki
 
 			ShaderProgram *shader = nullptr;
 			Rid shaderProgramRid = RID_NONE;
+			Document::Node *n = nullptr;
 
 			char *shaderProgramPath = doc.root->ResolveValue("shader.#0");
 			if(shaderProgramPath == nullptr) {
@@ -141,7 +142,7 @@ namespace Maki
 			shader = ShaderProgramManager::Get(shaderProgram);
 
 		
-			Document::Node *n = doc.root->Resolve("texture_set");
+			n = doc.root->Resolve("texture_set");
 			if(n != nullptr) {
 				Rid textureSetRids[TextureSet::MAX_TEXTURES_PER_SET];
 				uint32 textureSetSize = n->count;

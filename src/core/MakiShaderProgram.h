@@ -20,8 +20,8 @@ namespace Maki
 			};
 
 		private:
-			static char *variantDataKey[VariantCount];
-			static char *variantMetaKey[VariantCount];
+			static const char *variantDataKey[VariantCount];
+			static const char *variantMetaKey[VariantCount];
 
 		public:
 			ShaderProgram();

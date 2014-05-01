@@ -11,12 +11,12 @@ namespace Maki
 	namespace Core
 	{
 
-		char *ShaderProgram::variantDataKey[VariantCount] = {
+		const char *ShaderProgram::variantDataKey[VariantCount] = {
 			"data",
 			"depth_data",
 			"shadow_data"
 		};
-		char *ShaderProgram::variantMetaKey[VariantCount] = {
+		const char *ShaderProgram::variantMetaKey[VariantCount] = {
 			"meta",
 			"depth_meta",
 			"shadow_meta"
