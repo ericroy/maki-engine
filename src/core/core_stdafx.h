@@ -13,7 +13,7 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
-#include <assert.h>
+#include <cassert>
 #include <functional>
 #include <algorithm>
 

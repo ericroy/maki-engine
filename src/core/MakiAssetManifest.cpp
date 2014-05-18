@@ -44,7 +44,7 @@ namespace Maki
 		char *AssetManifest::AllocRead(Rid rid, uint32 *bytesRead) const
 		{
 			if(rid == RID_NONE) {
-				return false;
+				return nullptr;
 			}
 			const char *path = GetPath(rid);
 

@@ -68,12 +68,15 @@ def compile_lib(sources, build_dir, out, include_dirs=[], libs=[], defines=[]):
 	objects = listify([object_name(s) for s in sources])
 	sources = listify(relative(sources, build_dir))
 	with pushd(build_dir):
+		print(out)
 		if PLATFORM == 'win':
-			print(out)
+			# Build static libraries on windows
 			sh('cl /MP /EHsc /c %s %s' % (include_dirs, sources))
 			sh('lib /OUT:%s %s' % (out, objects))
 		else:
-			sh('clang++ -std=c++11 -fno-rtti %s %s' % (include_dirs, sources))
+			# Build shared libraries on *nix
+			out = out.dirname() / ('lib' + out.basename() + '.so')
+			sh('clang++ -std=c++11 -fno-rtti -fPIC -pthreads -o %s %s %s -shared -lSDL2 -ldl -lrt' % (out, sources, include_dirs))
 
 @task
 def debug():
