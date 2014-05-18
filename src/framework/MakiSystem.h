@@ -51,7 +51,7 @@ namespace Maki
 		};
 
 
-		template<class T1>
+		template<typename T1>
 		class System1 : public SystemBase
 		{
 			struct Node
@@ -59,7 +59,7 @@ namespace Maki
 				T1 *t1;
 
 				inline bool operator==(const Node &other) const { return t1 == other.t1; }
-				template<class U> inline U *Get() {}
+				template<typename U> inline U *Get() { return nullptr; }
 				template<> inline T1 *Get<T1>() { return t1; }
 			};
 
@@ -89,7 +89,7 @@ namespace Maki
 		};
 
 
-		template<class T1, class T2>
+		template<typename T1, typename T2>
 		class System2 : public SystemBase
 		{
 			struct Node
@@ -99,7 +99,7 @@ namespace Maki
 
 				inline bool operator==(const Node &other) const { return t1 == other.t1; }
 				
-				template<class U> inline U *Get() {}
+				template<typename U> inline U *Get() { return nullptr; }
 				template<> inline T1 *Get<T1>() { return t1; }
 				template<> inline T2 *Get<T2>() { return t2; }
 			};
@@ -132,7 +132,7 @@ namespace Maki
 
 
 
-		template<class T1, class T2, class T3>
+		template<typename T1, typename T2, typename T3>
 		class System3 : public SystemBase
 		{
 			struct Node
@@ -143,7 +143,7 @@ namespace Maki
 
 				inline bool operator==(const Node &other) const { return t1 == other.t1; }
 				
-				template<class U> inline U *Get() {}
+				template<typename U> inline U *Get() { return nullptr; }
 				template<> inline T1 *Get<T1>() { return t1; }
 				template<> inline T2 *Get<T2>() { return t2; }
 				template<> inline T3 *Get<T3>() { return t3; }

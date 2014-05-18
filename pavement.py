@@ -7,16 +7,16 @@ PLATFORM = 'win' if platform.system() == 'Windows' else 'nix'
 
 KNOWN_PATHS = {
 	'sdl': {
-		'win': 'deps/SDL2-2.0.0/include',
+		'win': './deps/SDL2-2.0.0/include',
 		'nix': '/usr/local/include/SDL2'
 	},
 	'bullet': {
-		'win': 'deps/bullet-2.81-rev2613/src',
-		'nix': ''
+		'win': './deps/bullet-2.81-rev2613/src',
+		'nix': './deps/bullet-2.81-rev2613/src'
 	},
 	'lua': {
-		'win': 'deps/LuaJIT-2.0.2/src',
-		'nix': ''
+		'win': './deps/LuaJIT-2.0.2/src',
+		'nix': './deps/LuaJIT-2.0.2/src'
 	}
 }
 
