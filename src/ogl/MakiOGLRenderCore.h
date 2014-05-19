@@ -241,6 +241,8 @@ namespace Maki
 				case RenderState::DepthTest_LessEqual:
 					glDepthFunc(GL_LEQUAL);
 					break;
+				default:
+					break;
 				}
 
 				currentDepthTest = depthTest;
@@ -264,6 +266,8 @@ namespace Maki
 					break;
 				case RenderState::CullMode_Back:
 					glCullFace(GL_BACK);
+					break;
+				default:
 					break;
 				}
 

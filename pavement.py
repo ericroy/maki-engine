@@ -76,7 +76,7 @@ def compile_lib(sources, build_dir, out, include_dirs=[], libs=[], defines=[]):
 		else:
 			# Build shared libraries on *nix
 			out = out.dirname() / ('lib' + out.basename() + '.so')
-			sh('clang++ -std=c++11 -fno-rtti -fPIC -pthreads -o %s %s %s -shared -lSDL2 -ldl -lrt' % (out, sources, include_dirs))
+			sh('clang++ -std=c++11 -fno-rtti -fPIC -pthreads -o %s %s %s -shared -lGLEW -lSDL2 -ldl -lrt' % (out, sources, include_dirs))
 
 @task
 def debug():
@@ -110,6 +110,8 @@ def framework():
 
 @task
 def d3d():
+	if PLATFORM != 'win':
+		return
 	build_dir = path('build/d3d')
 	try:
 		build_dir.rmtree()

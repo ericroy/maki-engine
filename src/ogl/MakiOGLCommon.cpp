@@ -1,17 +1,17 @@
 #include "ogl/ogl_stdafx.h"
 #include "ogl/MakiOGLCommon.h"
 
-
+/*
 #define MAKI_DEFINE_GL_FUNC(Name) Name = GetOGLFunc(Name, #Name);
-template<typename FT> inline FT GetOGLFunc(FT f, char *name) {
+template<typename FT> inline FT GetOGLFunc(FT f, const char *name) {
 	FT val = nullptr;
 	val = (FT)SDL_GL_GetProcAddress(name);
 	if(val == nullptr) {
-		Console::Warning("Failed to get address of OpenGL function: %s", name);
+		Maki::Core::Console::Warning("Failed to get address of OpenGL function: %s", name);
 	}
 	return val;
 }
-			
+	
 PFNGLACTIVETEXTUREPROC glActiveTexture;
 PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
@@ -82,7 +82,7 @@ PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
 PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;
-
+*/
 
 using namespace Maki::Core;
 
@@ -158,6 +158,11 @@ namespace Maki
 				return;
 			}
 
+#if !defined(_WIN32) && !defined(_WIN64)
+			glewInit();
+#endif
+
+/*
 			MAKI_DEFINE_GL_FUNC(glBufferData);
 			MAKI_DEFINE_GL_FUNC(glBufferSubData);
 			MAKI_DEFINE_GL_FUNC(glGenerateMipmap);
@@ -228,7 +233,7 @@ namespace Maki
 			MAKI_DEFINE_GL_FUNC(glCheckFramebufferStatus);
 
 			MAKI_DEFINE_GL_FUNC(glDebugMessageCallback);
-
+*/
 			loaded = true;
 		}
 
