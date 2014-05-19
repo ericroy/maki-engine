@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			PhysicsSystem::PhysicsSystem(uint32 messageQueueSize)
-				: SystemBase(Component::TypeFlag_Physics|Component::TypeFlag_Transform, 0, messageQueueSize, "PhysicsSystem"),
+				: SystemBase(Component::TypeFlag_Transform|Component::TypeFlag_Physics, 0, messageQueueSize, "PhysicsSystem"),
 				broadphase(nullptr),
 				collisionConfig(nullptr),
 				dispatcher(nullptr),

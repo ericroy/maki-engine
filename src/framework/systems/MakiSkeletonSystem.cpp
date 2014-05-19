@@ -13,7 +13,7 @@ namespace Maki
 		{
 
 			SkeletonSystem::SkeletonSystem(uint32 messageQueueSize)
-				: System2(Component::TypeFlag_Mesh|Component::TypeFlag_Skeleton, 0, messageQueueSize, "SkeletonSystem")
+				: System(Component::TypeFlag_Skeleton|Component::TypeFlag_Mesh, 0, messageQueueSize, "SkeletonSystem")
 			{
 			}
 
@@ -25,8 +25,8 @@ namespace Maki
 			{
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
-					Components::Skeleton *skelComp = nodes[i].Get<Components::Skeleton>();
-					Components::Mesh *meshComp = nodes[i].Get<Components::Mesh>();
+					Components::Skeleton *skelComp = std::get<0>(nodes[i]);
+					Components::Mesh *meshComp = std::get<1>(nodes[i]);
 			
 					Material *mat = MaterialManager::Get(meshComp->material);
 			

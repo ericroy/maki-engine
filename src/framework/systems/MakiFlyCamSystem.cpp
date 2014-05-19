@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			FlyCamSystem::FlyCamSystem(uint32 messageQueueSize)
-				: System2(Component::TypeFlag_Camera|Component::TypeFlag_Transform, 0, messageQueueSize, "FlyCamSystem")
+				: System(Component::TypeFlag_Transform|Component::TypeFlag_Camera, 0, messageQueueSize, "FlyCamSystem")
 			{
 			}
 
@@ -29,10 +29,10 @@ namespace Maki
 
 				const uint32 nodeCount = nodes.size();
 				for(uint32 i = 0; i < nodeCount; i++) {
-					if(!nodes[i].Get<Components::Camera>()->active) {
+					if(!std::get<1>(nodes[i])->active) {
 						continue;
 					}
-					Components::Transform *transComp = nodes[i].Get<Components::Transform>();
+					Components::Transform *transComp = std::get<0>(nodes[i]);
 										
 					Vector4 dir(0.0f, 0.0f, -1.0f, 0.0f);
 					Vector4 perp(-1.0f, 0.0f, 0.0f, 0.0f);

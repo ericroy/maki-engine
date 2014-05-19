@@ -16,7 +16,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class SkeletonSystem : public System2<Components::Skeleton, Components::Mesh>
+			class SkeletonSystem : public System<Components::Skeleton, Components::Mesh>
 			{
 			public:
 				SkeletonSystem(uint32 messageQueueSize);

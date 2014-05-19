@@ -11,7 +11,7 @@ namespace Maki
 		{
 
 			LightingSystem::LightingSystem(uint32 messageQueueSize)
-				: System2(Component::TypeFlag_Light|Component::TypeFlag_Transform, 0, messageQueueSize, "LightingSystem")
+				: System(Component::TypeFlag_Transform|Component::TypeFlag_Light, 0, messageQueueSize, "LightingSystem")
 			{
 			}
 

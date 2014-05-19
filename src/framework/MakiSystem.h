@@ -51,131 +51,44 @@ namespace Maki
 		};
 
 
-		template<typename T1>
-		class System1 : public SystemBase
+		template<typename... Types>
+		class System : public SystemBase
 		{
-			struct Node
-			{
-				T1 *t1;
-
-				inline bool operator==(const Node &other) const { return t1 == other.t1; }
-				template<typename U> inline U *Get() { return nullptr; }
-				template<> inline T1 *Get<T1>() { return t1; }
-			};
+		protected:
+			typedef std::tuple<Types *...> TupleType;
+			typedef typename std::tuple_element<0, std::tuple<Types...>>::type ZerothType;
 
 		public:
-			System1(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
+			System(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
 				: SystemBase(requiredComponentMask, anyOfComponentMask, messageQueueSize, typeName)
-			{}
-			virtual ~System1() {}
+			{
+
+			}
+			
+			virtual ~System()
+			{
+			}
 			
 		protected:
-			void Add(Entity *e)
+			virtual void Add(Entity *e)
 			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				nodes.push_back(n);
+				nodes.push_back(std::make_tuple(e->Get<Types>()...));
 			}
 
-			void Remove(Entity *e)
+			virtual void Remove(Entity *e)
 			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
+				using namespace std;
+
+				ZerothType *ptr = e->Get<ZerothType>();
+				nodes.erase(find_if(begin(nodes), end(nodes), [ptr](const TupleType &item) {
+					return ptr == std::get<0>(item);
+				}));
 			}
 
 		protected:
-			std::vector<Node> nodes;
+			std::vector<TupleType> nodes;
 		};
-
-
-		template<typename T1, typename T2>
-		class System2 : public SystemBase
-		{
-			struct Node
-			{
-				T1 *t1;
-				T2 *t2;
-
-				inline bool operator==(const Node &other) const { return t1 == other.t1; }
-				
-				template<typename U> inline U *Get() { return nullptr; }
-				template<> inline T1 *Get<T1>() { return t1; }
-				template<> inline T2 *Get<T2>() { return t2; }
-			};
-
-		public:
-			System2(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
-				: SystemBase(requiredComponentMask, anyOfComponentMask, messageQueueSize, typeName)
-			{}
-			virtual ~System2() {}
-			
-		protected:
-			void Add(Entity *e)
-			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				n.t2 = e->Get<T2>();
-				nodes.push_back(n);
-			}
-
-			void Remove(Entity *e)
-			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
-			}
-
-		protected:
-			std::vector<Node> nodes;
-		};
-
-
-
-		template<typename T1, typename T2, typename T3>
-		class System3 : public SystemBase
-		{
-			struct Node
-			{
-				T1 *t1;
-				T2 *t2;
-				T3 *t3;
-
-				inline bool operator==(const Node &other) const { return t1 == other.t1; }
-				
-				template<typename U> inline U *Get() { return nullptr; }
-				template<> inline T1 *Get<T1>() { return t1; }
-				template<> inline T2 *Get<T2>() { return t2; }
-				template<> inline T3 *Get<T3>() { return t3; }
-			};
-
-		public:
-			System3(uint64 requiredComponentMask, uint64 anyOfComponentMask, uint32 messageQueueSize, const char *typeName)
-				: SystemBase(requiredComponentMask, anyOfComponentMask, messageQueueSize, typeName)
-			{}
-			virtual ~System3() {}
-			
-		protected:
-			void Add(Entity *e)
-			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				n.t2 = e->Get<T2>();
-				n.t3 = e->Get<T3>();
-				nodes.push_back(n);
-			}
-
-			void Remove(Entity *e)
-			{
-				Node n;
-				n.t1 = e->Get<T1>();
-				nodes.erase(std::find(std::begin(nodes), std::end(nodes), n));
-			}
-
-		protected:
-			std::vector<Node> nodes;
-		};
-
+		
 
 	} // namespace Framework
 

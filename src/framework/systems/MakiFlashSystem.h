@@ -17,7 +17,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class FlashSystem : public System1<Components::Flash>
+			class FlashSystem : public System<Components::Flash>
 			{
 			public:
 				FlashSystem(uint32 messageQueueSize);

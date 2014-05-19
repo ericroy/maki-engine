@@ -13,7 +13,7 @@ namespace Maki
 		{
 
 			RenderSystem::RenderSystem(uint32 messageQueueSize)
-				: System3(Component::TypeFlag_Transform, Component::TypeFlag_Mesh|Component::TypeFlag_Flash, messageQueueSize, "RenderSystem")
+				: System(Component::TypeFlag_Transform, Component::TypeFlag_Mesh|Component::TypeFlag_Flash, messageQueueSize, "RenderSystem")
 			{
 			}
 
@@ -31,9 +31,9 @@ namespace Maki
 
 				const uint32 count = nodes.size();
 				for(uint32 i = 0; i < count; i++) {
-					Components::Transform *transComp = nodes[i].Get<Components::Transform>();
-					Components::Mesh *meshComp = nodes[i].Get<Components::Mesh>();
-					Components::Flash *flashComp = nodes[i].Get<Components::Flash>();
+					Components::Transform *transComp = std::get<0>(nodes[i]);
+					Components::Mesh *meshComp = std::get<1>(nodes[i]);
+					Components::Flash *flashComp = std::get<2>(nodes[i]);
 
 					RenderableComponent *renderComp;
 					if(meshComp != nullptr) {

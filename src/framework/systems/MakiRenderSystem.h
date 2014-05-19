@@ -17,7 +17,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class RenderSystem : public System3<Components::Transform, Components::Mesh, Components::Flash>
+			class RenderSystem : public System<Components::Transform, Components::Mesh, Components::Flash>
 			{
 			public:
 				RenderSystem(uint32 messageQueueSize);
