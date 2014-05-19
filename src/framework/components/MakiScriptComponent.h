@@ -11,8 +11,9 @@ namespace Maki
 {
 	namespace Framework
 	{
-		namespace Systems
-		{
+		class ScriptingApi;
+
+		namespace Systems {
 			class ScriptingSystem;
 		}
 
@@ -21,8 +22,8 @@ namespace Maki
 
 			class Script : public Component
 			{
-				friend class Systems::ScriptingSystem;
-				friend class ScriptingApi;
+				friend class Maki::Framework::Systems::ScriptingSystem;
+				friend class Maki::Framework::ScriptingApi;
 
 			public:
 				static const Type TYPE = Type_Script;

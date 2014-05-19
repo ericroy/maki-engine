@@ -18,7 +18,6 @@ namespace Maki
 				resPool(size, "EntityPool"),
 				generationCount(nullptr)
 			{
-				assert(size < (1ULL<<32));
 				generationCount = (uint32 *)Allocator::Malloc(size * sizeof(uint32));
 				for(uint32 i = 0; i < size; i++) {
 					// 1 will be the minimum generation number to ensure we never have a uid of 0

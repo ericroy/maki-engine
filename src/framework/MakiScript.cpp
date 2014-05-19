@@ -1,15 +1,10 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiScript.h"
 #include "framework/MakiScriptUtils.h"
 #include "framework/MakiScriptingApi.h"
 #include <sstream>
 
-extern "C"
-{
-	#include <lualib.h>
-	#include <lauxlib.h>
-}
+#include <lua.hpp>
 
 namespace Maki
 {
@@ -60,7 +55,7 @@ namespace Maki
 
 			// Load and evaluate the script
 			char chunkName[32];
-			sprintf(chunkName, "Rid<%u>", scriptRid);
+			sprintf(chunkName, "Rid<%u>", (uint32)scriptRid);
 
 			if(luaL_loadbuffer(state, data, bytesRead, chunkName) != 0) {
 				Console::LuaError(luaL_checklstring(state, 1, nullptr));

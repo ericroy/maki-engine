@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiSceneGraphSystem.h"
 #include "framework/components/MakiSceneNodeComponent.h"

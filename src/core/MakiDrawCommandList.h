@@ -11,7 +11,7 @@ namespace Maki
 		class DrawCommandList
 		{
 		public:
-			__declspec(align(16)) struct KeyEntry : public Aligned<16>
+			struct __declspec(align(16)) KeyEntry : public Aligned<16>
 			{
 				uint64 key;
 				uint32 index;

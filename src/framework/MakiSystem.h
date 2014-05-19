@@ -80,7 +80,7 @@ namespace Maki
 				using namespace std;
 
 				ZerothType *ptr = e->Get<ZerothType>();
-				nodes.erase(find_if(begin(nodes), end(nodes), [ptr](const TupleType &item) {
+				nodes.erase(find_if(begin(nodes), end(nodes), [ptr](TupleType &item) {
 					return ptr == std::get<0>(item);
 				}));
 			}

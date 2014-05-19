@@ -24,7 +24,7 @@ namespace Maki
 		class Mesh;
 		class Material;
 
-		__declspec(align(16)) class DrawCommand : public Aligned<16>
+		class __declspec(align(16)) DrawCommand : public Aligned<16>
 		{
 		friend class RenderCore;
 		friend class D3D::D3DRenderCore;

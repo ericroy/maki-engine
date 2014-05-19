@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/hash/hash.h"
 #include "framework/MakiScriptingApi.h"
@@ -18,7 +17,7 @@ namespace Maki
 
 		using namespace Systems;
 
-		const ScriptingApi::ApiFunction ScriptingApi::apiFunctions[] = {
+		const luaL_Reg ScriptingApi::apiFunctions[] = {
 			{ "post_message", &PostMessage },
 			{ "get_message", &GetMessage },
 			{ "get_entity", &GetEntity },
@@ -26,17 +25,12 @@ namespace Maki
 			{ "set_property", &SetProperty },
 			{ "set_message_handler", &SetMessageHandler },
 			{ "hash", &Hash },
+			{ nullptr, nullptr }
 		};
 		
 		void ScriptingApi::ExposeApiToScript(lua_State *state)
 		{
-			lua_newtable(state);
-			for(uint32 i = 0; i < sizeof(apiFunctions)/sizeof(ApiFunction); i++) {
-				lua_pushstring(state, apiFunctions[i].name);
-				lua_pushcfunction(state, apiFunctions[i].func);
-				lua_settable(state, lua_gettop(state)-2);
-			}
-			lua_setglobal(state, "maki");
+			luaL_register(state, "maki", apiFunctions);
 		}
 
 

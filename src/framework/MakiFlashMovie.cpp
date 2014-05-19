@@ -295,21 +295,24 @@ namespace Maki
 		bool FlashMovie::Load(Rid movieRid)
 		{
 			Document doc;
+			Handle material, metaMaterial;
+
 			if(!doc.Load(movieRid)) {
 				Console::Error("Failed to load flash movie <rid %u>", movieRid);
-				goto failed;
+				return false;
 			}
 
-			Handle metaMaterial = CoreManagers::Get()->materialManager->Load(metaMaterialRid);
+			metaMaterial = CoreManagers::Get()->materialManager->Load(metaMaterialRid);
 			if(metaMaterial == HANDLE_NONE) {
 				Console::Error("Failed to load flash meta material <rid %u>", metaMaterialRid);
-				goto failed;
+				return false;
 			}
 
-			Handle material = CoreManagers::Get()->materialManager->Load(materialRid);
+			material = CoreManagers::Get()->materialManager->Load(materialRid);
 			if(material == HANDLE_NONE) {
 				Console::Error("Failed to load flash material <rid %u>", materialRid);
-				goto failed;
+				MaterialManager::Free(metaMaterial);
+				return false;
 			}
 
 			frameRate = doc.root->ResolveAsUInt("frame_rate.#0");
@@ -347,7 +350,9 @@ namespace Maki
 				sheets[i].textureRid = Engine::Get()->assets->PathToRid(path);
 				if(sheets[i].textureRid == RID_NONE) {
 					Console::Error("Failed to find lookup RID for path: %s", path);
-					goto failed;
+					MaterialManager::Free(material);
+					MaterialManager::Free(metaMaterial);
+					return false;
 				}
 			}
 
@@ -398,11 +403,6 @@ namespace Maki
 			this->metaMaterial = metaMaterial;
 			this->rid = rid;
 			return true;
-
-failed:
-			MaterialManager::Free(material);
-			MaterialManager::Free(metaMaterial);
-			return false;
 		}
 
 		static Vector2 unitQuadCoeffs[4] = {

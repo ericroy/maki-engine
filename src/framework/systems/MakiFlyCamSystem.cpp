@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiFlyCamSystem.h"
 #include "framework/components/MakiTransformComponent.h"

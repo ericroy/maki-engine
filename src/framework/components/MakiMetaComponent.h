@@ -70,7 +70,7 @@ namespace Maki
 					if(prop != nullptr) {
 						if(prop->type == PropertyTraits<T>::PROPERTY_TYPE) {
 							if(valueOut != nullptr) {
-								*valueOut = PropertyTraits<T>::ToValueType(*reinterpret_cast<PropertyTraits<T>::ELEMENT_TYPE *>(&prop->value));
+								*valueOut = PropertyTraits<T>::ToValueType(*reinterpret_cast<typename PropertyTraits<T>::ELEMENT_TYPE *>(&prop->value));
 							}
 							return true;
 						}

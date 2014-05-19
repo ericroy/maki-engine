@@ -11,7 +11,7 @@ namespace Maki
 	namespace Core
 	{
 
-		__declspec(align(SIMD_ALIGN)) class Matrix44 : public Aligned<SIMD_ALIGN>
+		class __declspec(align(SIMD_ALIGN)) Matrix44 : public Aligned<SIMD_ALIGN>
 		{
 		public:
 			static void RotationX(float rads, Matrix44 &m);
