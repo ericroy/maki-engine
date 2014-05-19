@@ -104,18 +104,19 @@ class Node(object):
 TOKEN_INDENT = 0
 TOKEN_EOL = 1
 TOKEN_COMMA = 2
-TOKENvalue = 3
+TOKEN_VALUE = 3
 TOKEN_COMMENT = 4
 
 TOKEN_NAMES = {
     TOKEN_INDENT: 'INDENT',
     TOKEN_EOL: 'EOL',
     TOKEN_COMMA: 'COMMA',
-    TOKENvalue: 'VALUE',
+    TOKEN_VALUE: 'VALUE',
     TOKEN_COMMENT: 'COMMENT',
 }
 
-def _tokens(source):
+def _tokens(s):
+    source = iter(s)
     prev_token_type = None
     c = next(source)
     try:
@@ -149,8 +150,8 @@ def _tokens(source):
                 while not (c == '"' and token[-1] != '\\'):
                     token.append(c)
                     c = next(source)
-                yield TOKENvalue, ''.join(token)
-                prev_token_type = TOKENvalue
+                yield TOKEN_VALUE, ''.join(token)
+                prev_token_type = TOKEN_VALUE
                 c = next(source)
             elif c in ('\r', '\n'):
                 while c in ('\r', '\n'):
@@ -166,24 +167,23 @@ def _tokens(source):
                     c = next(source)
                 while c == ' ':
                     c = next(source)
-                yield TOKENvalue, ''.join(token)
-                prev_token_type = TOKENvalue
+                yield TOKEN_VALUE, ''.join(token)
+                prev_token_type = TOKEN_VALUE
     except StopIteration:
-        tokenvalue = ''.join(token)
-        if tokenvalue.strip():
-            yield TOKENvalue, tokenvalue
+        token_value = ''.join(token)
+        if token_value.strip():
+            yield TOKEN_VALUE, token_value
         raise
 
 def deserialize(s):
     root = Node('<root>')
-    it = iter(s)
     parent = root
     last_node = root
     indent = 0
     indent_format = None
-    for tok_type, tok in _tokens(it):
+    for tok_type, tok in _tokens(s):
         #print(TOKEN_NAMES[tok_type], repr(tok))
-        if tok_type == TOKENvalue:
+        if tok_type == TOKEN_VALUE:
             indent += 1
             n = Node(tok)
             parent.add_child(n)
