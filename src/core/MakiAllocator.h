@@ -47,8 +47,11 @@ namespace Maki
 
 		inline void *AlignedRealloc(void *existing, std::size_t size, std::size_t alignment = 8)
 		{
-			std::size_t shift = *reinterpret_cast<std::size_t *>(static_cast<char *>(existing) - sizeof(std::size_t));
-			char *base = static_cast<char *>(existing) - shift - sizeof(std::size_t);
+			char *base = nullptr;
+			if(existing != nullptr) {
+				std::size_t shift = *reinterpret_cast<std::size_t *>(static_cast<char *>(existing)-sizeof(std::size_t));
+				base = static_cast<char *>(existing)-shift - sizeof(std::size_t);
+			}
 
 			// Alignment must be at least 4, which is the default alignment of malloc for a 32 bit system.
 			assert(alignment >= 4);
@@ -60,7 +63,7 @@ namespace Maki
 			char *p = static_cast<char *>(realloc(base, size + sizeof(std::size_t) + alignment-1)) + sizeof(std::size_t);
 
 			std::size_t lowerBits = reinterpret_cast<uintptr_t>(p) & (alignment-1);
-			shift = lowerBits != 0 ? alignment - lowerBits : 0;
+			std::size_t shift = lowerBits != 0 ? alignment - lowerBits : 0;
 			p += shift;
 
 			// Stash the alignment value immediately before the 
