@@ -6,6 +6,12 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
+#if defined(_WIN32) || defined(_WIN64)
+#	define MAKI_FSEEK64 _fseeki64
+#else
+#	define MAKI_FSEEK64 fseeko64
+#endif
+
 #include <cstdio>
 #include <new>
 #include <cstring>

@@ -97,7 +97,7 @@ namespace Maki
 			dest[entries[i].uncompressedLength] = 0;
 
 			if((entries[i].flags & Flag_ZLibCompressed) != 0) {
-				fseeko64(fp, bodyOffset + entries[i].offset, SEEK_SET);
+				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
 
 				z_stream stream;
 				memset(&stream, 0, sizeof(stream));
@@ -119,7 +119,7 @@ namespace Maki
 				status = inflateEnd(&stream);
 				assert(status == Z_OK);
 			} else {
-				fseeko64(fp, bodyOffset + entries[i].offset, SEEK_SET);
+				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
 				uint32 read = fread(dest, sizeof(char), entries[i].uncompressedLength, fp);
 				assert(read == entries[i].uncompressedLength);
 			}
