@@ -24,6 +24,14 @@ namespace Maki
 	namespace Core
 	{
 
+#if defined(_WIN32) || defined(_WIN64)
+
+		inline void *AlignedMalloc(std::size_t size, std::size_t alignment = 8) { return _aligned_malloc(size, alignment); }
+		inline void *AlignedRealloc(void *existing, std::size_t size, std::size_t alignment = 8) { return _aligned_realloc(existing, size, alignment); }
+		inline void AlignedFree(void *p) { _aligned_free(p); }
+
+#else
+
 		inline void *AlignedMalloc(std::size_t size, std::size_t alignment = 8)
 		{
 			// Alignment must be at least 4, which is the default alignment of malloc for a 32 bit system.
@@ -78,6 +86,8 @@ namespace Maki
 			char *base = static_cast<char *>(p) - shift - sizeof(std::size_t);
 			free(base);
 		}
+
+#endif
 
 
 
