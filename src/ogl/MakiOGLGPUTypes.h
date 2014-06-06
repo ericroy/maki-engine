@@ -1,5 +1,4 @@
 #pragma once
-#include "ogl/ogl_stdafx.h"
 #include "ogl/MakiOGLCommon.h"
 
 namespace Maki
@@ -28,8 +27,8 @@ namespace Maki
 
 		struct GPUShader
 		{
-			GPUShader() : sh(0) {}
-			virtual ~GPUShader() { glDeleteShader(sh); }
+			GPUShader();
+			virtual ~GPUShader();
 
 			GLuint sh;
 		};

@@ -1,5 +1,6 @@
 #pragma once
-#include "ogl/ogl_stdafx.h"
+#include <GL/gl.h>
+
 
 /*
 #define MAKI_EXTERN_GL_FUNC(Type, Name) extern PFN##Type##PROC Name;

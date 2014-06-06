@@ -158,9 +158,7 @@ namespace Maki
 				return;
 			}
 
-#if !defined(_WIN32) && !defined(_WIN64)
 			glewInit();
-#endif
 
 /*
 			MAKI_DEFINE_GL_FUNC(glBufferData);

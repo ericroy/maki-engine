@@ -14,6 +14,8 @@ namespace Maki
 		}
 
 
+		GPUShader::GPUShader() : sh(0) {}
+		GPUShader::~GPUShader() { glDeleteShader(sh); }
 
 
 		GPUVertexShader::GPUVertexShader()
