@@ -14,7 +14,7 @@ namespace Maki
 
 		namespace Systems
 		{
-			class SceneGraphSystem : public System1<Components::SceneNode>
+			class SceneGraphSystem : public System<Components::SceneNode>
 			{
 			public:
 				SceneGraphSystem(uint32 messageQueueSize);

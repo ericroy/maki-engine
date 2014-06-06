@@ -13,6 +13,13 @@ namespace Maki
 	namespace Core
 	{
 
+		Document::Node::Node(const char *data, uint32 length)
+			: parent(nullptr), value(nullptr), count(0), capacity(0), children(nullptr)
+		{
+			value = new char[length+1];
+			memcpy(value, data, length+1);
+			value[length] = 0;
+		}
 
 		Document::Node::Node(char *data, uint32 length, bool shouldCloneData)
 			: parent(nullptr), value(nullptr), count(0), capacity(0), children(nullptr)
@@ -196,7 +203,7 @@ namespace Maki
 		Document::Document()
 		:	root(nullptr)
 		{
-			root = new Node("<root>", 6, true);
+			root = new Node("<root>", 6);
 		}
 
 		Document::~Document()
@@ -348,7 +355,7 @@ namespace Maki
 		bool DocumentTextSerializer::Deserialize(char *data, uint32 length)
 		{
 			SAFE_DELETE(doc.root);
-			doc.root = new Document::Node("<root>", 6, true);
+			doc.root = new Document::Node("<root>", 6);
 		
 			uint32 character = 0;
 			uint32 line = 0;
@@ -598,7 +605,7 @@ namespace Maki
 			}
 
 			SAFE_DELETE(doc.root);
-			doc.root = new Document::Node("<root>", 6, true);
+			doc.root = new Document::Node("<root>", 6);
 
 			char *p = data; p += sizeof(BINARY_HEADER);
 

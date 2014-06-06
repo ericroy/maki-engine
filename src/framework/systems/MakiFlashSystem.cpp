@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiFlashMovieManager.h"
 #include "framework/MakiMessageHub.h"
@@ -13,7 +12,7 @@ namespace Maki
 		{
 
 			FlashSystem::FlashSystem(uint32 messageQueueSize)
-				: System1(Component::TypeFlag_Flash, 0, messageQueueSize, "FlashSystem")
+				: System(Component::TypeFlag_Flash, 0, messageQueueSize, "FlashSystem")
 			{
 			}
 
@@ -25,7 +24,7 @@ namespace Maki
 			{
 				const uint32 nodeCount = nodes.size();
 				for(uint32 i = 0; i < nodeCount; i++) {
-					Components::Flash *flashComp = nodes[i].Get<Components::Flash>();
+					Components::Flash *flashComp = std::get<0>(nodes[i]);
 					FlashMovie *mov = FlashMovieManager::Get(flashComp->movie);
 
 					bool wasFinished = flashComp->state.IsFinished();
@@ -60,7 +59,7 @@ namespace Maki
 						} else {
 							const uint32 count = nodes.size();
 							for(uint32 j = 0; j < count; j++) {
-								Components::Flash *flashComp = nodes[j].Get<Components::Flash>();
+								Components::Flash *flashComp = std::get<0>(nodes[j]);
 								int32 index = FlashMovieManager::Get(flashComp->movie)->GetTrackIndexByNameHash((uint32)msg.arg1);
 								flashComp->state.PlayTrack(index);
 							}

@@ -17,7 +17,11 @@ namespace Maki
 	namespace OGL
 	{
 
-		void APIENTRY OGLDebugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+		#if defined(_WIN32) || defined(_WIN64)
+		void APIENTRY OGLDebugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
+		#else
+		void OGLDebugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+		#endif
 		{
 			Console::Info("GL DEBUG: %s", message);
 		}
@@ -107,6 +111,7 @@ namespace Maki
 
 			DefineGLFunctions();
 
+#if defined(_WIN32) || defined(_WIN64)
 			debugOutput = config->GetBool("ogl.debug_messages", false);
 			if(debugOutput && glDebugMessageCallback != nullptr) {
 				Console::Info("Registering for OpenGL debug messages");
@@ -115,6 +120,7 @@ namespace Maki
 				glEnable(GL_DEBUG_OUTPUT);
 				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			}
+#endif
 		}
 
 		OGLRenderCore::~OGLRenderCore() {
@@ -135,12 +141,14 @@ namespace Maki
 
 			SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 
+#if defined(_WIN32) || defined(_WIN64)
 			if(debugOutput && glDebugMessageCallback != nullptr) {
 				// Register debug callback for render thread's context
 				glDebugMessageCallback(OGLDebugMessageHandler, nullptr);
 				glEnable(GL_DEBUG_OUTPUT);
 				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			}
+#endif
 
 			
 			// Set initial state:
@@ -254,14 +262,14 @@ namespace Maki
 			}
 
 			gs->sh = glCreateShader(shaderType);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { SAFE_DELETE(gs); return false; }
 
 			int32 length = (int32)s->programDataBytes;
 			glShaderSource(gs->sh, 1, (const GLchar **)&s->programData, &length);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { SAFE_DELETE(gs); return false; }
 			
 			glCompileShader(gs->sh);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { SAFE_DELETE(gs); return false; }
 
 			GLint infoLogLength;
 			glGetShaderiv(gs->sh, GL_INFO_LOG_LENGTH, &infoLogLength);
@@ -275,17 +283,15 @@ namespace Maki
 
 			GLint compileStatus;
 			glGetShaderiv(gs->sh, GL_COMPILE_STATUS, &compileStatus);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { SAFE_DELETE(gs); return false; }
 			if(compileStatus == GL_FALSE) {
 				Console::Error("Failed to compile glsl %s shader", shaderType == GL_FRAGMENT_SHADER ? "pixel" : "vertex");
-				goto failed;
+				SAFE_DELETE(gs);
+				return false;
 			}
 
 			s->handle = (intptr_t)gs;
 			return true;
-failed:
-			SAFE_DELETE(gs);
-			return false;
 		}
 
 		bool OGLRenderCore::CreateShaderProgram(ShaderProgram *s)
@@ -308,7 +314,7 @@ failed:
 				glBindAttribLocation(program, i, attributeName[i]);
 			}
 			glLinkProgram(program);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteProgram(program); return false; }
 			
 			GLint infoLogLength;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
@@ -322,10 +328,11 @@ failed:
 
 			GLint linkStatus;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteProgram(program); return false; }
 			if(linkStatus == GL_FALSE) {
 				Console::Error("Failed to link glsl program");
-				goto failed;
+				glDeleteProgram(program);
+				return false;
 			}
 			assert(glIsProgram(program));
 
@@ -480,7 +487,7 @@ failed:
 				SAFE_DELETE(nameBuffer);
 			}
 
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteProgram(program); return false; }
 
 			int32 largestBuffer = std::max(std::max(s->vertexShader.materialUniformBytes, s->vertexShader.engineObjectUniformBytes), s->vertexShader.engineFrameUniformBytes);
 			gvs->scratchBuffer = (char *)Allocator::Malloc(largestBuffer, 16);
@@ -501,10 +508,6 @@ failed:
 
 			s->handle = (intptr_t)program;
 			return true;
-
-failed:
-			glDeleteProgram(program);
-			return false;
 		}
 
 	
@@ -515,12 +518,12 @@ failed:
 
 			if(channels == 0 || channels > 4 || channels == 3) {
 				Console::Error("Unsupported number of channels in image: %d", channels);
-				goto failed;
+				return false;
 			}
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			glBindTexture(GL_TEXTURE_2D, tex);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -528,16 +531,12 @@ failed:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexImage2D(GL_TEXTURE_2D, 0, channels, t->width, t->height, 0, channelsToFormat[channels], GL_UNSIGNED_BYTE, nullptr);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			GPUTexture *gtex = new GPUTexture();
 			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
-			return true;
-
-failed:
-			glDeleteTextures(1, &tex);
-			return false;
+			return true;	
 		}
 
 		bool OGLRenderCore::CreateRenderTarget(Texture *t)
@@ -546,7 +545,7 @@ failed:
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			glBindTexture(GL_TEXTURE_2D, tex);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -554,15 +553,12 @@ failed:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->width, t->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			GPUTexture *gtex = new GPUTexture();
 			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
 			return true;
-failed:
-			glDeleteTextures(1, &tex);
-			return false;
 		}
 
 		bool OGLRenderCore::CreateDepthTexture(Texture *t)
@@ -574,16 +570,12 @@ failed:
 			glBindRenderbuffer(GL_RENDERBUFFER, tex);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, t->width, t->height);
 			glBindRenderbuffer(GL_RENDERBUFFER, 0);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			GPUTexture *gtex = new GPUTexture();
 			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
 			return true;
-
-failed:
-			glDeleteTextures(1, &tex);
-			return false;
 		}
 
 		bool OGLRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
@@ -597,19 +589,19 @@ failed:
 			int32 ret = MOJODDS_getTexture(data, dataLength, &dataOut, &dataLengthOut, &format, &t->width, &t->height, &mipLevels);
 			if(ret == 0) {
 				Console::Error("Failed to mojo-load dds file");
-				goto failed;
+				return false;
 			}
 
 			GLuint tex = 0;
 			glGenTextures(1, &tex);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			glBindTexture(GL_TEXTURE_2D, tex);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			switch(format)
 			{
@@ -629,21 +621,17 @@ failed:
 				break;
 			default:
 				Console::Error("Failed to load texture, not a supported internal pixel format");
-				goto failed;
+				glDeleteTextures(1, &tex); return false;
 			}
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			glGenerateMipmap(GL_TEXTURE_2D);
-			if(MAKI_OGL_FAILED()) { goto failed; }
+			if(MAKI_OGL_FAILED()) { glDeleteTextures(1, &tex); return false; }
 
 			GPUTexture *gtex = new GPUTexture();
 			gtex->tex = tex;
 			t->handle = (intptr_t)gtex;
 			return true;
-
-failed:
-			glDeleteTextures(1, &tex);
-			return false;
 		}
 
 		void OGLRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)

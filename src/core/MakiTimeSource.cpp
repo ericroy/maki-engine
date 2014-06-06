@@ -1,4 +1,3 @@
-#pragma once
 #include "core/core_stdafx.h"
 #include "core/MakiTimeSource.h"
 

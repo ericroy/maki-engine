@@ -17,14 +17,14 @@ namespace Maki
 		namespace Systems
 		{
 
-			class LightingSystem : public System2<Components::Transform, Components::Light>
+			class LightingSystem : public System<Components::Transform, Components::Light>
 			{
 			public:
 				LightingSystem(uint32 messageQueueSize);
 				virtual ~LightingSystem();
 		
 				inline uint32 GetLightCount() const { return nodes.size(); }
-				inline Entity *GetLight(uint32 index) { return nodes[index].Get<Components::Light>()->owner; }
+				inline Entity *GetLight(uint32 index) { return std::get<1>(nodes[index])->owner; }
 			};
 
 		} // namespace Systems

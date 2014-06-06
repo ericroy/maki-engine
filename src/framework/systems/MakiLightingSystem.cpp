@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiLightingSystem.h"
 #include "framework/components/MakiTransformComponent.h"
@@ -11,7 +10,7 @@ namespace Maki
 		{
 
 			LightingSystem::LightingSystem(uint32 messageQueueSize)
-				: System2(Component::TypeFlag_Light|Component::TypeFlag_Transform, 0, messageQueueSize, "LightingSystem")
+				: System(Component::TypeFlag_Transform|Component::TypeFlag_Light, 0, messageQueueSize, "LightingSystem")
 			{
 			}
 

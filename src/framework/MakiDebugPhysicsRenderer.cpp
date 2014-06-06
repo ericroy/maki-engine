@@ -35,10 +35,11 @@ namespace Maki
 			maxLines = config->GetUint("engine.debug_physics_max_lines", DEFAULT_MAX_LINES);
 
 			Point p[2] = {{ 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }, { 0.0f, 0.0f, 0.0f, 0, 0, 0, 0 }};
-			for(uint32 i = 0; i < maxLines; ++i) {	
+			assert(maxLines < (1<<16));
+			for(uint16 i = 0; i < (uint16)maxLines; ++i) {
 				m.PushVertexData(sizeof(p), (char *)p);
 
-				uint16 line[2] = { i*2, i*2+1 };
+				uint16 line[2] = { static_cast<uint16>(i*2), static_cast<uint16>(i*2+1) };
 				m.PushIndexData(sizeof(line), (char *)line);
 			}
 

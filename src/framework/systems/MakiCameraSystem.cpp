@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/systems/MakiCameraSystem.h"
 #include "framework/components/MakiTransformComponent.h"
@@ -11,7 +10,7 @@ namespace Maki
 		{
 
 			CameraSystem::CameraSystem(uint32 messageQueueSize)
-				: System2(Component::TypeFlag_Camera|Component::TypeFlag_Transform, 0, messageQueueSize, "CameraSystem")
+				: System(Component::TypeFlag_Transform|Component::TypeFlag_Camera, 0, messageQueueSize, "CameraSystem")
 			{
 			}
 

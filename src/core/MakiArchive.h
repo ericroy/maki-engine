@@ -23,6 +23,7 @@ namespace Maki
 				uint32 flags;
 			};
 
+			static const uint32 FILE_PATH_MAX_LENGTH = 260;
 			static const uint32 DECOMPRESSION_BUFFER_SIZE = 32 * 1024;
 			static char buffer[DECOMPRESSION_BUFFER_SIZE];
 

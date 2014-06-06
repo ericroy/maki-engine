@@ -20,6 +20,7 @@ namespace Maki
 				friend class DocumentBinarySerializer;
 		
 			public:
+				Node(const char *data, uint32 length);
 				Node(char *data, uint32 length, bool shouldCloneData);
 				~Node();
 

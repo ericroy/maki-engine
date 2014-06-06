@@ -121,7 +121,7 @@ namespace Maki
 				m->PushVertexData(sizeof(v), (char *)v);
 
 				uint16 base = i*4;
-				uint16 f[6] = {base, base+1, base+2, base, base+2, base+3};
+				uint16 f[6] = {base, (uint16)(base+1), (uint16)(base+2), base, (uint16)(base+2), (uint16)(base+3)};
 				m->PushIndexData(sizeof(f), (char *)f);
 			}
 

@@ -57,7 +57,9 @@ namespace Maki
 
 			std::map<std::string, Rid>::iterator iter = Script::modules.find(moduleName);
 			assert(iter != Script::modules.end());
-				
+			
+			int32 ret;
+
 			uint32 bytesRead;
 			char *data = Engine::Get()->assets->AllocRead(iter->second, &bytesRead);
 			if(data == nullptr) {
@@ -65,7 +67,7 @@ namespace Maki
 				goto failed;
 			}
 
-			int32 ret = luaL_loadbuffer(state, data, bytesRead, moduleName.c_str());
+			ret = luaL_loadbuffer(state, data, bytesRead, moduleName.c_str());
 			if(ret != 0) {
 				Console::LuaError(luaL_checklstring(state, 1, nullptr));
 				lua_pop(state, 1);

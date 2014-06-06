@@ -17,7 +17,7 @@ namespace Maki
 		namespace Systems
 		{
 
-			class FlyCamSystem : public System2<Components::Transform, Components::Camera>
+			class FlyCamSystem : public System<Components::Transform, Components::Camera>
 			{
 			public:
 				FlyCamSystem(uint32 messageQueueSize);

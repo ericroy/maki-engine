@@ -17,13 +17,13 @@ namespace Maki
 		namespace Systems
 		{
 
-			class CameraSystem : public System2<Components::Transform, Components::Camera>
+			class CameraSystem : public System<Components::Transform, Components::Camera>
 			{
 			public:
 				CameraSystem(uint32 messageQueueSize);
 				virtual ~CameraSystem();
 				inline uint32 GetCameraCount() const { return nodes.size(); }
-				inline Entity *GetCamera(uint32 index) { return nodes[index].Get<Components::Camera>()->owner; }
+				inline Entity *GetCamera(uint32 index) { return std::get<1>(nodes[index])->owner; }
 			};
 
 		} // namespace Systems

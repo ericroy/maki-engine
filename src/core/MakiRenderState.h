@@ -9,7 +9,7 @@ namespace Maki
 	namespace Core
 	{
 
-		__declspec(align(SIMD_ALIGN)) class RenderState : public Aligned<SIMD_ALIGN>
+		class __declspec(align(SIMD_ALIGN)) RenderState : public Aligned<SIMD_ALIGN>
 		{
 		public:
 			static const int32 MAX_LIGHTS = 8;
@@ -85,7 +85,7 @@ namespace Maki
 				float splits[MAX_CASCADES-1];
 			};
 
-			__declspec(align(SIMD_ALIGN)) struct LightSplitRegion : public Aligned<SIMD_ALIGN>
+			struct __declspec(align(SIMD_ALIGN)) LightSplitRegion : public Aligned<SIMD_ALIGN>
 			{
 				Matrix44 viewProj;
 				Vector4 widthHeightNearFar;

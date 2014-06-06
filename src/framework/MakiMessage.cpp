@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiMessage.h"
 #include "framework/hash/hash.h"

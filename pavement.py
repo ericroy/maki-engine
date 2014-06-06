@@ -7,16 +7,16 @@ PLATFORM = 'win' if platform.system() == 'Windows' else 'nix'
 
 KNOWN_PATHS = {
 	'sdl': {
-		'win': 'deps/SDL2-2.0.0/include',
-		'nix': ''
+		'win': './deps/SDL2-2.0.0/include',
+		'nix': '/usr/local/include/SDL2'
 	},
 	'bullet': {
-		'win': 'deps/bullet-2.81-rev2613/src',
-		'nix': ''
+		'win': './deps/bullet-2.81-rev2613/src',
+		'nix': './deps/bullet-2.81-rev2613/src'
 	},
 	'lua': {
-		'win': 'deps/LuaJIT-2.0.2/src',
-		'nix': ''
+		'win': './deps/LuaJIT-2.0.2/src',
+		'nix': './deps/LuaJIT-2.0.2/src'
 	}
 }
 
@@ -68,12 +68,15 @@ def compile_lib(sources, build_dir, out, include_dirs=[], libs=[], defines=[]):
 	objects = listify([object_name(s) for s in sources])
 	sources = listify(relative(sources, build_dir))
 	with pushd(build_dir):
+		print(out)
 		if PLATFORM == 'win':
-			print(out)
+			# Build static libraries on windows
 			sh('cl /MP /EHsc /c %s %s' % (include_dirs, sources))
 			sh('lib /OUT:%s %s' % (out, objects))
 		else:
-			sh('')
+			# Build shared libraries on *nix
+			out = out.dirname() / ('lib' + out.basename() + '.so')
+			sh('clang++ -std=c++11 -fno-rtti -fPIC -pthreads -o %s %s %s -shared -lGLEW -lSDL2 -ldl -lrt' % (out, sources, include_dirs))
 
 @task
 def debug():
@@ -107,6 +110,8 @@ def framework():
 
 @task
 def d3d():
+	if PLATFORM != 'win':
+		return
 	build_dir = path('build/d3d')
 	try:
 		build_dir.rmtree()

@@ -1,5 +1,5 @@
 #pragma once
-#include "d3d/d3d_stdafx.h"
+#include <d3d11.h>
 
 namespace Maki
 {

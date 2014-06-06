@@ -7,7 +7,7 @@ namespace Maki
 	namespace Core
 	{
 
-		char Archive::buffer[DECOMPRESSION_BUFFER_SIZE];
+		char Archive::buffer[Archive::DECOMPRESSION_BUFFER_SIZE];
 
 		Archive::Archive()
 			: fp(nullptr), ridStart(0), bodyOffset(0)
@@ -52,7 +52,7 @@ namespace Maki
 			entries.Zero();
 			
 			// Read table of contents
-			char buffer[_MAX_PATH];
+			char buffer[FILE_PATH_MAX_LENGTH];
 			uint32 tocOffset = ftell(fp);
 			for(uint32 i = 0; i < tocCount; i++) {
 				Entry &entry = entries[i];
@@ -60,7 +60,7 @@ namespace Maki
 
 				uint32 nameLength = 0;
 				fread(&nameLength, sizeof(nameLength), 1, fp);
-				assert(nameLength < _MAX_PATH);
+				assert(nameLength < FILE_PATH_MAX_LENGTH);
 
 				fread(buffer, sizeof(char), nameLength, fp);
 				entry.fileName = std::string(buffer, nameLength);
@@ -97,7 +97,7 @@ namespace Maki
 			dest[entries[i].uncompressedLength] = 0;
 
 			if((entries[i].flags & Flag_ZLibCompressed) != 0) {
-				_fseeki64(fp, bodyOffset + entries[i].offset, SEEK_SET);
+				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
 
 				z_stream stream;
 				memset(&stream, 0, sizeof(stream));
@@ -105,7 +105,7 @@ namespace Maki
 				stream.avail_out = entries[i].uncompressedLength;
 				inflateInit(&stream);
 				
-				int status = Z_OK;
+				int32 status = Z_OK;
 				uint32 remaining = entries[i].compressedLength;
 				while(remaining > 0) {
 					stream.next_in = (const uint8 *)buffer;
@@ -119,7 +119,7 @@ namespace Maki
 				status = inflateEnd(&stream);
 				assert(status == Z_OK);
 			} else {
-				_fseeki64(fp, bodyOffset + entries[i].offset, SEEK_SET);
+				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
 				uint32 read = fread(dest, sizeof(char), entries[i].uncompressedLength, fp);
 				assert(read == entries[i].uncompressedLength);
 			}

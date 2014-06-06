@@ -1,4 +1,3 @@
-#pragma once
 #include "framework/framework_stdafx.h"
 #include "framework/MakiSystem.h"
 #include "framework/MakiMessageHub.h"
