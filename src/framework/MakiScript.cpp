@@ -5,11 +5,7 @@
 #include "framework/MakiScriptingApi.h"
 #include <sstream>
 
-extern "C"
-{
-	#include <lualib.h>
-	#include <lauxlib.h>
-}
+#include <lua.hpp>
 
 namespace Maki
 {

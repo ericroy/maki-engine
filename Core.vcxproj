@@ -295,7 +295,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>core/core_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -321,7 +321,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>core/core_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>

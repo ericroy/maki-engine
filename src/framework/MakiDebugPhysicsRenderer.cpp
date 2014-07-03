@@ -1,6 +1,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiDebugPhysicsRenderer.h"
 
+#if 0
 namespace Maki
 {
 	namespace Framework
@@ -133,3 +134,5 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+
+#endif

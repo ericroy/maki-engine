@@ -18,8 +18,8 @@
 #endif
 #include "Maki.h"
 
-#include "btBulletCollisionCommon.h"
-#include "btBulletDynamicsCommon.h"
+//#include "btBulletCollisionCommon.h"
+//#include "btBulletDynamicsCommon.h"
 
 #include "framework/MakiMacros.h"
 #include "framework/MakiTween.h"

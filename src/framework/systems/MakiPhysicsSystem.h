@@ -2,6 +2,7 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiSystem.h"
 
+#if 0
 namespace Maki
 {
 	namespace Framework
@@ -53,3 +54,4 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+#endif

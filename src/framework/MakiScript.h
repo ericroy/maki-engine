@@ -1,11 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 #include "core/MakiResource.h"
-
-extern "C"
-{
-	#include <luajit.h>
-}
+#include <lua.hpp>
 
 namespace Maki
 {

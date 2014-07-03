@@ -4,6 +4,7 @@
 #include "framework/components/MakiTransformComponent.h"
 #include "framework/MakiComponentPool.h"
 
+#if 0
 namespace Maki
 {
 	namespace Framework
@@ -190,3 +191,5 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+
+#endif

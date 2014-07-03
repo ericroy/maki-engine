@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;OGLRENDERCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>oglrendercore/oglrendercore_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -75,7 +75,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;OGLRENDERCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.0/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/ogl/mojo;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>oglrendercore/oglrendercore_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>

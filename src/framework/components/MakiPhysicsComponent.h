@@ -2,8 +2,9 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiComponent.h"
 
-//#include "btBulletCollisionCommon.h"
-//#include "btBulletDynamicsCommon.h"
+#if 0
+#include "btBulletCollisionCommon.h"
+#include "btBulletDynamicsCommon.h"
 
 
 namespace Maki
@@ -95,3 +96,5 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+
+#endif

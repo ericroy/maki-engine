@@ -45,6 +45,6 @@ Debug_core/
 Debug_framework/
 Release_core/
 Release_framework/
-bullet-2.81-rev2613/
-LuaJIT-2.0.2/
-SDL2-2.0.0/
+bullet-2*/
+LuaJIT-2*/
+SDL2-2*/

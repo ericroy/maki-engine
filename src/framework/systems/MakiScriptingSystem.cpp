@@ -9,12 +9,8 @@
 #include "framework/components/MakiScriptComponent.h"
 #include <sstream>
 
-extern "C"
-{
-	#include <luajit.h>
-	#include <lualib.h>
-	#include <lauxlib.h>
-}
+#include <lua.hpp>
+
 
 namespace Maki
 {
