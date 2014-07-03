@@ -3,6 +3,7 @@
 
 #include <lua.hpp>
 
+
 namespace Maki
 {
 	namespace Framework
@@ -10,6 +11,9 @@ namespace Maki
 
 		class ScriptingApi
 		{
+		private:
+			struct  ApiFunction { const char *name; lua_CFunction func; };
+
 		public:
 			static void ExposeApiToScript(lua_State *state);
 
@@ -23,7 +27,7 @@ namespace Maki
 			static int32 Hash(lua_State *state);
 
 		private:
-			static const luaL_Reg apiFunctions[];
+			static const ApiFunction apiFunctions[];
 		};
 
 

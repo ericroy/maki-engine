@@ -2,10 +2,8 @@
 #include "framework/framework_stdafx.h"
 #include "framework/MakiComponent.h"
 
-extern "C"
-{
-	#include <luajit.h>
-}
+#include <lua.hpp>
+
 
 namespace Maki
 {

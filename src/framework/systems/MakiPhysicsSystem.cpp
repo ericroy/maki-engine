@@ -3,6 +3,7 @@
 #include "framework/components/MakiPhysicsComponent.h"
 #include "framework/components/MakiTransformComponent.h"
 
+#if 0
 namespace Maki
 {
 	namespace Framework
@@ -149,3 +150,5 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+
+#endif

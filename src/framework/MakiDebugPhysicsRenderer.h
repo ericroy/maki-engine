@@ -1,6 +1,7 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 
+#if 0
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 
@@ -40,3 +41,5 @@ namespace Maki
 	} // namespace Framework
 
 } // namespace Maki
+
+#endif
