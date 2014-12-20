@@ -56,8 +56,8 @@ namespace maki
 			void BindMaterialConstants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat);
 
 		public:
-			SafeQueue<RenderPayload> input;
-			SafeQueue<RenderPayload> output;
+			safe_queue_t<render_payload_t> input;
+			safe_queue_t<render_payload_t> output;
 
 		protected:
 			uint32 window_width_;
@@ -74,14 +74,14 @@ namespace maki
 			// Resize screen buffers if necessary
 			if(window_width_ != state.window_width_ || window_height_ != state.window_height_) {
 				console_t::info("renderer_t resizing to %dx%d", state.window_width_, state.window_height_);
-				derived->set_render_target_and_depth_stencil(render_state_t::RenderTarget_Null, HANDLE_NONE, render_state_t::DepthStencil_Null, HANDLE_NONE);
+				derived->set_render_target_and_depth_stencil(render_state_t::render_target_null_, HANDLE_NONE, render_state_t::depth_stencil_null_, HANDLE_NONE);
 				derived->Resized(state.window_width_, state.window_height_);
 				window_width = state.window_width_;
 				window_height = state.window_height_;
 			}
 
 			derived->set_render_target_and_depth_stencil(state.render_target_type_, state.render_target_, state.depth_stencil_type_, state.depth_stencil_);
-			derived->SetViewport(state.view_port_rect_);
+			derived->set_viewport(state.view_port_rect_);
 			derived->set_depth_state(state.depth_test_, state.depth_write_);
 			derived->SetRasterizerState(state.cull_mode_, state.wire_frame_);
 
@@ -109,9 +109,9 @@ namespace maki
 				const vertex_format_t *vf = vertex_format_manager_t::get(dc->vertex_format_);
 				const shader_program_t *base_shader = shader_program_manager_t::get(dc->shader_program_);
 			
-				assert(base_shader->variant_ == shader_program_t::Variant_Normal && "can only get variants from a normal shader program");
+				assert(base_shader->variant_ == shader_program_t::variant_normal_ && "can only get variants_ from a normal shader program");
 				const shader_program_t *shader = base_shader;
-				if(state.shader_variant_ != shader_program_t::Variant_Normal) {
+				if(state.shader_variant_ != shader_program_t::variant_normal_) {
 					handle_t h = base_shader->variants_[state.shader_variant_-1];
 					if(h == HANDLE_NONE) {
 						// No such variant for this shader, skip
@@ -216,7 +216,7 @@ namespace maki
 				derived->bind_shaders(nullptr);
 			}
 
-			derived->set_render_target_and_depth_stencil(render_state_t::RenderTarget_Null, HANDLE_NONE, render_state_t::DepthStencil_Null, HANDLE_NONE);
+			derived->set_render_target_and_depth_stencil(render_state_t::render_target_null_, HANDLE_NONE, render_state_t::depth_stencil_null_, HANDLE_NONE);
 			derived->release_context();
 		}
 

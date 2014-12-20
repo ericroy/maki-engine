@@ -100,10 +100,10 @@ namespace maki
 		
 			inline void set_row(uint32 row, const vector4_t &v)
 			{
-				cols_[0][row] = v.x;
-				cols_[1][row] = v.y;
-				cols_[2][row] = v.z;
-				cols_[3][row] = v.w;
+				cols_[0][row] = v.x_;
+				cols_[1][row] = v.y_;
+				cols_[2][row] = v.z_;
+				cols_[3][row] = v.w_;
 			}
 
 			inline bool is_affine() const
@@ -136,10 +136,10 @@ namespace maki
 
 			inline vector4_t operator*(const vector4_t &v) const
 			{
-				return vector4_t(cols_[0][0]*v.x + cols_[1][0]*v.y + cols_[2][0]*v.z + cols_[3][0]*v.w,
-					cols_[0][1]*v.x + cols_[1][1]*v.y + cols_[2][1]*v.z + cols_[3][1]*v.w,
-					cols_[0][2]*v.x + cols_[1][2]*v.y + cols_[2][2]*v.z + cols_[3][2]*v.w,
-					cols_[0][3]*v.x + cols_[1][3]*v.y + cols_[2][3]*v.z + cols_[3][3]*v.w);
+				return vector4_t(cols_[0][0]*v.x_ + cols_[1][0]*v.y_ + cols_[2][0]*v.z_ + cols_[3][0]*v.w_,
+					cols_[0][1]*v.x_ + cols_[1][1]*v.y_ + cols_[2][1]*v.z_ + cols_[3][1]*v.w_,
+					cols_[0][2]*v.x_ + cols_[1][2]*v.y_ + cols_[2][2]*v.z_ + cols_[3][2]*v.w_,
+					cols_[0][3]*v.x_ + cols_[1][3]*v.y_ + cols_[2][3]*v.z_ + cols_[3][3]*v.w_);
 			}
 
 			inline vector3_t operator*(const vector3_t &v) const
@@ -147,9 +147,9 @@ namespace maki
 				// Cheating:
 				// This operation doesn't really exist in a mathematical sense.  Pretend that the vector
 				// has a 1 in the fourth component, so it picks up the translation part of the matrix.
-				return vector3_t(cols_[0][0]*v.x + cols_[1][0]*v.y + cols_[2][0]*v.z + cols_[3][0],
-					cols_[0][1]*v.x + cols_[1][1]*v.y + cols_[2][1]*v.z + cols_[3][1],
-					cols_[0][2]*v.x + cols_[1][2]*v.y + cols_[2][2]*v.z + cols_[3][2]);
+				return vector3_t(cols_[0][0]*v.x_ + cols_[1][0]*v.y_ + cols_[2][0]*v.z_ + cols_[3][0],
+					cols_[0][1]*v.x_ + cols_[1][1]*v.y_ + cols_[2][1]*v.z_ + cols_[3][1],
+					cols_[0][2]*v.x_ + cols_[1][2]*v.y_ + cols_[2][2]*v.z_ + cols_[3][2]);
 			}
 
 			inline matrix44_t operator*(const matrix44_t &v) const

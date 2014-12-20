@@ -16,8 +16,8 @@ namespace maki
 				: empty_(true), pos_(0.0f), radii_(0.0f)
 			{
 			}
-			bounding_box_t(const vector4_t &pos, const Vector3 &radii)
-				: empty_(false), pos_(pos), radii_(radii.x, radii.y, radii.z, 1.0f)
+			bounding_box_t(const vector4_t &pos, const vector3_t &radii)
+				: empty_(false), pos_(pos), radii_(radii.x_, radii.y_, radii.z_, 1.0f)
 			{
 			}
 			bounding_box_t(const vector4_t &pos, const vector4_t &radii)
@@ -35,14 +35,14 @@ namespace maki
 				}
 
 				vector4_t max_corner(
-					std::max<float>(pos_.x+radii_.x, other.pos_.x+other.radii_.x),
-					std::max<float>(pos_.y+radii_.y, other.pos_.y+other.radii_.y),
-					std::max<float>(pos_.z+radii_.z, other.pos_.z+other.radii_.z),
+					std::max<float>(pos_.x_+radii_.x_, other.pos_.x_+other.radii_.x_),
+					std::max<float>(pos_.y_+radii_.y_, other.pos_.y_+other.radii_.y_),
+					std::max<float>(pos_.z_+radii_.z_, other.pos_.z_+other.radii_.z_),
 					1.0f);
 				vector4_t min_corner(
-					std::min<float>(pos_.x-radii_.x, other.pos_.x-other.radii_.x),
-					std::min<float>(pos_.y-radii_.y, other.pos_.y-other.radii_.y),
-					std::min<float>(pos_.z-radii_.z, other.pos_.z-other.radii_.z),
+					std::min<float>(pos_.x_-radii_.x_, other.pos_.x_-other.radii_.x_),
+					std::min<float>(pos_.y_-radii_.y_, other.pos_.y_-other.radii_.y_),
+					std::min<float>(pos_.z_-radii_.z_, other.pos_.z_-other.radii_.z_),
 					1.0f);
 				pos_ = (max_corner + min_corner) / 2.0f;
 				radii_ = max_corner - pos_;
@@ -57,25 +57,25 @@ namespace maki
 				}
 
 				vector4_t max_corner(
-					std::max<float>(pos_.x+radii_.x, x),
-					std::max<float>(pos_.y+radii_.y, y),
-					std::max<float>(pos_.z+radii_.z, z),
+					std::max<float>(pos_.x_+radii_.x_, x),
+					std::max<float>(pos_.y_+radii_.y_, y),
+					std::max<float>(pos_.z_+radii_.z_, z),
 					1.0f);
 				vector4_t min_corner(
-					std::min<float>(pos_.x-radii_.x, x),
-					std::min<float>(pos_.y-radii_.y, y),
-					std::min<float>(pos_.z-radii_.z, z),
+					std::min<float>(pos_.x_-radii_.x_, x),
+					std::min<float>(pos_.y_-radii_.y_, y),
+					std::min<float>(pos_.z_-radii_.z_, z),
 					1.0f);
 				pos_ = (max_corner + min_corner) / 2.0f;
 				radii_ = max_corner - pos_;
 			}
-			inline void merge(const vector4_t &point) { merge(point.x, point.y, point.z); }
-			inline void merge(const Vector3 &point) { merge(point.x, point.y, point.z); }
+			inline void merge(const vector4_t &point) { merge(point.x_, point.y_, point.z_); }
+			inline void merge(const vector3_t &point) { merge(point.x_, point.y_, point.z_); }
 		
 			inline void merge(const vector4_t &point, float radius)
 			{
-				merge(point.x+radius, point.y+radius, point.z+radius);
-				merge(point.x-radius, point.y-radius, point.z-radius);
+				merge(point.x_+radius, point.y_+radius, point.z_+radius);
+				merge(point.x_-radius, point.y_-radius, point.z_-radius);
 			}
 
 			inline void reset()
@@ -94,7 +94,7 @@ namespace maki
 			}
 
 			inline float GetRadius() const { return radii_.length(); }
-			inline float GetRadiusSq() const { return radii_.LengthSquared(); }
+			inline float GetRadiusSq() const { return radii_.length_squared(); }
 
 		public:
 			vector4_t pos_;

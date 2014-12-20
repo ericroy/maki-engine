@@ -4045,7 +4045,7 @@ mz_bool mz_zip_writer_init_from_reader(mz_zip_archive *pZip, const char *pFilena
   else if (!pZip->m_pWrite)
     return MZ_FALSE;
 
-  // Start writing new files at the archive's current central directory location.
+  // start writing new files at the archive's current central directory location.
   pZip->m_archive_size = pZip->m_central_directory_file_ofs;
   pZip->m_zip_mode = MZ_ZIP_MODE_WRITING;
   pZip->m_central_directory_file_ofs = 0;

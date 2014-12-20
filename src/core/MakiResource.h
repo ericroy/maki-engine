@@ -15,7 +15,7 @@ namespace maki
 				find_predicate_t(rid_t rid) : rid(rid) {}
 				inline bool operator()(const T *res) const
 				{
-					return res->rid == rid;
+					return res->rid_ == rid;
 				}
 				rid_t rid;
 			};

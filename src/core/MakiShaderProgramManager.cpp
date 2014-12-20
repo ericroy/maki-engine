@@ -20,23 +20,23 @@ namespace maki
 
 		handle_t shader_program_manager_t::load(rid_t rid, shader_program_t::variant_t variant)
 		{
-			handle_t handle = resPool->Match(find_predicate_t(rid, variant)) | managerId;
+			handle_t handle = res_pool_->match(find_predicate_t(rid, variant)) | manager_id_;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->alloc() | managerId;
-			shader_program_t *shader = resPool->get(handle & handle_value_mask_);
+			handle = res_pool_->alloc() | manager_id_;
+			shader_program_t *shader = res_pool_->get(handle & handle_value_mask_);
 			new(shader) shader_program_t();
 		
 			if(!shader->load(rid, variant)) {
-				resPool->free(handle & handle_value_mask_);
+				res_pool_->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
 			engine_t *eng = engine_t::get();
 			if(!eng->renderer_->create_shader_program(shader)) {
-				resPool->free(handle & handle_value_mask_);
+				res_pool_->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
@@ -46,8 +46,8 @@ namespace maki
 		void shader_program_manager_t::reload_assets()
 		{
 			engine_t *eng = engine_t::get();
-			const resource_pool_t<shader_program_t>::iterator_t end = resPool->end();
-			for(resource_pool_t<shader_program_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+			const resource_pool_t<shader_program_t>::iterator_t end = res_pool_->end();
+			for(resource_pool_t<shader_program_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
 				shader_program_t *shader = iter.Ptr();
 				rid_t rid = shader->rid_;
 				shader_program_t::variant_t variant = shader->variant_;
@@ -66,14 +66,14 @@ namespace maki
 		{
 			bool found = false;
 			for(uint32 variant = shader_program_t::variant_normal_; variant < shader_program_t::variant_count_; variant++) {
-				handle_t handle = resPool->Match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | managerId;
+				handle_t handle = res_pool_->match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | manager_id_;
 				if(handle == HANDLE_NONE) {
 					continue;
 				}
 				found = true;
 
-				shader_program_t *shader = resPool->get(handle & handle_value_mask_);
-				resPool->free(handle & handle_value_mask_);
+				shader_program_t *shader = res_pool_->get(handle & handle_value_mask_);
+				res_pool_->free(handle & handle_value_mask_);
 
 				if(rid != RID_NONE) {
 					shader->~shader_program_t();

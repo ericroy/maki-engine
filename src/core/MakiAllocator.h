@@ -6,8 +6,8 @@
 #include <cassert>
 #include <limits>
 
-#define SIMD_ALIGN 16
-#define CACHE_ALIGN 64
+#define MAKI_SIMD_ALIGN 16
+#define MAKI_CACHE_ALIGN 64
 
 // #ifdef _CRTDBG_MAP_ALLOC
 // #	define _MAKI_ALIGNED_MALLOC(a, b) _aligned_malloc_dbg(a, b, __FILE__, __LINE__)

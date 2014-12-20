@@ -12,7 +12,7 @@ namespace maki
 		static void METHOD_NAME(const char *format, ...) { \
 			va_list args; \
 			va_start(args, format); \
-			console_t *c = Get(); \
+			console_t *c = get(); \
 			if(c != nullptr) { \
 				c->write(LEVEL, LINE_FEED, PREFIX, format, args); \
 			} \

@@ -7,7 +7,7 @@ namespace maki
 	{
 
 		template<class T>
-		inline T Clamp(T x, T low, T high)
+		inline T clamp(T x, T low, T high)
 		{
 			if(x < low) return low;
 			if(x > high) return high;

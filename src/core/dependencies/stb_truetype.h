@@ -975,7 +975,7 @@ int stbtt_GetCodepointShape(const stbtt_fontinfo *info, int unicode_codepoint, s
 
 static void stbtt_setvertex(stbtt_vertex *v, stbtt_uint8 type, stbtt_int32 x, stbtt_int32 y, stbtt_int32 cx, stbtt_int32 cy)
 {
-   v->type = type;
+   v->type_ = type;
    v->x = (stbtt_int16) x;
    v->y = (stbtt_int16) y;
    v->cx = (stbtt_int16) cx;

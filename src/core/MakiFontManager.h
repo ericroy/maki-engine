@@ -10,7 +10,7 @@ namespace maki
 		class font_manager_t;
 		
 
-		class font_manager_t : public Manager<font_t, font_manager_t>
+		class font_manager_t : public manager_t<font_t, font_manager_t>
 		{
 		private:
 			struct predicate_t : std::unary_function<const font_t *, bool>

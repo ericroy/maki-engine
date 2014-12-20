@@ -35,25 +35,25 @@ namespace maki
 
 		skeleton_animation_t::skeleton_animation_t()
 			: resource_t(),
-			frameCount(0),
-			frameRate(0.0f)
+			frame_count_(0),
+			frame_rate_(0.0f)
 		{
 		}
 
 		skeleton_animation_t::~skeleton_animation_t()
 		{
-			for(uint32 i = 0; i < data.count_; i++) {
-				data[i].free();
+			for(uint32 i = 0; i < data_.count_; i++) {
+				data_[i].free();
 			}
 		}
 
 		bool skeleton_animation_t::load(rid_t rid)
 		{
-			if(data.data_ != nullptr) {
-				data.free();
+			if(data_.data_ != nullptr) {
+				data_.free();
 			}
-			frameCount = 0;
-			frameRate = 0.0f;
+			frame_count_ = 0;
+			frame_rate_ = 0.0f;
 
 			document_t doc;
 			if(!doc.load(rid)) {
@@ -62,37 +62,37 @@ namespace maki
 			}
 
 			uint32 count;
-			if(!doc.root->resolve_as_uint("bone_count.#0", &count)) {
+			if(!doc.root_->resolve_as_uint("bone_count.#0", &count)) {
 				console_t::error("Could not find bone count in animation document");
 				return false;
 			}
-			data.set_size(count);
-			data.zero();
+			data_.set_size(count);
+			data_.zero();
 
-			if(!doc.root->resolve_as_float("frame_rate.#0", &frameRate)) {
+			if(!doc.root_->resolve_as_float("frame_rate.#0", &frame_rate_)) {
 				console_t::error("Could not find frame rate in animation document");
 				return false;
 			}
-			if(!doc.root->resolve_as_uint("frame_count.#0", &frameCount)) {
+			if(!doc.root_->resolve_as_uint("frame_count.#0", &frame_count_)) {
 				console_t::error("Could not find frame count in animation document");
 				return false;
 			}
 		
-			for(uint32 i = 3; i < doc.root->count; i++) {
-				document_t::node_t *boneNode = doc.root->children[i];
+			for(uint32 i = 3; i < doc.root_->count_; i++) {
+				document_t::node_t *boneNode = doc.root_->children_[i];
 				uint32 bone = i-3;
 
-				data[bone].set_size(boneNode->count);
-				data[bone].zero();
+				data_[bone].set_size(boneNode->count_);
+				data_[bone].zero();
 
-				for(uint32 j = 0; j < boneNode->count; j++) {
-					document_t::node_t *n = boneNode->children[j];
-					key_frame_t &kf = data[bone][j];
+				for(uint32 j = 0; j < boneNode->count_; j++) {
+					document_t::node_t *n = boneNode->children_[j];
+					key_frame_t &kf = data_[bone][j];
 
 					kf.frame_ = n->value_as_uint();
-					kf.offset_ = vector3_t(n->children[0]->value_as_float(), n->children[1]->value_as_float(), n->children[2]->value_as_float());
+					kf.offset_ = vector3_t(n->children_[0]->value_as_float(), n->children_[1]->value_as_float(), n->children_[2]->value_as_float());
 
-					vector3_t euler_angles = vector3_t(n->children[3]->value_as_float(), n->children[4]->value_as_float(), n->children[5]->value_as_float()) * MAKI_DEG_TO_RAD;
+					vector3_t euler_angles = vector3_t(n->children_[3]->value_as_float(), n->children_[4]->value_as_float(), n->children_[5]->value_as_float()) * MAKI_DEG_TO_RAD;
 					kf.rot_.from_euler_angles(euler_angles);
 				}
 			}
@@ -103,61 +103,61 @@ namespace maki
 
 		void skeleton_animation_t::AdvanceState(float timeDelta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rateCoeff)
 		{
-			state.current_frame_ += timeDelta * rateCoeff * debug_rate_coeff_ * frameRate;
-			if(state.current_frame_ >= frameCount) {
+			state.current_frame_ += timeDelta * rateCoeff * debug_rate_coeff_ * frame_rate_;
+			if(state.current_frame_ >= frame_count_) {
 				if(loop) {
-					state.current_frame_ = state.current_frame_ - ((uint32)state.current_frame_ / frameCount)*frameCount;
+					state.current_frame_ = state.current_frame_ - ((uint32)state.current_frame_ / frame_count_)*frame_count_;
 				} else {
-					state.current_frame_ = (float)frameCount;
+					state.current_frame_ = (float)frame_count_;
 				}
 			}
 
-			for(uint32 i = 0; i < data.count_; i++) {
-				uint32 &currentIndex = state.current_key_frames_[i];
-				const array_t<key_frame_t> &boneFrames = data[i];
+			for(uint32 i = 0; i < data_.count_; i++) {
+				uint32 &current_index = state.current_key_frames_[i];
+				const array_t<key_frame_t> &bone_frames = data_[i];
 
-				if(boneFrames.count_ == 0) {
+				if(bone_frames.count_ == 0) {
 					continue;
 				}
-				if(boneFrames.count_ == 1) {
-					pose[i].offset_ = boneFrames[0].offset_;
-					pose[i].rot_ = boneFrames[0].rot_;
+				if(bone_frames.count_ == 1) {
+					pose[i].offset_ = bone_frames[0].offset_;
+					pose[i].rot_ = bone_frames[0].rot_;
 					continue;
 				}
 			
 				// Advance through the frames for this bone until we find the two keyframes
 				// that bound the current frame time.
-				uint32 nextFrameIndex = (currentIndex + 1) % frameCount;
-				const key_frame_t *next = &boneFrames[nextFrameIndex];
-				const key_frame_t *curr = &boneFrames[currentIndex];
+				uint32 next_frame_index = (current_index + 1) % frame_count_;
+				const key_frame_t *next = &bone_frames[next_frame_index];
+				const key_frame_t *curr = &bone_frames[current_index];
 				while(true) {
 					// Current and next frame bound the playhead
-					if(state.current_frame_ >= curr->frame && state.current_frame_ < next->frame) {
+					if(state.current_frame_ >= curr->frame_ && state.current_frame_ < next->frame_) {
 						break;
 					}
 
 					// Wrap-around case
-					if(next->frame == 0 && state.current_frame_ >= curr->frame) {
+					if(next->frame_ == 0 && state.current_frame_ >= curr->frame_) {
 						break;
 					}
 
-					currentIndex = (currentIndex + 1) % frameCount;
-					nextFrameIndex = (currentIndex + 1) % frameCount;
-					next = &boneFrames[nextFrameIndex];
-					curr = &boneFrames[currentIndex];
+					current_index = (current_index + 1) % frame_count_;
+					next_frame_index = (current_index + 1) % frame_count_;
+					next = &bone_frames[next_frame_index];
+					curr = &bone_frames[current_index];
 				}
 
 				uint32 distance;
-				if(nextFrameIndex < currentIndex) {
+				if(next_frame_index < current_index) {
 					// Wrapped
-					distance = frameCount - curr->frame + next->frame;
+					distance = frame_count_ - curr->frame_ + next->frame_;
 				} else {
-					distance = next->frame - curr->frame;
+					distance = next->frame_ - curr->frame_;
 				}
 
-				float frac = (state.current_frame_ - curr->frame) / distance;
-				pose[i].offset_ = curr->offset * (1.0f - frac) + next->offset * frac;
-				pose[i].rot_ = quaternion_t::nlerp(frac, curr->rot, next->rot);
+				float frac = (state.current_frame_ - curr->frame_) / distance;
+				pose[i].offset_ = curr->offset_ * (1.0f - frac) + next->offset_ * frac;
+				pose[i].rot_ = quaternion_t::nlerp(frac, curr->rot_, next->rot_);
 			}
 		}
 	

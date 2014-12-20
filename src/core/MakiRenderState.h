@@ -76,7 +76,7 @@ namespace maki
 
 			struct shadow_map_properties_t
 			{
-				Vector2 size_;
+				vector2_t size_;
 				float pad_[2];
 			};
 
@@ -104,7 +104,7 @@ namespace maki
 				wire_frame_ = false;
 				global_ambient_color_ = vector4_t(0.0f);
 				cull_mode_ = cull_mode_back_;
-				shader_variant_ = shader_program_t::Variant_Normal;
+				shader_variant_ = shader_program_t::variant_normal_;
 			
 				light_count_ = 0;
 				shadow_light_count_ = 0;

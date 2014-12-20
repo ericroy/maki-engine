@@ -19,12 +19,12 @@ namespace maki
 			texture_manager_t(uint32 size = default_size_);	
 			virtual ~texture_manager_t();
 			handle_t load(rid_t rid);
-			handle_t AllocTexture(texture_t::texture_type_t type, uint32 width, uint32 height, uint8 channels);
+			handle_t alloc_texture(texture_t::texture_type_t type, uint32 width, uint32 height, uint8 channels);
 			void reload_assets();
 			bool reload_asset(rid_t rid);
 
 		private:
-			bool LoadData(texture_t *tex, rid_t rid);
+			bool load_data(texture_t *tex, rid_t rid);
 		};
 
 	} // namespace core

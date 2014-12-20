@@ -46,11 +46,11 @@ namespace maki
 			// lists will once again be in the posession of this renderer object (in the main thread).
 			void sync_with_core();
 		
-			// State actions
+			// state_t actions
 			inline void clear_depth(float value);
 			inline void clear_color(const vector4_t &rgba);
 
-			// State setters
+			// state_t setters
 			void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
 			inline void set_viewport(const Rect &rect);
 			inline void set_view(const matrix44_t &view);
@@ -65,7 +65,7 @@ namespace maki
 			inline void set_shader_variant(shader_program_t::variant_t variant);
 	
 			inline void set_light_count(uint32 count, uint32 shadow_count = 0, uint32 split_shadow_count = 0);
-			void set_light(uint32 light_index, const render_state_t::LightProperties *props = nullptr, const render_state_t::ShadowMapProperties *shad_props = nullptr, const matrix44_t *matrix = nullptr, float fov = 0.0f, handle_t depth_buffer = HANDLE_NONE);
+			void set_light(uint32 light_index, const render_state_t::light_properties_t *props = nullptr, const render_state_t::shadow_map_properties_t *shad_props = nullptr, const matrix44_t *matrix = nullptr, float fov = 0.0f, handle_t depth_buffer = HANDLE_NONE);
 			void set_light_cascade(uint32 light_index, uint32 cascade_index, const frustum_t &frustum);
 			inline void set_camera_split_distances(uint32 count, float *split_distances);
 
@@ -103,8 +103,8 @@ namespace maki
 			uint32 light_dirty_flags;
 			render_state_t *state;
 			draw_command_list_t *commands;
-			std::vector<render_state_t *> render_states;
-			std::vector<draw_command_list_t *> command_lists;
+			std::vector<render_state_t *> render_states_;
+			std::vector<draw_command_list_t *> command_lists_;
 			render_core_t *core_;
 
 		private:
@@ -163,8 +163,8 @@ namespace maki
 
 		inline void renderer_t::set_camera_split_distances(uint32 splitCount, float *split_distances)
 		{
-			assert(splitCount < render_state_t::MAX_CASCADES);
-			memcpy(current_.cameraSplitDistances.splits, split_distances, splitCount*sizeof(float));
+			assert(splitCount < render_state_t::max_cascades_);
+			memcpy(current_.camera_split_distances_.splits_, split_distances, splitCount*sizeof(float));
 		}
 
 		inline void renderer_t::set_cull_mode(render_state_t::cull_mode_t mode)
@@ -203,7 +203,7 @@ namespace maki
 
 		inline window_t *renderer_t::get_window() const
 		{
-			return window;
+			return window_;
 		}
 
 		inline render_state_t::cull_mode_t renderer_t::get_cull_mode() const

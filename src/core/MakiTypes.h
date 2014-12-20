@@ -21,11 +21,11 @@ namespace maki
 	// A unique identifier for a file resource from the resource_library_t
 	// Rids cannot be a simple typedef because we need them to have a distinct type from a handle_t
 	typedef struct _Rid {
-		uint32 index;
-		inline bool operator==(const _Rid &other) const { return index == other.index_; }
-		inline bool operator!=(const _Rid &other) const { return index != other.index_; }
-		inline _Rid &operator=(const uint32 &u) { this->index = u; return *this; }
-		inline operator uint32() const { return index; }
+		uint32 index_;
+		inline bool operator==(const _Rid &other) const { return index_ == other.index_; }
+		inline bool operator!=(const _Rid &other) const { return index_ != other.index_; }
+		inline _Rid &operator=(const uint32 &u) { index_ = u; return *this; }
+		inline operator uint32() const { return index_; }
 	} rid_t;
 	const rid_t RID_NONE = {(uint32)-1};
 

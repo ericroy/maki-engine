@@ -20,7 +20,7 @@ namespace maki
 				set(width, height, centered);
 			}
 
-			Rect(const Vector2 &width_height, bool centered = false)
+			Rect(const vector2_t &width_height, bool centered = false)
 			{
 				set(width_height, centered);
 			}
@@ -50,7 +50,7 @@ namespace maki
 				}
 			}
 
-			inline void set(const Vector2 &width_height, bool centered = false)
+			inline void set(const vector2_t &width_height, bool centered = false)
 			{
 				set(width_height.x_, width_height.y_, centered);
 			}

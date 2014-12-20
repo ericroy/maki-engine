@@ -20,7 +20,7 @@ namespace maki
 			char *alloc_read(rid_t rid, uint32 *bytesRead = nullptr) const;
 
 		public:
-			std::string common_path_prefix;
+			std::string common_path_prefix_;
 			std::string debug_mode_path_adjustment_;
 
 		private:

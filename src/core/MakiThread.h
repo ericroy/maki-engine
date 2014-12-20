@@ -6,12 +6,11 @@ namespace maki
 {
 	namespace core
 	{
-		
 
 		class thread_t
 		{
 		private:
-			static void RunDispatch(thread_t *instance)
+			static void run_dispatch(thread_t *instance)
 			{
 				instance->run();
 			}
@@ -20,24 +19,24 @@ namespace maki
 			thread_t() {}
 			virtual ~thread_t() {}
 		
-			inline void Start()
+			inline void start()
 			{
-				if(!thread.joinable()) {
-					thread = std::thread(RunDispatch, this);
+				if(!thread_.joinable()) {
+					thread_ = std::thread(run_dispatch, this);
 				}
 			}
 
-			inline void Join()
+			inline void join()
 			{
-				if(thread.joinable()) {
-					thread.join();
+				if(thread_.joinable()) {
+					thread_.join();
 				}
 			}
 
 			virtual void run() = 0;
 
 		protected:
-			std::thread thread;
+			std::thread thread_;
 		};
 
 	} // namespace core

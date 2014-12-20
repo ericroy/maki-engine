@@ -22,8 +22,8 @@ namespace maki
 			{
 			}
 
-			frustum_t(const Vector2 &width_height, float near_plane, float far_plane, float fov = 0.0f)
-				: left_(-width_height.x/2), right_(width_height.x/2), bottom_(-width_height.y/2), top_(width_height.y/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
+			frustum_t(const vector2_t &width_height, float near_plane, float far_plane, float fov = 0.0f)
+				: left_(-width_height.x_/2), right_(width_height.x_/2), bottom_(-width_height.y_/2), top_(width_height.y_/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
 			{
 			}
 
@@ -39,9 +39,9 @@ namespace maki
 				far_plane_ = far_plane;
 				fov_ = fov;
 			}
-			inline void set(const Vector2 &width_height, float near_plane, float far_plane, float fov = 0.0f) { set(width_height.x, width_height.y, near_plane, far_plane, fov); }
+			inline void set(const vector2_t &width_height, float near_plane, float far_plane, float fov = 0.0f) { set(width_height.x_, width_height.y_, near_plane, far_plane, fov); }
 			inline void set(float width, float height) { set(width, height, near_plane_, far_plane_, fov_); }		
-			inline void set(const Vector2 &width_height) { set(width_height.x, width_height.y, near_plane_, far_plane_, fov_); }
+			inline void set(const vector2_t &width_height) { set(width_height.x_, width_height.y_, near_plane_, far_plane_, fov_); }
 
 			inline void set(float left, float right, float bottom, float top, float near_plane, float far_plane, float fov = 0.0f)
 			{
@@ -90,18 +90,18 @@ namespace maki
 					// Left, right
 					planes[2] = far_top_left.cross(far_bottom_left);
 					planes[2].normalize();
-					planes[2].w = 0.0f;
+					planes[2].w_ = 0.0f;
 					planes[3] = far_bottom_right.cross(far_top_right);
 					planes[3].normalize();
-					planes[3].w = 0.0f;
+					planes[3].w_ = 0.0f;
 
 					// Top, bottom
 					planes[4] = far_top_right.cross(far_top_left);
 					planes[4].normalize();
-					planes[4].w = 0.0f;
+					planes[4].w_ = 0.0f;
 					planes[5] = far_bottom_left.cross(far_bottom_right);
 					planes[5].normalize();
-					planes[5].w = 0.0f;
+					planes[5].w_ = 0.0f;
 				}
 			}
 

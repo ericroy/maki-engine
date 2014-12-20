@@ -17,8 +17,8 @@ namespace maki
 				: empty_(false), pos_(pos), radius_(radius)
 			{
 			}
-			bounding_sphere_t(const Vector3 &pos, float radius)
-				: empty_(false), pos_(pos.x, pos.y, pos.z, 1.0f), radius_(radius)
+			bounding_sphere_t(const vector3_t &pos, float radius)
+				: empty_(false), pos_(pos.x_, pos.y_, pos.z_, 1.0f), radius_(radius)
 			{
 			}
 

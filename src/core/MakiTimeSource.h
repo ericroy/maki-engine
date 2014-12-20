@@ -12,11 +12,11 @@ namespace maki
 			time_source_t();
 			virtual ~time_source_t();
 
-			uint64 GetTimeMicro();
+			uint64 get_time_micro();
 
 		private:
-			double frequency;
-			uint64 start;
+			double frequency_;
+			uint64 start_;
 		};
 
 

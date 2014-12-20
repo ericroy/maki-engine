@@ -50,25 +50,25 @@ namespace maki
 			{
 				// These fields contain the actual handle value to a resource.
 				// Make sure there are enough bits to represent every handle up to the maximum size of the manager's pool.
-				uint64 mesh : bits_per_mesh_;
-				uint64 meshManagerId : mesh_manager_t::bits_per_manager_id_;
+				uint64 mesh_ : bits_per_mesh_;
+				uint64 mesh_manager_id_ : mesh_manager_t::bits_per_manager_id_;
 
 				uint64 material_ : bits_per_material_;
-				uint64 materialManagerId : material_manager_t::bits_per_manager_id_;
+				uint64 material_manager_id_ : material_manager_t::bits_per_manager_id_;
 
-				uint64 textureSet : bits_per_texture_set_;
-				uint64 textureSetManagerId : texture_set_manager_t::bits_per_manager_id_;
+				uint64 texture_set_ : bits_per_texture_set_;
+				uint64 material_manager_id_ : texture_set_manager_t::bits_per_manager_id_;
 
-				uint64 shaderProgram : bits_per_shader_program_;
-				uint64 shaderProgramManagerId : shader_program_manager_t::bits_per_manager_id_;
+				uint64 shader_program_ : bits_per_shader_program_;
+				uint64 shader_program_manager_id_ : shader_program_manager_t::bits_per_manager_id_;
 
-				uint64 vertexFormat : bits_per_vertex_format_;
-				uint64 vertexFormatManagerId : vertex_format_manager_t::bits_per_manager_id_;
+				uint64 vertex_format_ : bits_per_vertex_format_;
+				uint64 vertex_format_manager_id_ : vertex_format_manager_t::bits_per_manager_id_;
 
-				uint64 inverseDepth : 11;
+				uint64 inverse_depth_ : 11;
 
 				// Other higher priority sorting properties
-				uint64 translucencyType : 1;
+				uint64 translucency_type_ : 1;
 			};
 
 		public:
@@ -76,7 +76,7 @@ namespace maki
 			draw_command_t(const move_token_t<draw_command_t> &other);
 			~draw_command_t();
 
-			inline uint64 get_key() const { return key; }
+			inline uint64 get_key() const { return key_; }
 			void set_mesh(handle_t mesh);
 			void set_material(handle_t material);
 			inline void clear();
@@ -113,8 +113,8 @@ namespace maki
 			texture_set_ = other.texture_set_;
 			vertex_format_ = other.vertex_format_;
 
-			mesh_manager_t::add_ref(mesh);
-			material_manager_t::add_ref(material);
+			mesh_manager_t::add_ref(mesh_);
+			material_manager_t::add_ref(material_);
 			shader_program_manager_t::add_ref(shader_program_);
 			texture_set_manager_t::add_ref(texture_set_);
 			vertex_format_manager_t::add_ref(vertex_format_);

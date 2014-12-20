@@ -22,7 +22,7 @@ namespace maki
 		};
 
 		template<class T>
-		inline move_token_t<T> maki_move(T &obj) { move_token_t<T> m; m.obj = &obj; return m; }
+		inline move_token_t<T> maki_move(T &obj) { move_token_t<T> m; m.obj_ = &obj; return m; }
 
 	} // namespace core
 

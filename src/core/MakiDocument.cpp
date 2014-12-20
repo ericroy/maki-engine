@@ -14,56 +14,56 @@ namespace maki
 	{
 
 		document_t::node_t::node_t(const char *data, uint32 length)
-			: parent(nullptr), value(nullptr), count(0), capacity(0), children(nullptr)
+			: parent_(nullptr), value_(nullptr), count_(0), capacity_(0), children_(nullptr)
 		{
-			value = new char[length+1];
-			memcpy(value, data, length+1);
-			value[length] = 0;
+			value_ = new char[length+1];
+			memcpy(value_, data, length+1);
+			value_[length] = 0;
 		}
 
 		document_t::node_t::node_t(char *data, uint32 length, bool should_clone_data)
-			: parent(nullptr), value(nullptr), count(0), capacity(0), children(nullptr)
+			: parent_(nullptr), value_(nullptr), count_(0), capacity_(0), children_(nullptr)
 		{
 			if(should_clone_data) {
-				value = new char[length+1];
-				memcpy(value, data, length+1);
-				value[length] = 0;
+				value_ = new char[length+1];
+				memcpy(value_, data, length+1);
+				value_[length] = 0;
 			} else {
-				value = data;
+				value_ = data;
 			}
 		}
 
 		document_t::node_t::~node_t()
 		{
-			MAKI_SAFE_DELETE_ARRAY(value);
-			for(uint32 i = 0; i < count; i++) {
-				MAKI_SAFE_DELETE(children[i]);
+			MAKI_SAFE_DELETE_ARRAY(value_);
+			for(uint32 i = 0; i < count_; i++) {
+				MAKI_SAFE_DELETE(children_[i]);
 			}
-			MAKI_SAFE_FREE(children);
+			MAKI_SAFE_FREE(children_);
 		}
 
 		void document_t::node_t::append_child(node_t *n)
 		{
-			n->parent = this;
-			if(count == capacity) {
-				capacity = std::max<uint32>(8, capacity*2);
-				children = (node_t **)allocator_t::realloc(children, capacity * sizeof(node_t *), std::alignment_of<node_t *>::value_);
-				assert(children != nullptr);
+			n->parent_ = this;
+			if(count_ == capacity_) {
+				capacity_ = std::max<uint32>(8, capacity_*2);
+				children_ = (node_t **)allocator_t::realloc(children_, capacity_ * sizeof(node_t *), std::alignment_of<node_t *>::value);
+				assert(children_ != nullptr);
 			}
-			children[count++] = n;
+			children_[count_++] = n;
 		}
 
 		document_t::node_t *document_t::node_t::remove_child(uint32 index)
 		{
-			document_t::node_t *ret = children[index];
-			memmove(&children[index], &children[index+1], (count-index-1)*sizeof(node_t *));
+			document_t::node_t *ret = children_[index];
+			memmove(&children_[index], &children_[index+1], (count_-index-1)*sizeof(node_t *));
 			return ret;
 		}
 
 		bool document_t::node_t::remove_child(document_t::node_t *n)
 		{
-			for(uint32 i = 0; i < count; i++) {
-				if(children[i] == n) {
+			for(uint32 i = 0; i < count_; i++) {
+				if(children_[i] == n) {
 					remove_child(i);
 					return true;
 				}
@@ -73,8 +73,8 @@ namespace maki
 
 		void document_t::node_t::detach()
 		{
-			if(parent != nullptr) {
-				parent->remove_child(this);
+			if(parent_ != nullptr) {
+				parent_->remove_child(this);
 			}
 		}
 	
@@ -89,8 +89,8 @@ namespace maki
 		bool document_t::node_t::value_as_int(int32 *out) const
 		{
 			char *end;
-			int32 v = strtol(value, &end, 10);
-			if(end == value) {
+			int32 v = strtol(value_, &end, 10);
+			if(end == value_) {
 				return false;
 			}
 			if(out != nullptr) {
@@ -110,8 +110,8 @@ namespace maki
 		bool document_t::node_t::value_as_uint(uint32 *out) const
 		{
 			char *end;
-			uint32 v = strtoul(value, &end, 10);
-			if(end == value) {
+			uint32 v = strtoul(value_, &end, 10);
+			if(end == value_) {
 				return false;
 			}
 			if(out != nullptr) {
@@ -131,8 +131,8 @@ namespace maki
 		bool document_t::node_t::value_as_float(float *out) const
 		{
 			char *end;
-			float v = (float)strtod(value, &end);
-			if(end == value) {
+			float v = (float)strtod(value_, &end);
+			if(end == value_) {
 				return false;
 			}
 			if(out != nullptr) {
@@ -152,7 +152,7 @@ namespace maki
 		bool document_t::node_t::value_as_bool(bool *out) const
 		{
 			if(out != nullptr) {
-				*out = value[0] == 'T' || value[0] == 't' || value[0] == '1' || value[0] == 'Y' || value[0] == 'y';
+				*out = value_[0] == 'T' || value_[0] == 't' || value_[0] == '1' || value_[0] == 'Y' || value_[0] == 'y';
 			}
 			return true;
 		}
@@ -171,22 +171,22 @@ namespace maki
 				char *end = nullptr;
 				uint32 i = strtoul(p, &end, 10);
 				p = end;
-				if(i >= count) {
+				if(i >= count_) {
 					return nullptr;
 				}
-				return children[i]->resolve(p);
+				return children_[i]->resolve(p);
 			}
 
 			// Referencing a child by name
 			while(*p != 0 && *p != '.') {
 				p++;
 			}
-			for(uint32 i = 0; i < count; i++) {
-				if(strncmp(children[i]->value, node_path, p-node_path) == 0) {
+			for(uint32 i = 0; i < count_; i++) {
+				if(strncmp(children_[i]->value_, node_path, p-node_path) == 0) {
 					if(*p == '.') {
 						p++;
 					}
-					return children[i]->resolve(p);
+					return children_[i]->resolve(p);
 				}
 			}
 			return nullptr;
@@ -201,21 +201,21 @@ namespace maki
 
 
 		document_t::document_t()
-		:	root(nullptr)
+		:	root_(nullptr)
 		{
-			root = new node_t("<root>", 6);
+			root_ = new node_t("<root_>", 6);
 		}
 
 		document_t::~document_t()
 		{
-			MAKI_SAFE_DELETE(root);
+			MAKI_SAFE_DELETE(root_);
 		}
 
 	#ifndef MAKI_TOOLS
 		bool document_t::load(rid_t rid)
 		{
 			uint32 bytes;
-			char *data = engine_t::get()->assets->alloc_read(rid, &bytes);
+			char *data = engine_t::get()->assets_->alloc_read(rid, &bytes);
 			if(data == nullptr) {
 				console_t::error("Failed to alloc_read document bytes");
 				return false;
@@ -239,7 +239,7 @@ namespace maki
 
 		void document_t::print(const char *indent_token)
 		{
-			if(root == nullptr) {
+			if(root_ == nullptr) {
 				return;
 			}
 			std::ostringstream out;
@@ -253,8 +253,8 @@ namespace maki
 
 
 
-		document_text_serializer_t::document_text_serializer_t(document_t &doc)
-			: doc(doc)
+		document_text_serializer_t::document_text_serializer_t(document_t &doc_)
+			: doc_(doc_)
 		{
 		}
 
@@ -264,8 +264,8 @@ namespace maki
 
 		bool document_text_serializer_t::serialize(char *path, const char *indent_token)
 		{
-			if(doc.root == nullptr) {
-				console_t::error("Could not serialize text document, root was null");
+			if(doc_.root_ == nullptr) {
+				console_t::error("Could not serialize text document, root_ was null");
 				return false;
 			}
 
@@ -276,8 +276,8 @@ namespace maki
 				return false;
 			}
 
-			for(uint32 i = 0; i < doc.root->count; i++) {
-				serialize_node(doc.root->children[i], 0, file, false, false, false, indent_token);
+			for(uint32 i = 0; i < doc_.root_->count_; i++) {
+				serialize_node(doc_.root_->children_[i], 0, file, false, false, false, indent_token);
 			}
 
 			file.close();
@@ -286,13 +286,13 @@ namespace maki
 
 		bool document_text_serializer_t::serialize(std::ostream &out, const char *indent_token)
 		{
-			if(doc.root == nullptr) {
-				console_t::error("Could not serialize text document, root was null");
+			if(doc_.root_ == nullptr) {
+				console_t::error("Could not serialize text document, root_ was null");
 				return false;
 			}
 
-			for(uint32 i = 0; i < doc.root->count; i++) {
-				serialize_node(doc.root->children[i], 0, out, false, false, false, indent_token);
+			for(uint32 i = 0; i < doc_.root_->count_; i++) {
+				serialize_node(doc_.root_->children_[i], 0, out, false, false, false, indent_token);
 			}
 			return true;
 		}
@@ -307,7 +307,7 @@ namespace maki
 				}
 			}
 		
-			std::string s = n->value;
+			std::string s = n->value_;
 		
 			// Escape quotes
 			std::size_t start = 0;
@@ -328,12 +328,12 @@ namespace maki
 
 			// Check for a special case where we will stack a small number of leaf nodes on the
 			// same line for readability (vectors, particularly)
-			bool stackChildren = false;
-			if(n->count > 0 && n->count <= stack_children_count_threshold_) {
-				stackChildren = true;
-				for(uint32 i = 0; i < n->count; i++) {
-					if(n->children[i]->count != 0) {
-						stackChildren = false;
+			bool stack_children = false;
+			if(n->count_ > 0 && n->count_ <= stack_children_count_threshold_) {
+				stack_children = true;
+				for(uint32 i = 0; i < n->count_; i++) {
+					if(n->children_[i]->count_ != 0) {
+						stack_children = false;
 						break;
 					}
 				}
@@ -342,30 +342,30 @@ namespace maki
 			if(stacking && !last_in_stack) {
 				out << ",";
 			} else {
-				if(!stackChildren) {
+				if(!stack_children) {
 					out << std::endl;
 				}
 			}
 
-			for(uint32 i = 0; i < n->count; i++) {
-				serialize_node(n->children[i], depth+1, out, stackChildren, i == 0, i == n->count-1, indent_token);
+			for(uint32 i = 0; i < n->count_; i++) {
+				serialize_node(n->children_[i], depth+1, out, stack_children, i == 0, i == n->count_-1, indent_token);
 			}
 		}
 
 		bool document_text_serializer_t::deserialize(char *data, uint32 length)
 		{
-			MAKI_SAFE_DELETE(doc.root);
-			doc.root = new document_t::node_t("<root>", 6);
+			MAKI_SAFE_DELETE(doc_.root_);
+			doc_.root_ = new document_t::node_t("<root_>", 6);
 		
 			uint32 character = 0;
 			uint32 line = 0;
-			uint32 indentWidth = 0;
+			uint32 indent_width = 0;
 
-			bool cleanLine = true;
+			bool clean_line = true;
 			bool append_sibling = false;
-			int32 indentLevel = 0;
+			int32 indent_level = 0;
 			int32 previous_indent_level = -1;
-			document_t::node_t *previous = doc.root;
+			document_t::node_t *previous = doc_.root_;
 		
 			char *p = data;
 
@@ -374,19 +374,19 @@ namespace maki
 					do { p++; character++; } while(*p != 0 && *p != '\r' && *p != '\n');
 				} else if(*p == ' ' || *p == '\t') {
 					do { p++; character++; } while(*p == ' ' || *p == '\t');
-					indentLevel++;
+					indent_level++;
 				} else if(*p == '\n' || *p == '\r') {
-					cleanLine = true;
-					do { p++; line++; character = 0; indentLevel = 0; } while(*p == '\n' || *p == '\r');
+					clean_line = true;
+					do { p++; line++; character = 0; indent_level = 0; } while(*p == '\n' || *p == '\r');
 					if(*p == ' ' || *p == '\t') {
-						uint32 count = 0;
-						do { p++; character++; count++; } while(*p == ' ' || *p == '\t');
+						uint32 count_ = 0;
+						do { p++; character++; count_++; } while(*p == ' ' || *p == '\t');
 
-						indentLevel += indentWidth != 0 ? count/indentWidth : count;
-						if(indentLevel > previous_indent_level+1) {
-							if(indentWidth == 0) {
-								indentWidth = indentLevel - previous_indent_level;
-								indentLevel = previous_indent_level+1;
+						indent_level += indent_width != 0 ? count_/indent_width : count_;
+						if(indent_level > previous_indent_level+1) {
+							if(indent_width == 0) {
+								indent_width = indent_level - previous_indent_level;
+								indent_level = previous_indent_level+1;
 							} else {
 								console_t::error("Indentation error at line %d, char %d", line, character);
 								return false;
@@ -414,18 +414,18 @@ namespace maki
 					// Unescape quotes in string
 					char *buffer = new char[length+1];
 					char *q = start;
-					uint32 newLength = 0;
+					uint32 new_length = 0;
 					for(uint32 i = 0; i < length; i++) {
 						if(i > 0 && *q == '"' && *(q-1) == '\\') {
 							// Back-stomp on the escape character
-							newLength--;
+							new_length--;
 						}
-						buffer[newLength++] = *q++;
+						buffer[new_length++] = *q++;
 					}
-					buffer[newLength] = 0;
+					buffer[new_length] = 0;
 
 					// We give ownership of the buffer we allocated to the node
-					if(!add_node(new document_t::node_t(buffer, newLength, false), indentLevel, &previous, previous_indent_level, cleanLine, append_sibling)) {
+					if(!add_node(new document_t::node_t(buffer, new_length, false), indent_level, &previous, previous_indent_level, clean_line, append_sibling)) {
 						console_t::error("Parse error near line %d, char %d", line, character);
 						return false;
 					}
@@ -435,7 +435,7 @@ namespace maki
 					while(*p != 0 && *p != ' ' && *p != '\t' && *p != '\r' && *p != ',') {
 						p++; character++; length++;
 					}
-					if(!add_node(new document_t::node_t(start, length, true), indentLevel, &previous, previous_indent_level, cleanLine, append_sibling)) {
+					if(!add_node(new document_t::node_t(start, length, true), indent_level, &previous, previous_indent_level, clean_line, append_sibling)) {
 						console_t::error("Parse error near line %d, char %d", line, character);
 						return false;
 					}
@@ -444,34 +444,34 @@ namespace maki
 			return true;
 		}
 
-		bool document_text_serializer_t::add_node(document_t::node_t *n, int32 indentLevel, document_t::node_t **previous, int32 &previous_indent_level, bool &cleanLine, bool &append_sibling)
+		bool document_text_serializer_t::add_node(document_t::node_t *n, int32 indent_level, document_t::node_t **previous, int32 &previous_indent_level, bool &clean_line, bool &append_sibling)
 		{
-			if(!cleanLine || indentLevel > previous_indent_level) {
+			if(!clean_line || indent_level > previous_indent_level) {
 				if(append_sibling) {
 					(*previous)->append_sibling(n);
 				} else {
 					(*previous)->append_child(n);
 					*previous = n;
-					previous_indent_level = indentLevel;
+					previous_indent_level = indent_level;
 				}
 			} else {
-				document_t::node_t *parent = *previous;
-				for(int32 i = indentLevel; i <= previous_indent_level; i++) {
-					parent = parent->parent;
-					if(parent == nullptr) {
+				document_t::node_t *parent_ = *previous;
+				for(int32 i = indent_level; i <= previous_indent_level; i++) {
+					parent_ = parent_->parent_;
+					if(parent_ == nullptr) {
 						console_t::error("Parsing document failed, suspect indentation");
 						return false;
 					}
 				}
 				if(append_sibling) {
-					parent->append_sibling(n);
+					parent_->append_sibling(n);
 				} else {
-					parent->append_child(n);
+					parent_->append_child(n);
 					*previous = n;
-					previous_indent_level = indentLevel;
+					previous_indent_level = indent_level;
 				}
 			}
-			cleanLine = false;
+			clean_line = false;
 			append_sibling = false;
 			return true;
 		}
@@ -489,8 +489,8 @@ namespace maki
 			return data != nullptr && length >= sizeof(BINARY_HEADER) && memcmp(data, BINARY_HEADER, sizeof(BINARY_HEADER)) == 0;
 		}
 
-		document_binary_serializer_t::document_binary_serializer_t(document_t &doc)
-			: doc(doc)
+		document_binary_serializer_t::document_binary_serializer_t(document_t &doc_)
+			: doc_(doc_)
 		{
 		}
 	
@@ -500,8 +500,8 @@ namespace maki
 
 		bool document_binary_serializer_t::serialize(char *path)
 		{
-			if(doc.root == nullptr) {
-				console_t::error("Could not serialize binary document, root was null");
+			if(doc_.root_ == nullptr) {
+				console_t::error("Could not serialize binary document, root_ was null");
 				return false;
 			}
 
@@ -519,8 +519,8 @@ namespace maki
 
 		bool document_binary_serializer_t::serialize(std::ostream &out)
 		{
-			if(doc.root == nullptr) {
-				console_t::error("Could not serialize binary document, root was null");
+			if(doc_.root_ == nullptr) {
+				console_t::error("Could not serialize binary document, root_ was null");
 				return false;
 			}
 
@@ -528,9 +528,9 @@ namespace maki
 			std::ostringstream body;
 
 			// serialize our document to the stringstream, constructing a stringtable along the way
-			for(uint32 i = 0; i < doc.root->count; i++) {
+			for(uint32 i = 0; i < doc_.root_->count_; i++) {
 				uint32 level = 0;
-				serialize_node(doc.root->children[i], body, table, level);
+				serialize_node(doc_.root_->children_[i], body, table, level);
 			}
 
 			// write header ident
@@ -538,7 +538,7 @@ namespace maki
 			out.write((char *)BINARY_HEADER, sizeof(BINARY_HEADER));
 			offset += sizeof(BINARY_HEADER);
 
-			// write string table count
+			// write string table count_
 			uint32 stringCount = table.size();
 			assert(stringCount < 1<<16);
 			uint16 sc = stringCount;
@@ -586,13 +586,13 @@ namespace maki
 			uint16 l = level;
 			body.write((char *)&l, sizeof(l));
 		
-			// write node value (index into string table actually)
-			uint16 stringIndex = get_or_add(string_table, n->value);
+			// write node value_ (index into string table actually)
+			uint16 stringIndex = get_or_add(string_table, n->value_);
 			body.write((char *)&stringIndex, sizeof(stringIndex));
 
 			level++;
-			for(uint32 i = 0; i < n->count; i++) {
-				serialize_node(n->children[i], body, string_table, level);
+			for(uint32 i = 0; i < n->count_; i++) {
+				serialize_node(n->children_[i], body, string_table, level);
 			}
 			level--;
 		}
@@ -604,23 +604,23 @@ namespace maki
 				return false;
 			}
 
-			MAKI_SAFE_DELETE(doc.root);
-			doc.root = new document_t::node_t("<root>", 6);
+			MAKI_SAFE_DELETE(doc_.root_);
+			doc_.root_ = new document_t::node_t("<root_>", 6);
 
 			char *p = data; p += sizeof(BINARY_HEADER);
 
 			// Parse string table, finding the offsets to the start of each string
-			uint16 stringTableCount = *(uint16 *)p; p += sizeof(uint16);
-			uint16 *stringTableOffsets = new uint16[stringTableCount+1];
-			char *stringTableStart = p;
-			for(uint16 i = 0; i < stringTableCount; i++) {
-				stringTableOffsets[i] = p - stringTableStart;
+			uint16 string_table_count = *(uint16 *)p; p += sizeof(uint16);
+			uint16 *string_table_offsets = new uint16[string_table_count+1];
+			char *string_table_start = p;
+			for(uint16 i = 0; i < string_table_count; i++) {
+				string_table_offsets[i] = p - string_table_start;
 				while(*p != 0) {
 					p++;
 				}
 				p++;
 			}
-			stringTableOffsets[stringTableCount] = p - stringTableStart;
+			string_table_offsets[string_table_count] = p - string_table_start;
 
 			// Align
 			while((p-data) % 2 != 0) {
@@ -628,21 +628,21 @@ namespace maki
 			}	
 
 			int32 previousLevel = -1;
-			document_t::node_t *previous = doc.root;
+			document_t::node_t *previous = doc_.root_;
 
 			while(p < data+length) {
 				// Read indentation depth
 				uint16 level = *(uint16 *)p; p += sizeof(uint16);
 
-				// Read string table index which specifies the node value
+				// Read string table index which specifies the node value_
 				uint16 stringIndex = *(uint16 *)p; p += sizeof(uint16);
 
-				document_t::node_t *n = new document_t::node_t(stringTableStart+stringTableOffsets[stringIndex], stringTableOffsets[stringIndex+1]-stringTableOffsets[stringIndex], true);
+				document_t::node_t *n = new document_t::node_t(string_table_start+string_table_offsets[stringIndex], string_table_offsets[stringIndex+1]-string_table_offsets[stringIndex], true);
 				if(level > previousLevel) {
 					previous->append_child(n);
 				} else {
 					while(level <= previousLevel) {
-						previous = previous->parent;
+						previous = previous->parent_;
 						assert(previous != nullptr);
 						previousLevel--;
 					}
@@ -652,7 +652,7 @@ namespace maki
 				previousLevel = level;
 			}
 
-			MAKI_SAFE_DELETE_ARRAY(stringTableOffsets);
+			MAKI_SAFE_DELETE_ARRAY(string_table_offsets);
 			return true;
 		}
 

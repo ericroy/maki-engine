@@ -7,35 +7,35 @@ namespace maki
 	namespace core
 	{
 
-		const uint8 vertex_format_t::DataTypeSizes[DataTypeCount] = {4, 4, 2, 1};
+		const uint8 vertex_format_t::data_type_sizes_[data_type_count_] = {4, 4, 2, 1};
 
 		vertex_format_t::vertex_format_t()
-			: stride(0),
-			attrCount(0),
-			attrFlags(0)
+			: stride_(0),
+			attr_count_(0),
+			attr_flags_(0)
 		{
-			memset(formats, 0, sizeof(formats));
+			memset(formats_, 0, sizeof(formats_));
 		}
 
 		vertex_format_t::vertex_format_t(const vertex_format_t &other)
-			: stride(other.stride),
-			attrCount(other.attrCount),
-			attrFlags(other.attrFlags)
+			: stride_(other.stride_),
+			attr_count_(other.attr_count_),
+			attr_flags_(other.attr_flags_)
 		{
-			memcpy(formats, other.formats, sizeof(formats));
+			memcpy(formats_, other.formats_, sizeof(formats_));
 		}
 
 		vertex_format_t::~vertex_format_t() {
 		}
 
-		void vertex_format_t::PushAttribute(Attribute attr, DataType type, uint8 count)
+		void vertex_format_t::push_attribute(attribute_t attr, data_type_t type, uint8 count)
 		{
 			assert(count <= 64);
-			attrFlags |= 1<<attr;
-			formats[attr].type_ = type;
-			formats[attr].count_ = count;
-			stride += DataTypeSizes[type]*count;
-			attrCount++;
+			attr_flags_ |= 1<<attr;
+			formats_[attr].type_ = type;
+			formats_[attr].count_ = count;
+			stride_ += data_type_sizes_[type]*count;
+			attr_count_++;
 		}
 
 	} // namespace core

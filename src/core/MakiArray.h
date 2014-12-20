@@ -24,15 +24,15 @@ namespace maki
 			}
 
 			array_t(const move_token_t<array_t> &other)
-				: count_(other.obj->count_), data_(other.obj->data_)
+				: count_(other.obj_->count_), data_(other.obj_->data_)
 			{
-				other.obj->count_ = 0;
-				other.obj->data_ = nullptr;
+				other.obj_->count_ = 0;
+				other.obj_->data_ = nullptr;
 			}
 
 			~array_t()
 			{
-				SAFE_FREE(data_);
+				MAKI_SAFE_FREE(data_);
 			}
 
 			inline void set_size(uint32 size)
@@ -40,8 +40,8 @@ namespace maki
 				if(size == count_) {
 					return;
 				}
-				SAFE_FREE(data_);
-				data_ = (T *)allocator_t::malloc(sizeof(T)*size, std::alignment_of<T>::value);
+				MAKI_SAFE_FREE(data_);
+				data_ = (T *)allocator_t::malloc(sizeof(T)*size, std::alignment_of<T>::value_);
 				count_ = size;
 			}
 
@@ -52,7 +52,7 @@ namespace maki
 
 			inline void free()
 			{
-				SAFE_FREE(data_);
+				MAKI_SAFE_FREE(data_);
 				count_ = 0;
 			}
 

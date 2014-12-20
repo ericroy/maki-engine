@@ -13,7 +13,7 @@ namespace maki
 		class material_manager_t : public manager_t<material_t, material_manager_t>
 		{
 		public:
-			static handle_t DuplicateIfShared(handle_t handle);
+			static handle_t duplicate_if_shared(handle_t handle);
 
 		public:
 			static const int32 default_size_ = 64;
@@ -26,7 +26,7 @@ namespace maki
 			bool reload_asset(rid_t rid);
 
 		private:
-			void Reload(material_t *mat);
+			void reload(material_t *mat);
 		};
 
 	} // namespace core

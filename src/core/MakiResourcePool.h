@@ -230,7 +230,7 @@ namespace maki
 
 			// Returns a handle to the first item for which predicate is true.
 			// Note: this method adds a reference to the item if it is found.
-			handle_t Match(std::function<bool(const T *)> predicate)
+			handle_t match(std::function<bool(const T *)> predicate)
 			{
 				const iterator_t iterEnd = end_();
 				for(iterator_t iter = begin(); iter != iterEnd; ++iter) {

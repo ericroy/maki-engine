@@ -8,7 +8,7 @@ namespace maki
 	namespace core
 	{
 
-		texture_t::texture_t() : resource_t(), type(texture_type_regular_), width(0), height(0), handle(-1) {
+		texture_t::texture_t() : resource_t(), type_(texture_type_regular_), width_(0), height_(0), handle_(-1) {
 		}
 	
 		texture_t::~texture_t() {

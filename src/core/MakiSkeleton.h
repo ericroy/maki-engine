@@ -16,7 +16,7 @@ namespace maki
 			static const int32 MAX_BONES = 128;
 			static const int32 MAX_CHILDREN_PER_BONE = 7;
 
-			struct __declspec(align(MAKI_SIMD_ALIGN)) Joint : public aligned_t<MAKI_SIMD_ALIGN>
+			struct __declspec(align(MAKI_SIMD_ALIGN)) joint_t : public aligned_t<MAKI_SIMD_ALIGN>
 			{
 				quaternion_t rot_;
 				vector3_t offset_;
@@ -34,11 +34,11 @@ namespace maki
 			skeleton_t(const skeleton_t &) { assert(false && "skeleton_t copy construction not allowed"); }
 			~skeleton_t();
 			bool load(rid_t rid);
-			void calculate_world_pose(Joint *joint_states, matrix44_t *out);
+			void calculate_world_pose(joint_t *joint_states, matrix44_t *out);
 	
 		private:
-			void calculate_inverse_bind_pose(Joint *joint_states, matrix44_t *out);
-			void calculate_pos_recursive(uint32 &index, const matrix44_t &current, Joint *joint_states, matrix44_t *out);
+			void calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out);
+			void calculate_pos_recursive(uint32 &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out);
 
 		public:
 			array_t<matrix44_t> inverse_bind_pose_;

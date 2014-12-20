@@ -17,7 +17,7 @@ namespace maki
 		{
 			const uint32 count = groups_.size();
 			for(uint32 i = 0; i < count; i++) {
-				SAFE_DELETE(groups_[i].archive_);
+				MAKI_SAFE_DELETE(groups_[i].archive_);
 				// DON'T delete manifest, we do not own it
 			}
 		}

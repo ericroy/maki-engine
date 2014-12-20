@@ -8,54 +8,54 @@ namespace maki
 	{
 
 		timer_t::timer_t(time_source_t *source)
-			: source(source)
+			: source_(source)
 		{
-			lastTime = source->GetTimeMicro();
+			last_time_ = source_->get_time_micro();
 
-			updateCount = 0;
-			averageFps = 0.0f;
+			update_count_ = 0;
+			average_fps_ = 0.0f;
 
-			deltaSeconds = 0.0f;
-			deltaMicros = 0;
+			delta_seconds_ = 0.0f;
+			delta_micros_ = 0;
 
-			elapsedSeconds = 0.0;
-			elapsedMicros = 0;
+			elapsed_seconds_ = 0.0;
+			elapsed_micros_ = 0;
 		}
 
-		void timer_t::UpdateHistory()
+		void timer_t::update_history()
 		{
-			uint32 index = updateCount % N_FRAME_AVERAGE;
+			uint32 index = update_count_ % n_frame_average_;
 
 			// If N frames have gone by, calculate new average values
-			if(updateCount > N_FRAME_AVERAGE && index == 0) {
-				float averageDelta = 0;
-				for(uint32 i = 0; i < N_FRAME_AVERAGE; i++ ) {
-					averageDelta += deltaHistory[i];
+			if(update_count_ > n_frame_average_ && index == 0) {
+				float average_delta = 0;
+				for(uint32 i = 0; i < n_frame_average_; i++ ) {
+					average_delta += delta_history_[i];
 				}
-				averageDelta /= N_FRAME_AVERAGE;
-				averageFps = 1.0f / averageDelta;
+				average_delta /= n_frame_average_;
+				average_fps_ = 1.0f / average_delta;
 			}
 
 			// Store the current values as historical ones
-			deltaHistory[index] = deltaSeconds;
+			delta_history_[index] = delta_seconds_;
 		}
 
 		void timer_t::tick() {
-			updateCount++;
+			update_count_++;
 
-			uint64 now = source->GetTimeMicro();
-			if(now < lastTime) {
-				now = lastTime;
+			uint64 now = source_->get_time_micro();
+			if(now < last_time_) {
+				now = last_time_;
 			}
 
-			deltaMicros = now - lastTime;
-			elapsedMicros += deltaMicros;
+			delta_micros_ = now - last_time_;
+			elapsed_micros_ += delta_micros_;
 
-			deltaSeconds = (now - lastTime) / 1e6f;
-			elapsedSeconds = elapsedMicros / 1e6f;
+			delta_seconds_ = (now - last_time_) / 1e6f;
+			elapsed_seconds_ = elapsed_micros_ / 1e6f;
 		
-			lastTime = now;
-			UpdateHistory();
+			last_time_ = now;
+			update_history();
 		}
 
 	} // namespace core

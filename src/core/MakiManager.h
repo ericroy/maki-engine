@@ -122,8 +122,8 @@ namespace maki
 			void dump_items()
 			{
 				console_t::info("manager_t items:");
-				const typename resource_pool_t<T>::iterator_t end = res_pool_->End();
-				for(typename resource_pool_t<T>::iterator_t iter = res_pool_->Begin(); iter != end; ++iter) {
+				const typename resource_pool_t<T>::iterator_t end = res_pool_->end();
+				for(typename resource_pool_t<T>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
 					console_t::info("Item handle=%d refcount=%d", iter.Index(), iter.RefCount());
 				}
 			}

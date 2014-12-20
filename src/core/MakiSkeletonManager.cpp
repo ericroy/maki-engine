@@ -19,17 +19,17 @@ namespace maki
 	
 		handle_t skeleton_manager_t::load(rid_t rid)
 		{
-			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_t>(rid)) | managerId;
+			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_t>(rid)) | manager_id_;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->alloc() | managerId;
-			skeleton_t *skel = resPool->get(handle & handle_value_mask_);
+			handle = res_pool_->alloc() | manager_id_;
+			skeleton_t *skel = res_pool_->get(handle & handle_value_mask_);
 			new(skel) skeleton_t();
 		
 			if(!skel->load(rid)) {
-				resPool->free(handle & handle_value_mask_);
+				res_pool_->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
@@ -39,8 +39,8 @@ namespace maki
 		{
 			engine_t *eng = engine_t::get();
 
-			const resource_pool_t<skeleton_t>::iterator_t end = resPool->end();
-			for(resource_pool_t<skeleton_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+			const resource_pool_t<skeleton_t>::iterator_t end = res_pool_->end();
+			for(resource_pool_t<skeleton_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
 				skeleton_t *skel = iter.Ptr();
 				rid_t rid = skel->rid_;
 				if(rid != RID_NONE) {
@@ -53,12 +53,12 @@ namespace maki
 
 		bool skeleton_manager_t::reload_asset(rid_t rid)
 		{
-			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_t>(rid)) | managerId;
+			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_t>(rid)) | manager_id_;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			skeleton_t *skel = resPool->get(handle & handle_value_mask_);
-			resPool->free(handle & handle_value_mask_);
+			skeleton_t *skel = res_pool_->get(handle & handle_value_mask_);
+			res_pool_->free(handle & handle_value_mask_);
 
 			if(rid != RID_NONE) {
 				skel->~skeleton_t();

@@ -19,7 +19,7 @@ namespace maki
 
 			struct value_entry_t
 			{
-				Matrix44 m_;
+				matrix44_t m_;
 				draw_command_t draw_command_;
 			};
 
@@ -36,7 +36,7 @@ namespace maki
 		
 			~draw_command_list_t() {}
 
-			inline void add(const draw_command_t &draw_command, const Matrix44 &m)
+			inline void add(const draw_command_t &draw_command, const matrix44_t &m)
 			{
 				assert(count < keys.count_);
 

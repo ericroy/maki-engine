@@ -26,34 +26,34 @@ namespace maki
 				return HANDLE_NONE;
 			}
 
-			handle_t handle = resPool->Match(resource_t::FindPredicate<material_t>(rid)) | managerId;
+			handle_t handle = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->alloc() | managerId;
-			material_t *mat = resPool->get(handle & handle_value_mask_);
+			handle = res_pool_->alloc() | manager_id_;
+			material_t *mat = res_pool_->get(handle & handle_value_mask_);
 			new(mat) material_t();
 			if(!mat->load(rid)) {
-				resPool->free(handle & handle_value_mask_);
+				res_pool_->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
-		handle_t material_manager_t::DuplicateIfShared(handle_t handle)
+		handle_t material_manager_t::duplicate_if_shared(handle_t handle)
 		{
 			material_manager_t *owner = get_owner(handle);
-			if(handle != HANDLE_NONE && owner->resPool->GetRefCount(handle & handle_value_mask_) > 1) {
+			if(handle != HANDLE_NONE && owner->res_pool_->GetRefCount(handle & handle_value_mask_) > 1) {
 				// Allocate a new item, relying on the item's copy constructor to duplicate it
-				handle_t newHandle = owner->resPool->alloc(*owner->resPool->get(handle)) | owner->managerId;
-				owner->resPool->free(handle & handle_value_mask_);
+				handle_t newHandle = owner->res_pool_->alloc(*owner->res_pool_->get(handle)) | owner->manager_id_;
+				owner->res_pool_->free(handle & handle_value_mask_);
 
 				// Must clear the rid_t on cloned resources, since they are no longer hot-swappable.
 				// Duplicating usually implies an intent to modify the resource, and if you hot-swapped
 				// in a new one, those modifications would be lost.
-				material_t *mat = owner->resPool->get(newHandle & handle_value_mask_);
-				mat->rid = RID_NONE;
+				material_t *mat = owner->res_pool_->get(newHandle & handle_value_mask_);
+				mat->rid_ = RID_NONE;
 
 				return newHandle;
 			}
@@ -62,12 +62,12 @@ namespace maki
 
 		void material_manager_t::reload_assets()
 		{
-			const resource_pool_t<material_t>::iterator_t end = resPool->End();
-			for(resource_pool_t<material_t>::iterator_t iter = resPool->Begin(); iter != end; ++iter) {
+			const resource_pool_t<material_t>::iterator_t end = res_pool_->end();
+			for(resource_pool_t<material_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
 				material_t *mat = iter.Ptr();
-				rid_t rid = mat->rid;
+				rid_t rid = mat->rid_;
 				if(rid != RID_NONE) {
-					Reload(mat);
+					reload(mat);
 				}
 			}
 		}
@@ -77,17 +77,17 @@ namespace maki
 			if(rid == RID_NONE) {
 				return false;
 			}
-			handle_t handle = resPool->Match(resource_t::FindPredicate<material_t>(rid)) | managerId;
+			handle_t handle = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			material_t *mat = resPool->get(handle & handle_value_mask_);
-			resPool->free(handle & handle_value_mask_);
-			Reload(mat);
+			material_t *mat = res_pool_->get(handle & handle_value_mask_);
+			res_pool_->free(handle & handle_value_mask_);
+			reload(mat);
 			return true;
 		}
 
-		void material_manager_t::Reload(material_t *mat)
+		void material_manager_t::reload(material_t *mat)
 		{
 			// Acquire the material's handles while we recreate it
 			handle_t texture_set = mat->texture_set_;
@@ -96,7 +96,7 @@ namespace maki
 			shader_program_manager_t::add_ref(shader_program);
 
 			// Recreate material
-			rid_t rid = mat->rid;
+			rid_t rid = mat->rid_;
 			mat->~material_t();
 			new(mat) material_t();
 			mat->load(rid);

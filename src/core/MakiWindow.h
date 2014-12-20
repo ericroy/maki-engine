@@ -20,33 +20,33 @@ namespace maki
 		class window_t
 		{
 		public:
-			window_t(render_core_t::type_t renderCoreType, const config_t *config);
+			window_t(render_core_t::type_t render_core_type, const config_t *config);
 			virtual ~window_t();
-			int Pump(engine_t *engine);
+			int pump(engine_t *engine);
 			void poll_input(input_state_t *state);
-			inline float get_aspect() { return height == 0 ? (float)width : width / (float)height; };
+			inline float get_aspect() { return height_ == 0 ? (float)width_ : width_ / (float)height_; };
 
 		private:
-			void ConnectGameController(int32 i); 
-			inline int32 GetControllerIndex(int32 instanceId)
+			void connect_game_controller(int32 i); 
+			inline int32 get_controller_index(int32 instance_id)
 			{
 				for(int32 i = 0; i < input_state_t::max_players_; i++) {
-					if(controllerInstanceIds[i] == instanceId) { return i; }
+					if(controller_instance_ids_[i] == instance_id) { return i; }
 				}
 				return -1;
 			}
 
 		public:
-			int32 width;
-			int32 height;
-			bool fullscreen;
-			SDL_Window *window;
+			int32 width_;
+			int32 height_;
+			bool fullscreen_;
+			SDL_Window *window_;
 
 		private:
-			input_state_t::key_state_report_t keyStates[256];
-			SDL_GameController *controllerHandles[input_state_t::max_players_];
-			input_state_t::controller_t controllers[input_state_t::max_players_];
-			int32 controllerInstanceIds[input_state_t::max_players_];
+			input_state_t::key_state_report_t key_states_[256];
+			SDL_GameController *controller_handles_[input_state_t::max_players_];
+			input_state_t::controller_t controllers_[input_state_t::max_players_];
+			int32 controller_instance_ids_[input_state_t::max_players_];
 		};
 
 	} // namespace core

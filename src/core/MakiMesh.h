@@ -60,13 +60,13 @@ namespace maki
 			inline void set_mesh_flag(mesh_flag_t flag, bool on = true) { if(on) { mesh_flags_ |= flag; } else { mesh_flags_ &= ~flag; } }
 
 			// Retrieves the gpu buffer_ associated with this mesh (creating it if necessary)
-			inline void *GetBuffer() { if(buffer_ == nullptr) { upload(); } return buffer_; }
+			inline void *get_buffer() { if(buffer_ == nullptr) { upload(); } return buffer_; }
 
 			inline uint8 GetVertexStride() const { return vertex_stride_; }
 			inline uint32 GetVertexCount() const { return vertex_count_; }
 			//inline void SetVertexCount(uint32 count) { vertex_count_ = count; }
 			inline char *GetVertexData() { return vertex_data_; }
-			int32 get_attribute_offset(VertexFormat::Attribute attr);
+			int32 get_attribute_offset(vertex_format_t::attribute_t attr);
 
 			inline uint8 get_bytes_per_index() const { return bytes_per_index_; }
 			inline uint8 get_indices_per_face() const { return indices_per_face_; }
@@ -83,7 +83,7 @@ namespace maki
 			void make_rect(const rect_args_t &args);
 
 		public:
-			std::vector<handle_t> siblings;
+			std::vector<handle_t> siblings_;
 			handle_t vertex_format_;
 			bounding_box_t bounds_;
 

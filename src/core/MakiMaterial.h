@@ -46,12 +46,12 @@ namespace maki
 			// Pointer must be allocated with Maki::allocator_t.
 			// Returns the index of the constant value in this material.
 			// Returns -1 on failure (provided pointer will be freed in this case).
-			int32 PushConstant(const char *key, uint32 bytes, char *data);
+			int32 push_constant(const char *key, uint32 bytes, char *data);
 		
 		public:
-			handle_t texture_set;
-			handle_t shader_program;
-			uint8 uniform_count;
+			handle_t texture_set_;
+			handle_t shader_program_;
+			uint8 uniform_count_;
 			uniform_value_t uniform_values_[max_uniforms_];
 		};
 

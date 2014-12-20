@@ -106,7 +106,7 @@ namespace maki
 			bool deserialize(char *data, uint32 length);
 
 		private:
-			bool add_node(document_t::node_t *n, int32 indentLevel, document_t::node_t **previous, int32 &previous_indent_level, bool &cleanLine, bool &append_sibling);
+			bool add_node(document_t::node_t *n, int32 indent_level, document_t::node_t **previous, int32 &previous_indent_level, bool &clean_line, bool &append_sibling);
 			void serialize_node(document_t::node_t *n, uint32 depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token);
 
 		private:

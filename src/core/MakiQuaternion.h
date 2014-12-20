@@ -52,11 +52,11 @@ namespace maki
     
 		public:
 			// Create the quaternion necessary to billboard a quad
-			// toCamera: The direction from the sprite's world position to the camera's world position (normalized)
-			// spriteFaceAxis: The axis along which the untransformed sprite faces (normalized)
-			// spritePivotAxis: The axis around which the sprite is allowed to pivot (normalized)
-			static inline quaternion_t billboard_face(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spriteUpAxis);
-			static inline quaternion_t billboard_pivot(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spritePivotAxis);
+			// to_camera: The direction from the sprite's world position to the camera's world position (normalized)
+			// sprite_face_axis: The axis along which the untransformed sprite faces (normalized)
+			// sprite_pivot_axis: The axis around which the sprite is allowed to pivot (normalized)
+			static inline quaternion_t billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &spriteUpAxis);
+			static inline quaternion_t billboard_pivot(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_pivot_axis);
 
 			// Performs Spherical linear interpolation between two quaternions, and returns the result.
 			static inline quaternion_t slerp(float t, const quaternion_t &v0, const quaternion_t &v1);
@@ -75,10 +75,10 @@ namespace maki
 
 
 			// Default constructor, initializes to identity rotation (aka 0 rads)
-			inline quaternion_t() : w(1), x(0), y(0), z(0) {}
+			inline quaternion_t() : w_(1), x_(0), y_(0), z_(0) {}
 			inline quaternion_t(float theta_x, float theta_y, float theta_z) { from_euler_angles(theta_x, theta_y, theta_z); }
 			inline quaternion_t(const vector3_t &euler_angles) { from_euler_angles(euler_angles); }
-			inline quaternion_t(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
+			inline quaternion_t(float w_, float x_, float y_, float z_) : w_(w_), x_(x_), y_(y_), z_(z_) {}
 
 			void to_matrix(matrix44_t &rot) const;
 			void from_matrix(const matrix44_t &m);
@@ -92,7 +92,7 @@ namespace maki
 			void to_angle_axis(float &theta, vector3_t &axis) const;
 			void to_angle_axis(float &theta, vector4_t &axis) const;
 
-			// Start and end must be normalized!
+			// start and end must be normalized!
 			void from_rotation_arc(const vector3_t &start, const vector3_t &end);
 
 			inline quaternion_t operator+(const quaternion_t &q) const;
@@ -128,17 +128,17 @@ namespace maki
 
 		quaternion_t quaternion_t::operator+(const quaternion_t &q) const
 		{
-			return quaternion_t(w+q.w_, x+q.x_, y+q.y_, z+q.z_);
+			return quaternion_t(w_+q.w_, x_+q.x_, y_+q.y_, z_+q.z_);
 		}
 
 		quaternion_t quaternion_t::operator-(const quaternion_t &q) const
 		{
-			return quaternion_t(w-q.w_, x-q.x_, y-q.y_, z-q.z_);
+			return quaternion_t(w_-q.w_, x_-q.x_, y_-q.y_, z_-q.z_);
 		}
 
 		quaternion_t quaternion_t::operator*(float s) const
 		{
-			return quaternion_t(s*w,s*x,s*y,s*z);
+			return quaternion_t(s*w_,s*x_,s*y_,s*z_);
 		}
 
 		quaternion_t quaternion_t::operator*(const quaternion_t &q) const
@@ -146,35 +146,35 @@ namespace maki
 			// NOTE:  Multiplication is not generally commutative, so in most
 			// cases p*q != q*p.
 			return quaternion_t(
-				w * q.w_ - x * q.x_ - y * q.y_ - z * q.z_,
-				w * q.x_ + x * q.w_ + y * q.z_ - z * q.y_,
-				w * q.y_ + y * q.w_ + z * q.x_ - x * q.z_,
-				w * q.z_ + z * q.w_ + x * q.y_ - y * q.x_
+				w_ * q.w_ - x_ * q.x_ - y_ * q.y_ - z_ * q.z_,
+				w_ * q.x_ + x_ * q.w_ + y_ * q.z_ - z_ * q.y_,
+				w_ * q.y_ + y_ * q.w_ + z_ * q.x_ - x_ * q.z_,
+				w_ * q.z_ + z_ * q.w_ + x_ * q.y_ - y_ * q.x_
 			);
 		}
 
 		quaternion_t quaternion_t::operator-() const
 		{
-			return quaternion_t(-w, -x, -y, -z);
+			return quaternion_t(-w_, -x_, -y_, -z_);
 		}
 
 		float quaternion_t::dot(const quaternion_t& q) const
 		{
-			return w*q.w_ + x*q.x_ + y*q.y_ + z*q.z_;
+			return w_*q.w_ + x_*q.x_ + y_*q.y_ + z_*q.z_;
 		}
 
 		float quaternion_t::norm() const
 		{
-			return w*w + x*x + y*y + z*z;
+			return w_*w_ + x_*x_ + y_*y_ + z_*z_;
 		}
 
 		void quaternion_t::normalize(void)
 		{
 			float factor = 1.0f / sqrt(norm());
-			w *= factor;
-			x *= factor;
-			y *= factor;
-			z *= factor;
+			w_ *= factor;
+			x_ *= factor;
+			y_ *= factor;
+			z_ *= factor;
 		}
 
 
@@ -206,7 +206,7 @@ namespace maki
 				return res;
 			}
 
-			// Clamp dot product (in case inputs were not *quite* normalized)
+			// clamp dot product (in case inputs were not *quite* normalized)
 			if(dot < -1.0f)
 			{
 				dot = -1.0f;
@@ -244,31 +244,31 @@ namespace maki
 		}
 
 
-		quaternion_t quaternion_t::billboard_face(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spriteUpAxis)
+		quaternion_t quaternion_t::billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &spriteUpAxis)
 		{
-			// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
+			// to_camera, sprite_face_axis, and sprite_pivot_axis must be normalized
 			quaternion_t ret;
-			ret.from_rotation_arc(spriteFaceAxis, toCamera);
+			ret.from_rotation_arc(sprite_face_axis, to_camera);
 			return ret;
 		}
 
-		quaternion_t quaternion_t::billboard_pivot(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spritePivotAxis)
+		quaternion_t quaternion_t::billboard_pivot(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_pivot_axis)
 		{
-			// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
+			// to_camera, sprite_face_axis, and sprite_pivot_axis must be normalized
 		
 			// find the destination facing direction, as for normal billboarding.
 			// Remove any component of that vector that is along the axis direction.
 			// Renormalize.
-			float axisComponent = toCamera.dot(spritePivotAxis);
-			if(fabs(axisComponent) > 0.99999f) {
+			float axis_component = to_camera.dot(sprite_pivot_axis);
+			if(fabs(axis_component) > 0.99999f) {
 				// Degenerate case, desired facing direction is along the pivot axis
 				return quaternion_t();
 			}
-			vector4_t dst = toCamera - spritePivotAxis * axisComponent;
+			vector4_t dst = to_camera - sprite_pivot_axis * axis_component;
 			dst.normalize();
 		
 			quaternion_t ret;
-			ret.from_rotation_arc(spriteFaceAxis, dst);
+			ret.from_rotation_arc(sprite_face_axis, dst);
 			return ret;
 		}
 

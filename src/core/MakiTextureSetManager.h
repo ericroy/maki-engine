@@ -16,8 +16,8 @@ namespace maki
 			struct predicate_t : public std::unary_function<const texture_set_t *, bool>
 			{
 				inline bool operator()(const texture_set_t *ts) const;
-				uint8 count;
-				rid_t *textureRids;
+				uint8 count_;
+				rid_t *texture_rids_;
 			};
 
 		public:
@@ -26,17 +26,17 @@ namespace maki
 		public:
 			texture_set_manager_t(uint32 size = default_size_);	
 			virtual ~texture_set_manager_t();	
-			handle_t load(uint8 count, rid_t *textureRids);
+			handle_t load(uint8 count, rid_t *texture_rids);
 		};
 
 
 		inline bool texture_set_manager_t::predicate_t::operator()(const texture_set_t *ts) const
 		{
-			if(count != ts->textureCount) {
+			if(count_ != ts->texture_count_) {
 				return false;
 			}
-			for(uint8 i = 0; i < count; i++) {
-				if(textureRids[i] != ts->textureRids[i]) {
+			for(uint8 i = 0; i < count_; i++) {
+				if(texture_rids_[i] != ts->texture_rids_[i]) {
 					return false;
 				}
 			}

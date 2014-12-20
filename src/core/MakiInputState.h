@@ -145,8 +145,8 @@ namespace maki
 				key_browser_favorites_ = 0xab,
 				key_browser_home_ = 0xac,
 				key_volume_mute_ = 0xad,
-				key_Volume_down_ = 0xae,
-				key_Volume_up_ = 0xaf,
+				key_volume_down_ = 0xae,
+				key_volume_up_ = 0xaf,
 				key_media_next_track_ = 0xb0,
 				key_media_prev_track_ = 0xb1,
 				key_media_stop_ = 0xb2,
@@ -296,9 +296,9 @@ namespace maki
 
 			// Don't hold a reference to the controller object - get it each time from the player
 			// in case the controller associated with the player changes
-			inline controller_t &GetController(uint8 index) { assert(index < max_players_); return controllers_[index]; }
+			inline controller_t &get_controller(uint8 index) { assert(index < max_players_); return controllers_[index]; }
 
-			void ConnectController(uint8 controllerIndex);
+			void connect_controller(uint8 controllerIndex);
 			void DisconnectController(uint8 controllerIndex);
 
 		private:

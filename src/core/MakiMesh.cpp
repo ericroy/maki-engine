@@ -13,49 +13,49 @@ namespace maki
 	namespace core
 	{
 
-		mesh_t::mesh_t(bool dynamic)
+		mesh_t::mesh_t(bool dynamic_)
 			: resource_t(),
-			vertex_count(0),
-			face_count(0),
-			meshFlags(0),
-			vertexAttributeFlags(0),
-			vertexStride(0),
-			indices_per_face(0),
-			bytes_per_index(0),
-			vertexDataSize(0),
-			vertex_data(nullptr),
-			indexDataSize(0),
-			index_data(nullptr),
+			vertex_count_(0),
+			face_count_(0),
+			mesh_flags_(0),
+			vertex_attribute_flags_(0),
+			vertex_stride_(0),
+			indices_per_face_(0),
+			bytes_per_index_(0),
+			vertex_data_size_(0),
+			vertex_data_(nullptr),
+			index_data_size_(0),
+			index_data_(nullptr),
 			vertex_format_(HANDLE_NONE),
-			buffer(nullptr),
-			vertexInsertionIndex(0),
-			indexInsertionIndex(0),
-			dynamic(dynamic),
-			oldVertexDataSize(-1),
-			oldIndexDataSize(-1)
+			buffer_(nullptr),
+			vertex_insertion_index_(0),
+			index_insertion_index_(0),
+			dynamic_(dynamic_),
+			old_vertex_data_size_(-1),
+			old_index_data_size_(-1)
 		{
 		}
 
 		mesh_t::mesh_t(object_t type, const object_args_t &args)
 			: resource_t(),
-			vertex_count(0),
-			face_count(0),
-			meshFlags(0),
-			vertexAttributeFlags(0),
-			vertexStride(0),
-			indices_per_face(0),
-			bytes_per_index(0),
-			vertexDataSize(0),
-			vertex_data(nullptr),
-			indexDataSize(0),
-			index_data(nullptr),
+			vertex_count_(0),
+			face_count_(0),
+			mesh_flags_(0),
+			vertex_attribute_flags_(0),
+			vertex_stride_(0),
+			indices_per_face_(0),
+			bytes_per_index_(0),
+			vertex_data_size_(0),
+			vertex_data_(nullptr),
+			index_data_size_(0),
+			index_data_(nullptr),
 			vertex_format_(HANDLE_NONE),
-			buffer(nullptr),
-			vertexInsertionIndex(0),
-			indexInsertionIndex(0),
-			dynamic(false),
-			oldVertexDataSize(-1),
-			oldIndexDataSize(-1)
+			buffer_(nullptr),
+			vertex_insertion_index_(0),
+			index_insertion_index_(0),
+			dynamic_(false),
+			old_vertex_data_size_(-1),
+			old_index_data_size_(-1)
 		{
 			switch(type) {
 			case Object_Rect:
@@ -71,121 +71,121 @@ namespace maki
 
 		mesh_t::mesh_t(const move_token_t<mesh_t> &other)
 			: resource_t((const move_token_t<resource_t> &)other),
-			vertex_count(0),
-			face_count(0),
-			meshFlags(0),
-			vertexAttributeFlags(0),
-			vertexStride(0),
-			indices_per_face(0),
-			bytes_per_index(0),
-			vertexDataSize(0),
-			vertex_data(nullptr),
-			indexDataSize(0),
-			index_data(nullptr),
+			vertex_count_(0),
+			face_count_(0),
+			mesh_flags_(0),
+			vertex_attribute_flags_(0),
+			vertex_stride_(0),
+			indices_per_face_(0),
+			bytes_per_index_(0),
+			vertex_data_size_(0),
+			vertex_data_(nullptr),
+			index_data_size_(0),
+			index_data_(nullptr),
 			vertex_format_(HANDLE_NONE),
-			buffer(nullptr),
-			vertexInsertionIndex(0),
-			indexInsertionIndex(0),
-			dynamic(false),
-			oldVertexDataSize(-1),
-			oldIndexDataSize(-1)
+			buffer_(nullptr),
+			vertex_insertion_index_(0),
+			index_insertion_index_(0),
+			dynamic_(false),
+			old_vertex_data_size_(-1),
+			old_index_data_size_(-1)
 		{
-			std::swap(siglings_, other.obj->siglings_);
-			std::swap(vertex_count, other.obj->vertex_count);
-			std::swap(face_count, other.obj->face_count);
-			std::swap(meshFlags, other.obj->meshFlags);
-			std::swap(vertexAttributeFlags, other.obj->vertexAttributeFlags);
-			std::swap(vertexStride, other.obj->vertexStride);
-			std::swap(indices_per_face, other.obj->indices_per_face);
-			std::swap(bytes_per_index, other.obj->bytes_per_index);
-			std::swap(vertexDataSize, other.obj->vertexDataSize);
-			std::swap(vertex_data, other.obj->vertex_data);
-			std::swap(indexDataSize, other.obj->indexDataSize);
-			std::swap(index_data, other.obj->index_data);
-			std::swap(vertex_format_, other.obj->vertex_format_);
-			std::swap(buffer, other.obj->buffer);
-			std::swap(vertexInsertionIndex, other.obj->vertexInsertionIndex);
-			std::swap(indexInsertionIndex, other.obj->indexInsertionIndex);
-			std::swap(dynamic, other.obj->dynamic);
-			std::swap(oldVertexDataSize, other.obj->oldVertexDataSize);
-			std::swap(oldIndexDataSize, other.obj->oldIndexDataSize);
-			std::swap(bounds, other.obj->bounds);
+			std::swap(siblings_, other.obj_->siblings_);
+			std::swap(vertex_count_, other.obj_->vertex_count_);
+			std::swap(face_count_, other.obj_->face_count_);
+			std::swap(mesh_flags_, other.obj_->mesh_flags_);
+			std::swap(vertex_attribute_flags_, other.obj_->vertex_attribute_flags_);
+			std::swap(vertex_stride_, other.obj_->vertex_stride_);
+			std::swap(indices_per_face_, other.obj_->indices_per_face_);
+			std::swap(bytes_per_index_, other.obj_->bytes_per_index_);
+			std::swap(vertex_data_size_, other.obj_->vertex_data_size_);
+			std::swap(vertex_data_, other.obj_->vertex_data_);
+			std::swap(index_data_size_, other.obj_->index_data_size_);
+			std::swap(index_data_, other.obj_->index_data_);
+			std::swap(vertex_format_, other.obj_->vertex_format_);
+			std::swap(buffer_, other.obj_->buffer_);
+			std::swap(vertex_insertion_index_, other.obj_->vertex_insertion_index_);
+			std::swap(index_insertion_index_, other.obj_->index_insertion_index_);
+			std::swap(dynamic_, other.obj_->dynamic_);
+			std::swap(old_vertex_data_size_, other.obj_->old_vertex_data_size_);
+			std::swap(old_index_data_size_, other.obj_->old_index_data_size_);
+			std::swap(bounds_, other.obj_->bounds_);
 		}
 
 
 		mesh_t::~mesh_t()
 		{
-			if(buffer != nullptr) {
-				engine_t::get()->renderer_->free_buffer(buffer);
+			if(buffer_ != nullptr) {
+				engine_t::get()->renderer_->free_buffer(buffer_);
 			}
 			vertex_format_manager_t::free(vertex_format_);
-			mesh_manager_t::free(siglings_.size(), siglings_.data_());
-			MAKI_SAFE_FREE(vertex_data);
-			MAKI_SAFE_FREE(index_data);
+			mesh_manager_t::free(siblings_.size(), siblings_.data());
+			MAKI_SAFE_FREE(vertex_data_);
+			MAKI_SAFE_FREE(index_data_);
 		}
 
 		void mesh_t::clear_data()
 		{
-			meshFlags = 0;
-			vertexAttributeFlags = 0;
-			vertexStride = 0;
-			vertex_count = 0;
-			face_count = 0;
-			bytes_per_index = 0;
-			vertexInsertionIndex = 0;
-			indexInsertionIndex = 0;
+			mesh_flags_ = 0;
+			vertex_attribute_flags_ = 0;
+			vertex_stride_ = 0;
+			vertex_count_ = 0;
+			face_count_ = 0;
+			bytes_per_index_ = 0;
+			vertex_insertion_index_ = 0;
+			index_insertion_index_ = 0;
 
-			mesh_manager_t::free(siglings_.size(), siglings_.data_());
-			siglings_.clear();
+			mesh_manager_t::free(siblings_.size(), siblings_.data());
+			siblings_.clear();
 		}
 
 		void mesh_t::push_vertex_data(uint32 sizeInBytes, char *data)
 		{
-			assert(sizeInBytes % vertexStride == 0);
+			assert(sizeInBytes % vertex_stride_ == 0);
 
-			if(vertexInsertionIndex+sizeInBytes > vertexDataSize) {
+			if(vertex_insertion_index_+sizeInBytes > vertex_data_size_) {
 				// Enlarge by some margin
-				uint32 overflow = vertexInsertionIndex + sizeInBytes - vertexDataSize;
-				uint32 more = std::max(std::max(overflow, 256U), vertexDataSize/2);
-				vertexDataSize += more;
-				vertex_data = (char *)allocator_t::realloc(vertex_data, vertexDataSize);
-				assert(vertex_data);
+				uint32 overflow = vertex_insertion_index_ + sizeInBytes - vertex_data_size_;
+				uint32 more = std::max(std::max(overflow, 256U), vertex_data_size_/2);
+				vertex_data_size_ += more;
+				vertex_data_ = (char *)allocator_t::realloc(vertex_data_, vertex_data_size_);
+				assert(vertex_data_);
 			}
-			assert(vertexInsertionIndex+sizeInBytes <= vertexDataSize);
+			assert(vertex_insertion_index_+sizeInBytes <= vertex_data_size_);
 
 			if(data != nullptr) {
-				memcpy(&vertex_data[vertexInsertionIndex], data, sizeInBytes);
+				memcpy(&vertex_data_[vertex_insertion_index_], data, sizeInBytes);
 			}
-			vertexInsertionIndex += sizeInBytes;
-			vertex_count += sizeInBytes / vertexStride;
+			vertex_insertion_index_ += sizeInBytes;
+			vertex_count_ += sizeInBytes / vertex_stride_;
 		}
 
 		void mesh_t::push_index_data(uint32 sizeInBytes, char *data)
 		{
-			assert(sizeInBytes % (bytes_per_index * indices_per_face) == 0);
+			assert(sizeInBytes % (bytes_per_index_ * indices_per_face_) == 0);
 
-			if(indexInsertionIndex+sizeInBytes > indexDataSize) {
+			if(index_insertion_index_+sizeInBytes > index_data_size_) {
 				// Enlarge by some margin
-				uint32 overflow = indexInsertionIndex + sizeInBytes - indexDataSize;
-				uint32 more = std::max(std::max(overflow, 256U), indexDataSize/2);
-				indexDataSize += more;
-				index_data = (char *)allocator_t::realloc(index_data, indexDataSize);
-				assert(index_data);
+				uint32 overflow = index_insertion_index_ + sizeInBytes - index_data_size_;
+				uint32 more = std::max(std::max(overflow, 256U), index_data_size_/2);
+				index_data_size_ += more;
+				index_data_ = (char *)allocator_t::realloc(index_data_, index_data_size_);
+				assert(index_data_);
 			}
-			assert(indexInsertionIndex+sizeInBytes <= indexDataSize);
+			assert(index_insertion_index_+sizeInBytes <= index_data_size_);
 
 			if(data != nullptr) {
-				memcpy(&index_data[indexInsertionIndex], data, sizeInBytes);
+				memcpy(&index_data_[index_insertion_index_], data, sizeInBytes);
 			}
-			indexInsertionIndex += sizeInBytes;
-			face_count += sizeInBytes / (indices_per_face * bytes_per_index);
+			index_insertion_index_ += sizeInBytes;
+			face_count_ += sizeInBytes / (indices_per_face_ * bytes_per_index_);
 		}
 
 		bool mesh_t::load(rid_t rid, bool upload)
 		{
 			uint32 bytesRead;
 			char *data;
-			char *start = data = engine_t::get()->assets->alloc_read(rid, &bytesRead);
+			char *start = data = engine_t::get()->assets_->alloc_read(rid, &bytesRead);
 			if(start == nullptr) {
 				return false;
 			}
@@ -205,7 +205,7 @@ namespace maki
 			for(uint32 i = 1; i < meshCount; i++) {
 				mesh_t nextMesh;
 				data += nextMesh.load_mesh_data(data, upload);
-				siglings_.push_back(res->mesh_manager_->add(maki_move(nextMesh)));
+				siblings_.push_back(res->mesh_manager_->add(maki_move(nextMesh)));
 			}
 
 			if((uint32)(data - start) > bytesRead) {
@@ -227,35 +227,35 @@ namespace maki
 			char *data = start;
 		
 			// Read mesh properties
-			vertex_count = *(uint32 *)data;			data += sizeof(uint32);
-			face_count = *(uint32 *)data;			data += sizeof(uint32);
+			vertex_count_ = *(uint32 *)data;			data += sizeof(uint32);
+			face_count_ = *(uint32 *)data;			data += sizeof(uint32);
 			set_vertex_attributes(*(uint8 *)data);	data += sizeof(uint8);
-			indices_per_face = *(uint8 *)data;		data += sizeof(uint8);
-			bytes_per_index = *(uint8 *)data;			data += sizeof(uint8);
+			indices_per_face_ = *(uint8 *)data;		data += sizeof(uint8);
+			bytes_per_index_ = *(uint8 *)data;			data += sizeof(uint8);
 													data += sizeof(uint8);	// Pad byte
 		
-			// Allocate a buffer for the vertex data
-			vertexDataSize = std::max(vertexDataSize, vertexStride * vertex_count);
-			vertex_data = (char *)allocator_t::realloc(vertex_data, vertexDataSize);
-			assert(vertex_data);
+			// Allocate a buffer_ for the vertex data
+			vertex_data_size_ = std::max(vertex_data_size_, vertex_stride_ * vertex_count_);
+			vertex_data_ = (char *)allocator_t::realloc(vertex_data_, vertex_data_size_);
+			assert(vertex_data_);
 
-			// Fill the buffer with vertex data
-			memcpy(vertex_data, data, vertexStride * vertex_count);
-			data += vertexStride * vertex_count;
+			// Fill the buffer_ with vertex data
+			memcpy(vertex_data_, data, vertex_stride_ * vertex_count_);
+			data += vertex_stride_ * vertex_count_;
 
 			// Align to the nearest word boundary
 			if(((intptr_t)data & 0x3) != 0) {
 				data += 0x4-((intptr_t)data & 0x3);
 			}
 
-			// Allocate a buffer for index data
-			indexDataSize = std::max(indexDataSize, bytes_per_index * indices_per_face * face_count);
-			index_data = (char *)allocator_t::realloc(index_data, indexDataSize);
-			assert(index_data);
+			// Allocate a buffer_ for index data
+			index_data_size_ = std::max(index_data_size_, bytes_per_index_ * indices_per_face_ * face_count_);
+			index_data_ = (char *)allocator_t::realloc(index_data_, index_data_size_);
+			assert(index_data_);
 
-			// Fill the buffer with index data
-			memcpy(index_data, data, bytes_per_index * indices_per_face * face_count);
-			data += bytes_per_index * indices_per_face * face_count;
+			// Fill the buffer_ with index data
+			memcpy(index_data_, data, bytes_per_index_ * indices_per_face_ * face_count_);
+			data += bytes_per_index_ * indices_per_face_ * face_count_;
 
 			// Align to the nearest word boundary
 			if(((intptr_t)data & 0x3) != 0) {
@@ -264,88 +264,88 @@ namespace maki
 
 			// Build gpu buffers from the vertex and index data
 			if(upload) {
-				upload();
+				this->upload();
 			}
 
 			// Return how much we have advanced the pointer
 			return data - start;
 		}
 
-		void mesh_t::set_vertex_attributes(uint32 vertexAttributeFlags)
+		void mesh_t::set_vertex_attributes(uint32 vertex_attribute_flags_)
 		{
-			this->vertexAttributeFlags = vertexAttributeFlags;
-			vertexStride = 3*sizeof(float);
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Normal) != 0) {
-				vertexStride += 3*sizeof(float);
+			this->vertex_attribute_flags_ = vertex_attribute_flags_;
+			vertex_stride_ = 3*sizeof(float);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
+				vertex_stride_ += 3*sizeof(float);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Tangent) != 0) {
-				vertexStride += 3*sizeof(float);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_tangent_) != 0) {
+				vertex_stride_ += 3*sizeof(float);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color) != 0) {
-				vertexStride += 4*sizeof(uint8);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color_) != 0) {
+				vertex_stride_ += 4*sizeof(uint8);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color1) != 0) {
-				vertexStride += 4*sizeof(uint8);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color1_) != 0) {
+				vertex_stride_ += 4*sizeof(uint8);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_TexCoord) != 0) {
-				vertexStride += 2*sizeof(float);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_text_coord_) != 0) {
+				vertex_stride_ += 2*sizeof(float);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_BoneWeight) != 0) {
-				vertexStride += 4*sizeof(uint32);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_bone_weight_) != 0) {
+				vertex_stride_ += 4*sizeof(uint32);
 			}
 		}
 
-		void mesh_t::set_index_attributes(uint8 indices_per_face, uint8 bytes_per_index)
+		void mesh_t::set_index_attributes(uint8 indices_per_face_, uint8 bytes_per_index_)
 		{
-			this->indices_per_face = indices_per_face;
-			this->bytes_per_index = bytes_per_index;
+			this->indices_per_face_ = indices_per_face_;
+			this->bytes_per_index_ = bytes_per_index_;
 		}
 
-		int32 mesh_t::get_attribute_offset(vertex_format_t::Attribute attr)
+		int32 mesh_t::get_attribute_offset(vertex_format_t::attribute_t attr)
 		{
 			uint32 offset = 0;
-			if(attr == vertex_format_t::Attribute_Position) {
+			if(attr == vertex_format_t::attribute_position_) {
 				return offset;
 			}
 			offset += sizeof(float)*3;
 		
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Normal) != 0) {
-				if(attr == vertex_format_t::Attribute_Normal) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
+				if(attr == vertex_format_t::attribute_normal_) {
 					return offset;
 				}
 				offset += sizeof(float)*3;
 			}
 
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Tangent) != 0) {
-				if(attr == vertex_format_t::Attribute_Tangent) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_tangent_) != 0) {
+				if(attr == vertex_format_t::attribute_tangent_) {
 					return offset;
 				}
 				offset += sizeof(float)*3;
 			}
 
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color) != 0) {
-				if(attr == vertex_format_t::Attribute_Color) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color_) != 0) {
+				if(attr == vertex_format_t::attribute_color_) {
 					return offset;
 				}
 				offset += sizeof(uint8)*4;
 			}
 
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color1) != 0) {
-				if(attr == vertex_format_t::Attribute_Color1) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color1_) != 0) {
+				if(attr == vertex_format_t::attribute_color1_) {
 					return offset;
 				}
 				offset += sizeof(uint8)*4;
 			}
 
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_TexCoord) != 0) {
-				if(attr == vertex_format_t::Attribute_TexCoord) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_text_coord_) != 0) {
+				if(attr == vertex_format_t::attribute_tex_coord_) {
 					return offset;
 				}
 				offset += sizeof(float)*2;
 			}
 
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_BoneWeight) != 0) {
-				if(attr == vertex_format_t::Attribute_BoneWeight) {
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_bone_weight_) != 0) {
+				if(attr == vertex_format_t::attribute_bone_weight_) {
 					return offset;
 				}
 				offset += sizeof(uint32)*4;
@@ -357,66 +357,66 @@ namespace maki
 		void mesh_t::upload()
 		{		
 			vertex_format_t vf;
-			vf.PushAttribute(vertex_format_t::Attribute_Position, vertex_format_t::DataType_Float, 3);
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Normal) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_Normal, vertex_format_t::DataType_Float, 3);	
+			vf.push_attribute(vertex_format_t::attribute_position_, vertex_format_t::data_type_float_, 3);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_normal_, vertex_format_t::data_type_float_, 3);	
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Tangent) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_Tangent, vertex_format_t::DataType_Float, 3);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_tangent_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_tangent_, vertex_format_t::data_type_float_, 3);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_Color, vertex_format_t::DataType_UnsignedInt8, 4);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_color_, vertex_format_t::data_type_unsigned_int8_, 4);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_Color1) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_Color1, vertex_format_t::DataType_UnsignedInt8, 4);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_color1_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_color1_, vertex_format_t::data_type_unsigned_int8_, 4);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_TexCoord) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_TexCoord, vertex_format_t::DataType_Float, 2);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_text_coord_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_tex_coord_, vertex_format_t::data_type_float_, 2);
 			}
-			if((vertexAttributeFlags & vertex_format_t::AttributeFlag_BoneWeight) != 0) {
-				vf.PushAttribute(vertex_format_t::Attribute_BoneWeight, vertex_format_t::DataType_UnsignedInt32, 4);
+			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_bone_weight_) != 0) {
+				vf.push_attribute(vertex_format_t::attribute_bone_weight_, vertex_format_t::data_type_unsigned_int32_, 4);
 			}
 
-			bool length_changed = oldVertexDataSize != vertexDataSize || oldIndexDataSize != indexDataSize;
+			bool length_changed = old_vertex_data_size_ != vertex_data_size_ || old_index_data_size_ != index_data_size_;
 
-			buffer = engine_t::get()->renderer_->upload_buffer(buffer, &vf, vertex_data, vertex_count, index_data, face_count, indices_per_face, bytes_per_index, dynamic, length_changed);
+			buffer_ = engine_t::get()->renderer_->upload_buffer(buffer_, &vf, vertex_data_, vertex_count_, index_data_, face_count_, indices_per_face_, bytes_per_index_, dynamic_, length_changed);
 
 			// get or create vertex format
-			handle_t newVertexFormat = core_managers_t::get()->vertex_format_manager_->FindOrAdd(vf);
+			handle_t newVertexFormat = core_managers_t::get()->vertex_format_manager_->find_or_add(vf);
 			vertex_format_manager_t::free(vertex_format_);
 			vertex_format_ = newVertexFormat;
 
 			// Record the data sizes so if upload is called again later, we can see if the buffers have changed length
-			oldVertexDataSize = vertexDataSize;
-			oldIndexDataSize = indexDataSize;
+			old_vertex_data_size_ = vertex_data_size_;
+			old_index_data_size_ = index_data_size_;
 		}
 
 		void mesh_t::calculate_bounds()
 		{
-			bounds.reset();
+			bounds_.reset();
 
-			if(vertex_data != nullptr) {
-				char *p = vertex_data;
-				for(uint32 i = 0; i < vertex_count; i++) {
+			if(vertex_data_ != nullptr) {
+				char *p = vertex_data_;
+				for(uint32 i = 0; i < vertex_count_; i++) {
 					vector3_t *v = (vector3_t *)p;
-					bounds.merge(*v);
-					p += vertexStride;
+					bounds_.merge(*v);
+					p += vertex_stride_;
 				}
 			}
 
-			const uint32 siblingCount = siglings_.size();
+			const uint32 siblingCount = siblings_.size();
 			for(uint32 i = 0; i < siblingCount; i++) {
-				mesh_t *m = mesh_manager_t::get(siglings_[i]);
+				mesh_t *m = mesh_manager_t::get(siblings_[i]);
 				m->calculate_bounds();
-				bounds.merge(m->bounds);
+				bounds_.merge(m->bounds_);
 			}
 		}
 
 		void mesh_t::make_rect(const rect_args_t &args)
 		{
-			set_vertex_attributes(vertex_format_t::AttributeFlag_Color|vertex_format_t::AttributeFlag_TexCoord);
-			indices_per_face = 3;
-			bytes_per_index = 2;
+			set_vertex_attributes(vertex_format_t::attribute_flag_color_|vertex_format_t::attribute_flag_text_coord_);
+			indices_per_face_ = 3;
+			bytes_per_index_ = 2;
 
 			struct V {
 				float pos[3];

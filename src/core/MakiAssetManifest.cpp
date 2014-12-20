@@ -9,11 +9,11 @@ namespace maki
 	{
 
 		asset_manifest_t::asset_manifest_t(uint32 asset_count, rid_t *rid_array, const char **path_array, const char *common_path_prefix)
-			: rid_start(0),
-			count(asset_count),
-			rid_array(rid_array),
-			path_array(path_array),
-			common_path_prefix(common_path_prefix)
+			: rid_start_(0),
+			count_(asset_count),
+			rid_array_(rid_array),
+			path_array_(path_array),
+			common_path_prefix_(common_path_prefix)
 		{
 		}
 		
@@ -23,19 +23,19 @@ namespace maki
 
 		void asset_manifest_t::set_rid_start(uint32 rid_start)
 		{
-			// Renumber all rids, starting at <rid_start>
-			this->rid_start = rid_start;
-			for(uint32 i = 0; i < count; i++) {
-				rid_array[i] = rid_start+i;
+			// Renumber all rids, starting at <rid_start_>
+			rid_start_ = rid_start;
+			for(uint32 i = 0; i < count_; i++) {
+				rid_array_[i] = rid_start+i;
 			}
 		}
 
 		rid_t asset_manifest_t::path_to_rid(const char *path) const
 		{
-			std::string fullPath = common_path_prefix + path;
-			for(uint32 i = 0; i < count; i++) {
-				if(fullPath == path_array[i]) {
-					return MAKI_TO_RID(rid_array[i]);
+			std::string fullPath = common_path_prefix_ + path;
+			for(uint32 i = 0; i < count_; i++) {
+				if(fullPath == path_array_[i]) {
+					return MAKI_TO_RID(rid_array_[i]);
 				}
 			}
 			return RID_NONE;

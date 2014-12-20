@@ -8,8 +8,8 @@ namespace maki
 		
 		resource_t::resource_t(const move_token_t<resource_t> &other)
 		{
-			rid = other.obj->rid_;
-			other.obj->rid_ = RID_NONE;
+			rid_ = other.obj_->rid_;
+			other.obj_->rid_ = RID_NONE;
 		}
 
 	} // namespace core

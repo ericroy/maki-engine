@@ -15,12 +15,12 @@ namespace maki
 		}
 
 		archive_t::archive_t(const move_token_t<archive_t> &other)
-			: fp_(other.obj->fp_), rid_start_(other.obj->rid_start_), body_offset_(other.obj->body_offset_)
+			: fp_(other.obj_->fp_), rid_start_(other.obj_->rid_start_), body_offset_(other.obj_->body_offset_)
 		{
-			std::swap(entries, other.obj->entries);
-			other.obj->fp_ = nullptr;
-			other.obj->rid_start_ = 0;
-			other.obj->body_offset_ = 0;
+			std::swap(entries, other.obj_->entries);
+			other.obj_->fp_ = nullptr;
+			other.obj_->rid_start_ = 0;
+			other.obj_->body_offset_ = 0;
 		}
 
 		archive_t::~archive_t()
@@ -77,10 +77,10 @@ namespace maki
 		char *archive_t::alloc_read(const char *path, uint32 *bytes_read) const
 		{
 			assert(fp_ != nullptr);
-			for(uint32 i = 0; i < entries.count; i++) {
+			for(uint32 i = 0; i < entries.count_; i++) {
 				if(entries[i].file_name_ == path) {
 					uint32 rid = rid_start_ + i;
-					return alloc_read(TO_RID(rid), bytes_read);
+					return alloc_read(MAKI_TO_RID(rid), bytes_read);
 				}
 			}
 

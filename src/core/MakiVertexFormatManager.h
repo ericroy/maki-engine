@@ -16,13 +16,13 @@ namespace maki
 			static const int32 default_size_ = 8;
 
 		public:
-			inline handle_t FindOrAdd(const vertex_format_t &vf)
+			inline handle_t find_or_add(const vertex_format_t &vf)
 			{
-				handle_t vertex_format_ = find(vf);
-				if(vertex_format_ == HANDLE_NONE) {
+				handle_t vertex_format = find(vf);
+				if(vertex_format == HANDLE_NONE) {
 					return add(vf);
 				}
-				return vertex_format_;
+				return vertex_format;
 			}
 
 		public:

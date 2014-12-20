@@ -8,7 +8,7 @@ namespace maki
 
 		inline bool font_manager_t::predicate_t::operator()(const font_t *font) const
 		{
-			return font->rid_ == font_rid && font->pixel_size == pixel_size && font->shader_program_rid == shader_program_rid;
+			return font->rid_ == font_rid_ && font->pixel_size_ == pixel_size_ && font->shader_program_rid_ == shader_program_rid_;
 		}
 
 		font_manager_t::font_manager_t(uint32 size)
@@ -27,18 +27,18 @@ namespace maki
 			p.font_rid_ = font_rid;
 			p.shader_program_rid_ = shader_program_rid;
 			p.pixel_size_ = pixel_size;
-			handle_t handle = resPool->Match(p);
+			handle_t handle = res_pool_->match(p);
 		
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->alloc();
+			handle = res_pool_->alloc();
 			assert(handle != HANDLE_NONE && "font_t pool depleted");
-			font_t *font = resPool->get(handle);
+			font_t *font = res_pool_->get(handle);
 			new(font) font_t();
 			if(!font->load(shader_program_rid, font_rid, pixel_size)) {
-				resPool->free(handle);
+				res_pool_->free(handle);
 				return HANDLE_NONE;
 			}
 			return handle;

@@ -29,13 +29,13 @@ namespace maki
 			micros_per_update_ = 1000000u / config->get_uint("engine.updates_per_second", default_updates_per_second_);
 			max_skipped_frames_ = config->get_uint("engine.max_skipped_frames", default_max_skipped_frames_);
 
-			next_update_ = time_source->GetTimeMicro() + micros_per_update_;
+			next_update_ = time_source->get_time_micro() + micros_per_update_;
 		}
 
 		engine_t::~engine_t()
 		{
-			SAFE_DELETE(renderer_);
-			SAFE_DELETE(input_state);
+			MAKI_SAFE_DELETE(renderer_);
+			MAKI_SAFE_DELETE(input_state_);
 		}
 
 		void engine_t::tick()
@@ -43,7 +43,7 @@ namespace maki
 			// While we are overdue for the next update...
 			int64 now = 0;
 			uint32 skippedFrames = 0;
-			while((now = time_source_->GetTimeMicro()) > next_update_ && skippedFrames < max_skipped_frames_) {
+			while((now = time_source_->get_time_micro()) > next_update_ && skippedFrames < max_skipped_frames_) {
 				update_timer_.tick();
 				
 				window_->poll_input(input_state_);
@@ -56,7 +56,7 @@ namespace maki
 			}
 
 			render_timer_.tick();
-			//console_t::info("R:%0.02f  U:%0.02f", render_timer.averageFps, update_timer.averageFps);
+			//console_t::info("R:%0.02f  U:%0.02f", render_timer.average_fps, update_timer.average_fps);
 
 			if(frame_draw_ != nullptr) {
 				frame_draw_();

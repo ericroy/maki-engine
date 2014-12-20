@@ -24,7 +24,7 @@ NOTES:          This source code may be used as you wish, subject to
                     http://base64.sourceforge.net
 
 DESCRIPTION:
-                This little utility implements the Base64
+                This little utility implements the base64
                 Content-Transfer-Encoding standard described in
                 RFC1113 (http://www.faqs.org/rfcs/rfc1113.html).
 
@@ -232,10 +232,10 @@ namespace maki
 		namespace base64
 		{
 	
-			// Translation Table as described in RFC1113
+			// translation Table as described in RFC1113
 			static const char cb64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-			// Translation Table to decode (created by author)
+			// translation Table to decode (created by author)
 			static const char cd64[] = "|$$$}rstuvwxyz{$$$$$$$>?@ABCDEFGHIJKLMNOPQRSTUVW$$$$$$XYZ[\\]^_`abcdefghijklmnopq";
 
 

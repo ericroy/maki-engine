@@ -12,7 +12,7 @@ namespace maki
 		skeleton_t::~skeleton_t() {}
 
 		bool skeleton_t::load(rid_t rid) {
-			bones.free();
+			bones_.free();
 		
 			document_t doc;
 			if(!doc.load(rid)) {
@@ -20,30 +20,30 @@ namespace maki
 				return false;
 			}
 
-			bones.set_size(doc.root->count);
-			bones.zero();
+			bones_.set_size(doc.root_->count_);
+			bones_.zero();
 
-			array_t<joint_t> joints(doc.root->count);
+			array_t<joint_t> joints(doc.root_->count_);
 
-			for(uint32 i = 0; i < bones.count_; i++) {
-				document_t::node_t *n = doc.root->children[i];
-				Bone *b = &bones[i];
+			for(uint32 i = 0; i < bones_.count_; i++) {
+				document_t::node_t *n = doc.root_->children_[i];
+				Bone *b = &bones_[i];
 				joint_t *j = &joints[i];
 			
 				int32 parentIndex = n->resolve_as_int("#0");
 				if(parentIndex >= 0) {
-					assert(bones[parentIndex].child_count_ < MAX_CHILDREN_PER_BONE);
-					bones[parentIndex].children_[bones[parentIndex].child_count_++] = b;
+					assert(bones_[parentIndex].child_count_ < MAX_CHILDREN_PER_BONE);
+					bones_[parentIndex].children_[bones_[parentIndex].child_count_++] = b;
 				}
 
-				j->offset = vector3_t(n->children[1]->value_as_float(), n->children[2]->value_as_float(), n->children[3]->value_as_float());
+				j->offset_ = vector3_t(n->children_[1]->value_as_float(), n->children_[2]->value_as_float(), n->children_[3]->value_as_float());
 
 				vector3_t euler_angles(
-					n->children[4]->value_as_float() * MAKI_DEG_TO_RAD,
-					n->children[5]->value_as_float() * MAKI_DEG_TO_RAD,
-					n->children[6]->value_as_float() * MAKI_DEG_TO_RAD
+					n->children_[4]->value_as_float() * MAKI_DEG_TO_RAD,
+					n->children_[5]->value_as_float() * MAKI_DEG_TO_RAD,
+					n->children_[6]->value_as_float() * MAKI_DEG_TO_RAD
 				);
-				j->rot.from_euler_angles(euler_angles);
+				j->rot_.from_euler_angles(euler_angles);
 			}
 
 			this->rid_ = rid;
@@ -58,7 +58,7 @@ namespace maki
 		void skeleton_t::calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out) {
 			uint32 index = 0;
 			calculate_pos_recursive(index, matrix44_t::identity_, joint_states, out);
-			for(uint32 i = 0; i < bones.count_; i++) {
+			for(uint32 i = 0; i < bones_.count_; i++) {
 				matrix44_t::affine_inverse(out[i], out[i]);
 			}
 		}
@@ -76,9 +76,9 @@ namespace maki
 			out[index] = current * rot;
 			const matrix44_t &newCurrent = out[index];
 
-			const Bone *b = &bones[index];
+			const Bone *b = &bones_[index];
 			index++;
-			for(uint32 i = 0; i < b->childCount; i++) {
+			for(uint32 i = 0; i < b->child_count_; i++) {
 				calculate_pos_recursive(index, newCurrent, joint_states, out);
 			}
 		}
