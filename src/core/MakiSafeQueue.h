@@ -1,110 +1,107 @@
 #pragma once
 #include "core/core_stdafx.h"
-#include <mutex>
+#include <mutex_>
 #include <condition_variable>
 #include <assert.h>
 #include "core/MakiArray.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		
-		
-
 		template<class T>
-		class SafeQueue
+		class safe_queue_t
 		{
 		public:
-			static const int32 DEFAULT_SIZE = 64;
+			static const int32 default_size_ = 64;
 
 		public:
-			SafeQueue(int32 size = DEFAULT_SIZE)
-				: available(0),
-				readCursor(0),
-				writeCursor(0)
+			safe_queue_t(int32 size = default_size_)
+				: available_(0),
+				read_cursor_(0),
+				write_cursor_(0)
 			{
-				items.SetSize(size);
-				items.Zero();
+				items_.set_size(size);
+				items_.zero();
 			}
 
-			~SafeQueue()
+			~safe_queue_t()
 			{
 			}
 
-			inline void Put(const T &val)
+			inline void put(const T &val)
 			{
-				std::unique_lock<std::mutex> lock(mutex);
-				while(available == items.count) {
-					condSpaceAvailable.wait(lock);
+				std::unique_lock<std::mutex_> lock(mutex_);
+				while(available_ == items_.count_) {
+					cond_space_available_.wait(lock);
 				}
 
-				items[writeCursor++] = val;
-				available++;
-				if(writeCursor == items.count) {
-					writeCursor = 0;
+				items_[write_cursor_++] = val;
+				available_++;
+				if(write_cursor_ == items_.count_) {
+					write_cursor_ = 0;
 				}
-				condDataAvailable.notify_one();
+				cond_data_available_.notify_one();
 			}
 
-			inline bool TryPut(const T &val)
+			inline bool try_put(const T &val)
 			{
-				std::lock_guard<std::mutex> lock(mutex);
-				if(available < items.count) {
-					items[writeCursor++] = val;
-					available++;
-					if(writeCursor == items.count) {
-						writeCursor = 0;
+				std::lock_guard<std::mutex_> lock(mutex_);
+				if(available_ < items_.count_) {
+					items_[write_cursor_++] = val;
+					available_++;
+					if(write_cursor_ == items_.count_) {
+						write_cursor_ = 0;
 					}
-					condDataAvailable.notify_one();
+					cond_data_available_.notify_one();
 					return true;
 				}
 				return false;
 			}
 
-			inline void Get(T &out)
+			inline void get(T &out)
 			{
-				std::unique_lock<std::mutex> lock(mutex);
-				while(available == 0) {
-					condDataAvailable.wait(lock);
+				std::unique_lock<std::mutex_> lock(mutex_);
+				while(available_ == 0) {
+					cond_data_available_.wait(lock);
 				}
 
-				out = items[readCursor++];
-				available--;
-				if(readCursor == items.count) {
-					readCursor = 0;
+				out = items_[read_cursor_++];
+				available_--;
+				if(read_cursor_ == items_.count_) {
+					read_cursor_ = 0;
 				}
-				condSpaceAvailable.notify_one();
+				cond_space_available_.notify_one();
 			}
 
-			inline bool TryGet(T &out)
+			inline bool try_get(T &out)
 			{
-				std::lock_guard<std::mutex> lock(mutex);
-				if(available > 0) {
-					out = items[readCursor++];
-					available--;
-					if(readCursor == items.count) {
-						readCursor = 0;
+				std::lock_guard<std::mutex_> lock(mutex_);
+				if(available_ > 0) {
+					out = items_[read_cursor_++];
+					available_--;
+					if(read_cursor_ == items_.count_) {
+						read_cursor_ = 0;
 					}
-					condSpaceAvailable.notify_one();
+					cond_space_available_.notify_one();
 					return true;
 				}
 				return false;
 			}
 
 		private:
-			uint32 available;
+			uint32 available_;
 		
-			std::mutex mutex;
-			std::condition_variable condDataAvailable;
-			std::condition_variable condSpaceAvailable;
+			std::mutex_ mutex_;
+			std::condition_variable cond_data_available_;
+			std::condition_variable cond_space_available_;
 
-			uint32 readCursor;
-			uint32 writeCursor;
-			Array<T> items;
+			uint32 read_cursor_;
+			uint32 write_cursor_;
+			array_t<T> items_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

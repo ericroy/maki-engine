@@ -4,44 +4,44 @@
 #include "core/MakiRenderer.h"
 #include "core/MakiAssetLibrary.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		TextureManager::TextureManager(uint32 size)
-			: Manager<Texture, TextureManager>(size, "TextureManager")
+		texture_manager_t::texture_manager_t(uint32 size)
+			: manager_t<texture_t, texture_manager_t>(size, "texture_manager_t")
 		{
 		}
 	
-		TextureManager::~TextureManager()
+		texture_manager_t::~texture_manager_t()
 		{
 		}
 	
-		Handle TextureManager::AllocTexture(Texture::TextureType type, uint32 width, uint32 height, uint8 channels)
+		handle_t texture_manager_t::AllocTexture(texture_t::texture_type_t type, uint32 width, uint32 height, uint8 channels)
 		{
-			Engine *eng = Engine::Get();
+			engine_t *eng = engine_t::get();
 
-			Handle handle = resPool->Alloc() | managerId;
-			Texture *tex = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(tex) Texture();
+			handle_t handle = resPool->alloc() | managerId;
+			texture_t *tex = resPool->get(handle & handle_value_mask_);
+			new(tex) texture_t();
 			tex->type = type;
 			tex->width = width;
 			tex->height = height;
 
 			switch(tex->type) {
-			case Texture::TextureType_Regular:
-				if(eng->renderer->CreateEmptyTexture(tex, channels)) {
+			case texture_t::texture_type_regular_:
+				if(eng->renderer_->create_empty_texture(tex, channels)) {
 					return handle;
 				}
 				break;
-			case Texture::TextureType_DepthStencil:
-				if(eng->renderer->CreateDepthTexture(tex)) {
+			case texture_t::texture_type_depth_stencil_:
+				if(eng->renderer_->create_depth_texture(tex)) {
 					return handle;
 				}
 				break;
-			case Texture::TextureType_RenderTarget:
-				if(eng->renderer->CreateRenderTarget(tex)) {
+			case texture_t::texture_type_render_target_:
+				if(eng->renderer_->create_render_target(tex)) {
 					return handle;
 				}
 				break;
@@ -50,79 +50,79 @@ namespace Maki
 				break;
 			}
 
-			Console::Error("Failed to alloc empty texture");
-			resPool->Free(handle & HANDLE_VALUE_MASK);
+			console_t::error("Failed to alloc empty texture");
+			resPool->free(handle & handle_value_mask_);
 			return HANDLE_NONE;
 		}
 
-		Handle TextureManager::Load(Rid rid)
+		handle_t texture_manager_t::load(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Texture>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<texture_t>(rid)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			Texture *tex = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(tex) Texture();
+			handle = resPool->alloc() | managerId;
+			texture_t *tex = resPool->get(handle & handle_value_mask_);
+			new(tex) texture_t();
 		
 			if(!LoadData(tex, rid)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
-		bool TextureManager::LoadData(Texture *tex, Rid rid)
+		bool texture_manager_t::LoadData(texture_t *tex, rid_t rid)
 		{
-			Engine *eng = Engine::Get();
+			engine_t *eng = engine_t::get();
 
 			uint32 bytesRead;
-			char *data = eng->assets->AllocRead(rid, &bytesRead);
+			char *data = eng->assets->alloc_read(rid, &bytesRead);
 
-			if(!eng->renderer->CreateTexture(tex, (char *)data, bytesRead)) {
-				Console::Error("Failed to create texture <rid %d>", rid);
-				SAFE_FREE(data);
+			if(!eng->renderer_->create_texture(tex, (char *)data, bytesRead)) {
+				console_t::error("Failed to create texture <rid %d>", rid);
+				MAKI_SAFE_FREE(data);
 				return false;
 			}
 
-			SAFE_FREE(data);
-			tex->rid = rid;
+			MAKI_SAFE_FREE(data);
+			tex->rid_ = rid;
 			return true;
 		}
 
-		void TextureManager::ReloadAssets()
+		void texture_manager_t::reload_assets()
 		{
-			const ResourcePool<Texture>::Iterator end = resPool->End();
-			for(ResourcePool<Texture>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-				Texture *tex = iter.Ptr();
-				Rid rid = tex->rid;
+			const resource_pool_t<texture_t>::iterator_t end = resPool->end();
+			for(resource_pool_t<texture_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+				texture_t *tex = iter.Ptr();
+				rid_t rid = tex->rid_;
 				if(rid != RID_NONE) {
-					tex->~Texture();
-					new(tex) Texture();
+					tex->~texture_t();
+					new(tex) texture_t();
 					LoadData(tex, rid);
 				}
 			}
 		}
 
-		bool TextureManager::ReloadAsset(Rid rid)
+		bool texture_manager_t::reload_asset(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Texture>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<texture_t>(rid)) | managerId;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			Texture *tex = resPool->Get(handle & HANDLE_VALUE_MASK);
-			resPool->Free(handle & HANDLE_VALUE_MASK);
+			texture_t *tex = resPool->get(handle & handle_value_mask_);
+			resPool->free(handle & handle_value_mask_);
 
 			if(rid != RID_NONE) {
-				tex->~Texture();
-				new(tex) Texture();
+				tex->~texture_t();
+				new(tex) texture_t();
 				LoadData(tex, rid);
 			}
 			return true;
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

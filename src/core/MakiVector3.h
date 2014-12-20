@@ -2,59 +2,59 @@
 #include "core/core_stdafx.h"
 #include "core/MakiVector4.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class Matrix44;
+		class matrix44_t;
 
-		class Vector3
+		class vector3_t
 		{
 		public:
-			static const Vector3 UnitX;
-			static const Vector3 UnitY;
-			static const Vector3 UnitZ;
+			static const vector3_t UnitX;
+			static const vector3_t UnitY;
+			static const vector3_t UnitZ;
 
 		public:
-			inline Vector3() {}
-			inline Vector3(float xyz) : x(xyz), y(xyz), z(xyz) {}
-			inline Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
-			inline Vector3(const Vector4 &v) : x(v.x), y(v.y), z(v.z) {}
+			inline vector3_t() {}
+			inline vector3_t(float xyz) : x(xyz), y(xyz), z(xyz) {}
+			inline vector3_t(float x, float y, float z) : x(x), y(y), z(z) {}
+			inline vector3_t(const vector4_t &v) : x(v.x_), y(v.y_), z(v.z_) {}
 
 			// Member vector operations
 
-			inline float Length() const { return Length(*this); }
+			inline float length() const { return length(*this); }
 			inline float LengthSquared() const { return LengthSquared(*this); }
-			inline float Dot(const Vector3 &v) const { return Dot(*this, v); }
-			inline Vector3 Cross(const Vector3 &rhs) const { return Cross(*this, rhs); }
-			inline void Normalize() { Normalize(*this); }
+			inline float dot(const vector3_t &v) const { return dot(*this, v); }
+			inline vector3_t cross(const vector3_t &rhs) const { return cross(*this, rhs); }
+			inline void normalize() { normalize(*this); }
 
 			// Operator overloads
-			inline float operator*(const Vector3 &v) const { return x*v.x + y*v.y + z*v.z; }
+			inline float operator*(const vector3_t &v) const { return x*v.x_ + y*v.y_ + z*v.z_; }
 
-			inline Vector3 operator*(float s) const { return Vector3(x*s, y*s, z*s); }
+			inline vector3_t operator*(float s) const { return vector3_t(x*s, y*s, z*s); }
 			inline void operator*=(float s) { x*=s; y*=s; z*=s; }
 
-			inline Vector3 operator/(float s) const { assert(s != 0); return Vector3(x/s, y/s, z/s); }
+			inline vector3_t operator/(float s) const { assert(s != 0); return vector3_t(x/s, y/s, z/s); }
 			inline void operator/=(float s) { assert(s != 0); x/=s; y/=s; z/=s; }
 
-			inline Vector3 operator-(const Vector3 &v) const { return Vector3(x-v.x, y-v.y, z-v.z); }
-			inline void operator-=(const Vector3 &v) { x-=v.x; y-=v.y; z-=v.z; }
+			inline vector3_t operator-(const vector3_t &v) const { return vector3_t(x-v.x_, y-v.y_, z-v.z_); }
+			inline void operator-=(const vector3_t &v) { x-=v.x_; y-=v.y_; z-=v.z_; }
 
-			inline Vector3 operator+(const Vector3 &v) const { return Vector3(x+v.x, y+v.y, z+v.z); }
-			inline void operator+=(const Vector3 &v) { x+=v.x; y+=v.y; z+=v.z; }
+			inline vector3_t operator+(const vector3_t &v) const { return vector3_t(x+v.x_, y+v.y_, z+v.z_); }
+			inline void operator+=(const vector3_t &v) { x+=v.x_; y+=v.y_; z+=v.z_; }
 
-			inline Vector3 operator-() const { return Vector3(-x, -y, -z); }
+			inline vector3_t operator-() const { return vector3_t(-x, -y, -z); }
 
-			inline bool operator==(const Vector3 &v) { return x == v.x && y == v.y && z == v.z; }
-			inline bool operator!=(const Vector3 &v) { return x != v.x || y != v.y || z != v.z; }
+			inline bool operator==(const vector3_t &v) { return x == v.x_ && y == v.y_ && z == v.z_; }
+			inline bool operator!=(const vector3_t &v) { return x != v.x_ || y != v.y_ || z != v.z_; }
 
 			// Static methods
-			static inline float Dot(const Vector3 &v1, const Vector3 &v2);
-			static inline void Normalize(Vector3 &v);
-			static inline Vector3 Cross(const Vector3 &a, const Vector3 &b);
-			static inline float Length(const Vector3 &v);
-			static inline float LengthSquared(const Vector3 &v);
+			static inline float dot(const vector3_t &v1, const vector3_t &v2);
+			static inline void normalize(vector3_t &v);
+			static inline vector3_t cross(const vector3_t &a, const vector3_t &b);
+			static inline float length(const vector3_t &v);
+			static inline float LengthSquared(const vector3_t &v);
 
 		public:
 			union
@@ -67,33 +67,33 @@ namespace Maki
 			};
 		};
 
-		float Vector3::Dot(const Vector3 &v1, const Vector3 &v2)
+		float vector3_t::dot(const vector3_t &v1, const vector3_t &v2)
 		{
-			return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+			return v1.x_ * v2.x_ + v1.y_ * v2.y_ + v1.z_ * v2.z_;
 		}
 
-		void Vector3::Normalize(Vector3 &v)
+		void vector3_t::normalize(vector3_t &v)
 		{
-			float invLen = 1.f / sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+			float invLen = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_);
 			v *= invLen;
 		}
 
-		Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
+		vector3_t vector3_t::cross(const vector3_t &a, const vector3_t &b)
 		{
-			return Vector3(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
+			return vector3_t(a.y_*b.z_-a.z_*b.y_, a.z_*b.x_-a.x_*b.z_, a.x_*b.y_-a.y_*b.x_);
 		}
 	
-		float Vector3::Length(const Vector3 &v)
+		float vector3_t::length(const vector3_t &v)
 		{
-			return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+			return sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_);
 		}
 
-		float Vector3::LengthSquared(const Vector3 &v)
+		float vector3_t::LengthSquared(const vector3_t &v)
 		{
-			return v.x*v.x + v.y*v.y + v.z*v.z;
+			return v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_;
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

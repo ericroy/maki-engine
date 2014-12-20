@@ -2,14 +2,14 @@
 #include "core/MakiMatrix44.h"
 #include <cmath>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		const Matrix44 Matrix44::Identity(true);
+		const matrix44_t matrix44_t::identity_(true);
 	
-		void Matrix44::RotationX(float rads, Matrix44 &m) {
+		void matrix44_t::rotation_x(float rads, matrix44_t &m) {
 			float c = cos(rads);
 			float s = sin(rads);
 			m.cols[1][1] = c;
@@ -18,7 +18,7 @@ namespace Maki
 			m.cols[1][2] = s;
 		}
 
-		void Matrix44::RotationY(float rads, Matrix44 &m) {
+		void matrix44_t::rotation_y(float rads, matrix44_t &m) {
 			float c = cos(rads);
 			float s = sin(rads);
 			m.cols[0][0] = c;
@@ -27,7 +27,7 @@ namespace Maki
 			m.cols[2][0] = s;
 		}
 
-		void Matrix44::RotationZ(float rads, Matrix44 &m) {
+		void matrix44_t::rotation_z(float rads, matrix44_t &m) {
 			float c = cos(rads);
 			float s = sin(rads);
 			m.cols[0][0] = c;
@@ -36,42 +36,42 @@ namespace Maki
 			m.cols[0][1] = s;
 		}
 
-		void Matrix44::Translation(const Vector4 &trans, Matrix44 &m) {
-			m.cols[3][0] = trans.x;
-			m.cols[3][1] = trans.y;
-			m.cols[3][2] = trans.z;
+		void matrix44_t::translation(const vector4_t &trans, matrix44_t &m) {
+			m.cols[3][0] = trans.x_;
+			m.cols[3][1] = trans.y_;
+			m.cols[3][2] = trans.z_;
 			m.cols[3][3] = 1.0f;
 		}
-		void Matrix44::Translation(const Vector3 &trans, Matrix44 &m) {
-			m.cols[3][0] = trans.x;
-			m.cols[3][1] = trans.y;
-			m.cols[3][2] = trans.z;
+		void matrix44_t::translation(const vector3_t &trans, matrix44_t &m) {
+			m.cols[3][0] = trans.x_;
+			m.cols[3][1] = trans.y_;
+			m.cols[3][2] = trans.z_;
 			m.cols[3][3] = 1.0f;
 		}
-		void Matrix44::Translation(float x, float y, float z, Matrix44 &m) {
+		void matrix44_t::translation(float x, float y, float z, matrix44_t &m) {
 			m.cols[3][0] = x;
 			m.cols[3][1] = y;
 			m.cols[3][2] = z;
 			m.cols[3][3] = 1.0f;
 		}
 
-		void Matrix44::Scale(const Vector4 &scale, Matrix44 &m) {
-			m.cols[0][0] = scale.x;
-			m.cols[1][1] = scale.y;
-			m.cols[2][2] = scale.z;
+		void matrix44_t::scale(const vector4_t &scale, matrix44_t &m) {
+			m.cols[0][0] = scale.x_;
+			m.cols[1][1] = scale.y_;
+			m.cols[2][2] = scale.z_;
 		}
-		void Matrix44::Scale(const Vector3 &scale, Matrix44 &m) {
-			m.cols[0][0] = scale.x;
-			m.cols[1][1] = scale.y;
-			m.cols[2][2] = scale.z;
+		void matrix44_t::scale(const vector3_t &scale, matrix44_t &m) {
+			m.cols[0][0] = scale.x_;
+			m.cols[1][1] = scale.y_;
+			m.cols[2][2] = scale.z_;
 		}
-		void Matrix44::Scale(float sx, float sy, float sz, Matrix44 &m) {
+		void matrix44_t::scale(float sx, float sy, float sz, matrix44_t &m) {
 			m.cols[0][0] = sx;
 			m.cols[1][1] = sy;
 			m.cols[2][2] = sz;
 		}
 
-		void Matrix44::Transpose(const Matrix44 &m, Matrix44 &out) {
+		void matrix44_t::transpose(const matrix44_t &m, matrix44_t &out) {
 			float temp[4][4];
 			memcpy(temp, m.vals, sizeof(m.vals));
 
@@ -96,12 +96,12 @@ namespace Maki
 			out.cols[3][3] = temp[3][3];
 		}
 
-		void Matrix44::LookAt(const Vector4 &eye, const Vector4 &target, const Vector4 &up, Matrix44 &out) {
-			Vector4 nZ = eye-target;
-			nZ.Normalize();
-			Vector4 nX = Vector4::Cross(up, nZ);
-			nX.Normalize();
-			Vector4 nY = Vector4::Cross(nZ, nX);
+		void matrix44_t::look_at(const vector4_t &eye, const vector4_t &target, const vector4_t &up, matrix44_t &out) {
+			vector4_t nZ = eye-target;
+			nZ.normalize();
+			vector4_t nX = vector4_t::cross(up, nZ);
+			nX.normalize();
+			vector4_t nY = vector4_t::cross(nZ, nX);
 		
 			out.cols[0][0] = nX.vals[0];
 			out.cols[0][1] = nY.vals[0];
@@ -118,13 +118,13 @@ namespace Maki
 			out.cols[2][2] = nZ.vals[2];
 			out.cols[2][3] = 0.0f;
 
-			out.cols[3][0] = -nX.Dot(eye);
-			out.cols[3][1] = -nY.Dot(eye);
-			out.cols[3][2] = -nZ.Dot(eye);
+			out.cols[3][0] = -nX.dot(eye);
+			out.cols[3][1] = -nY.dot(eye);
+			out.cols[3][2] = -nZ.dot(eye);
 			out.cols[3][3] = 1.0f;
 		}
 
-		void Matrix44::Frustum(float l, float r, float b, float t, float n, float f, Matrix44 &out) {
+		void matrix44_t::frustum_t(float l, float r, float b, float t, float n, float f, matrix44_t &out) {
 			out.cols[0][0] = 2.0f * n / (r-l);
 			out.cols[0][1] = 0.0f;
 			out.cols[0][2] = 0.0f;
@@ -146,7 +146,7 @@ namespace Maki
 			out.cols[3][3] = 0.0f;
 		}
 
-		void Matrix44::Perspective(float fovY, float aspect, float nearPlane, float farPlane, Matrix44 &out) {
+		void matrix44_t::perspective(float fovY, float aspect, float nearPlane, float farPlane, matrix44_t &out) {
 			float t = std::tan(fovY / 2.0f * MAKI_DEG_TO_RAD);
 		
 			// Half height of near plane
@@ -155,10 +155,10 @@ namespace Maki
 			// Half width of near plane
 			float hw = hh * aspect;
 		
-			Frustum(-hw, hw, -hh, hh, nearPlane, farPlane, out);
+			frustum_t(-hw, hw, -hh, hh, nearPlane, farPlane, out);
 		}
 
-		void Matrix44::Ortho(float l, float r, float b, float t, float n, float f, Matrix44 &out) {
+		void matrix44_t::ortho(float l, float r, float b, float t, float n, float f, matrix44_t &out) {
 			out.cols[0][0] = 2.0f/(r-l);
 			out.cols[0][1] = 0.0f;
 			out.cols[0][2] = 0.0f;
@@ -182,10 +182,10 @@ namespace Maki
 
 
 		// Adapted from Ogre3d's implementation:
-		void Matrix44::Inverse(const Matrix44 &m, Matrix44 &out)
+		void matrix44_t::inverse(const matrix44_t &m, matrix44_t &out)
 		{
-			if(m.IsAffine()) {
-				AffineInverse(m, out);
+			if(m.is_affine()) {
+				affine_inverse(m, out);
 				return;
 			}
 
@@ -248,13 +248,13 @@ namespace Maki
 			out.cols[0][3] = d30;	out.cols[1][3] = d31;	out.cols[2][3] = d32;	out.cols[3][3] = d33;
 		}
 
-		//void Matrix44::AffineInverse(const Matrix44 &m, Matrix44 &out)
+		//void matrix44_t::affine_inverse(const matrix44_t &m, matrix44_t &out)
 		//{
-		//	const Vector4 translation(m.cols[3][0], m.cols[3][1], m.cols[3][2], m.cols[3][3]);
+		//	const vector4_t translation(m.cols[3][0], m.cols[3][1], m.cols[3][2], m.cols[3][3]);
 
 		//	// Calculate the inverse of the rotation part
 		//	// Also empty out the translation portions
-		//	Transpose(m, out);
+		//	transpose(m, out);
 		//	out.cols[0][3] = 0.0f;
 		//	out.cols[1][3] = 0.0f;
 		//	out.cols[2][3] = 0.0f;
@@ -266,11 +266,11 @@ namespace Maki
 		//	out.cols[3][3] = 1.0f;
 		//	
 		//	// Use the inverse rotation to calculate the inverse translation
-		//	Vector4 temp = out * -translation;
-		//	out.cols[3][0] = temp.x;
-		//	out.cols[3][1] = temp.y;
-		//	out.cols[3][2] = temp.z;
-		//	out.cols[3][3] = temp.w;
+		//	vector4_t temp = out * -translation;
+		//	out.cols[3][0] = temp.x_;
+		//	out.cols[3][1] = temp.y_;
+		//	out.cols[3][2] = temp.z_;
+		//	out.cols[3][3] = temp.w_;
 
 		//	out.cols[0][3] = 0.0f;
 		//	out.cols[1][3] = 0.0f;
@@ -279,7 +279,7 @@ namespace Maki
 		//}
 
 		// Adapted from Ogre3d's implementation:
-		void Matrix44::AffineInverse(const Matrix44 &m, Matrix44 &out)
+		void matrix44_t::affine_inverse(const matrix44_t &m, matrix44_t &out)
 		{
 			float m10 = m.cols[0][1], m11 = m.cols[1][1], m12 = m.cols[2][1];
 			float m20 = m.cols[0][2], m21 = m.cols[1][2], m22 = m.cols[2][2];
@@ -337,6 +337,6 @@ namespace Maki
 
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

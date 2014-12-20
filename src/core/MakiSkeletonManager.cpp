@@ -3,71 +3,71 @@
 #include "core/MakiSkeleton.h"
 #include "core/MakiEngine.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		SkeletonManager::SkeletonManager(uint32 size)
-			: Manager<Skeleton, SkeletonManager>(size, "SkeletonManager")
+		skeleton_manager_t::skeleton_manager_t(uint32 size)
+			: manager_t<skeleton_t, skeleton_manager_t>(size, "skeleton_manager_t")
 		{
 		}
 	
-		SkeletonManager::~SkeletonManager()
+		skeleton_manager_t::~skeleton_manager_t()
 		{
 		}
 	
-		Handle SkeletonManager::Load(Rid rid)
+		handle_t skeleton_manager_t::load(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Skeleton>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_t>(rid)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			Skeleton *skel = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(skel) Skeleton();
+			handle = resPool->alloc() | managerId;
+			skeleton_t *skel = resPool->get(handle & handle_value_mask_);
+			new(skel) skeleton_t();
 		
-			if(!skel->Load(rid)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			if(!skel->load(rid)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
-		void SkeletonManager::ReloadAssets()
+		void skeleton_manager_t::reload_assets()
 		{
-			Engine *eng = Engine::Get();
+			engine_t *eng = engine_t::get();
 
-			const ResourcePool<Skeleton>::Iterator end = resPool->End();
-			for(ResourcePool<Skeleton>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-				Skeleton *skel = iter.Ptr();
-				Rid rid = skel->rid;
+			const resource_pool_t<skeleton_t>::iterator_t end = resPool->end();
+			for(resource_pool_t<skeleton_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+				skeleton_t *skel = iter.Ptr();
+				rid_t rid = skel->rid_;
 				if(rid != RID_NONE) {
-					skel->~Skeleton();
-					new(skel) Skeleton();
-					skel->Load(rid);
+					skel->~skeleton_t();
+					new(skel) skeleton_t();
+					skel->load(rid);
 				}
 			}
 		}
 
-		bool SkeletonManager::ReloadAsset(Rid rid)
+		bool skeleton_manager_t::reload_asset(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Skeleton>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_t>(rid)) | managerId;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			Skeleton *skel = resPool->Get(handle & HANDLE_VALUE_MASK);
-			resPool->Free(handle & HANDLE_VALUE_MASK);
+			skeleton_t *skel = resPool->get(handle & handle_value_mask_);
+			resPool->free(handle & handle_value_mask_);
 
 			if(rid != RID_NONE) {
-				skel->~Skeleton();
-				new(skel) Skeleton();
-				return skel->Load(rid);
+				skel->~skeleton_t();
+				new(skel) skeleton_t();
+				return skel->load(rid);
 			}
 			return true;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -3,30 +3,30 @@
 #include "core/MakiTexture.h"
 #include "core/MakiManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class TextureManager;
+		class texture_manager_t;
 		
 
-		class TextureManager : public Manager<Texture, TextureManager>
+		class texture_manager_t : public manager_t<texture_t, texture_manager_t>
 		{
 		public:
-			static const int32 DEFAULT_SIZE = 64;
+			static const int32 default_size_ = 64;
 
 		public:
-			TextureManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~TextureManager();
-			Handle Load(Rid rid);
-			Handle AllocTexture(Texture::TextureType type, uint32 width, uint32 height, uint8 channels);
-			void ReloadAssets();
-			bool ReloadAsset(Rid rid);
+			texture_manager_t(uint32 size = default_size_);	
+			virtual ~texture_manager_t();
+			handle_t load(rid_t rid);
+			handle_t AllocTexture(texture_t::texture_type_t type, uint32 width, uint32 height, uint8 channels);
+			void reload_assets();
+			bool reload_asset(rid_t rid);
 
 		private:
-			bool LoadData(Texture *tex, Rid rid);
+			bool LoadData(texture_t *tex, rid_t rid);
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -1,35 +1,35 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class AssetManifest
+		class asset_manifest_t
 		{
 		public:
-			AssetManifest(uint32 assetCount, Rid *ridArray, const char **pathArray, const char *commonPathPrefix);
-			virtual ~AssetManifest();
+			asset_manifest_t(uint32 asset_count, rid_t *rid_array, const char **path_array, const char *common_path_prefix);
+			virtual ~asset_manifest_t();
 
-			inline uint32 GetCount() const { return count; }
-			inline bool Contains(Rid rid) const { return (uint32)rid >= ridStart && (uint32)rid < ridStart + count; }
-			inline const char *GetPath(Rid rid) const { return pathArray[rid - ridStart]; }
-			void SetRidStart(uint32 ridStart);
-			Rid PathToRid(const char *path) const;
-			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
+			inline uint32 get_count() const { return count_; }
+			inline bool contains(rid_t rid) const { return (uint32)rid >= rid_start_ && (uint32)rid < rid_start_ + count_; }
+			inline const char *get_path(rid_t rid) const { return path_array_[rid - rid_start_]; }
+			void set_rid_start(uint32 rid_start);
+			rid_t path_to_rid(const char *path) const;
+			char *alloc_read(rid_t rid, uint32 *bytesRead = nullptr) const;
 
 		public:
-			std::string commonPathPrefix;
-			std::string debugModePathAdjustment;
+			std::string common_path_prefix;
+			std::string debug_mode_path_adjustment_;
 
 		private:
-			uint32 count;
-			uint32 ridStart;
-			Rid *ridArray;
-			const char **pathArray;
+			uint32 count_;
+			uint32 rid_start_;
+			rid_t *rid_array_;
+			const char **path_array_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

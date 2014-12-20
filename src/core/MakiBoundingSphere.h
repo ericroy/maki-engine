@@ -1,90 +1,90 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class BoundingSphere
+		class bounding_sphere_t
 		{
 		public:
-			BoundingSphere()
-				: empty(true), pos(0.0f), radius(0.0f)
+			bounding_sphere_t()
+				: empty_(true), pos_(0.0f), radius_(0.0f)
 			{
 			}
-			BoundingSphere(const Vector4 &pos, float radius)
-				: empty(false), pos(pos), radius(radius)
+			bounding_sphere_t(const vector4_t &pos, float radius)
+				: empty_(false), pos_(pos), radius_(radius)
 			{
 			}
-			BoundingSphere(const Vector3 &pos, float radius)
-				: empty(false), pos(pos.x, pos.y, pos.z, 1.0f), radius(radius)
+			bounding_sphere_t(const Vector3 &pos, float radius)
+				: empty_(false), pos_(pos.x, pos.y, pos.z, 1.0f), radius_(radius)
 			{
 			}
 
-			inline void Merge(const BoundingSphere &other)
+			inline void merge(const bounding_sphere_t &other)
 			{
-				if(other.empty) {
+				if(other.empty_) {
 					return;
 				}
-				if(empty) {
-					pos = other.pos;
-					radius = other.radius;
-					empty = false;
+				if(empty_) {
+					pos_ = other.pos_;
+					radius_ = other.radius_;
+					empty_ = false;
 					return;
 				}
 
-				Vector4 dir = other.pos - pos;
-				float dist = dir.Length();
+				vector4_t dir = other.pos_ - pos_;
+				float dist = dir.length();
 				if(dist < 0.000001f) {
-					if(other.radius > radius) {
-						radius = other.radius;
+					if(other.radius_ > radius_) {
+						radius_ = other.radius_;
 					}
 				} else {
 					dir /= dist;
-					Vector4 minPoint = dir * -radius;
-					Vector4 maxPoint = dir * (dist + other.radius);
-					pos = (minPoint + maxPoint) / 2.0f;
-					radius = (radius + dist + other.radius) / 2.0f;
+					vector4_t min_point = dir * -radius_;
+					vector4_t max_point = dir * (dist + other.radius_);
+					pos_ = (min_point + max_point) / 2.0f;
+					radius_ = (radius_ + dist + other.radius_) / 2.0f;
 				}
 			}
 
-			inline void Merge(const Vector4 &p)
+			inline void merge(const vector4_t &p)
 			{
-				if(empty) {
-					pos = p;
-					empty = false;
+				if(empty_) {
+					pos_ = p;
+					empty_ = false;
 					return;
 				}
 			
-				Vector4 dir = p - pos;
-				float dist = dir.Length();
+				vector4_t dir = p - pos_;
+				float dist = dir.length();
 				if(dist < 0.000001f) {
-					if(dist > radius) {
-						radius = dist;
+					if(dist > radius_) {
+						radius_ = dist;
 					}
 				} else {
 					dir /= dist;
-					Vector4 minPoint = dir * -radius;
-					Vector4 maxPoint = dir * dist;
-					pos = (minPoint + maxPoint) / 2.0f;
-					radius = (radius + dist) / 2.0f;
+					vector4_t min_point = dir * -radius_;
+					vector4_t max_point = dir * dist;
+					pos_ = (min_point + max_point) / 2.0f;
+					radius_ = (radius_ + dist) / 2.0f;
 				}
 			}
 
-			inline void Reset()
+			inline void reset()
 			{
-				pos = Vector4(0.0f);
-				radius = 0.0f;
-				empty = true;
+				pos_ = vector4_t(0.0f);
+				radius_ = 0.0f;
+				empty_ = true;
 			}
 
 		public:
-			Vector4 pos;
-			float radius;
-			bool empty;
+			vector4_t pos_;
+			float radius_;
+			bool empty_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

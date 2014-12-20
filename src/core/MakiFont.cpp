@@ -8,9 +8,9 @@
 #include "core/MakiTextureSet.h"
 #include "core/MakiTextureSetManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		inline uint32 NextPowerOfTwo(uint32 v)
@@ -26,76 +26,76 @@ namespace Maki
 		}
 
 
-		Font::Font()
-			: Resource(), material(HANDLE_NONE), pixelSize(0), textureWidth(0), textureHeight(0)
+		font_t::font_t()
+			: resource_t(), material_(HANDLE_NONE), pixel_size_(0), texture_width_(0), texture_height_(0)
 		{
 		}
 
-		Font::~Font()
+		font_t::~font_t()
 		{
-			MaterialManager::Free(material);
+			material_manager_t::free(material_);
 		}
 
-		bool Font::operator==(const Font &other) const
+		bool font_t::operator==(const font_t &other) const
 		{
-			return rid == other.rid && pixelSize == other.pixelSize;
+			return rid == other.rid && pixel_size_ == other.pixel_size_;
 		}
 
-		bool Font::Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize)
+		bool font_t::load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size)
 		{
-			CoreManagers *res = CoreManagers::Get();
-			Engine *eng = Engine::Get();
+			core_managers_t *res = core_managers_t::Get();
+			engine_t *eng = engine_t::Get();
 
-			char *fontData = eng->assets->AllocRead(fontRid);
-			if(fontData == nullptr) {
-				Console::Error("Failed to load font <rid %d>", fontRid);
+			char *font_data = eng->assets_->alloc_read(font_rid);
+			if(font_data == nullptr) {
+				console_t::error("Failed to load font <rid %d>", font_rid);
 				return false;
 			}
 
-			textureWidth = 512;
-			textureHeight = NextPowerOfTwo(pixelSize);
-			uint8 *pixels = (uint8 *)Allocator::Realloc(nullptr, textureWidth * textureHeight);
+			texture_width_ = 512;
+			texture_height_ = NextPowerOfTwo(pixel_size);
+			uint8 *pixels = (uint8 *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
 
 			int ret;
-			while((ret = stbtt_BakeFontBitmap((const uint8 *)fontData, 0, (float)pixelSize, pixels, textureWidth, textureHeight, MIN_CHAR_CODE, CHAR_CODE_COUNT, bakedChars)) <= 0) {
-				textureHeight *= 2;
-				pixels = (uint8 *)Allocator::Realloc(pixels, textureWidth * textureHeight);
+			while((ret = stbtt_BakeFontBitmap((const uint8 *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars)) <= 0) {
+				texture_height_ *= 2;
+				pixels = (uint8 *)allocator_t::realloc(pixels, texture_width_ * texture_height_);
 			}
 
-			Handle glyphAtlas = res->textureManager->AllocTexture(Texture::TextureType_Regular, textureWidth, textureHeight, 1);
-			Texture *tex = TextureManager::Get(glyphAtlas);
-			eng->renderer->WriteToTexture(tex, 0, 0, 0, 0, textureWidth, textureHeight, textureWidth, 1, (char *)pixels);
+			handle_t glyph_atlas = res->texture_manager_->AllocTexture(Texture::TextureType_Regular, texture_width_, texture_height_, 1);
+			Texture *tex = texture_manager_t::Get(glyph_atlas);
+			eng->renderer_->WriteToTexture(tex, 0, 0, 0, 0, texture_width_, texture_height_, texture_width, 1, (char *)pixels);
 		
-			Allocator::Free(pixels);
-			SAFE_FREE(fontData);
+			allocator_t::free(pixels);
+			SAFE_FREE(font_data);
 
-			Material mat;
-			mat.SetShaderProgram(shaderProgramRid);
+			material_t mat;
+			mat.SetShaderProgram(shader_program_rid);
 
-			TextureSet ts;
-			// The texture set will take ownership of the glyphAtlas handle
-			ts.textures[ts.textureCount++] = glyphAtlas;
+			texture_set_t ts;
+			// The texture set will take ownership of the glyph_atlas handle
+			ts.textures_[ts.texture_count_++] = glyph_atlas;
 
 			// The material will take ownership of the new texture set handle
-			mat.textureSet = res->textureSetManager->Add(Move(ts));
+			mat.texture_set_ = res->texture_set_manager_->add(MakiMove(ts));
 
 			// And finally, we will accept ownerhip of the material handle
-			material = res->materialManager->Add(Move(mat));
+			material_ = res->material_manager_->add(MakiMove(mat));
 
 
-			this->pixelSize = pixelSize;
-			this->rid = fontRid;
+			pixel_size_ = pixel_size;
+			rid_ = font_rid;
 			return true;
 		}
 
-		void Font::RenderAsMesh(const char *s, Mesh *m)
+		void font_t::render_as_mesh(const char *s, mesh_t *m)
 		{
-			m->SetVertexAttributes(VertexFormat::AttributeFlag_TexCoord);
-			m->SetIndexAttributes(3, 2);
-			m->SetMeshFlag(Mesh::MeshFlag_HasTranslucency);
+			m->set_vertex_attributes(VertexFormat::AttributeFlag_TexCoord);
+			m->set_index_attributes(3, 2);
+			m->set_mesh_flag(mesh_t::MeshFlag_HasTranslucency);
 
-			float penX = 0.0f;
-			float penY = 0.0f;
+			float pen_x = 0.0f;
+			float pen_y = 0.0f;
 		
 			struct V {
 				float pos[3];
@@ -106,11 +106,11 @@ namespace Maki
 
 			const uint32 len = strlen(s);
 			for(uint32 i = 0; i < len; i++) {
-				if(s[i] < MIN_CHAR_CODE || s[i] > MAX_CHAR_CODE) {
+				if(s[i] < min_char_code_ || s[i] > max_char_code_) {
 					continue;
 				}
 			
-				stbtt_GetBakedQuad(bakedChars, textureWidth, textureHeight, s[i] - MIN_CHAR_CODE, &penX, &penY, &q, 1);
+				stbtt_GetBakedQuad(baked_chars_, texture_width_, texture_height_, s[i] - min_char_code_, &pen_x, &pen_y, &q, 1);
 
 				V v[4] = {
 					{q.x0, q.y0, 0, q.s0, q.t0},
@@ -118,17 +118,17 @@ namespace Maki
 					{q.x1, q.y1, 0, q.s1, q.t1},
 					{q.x1, q.y0, 0, q.s1, q.t0},
 				};
-				m->PushVertexData(sizeof(v), (char *)v);
+				m->push_vertex_data(sizeof(v), (char *)v);
 
 				uint16 base = i*4;
 				uint16 f[6] = {base, (uint16)(base+1), (uint16)(base+2), base, (uint16)(base+2), (uint16)(base+3)};
-				m->PushIndexData(sizeof(f), (char *)f);
+				m->push_index_data(sizeof(f), (char *)f);
 			}
 
-			m->Upload();
+			m->upload();
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

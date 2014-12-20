@@ -2,69 +2,69 @@
 #include "core/MakiMeshManager.h"
 #include "core/MakiDrawCommand.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		MeshManager::MeshManager(uint32 size)
-			: Manager<Mesh, MeshManager>(size, "MeshManager")
+		mesh_manager_t::mesh_manager_t(uint32 size)
+			: manager_t<mesh_t, mesh_manager_t>(size, "mesh_manager_t")
 		{
-			assert(size <= (1<<DrawCommand::BITS_PER_MESH) && "MeshManager too large, add more bits in DrawCommand");
+			assert(size <= (1<<draw_command_t::bits_per_mesh_) && "mesh_manager_t too large, add more bits in draw_command_t");
 		}
 	
-		MeshManager::~MeshManager()
+		mesh_manager_t::~mesh_manager_t()
 		{
 		}
 	
-		Handle MeshManager::Load(Rid rid)
+		handle_t mesh_manager_t::load(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Mesh>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<mesh_t>(rid)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			Mesh *mesh = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(mesh) Mesh();
-			if(!mesh->Load(rid)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			handle = resPool->alloc() | managerId;
+			mesh_t *mesh = resPool->get(handle & handle_value_mask_);
+			new(mesh) mesh_t();
+			if(!mesh->load(rid)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
-		void MeshManager::ReloadAssets()
+		void mesh_manager_t::reload_assets()
 		{
-			const ResourcePool<Mesh>::Iterator end = resPool->End();
-			for(ResourcePool<Mesh>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-				Mesh *mesh = iter.Ptr();
-				Rid rid = mesh->rid;
+			const resource_pool_t<mesh_t>::iterator_t end = resPool->end();
+			for(resource_pool_t<mesh_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+				mesh_t *mesh = iter.Ptr();
+				rid_t rid = mesh->rid_;
 				if(rid != RID_NONE) {
-					mesh->~Mesh();
-					new(mesh) Mesh();
-					mesh->Load(rid);
+					mesh->~mesh_t();
+					new(mesh) mesh_t();
+					mesh->load(rid);
 				}
 			}
 		}
 
-		bool MeshManager::ReloadAsset(Rid rid)
+		bool mesh_manager_t::reload_asset(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<Mesh>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<mesh_t>(rid)) | managerId;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			Mesh *mesh = resPool->Get(handle & HANDLE_VALUE_MASK);
-			resPool->Free(handle & HANDLE_VALUE_MASK);
+			mesh_t *mesh = resPool->get(handle & handle_value_mask_);
+			resPool->free(handle & handle_value_mask_);
 
 			if(rid != RID_NONE) {
-				mesh->~Mesh();
-				new(mesh) Mesh();
-				mesh->Load(rid);
+				mesh->~mesh_t();
+				new(mesh) mesh_t();
+				mesh->load(rid);
 			}
 			return true;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

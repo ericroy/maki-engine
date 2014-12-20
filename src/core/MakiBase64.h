@@ -1,5 +1,5 @@
 /*
-	Changes for Maki Engine:
+	Changes for Maki engine_t:
 	- Lots of stuff stripped out
 	- functions converted from using FILE* to using iostreams
 
@@ -99,7 +99,7 @@ VALIDATION:     Non-trivial code is never without errors.  This
 
                 case 0:empty file:
                     CASE0.DAT  ->  ->
-                    (Zero length target file created
+                    (zero length target file created
                     on both encode and decode.)
 
                 case 1:One input character:
@@ -164,13 +164,13 @@ VALIDATION:     Non-trivial code is never without errors.  This
                     Return Code 0 (Sucess)
                 case 15:
                     Two Args (invalid file) -- shows system error.
-                    Return Code 2 (File Error)
+                    Return Code 2 (File error)
                 case 16:
-                    Encode non-existent file -- shows system error.
-                    Return Code 2 (File Error)
+                    encode non-existent file -- shows system error.
+                    Return Code 2 (File error)
                 case 17:
                     Out of disk space -- shows system error.
-                    Return Code 3 (File I/O Error)
+                    Return Code 3 (File I/O error)
                 case 18:
                     Too many args -- shows system error.
                     Return Code 1 (Invalid Syntax)
@@ -213,7 +213,7 @@ VERSION HISTORY:
                 Bob Trower 08/17/01 -- Correct documentation, messages.
                                     -- Correct help for linesize syntax.
                                     -- Force error on too many arguments.
-                Bob Trower 08/19/01 -- Add sourceforge.net reference to
+                Bob Trower 08/19/01 -- add sourceforge.net reference to
                                        help screen prior to release.
                 Bob Trower 10/22/04 -- Cosmetics for package/release.
                 Bob Trower 02/28/08 -- More Cosmetics for package/release.
@@ -224,12 +224,12 @@ VERSION HISTORY:
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		namespace Base64
+		namespace base64
 		{
 	
 			// Translation Table as described in RFC1113
@@ -240,11 +240,11 @@ namespace Maki
 
 
 			/*
-			** encodeblock
+			** encode_block
 			**
 			** encode 3 8-bit binary bytes as 4 '6-bit' characters
 			*/
-			inline void encodeblock(unsigned char *in, unsigned char *out, int len)
+			inline void encode_block(unsigned char *in, unsigned char *out, int len)
 			{
 				out[0] = (unsigned char)cb64[ (int)(in[0] >> 2) ];
 				out[1] = (unsigned char)cb64[ (int)(((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4)) ];
@@ -253,11 +253,11 @@ namespace Maki
 			}
 
 			/*
-			** decodeblock
+			** decode_block
 			**
 			** decode 4 '6-bit' characters into 3 8-bit binary bytes
 			*/
-			inline void decodeblock(unsigned char *in, unsigned char *out)
+			inline void decode_block(unsigned char *in, unsigned char *out)
 			{   
 				out[0] = (unsigned char)(in[0] << 2 | in[1] >> 4);
 				out[1] = (unsigned char)(in[1] << 4 | in[2] >> 2);
@@ -266,7 +266,7 @@ namespace Maki
 
 
 
-			bool Decode(std::istream &src, std::ostream &dst)
+			bool decode(std::istream &src, std::ostream &dst)
 			{
 				int retcode = 0;
 				unsigned char in[4];
@@ -298,7 +298,7 @@ namespace Maki
 						}
 					}
 					if(len > 0) {
-						decodeblock(in, out);
+						decode_block(in, out);
 						for(i = 0; i < len - 1; i++) {
 							dst.put(out[i]);
 							if(dst.bad()){
@@ -310,7 +310,7 @@ namespace Maki
 				return true;
 			}
 
-			bool Encode(std::istream &src, std::ostream &dst, int linesize = 1024)
+			bool encode(std::istream &src, std::ostream &dst, int linesize = 1024)
 			{
 				unsigned char in[3];
 				unsigned char out[4];
@@ -332,7 +332,7 @@ namespace Maki
 						}
 					}
 					if(len > 0) {
-						encodeblock(in, out, len);
+						encode_block(in, out, len);
 						for(i = 0; i < 4; i++) {
 							dst.put(out[i]);
 							if(dst.bad()) {
@@ -351,8 +351,8 @@ namespace Maki
 				return true;
 			}
 
-		} // namespace Base64
+		} // namespace base64
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -3,150 +3,150 @@
 #include "core/MakiRenderer.h"
 #include "core/MakiShaderProgram.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		
-		RenderCore::RenderCore()
-			: Thread()
+		render_core_t::render_core_t()
+			: thread_t()
 		{
 		}
 
-		RenderCore::~RenderCore()
+		render_core_t::~render_core_t()
 		{
 		}
 
-		void RenderCore::Run()
+		void render_core_t::run()
 		{
-			Console::Info("Render core thread started");
+			console_t::info("Render core thread started");
 
-			RenderPayload payload;
+			render_payload_t payload;
 			while(true) {
-				input.Get(payload);
-				if(payload.cmd == RenderPayload::Command_Init) {
-					Console::Info("Initializing render core");
-					Init();
-					Console::Info("Render core initialized");
-					output.Put(payload);
-				} else if(payload.cmd == RenderPayload::Command_Abort) {
-					output.Put(payload);
+				input.get(payload);
+				if(payload.cmd == render_payload_t::command_init_) {
+					console_t::info("Initializing render core");
+					init();
+					console_t::info("Render core initialized");
+					output.put(payload);
+				} else if(payload.cmd == render_payload_t::command_abort_) {
+					output.put(payload);
 					break;
-				} else if(payload.cmd == RenderPayload::Command_Draw) {
+				} else if(payload.cmd == render_payload_t::command_draw_) {
 #if MAKI_SORT_DRAW_COMMANDS_IN_RENDER_THREAD
-					payload.commands->Sort();
+					payload.commands_->sort();
 #endif
-					Draw(*payload.state, *payload.commands);
-					output.Put(payload);
-				} else if(payload.cmd == RenderPayload::Command_Present) {
-					Present();
-					output.Put(payload);
+					draw(*payload.state_, *payload.commands_);
+					output.put(payload);
+				} else if(payload.cmd == render_payload_t::command_present_) {
+					present();
+					output.put(payload);
 				}
 			}
 
-			Console::Info("Render core thread stopped");
+			console_t::info("Render core thread stopped");
 		}
 
 
-		void RenderCore::SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, char *buffer)
+		void render_core_t::SetPerFrameConstants(const core::render_state_t &state, const core::shader_t *s, char *buffer)
 		{
-			using namespace Core;
+			using namespace core;
 
-			int32 location = s->engineFrameUniformLocations[Shader::FrameUniform_View];
+			int32 location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_view_];
 			if(location != -1) {
-				memcpy(buffer + location, state.view.vals, 16*sizeof(float));
+				memcpy(buffer + location, state.view_.vals, 16*sizeof(float));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_Projection];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_projection_];
 			if(location != -1) {
-				memcpy(buffer + location, state.projection.vals, sizeof(state.projection));
+				memcpy(buffer + location, state.projection_.vals, sizeof(state.projection_));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraWithHeightNearFar];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_camera_with_height_hear_far_];
 			if(location != -1) {
-				memcpy(buffer + location, &state.cameraWidthHeightNearFar, sizeof(state.cameraWidthHeightNearFar));
+				memcpy(buffer + location, &state.camera_width_height_near_far_, sizeof(state.camera_width_height_near_far_));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_CameraSplitDistances];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_camera_split_distances_];
 			if(location != -1) {
-				memcpy(buffer + location, &state.cameraSplitDistances, sizeof(state.cameraSplitDistances));
+				memcpy(buffer + location, &state.camera_split_distances_, sizeof(state.camera_split_distances_));
 			}
 
 
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightViewProj];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_light_view_proj_];
 			if(location != -1) {
-				memcpy(buffer + location, state.lightViewProj, sizeof(state.lightViewProj));
+				memcpy(buffer + location, state.light_view_proj, sizeof(state.light_view_proj));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightPositions];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_light_positions_];
 			if(location != -1) {
-				memcpy(buffer + location, state.lightPositions, sizeof(state.lightPositions));
+				memcpy(buffer + location, state.light_positions, sizeof(state.light_positions));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightDirections];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_light_directions_];
 			if(location != -1) {
-				memcpy(buffer + location, state.lightDirections, sizeof(state.lightDirections));
+				memcpy(buffer + location, state.light_directions, sizeof(state.light_directions));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightProperties];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_light_properties_];
 			if(location != -1) {
-				// Set all lighting slots here so that lights which are no longer in use get effectively turned off
-				memcpy(buffer + location, state.lightProperties, sizeof(state.lightProperties));
+				// set all lighting slots here so that lights which are no longer in use get effectively turned off
+				memcpy(buffer + location, state.light_properties, sizeof(state.light_properties));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_ShadowMapProperties];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_shadow_map_properties_];
 			if(location != -1) {
-				memcpy(buffer + location, state.shadowMapProperties, state.shadowLightCount*sizeof(RenderState::ShadowMapProperties));
+				memcpy(buffer + location, state.shadow_map_properties, state.shadow_light_count_*sizeof(render_state_t::shadow_map_properties_t));
 			}
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_LightSplitRegions];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_light_split_regions_];
 			if(location != -1) {
-				memcpy(buffer + location, state.lightSplitRegions, state.cascadedShadowLightCount*RenderState::MAX_CASCADES*sizeof(RenderState::LightSplitRegion));
+				memcpy(buffer + location, state.light_split_regions, state.cascaded_shadow_light_count_*render_state_t::max_cascades_*sizeof(render_state_t::light_split_region_t));
 			}
 		
 
-			location = s->engineFrameUniformLocations[Shader::FrameUniform_GlobalAmbientColor];
+			location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_global_ambient_color_];
 			if(location != -1) {
-				memcpy(buffer + location, &state.globalAmbientColor.x, sizeof(state.globalAmbientColor));
+				memcpy(buffer + location, &state.global_ambient_color_.x_, sizeof(state.global_ambient_color_));
 			}
 		}
 
 
-		void RenderCore::SetPerObjectConstants(const Core::Shader *s, char *buffer, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection)
+		void render_core_t::SetPerObjectConstants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection)
 		{
-			using namespace Core;
+			using namespace core;
 
-			int32 location = s->engineObjectUniformLocations[Shader::ObjectUniform_Model];
+			int32 location = s->engine_object_uniform_locations_[shader_t::object_uniform_model_];
 			if(location != -1) {
 				memcpy(buffer + location, model.vals, sizeof(model));
 			}
 
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelView];
+			location = s->engine_object_uniform_locations_[shader_t::object_uniform_model_view_];
 			if(location != -1) {
-				memcpy(buffer + location, modelView.vals, sizeof(modelView));
+				memcpy(buffer + location, model_view.vals, sizeof(model_view));
 			}
 
-			location = s->engineObjectUniformLocations[Shader::ObjectUniform_ModelViewProjection];
+			location = s->engine_object_uniform_locations_[shader_t::object_uniform_model_view_projection_];
 			if(location != -1) {
-				memcpy(buffer + location, modelViewProjection.vals, sizeof(modelViewProjection));
+				memcpy(buffer + location, model_view_projection.vals, sizeof(model_view_projection));
 			}
 		}
 
-		void RenderCore::BindMaterialConstants(const Core::Shader *s, bool isVertexShader, char *buffer, const Core::Material *mat)
+		void render_core_t::BindMaterialConstants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat)
 		{
-			using namespace Core;
+			using namespace core;
 
-			if(isVertexShader) {
-				for(uint8 i = 0; i < mat->uniformCount; i++) {
-					const Material::UniformValue &val = mat->uniformValues[i];
+			if(is_vertex_shader) {
+				for(uint8 i = 0; i < mat->uniform_count_; i++) {
+					const material_t::uniform_value_t &val = mat->uniform_values_[i];
 					if(val.vsLocation != -1) {
-						memcpy(buffer + val.vsLocation, val.data, val.bytes);
+						memcpy(buffer + val.vsLocation, val.data_, val.bytes);
 					}
 				}
 			} else {
-				for(uint8 i = 0; i < mat->uniformCount; i++) {
-					const Material::UniformValue &val = mat->uniformValues[i];
+				for(uint8 i = 0; i < mat->uniform_count_; i++) {
+					const material_t::uniform_value_t &val = mat->uniform_values_[i];
 					if(val.psLocation != -1) {
-						memcpy(buffer + val.psLocation, val.data, val.bytes);
+						memcpy(buffer + val.psLocation, val.data_, val.bytes);
 					}
 				}
 			}
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

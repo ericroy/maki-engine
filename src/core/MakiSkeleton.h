@@ -2,48 +2,48 @@
 #include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		
 
 
-		class Skeleton : public Resource
+		class skeleton_t : public resource_t
 		{
 		public:
 			static const int32 MAX_BONES = 128;
 			static const int32 MAX_CHILDREN_PER_BONE = 7;
 
-			struct __declspec(align(SIMD_ALIGN)) Joint : public Aligned<SIMD_ALIGN>
+			struct __declspec(align(MAKI_SIMD_ALIGN)) Joint : public aligned_t<MAKI_SIMD_ALIGN>
 			{
-				Quaternion rot;
-				Vector3 offset;
+				quaternion_t rot_;
+				vector3_t offset_;
 			};
 
-			struct __declspec(align(SIMD_ALIGN)) Bone : public Aligned<SIMD_ALIGN>
+			struct __declspec(align(MAKI_SIMD_ALIGN)) Bone : public aligned_t<MAKI_SIMD_ALIGN>
 			{
-				Bone *children[MAX_CHILDREN_PER_BONE];
-				uint32 childCount;
+				Bone *children_[MAX_CHILDREN_PER_BONE];
+				uint32 child_count_;
 			};
 	
 		public:
-			Skeleton();
-			Skeleton(const MoveToken<Skeleton> &) { assert(false && "Skeleton move construction not allowed"); }
-			Skeleton(const Skeleton &) { assert(false && "Skeleton copy construction not allowed"); }
-			~Skeleton();
-			bool Load(Rid rid);
-			void CalculateWorldPose(Joint *jointStates, Matrix44 *out);
+			skeleton_t();
+			skeleton_t(const move_token_t<skeleton_t> &) { assert(false && "skeleton_t move construction not allowed"); }
+			skeleton_t(const skeleton_t &) { assert(false && "skeleton_t copy construction not allowed"); }
+			~skeleton_t();
+			bool load(rid_t rid);
+			void calculate_world_pose(Joint *joint_states, matrix44_t *out);
 	
 		private:
-			void CalculateInverseBindPose(Joint *jointStates, Matrix44 *out);
-			void CalculatePoseRecursive(uint32 &index, const Matrix44 &current, Joint *jointStates, Matrix44 *out);
+			void calculate_inverse_bind_pose(Joint *joint_states, matrix44_t *out);
+			void calculate_pos_recursive(uint32 &index, const matrix44_t &current, Joint *joint_states, matrix44_t *out);
 
 		public:
-			Array<Matrix44> inverseBindPose;
+			array_t<matrix44_t> inverse_bind_pose_;
 
-			Array<Bone> bones;
+			array_t<Bone> bones_;
 
 		};
 
@@ -51,6 +51,6 @@ namespace Maki
 		
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

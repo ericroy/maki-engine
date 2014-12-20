@@ -1,15 +1,15 @@
 #include "core/core_stdafx.h"
 #include "core/MakiVector3.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		const Vector3 Vector3::UnitX(1.0f, 0.0f, 0.0f);
-		const Vector3 Vector3::UnitY(0.0f, 1.0f, 0.0f);
-		const Vector3 Vector3::UnitZ(0.0f, 0.0f, 1.0f);
+		const vector3_t vector3_t::UnitX(1.0f, 0.0f, 0.0f);
+		const vector3_t vector3_t::UnitY(0.0f, 1.0f, 0.0f);
+		const vector3_t vector3_t::UnitZ(0.0f, 0.0f, 1.0f);
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

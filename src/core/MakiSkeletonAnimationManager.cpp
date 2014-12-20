@@ -3,72 +3,72 @@
 #include "core/MakiSkeletonAnimation.h"
 #include "core/MakiEngine.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		SkeletonAnimationManager::SkeletonAnimationManager(uint32 size)
-			: Manager<SkeletonAnimation, SkeletonAnimationManager>(size, "SkeletonAnimationManager")
+		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32 size)
+			: manager_t<skeleton_animation_t, skeleton_animation_manager_t>(size, "skeleton_animation_manager_t")
 		{
 		}
 	
-		SkeletonAnimationManager::~SkeletonAnimationManager()
+		skeleton_animation_manager_t::~skeleton_animation_manager_t()
 		{
 		}
 	
-		Handle SkeletonAnimationManager::Load(Rid rid)
+		handle_t skeleton_animation_manager_t::load(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<SkeletonAnimation>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			SkeletonAnimation *skelAnim = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(skelAnim) SkeletonAnimation();
+			handle = resPool->alloc() | managerId;
+			skeleton_animation_t *skelAnim = resPool->get(handle & handle_value_mask_);
+			new(skelAnim) skeleton_animation_t();
 		
-			if(!skelAnim->Load(rid)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			if(!skelAnim->load(rid)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
-		void SkeletonAnimationManager::ReloadAssets()
+		void skeleton_animation_manager_t::reload_assets()
 		{
-			Engine *eng = Engine::Get();
+			engine_t *eng = engine_t::get();
 
-			const ResourcePool<SkeletonAnimation>::Iterator end = resPool->End();
-			for(ResourcePool<SkeletonAnimation>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-				SkeletonAnimation *skelAnim = iter.Ptr();
-				Rid rid = skelAnim->rid;
+			const resource_pool_t<skeleton_animation_t>::iterator_t end = resPool->end();
+			for(resource_pool_t<skeleton_animation_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+				skeleton_animation_t *skelAnim = iter.Ptr();
+				rid_t rid = skelAnim->rid_;
 				if(rid != RID_NONE) {
-					skelAnim->~SkeletonAnimation();
-					new(skelAnim) SkeletonAnimation();
-					skelAnim->Load(rid);
+					skelAnim->~skeleton_animation_t();
+					new(skelAnim) skeleton_animation_t();
+					skelAnim->load(rid);
 				}
 			}
 		}
 		
-		bool SkeletonAnimationManager::ReloadAsset(Rid rid)
+		bool skeleton_animation_manager_t::reload_asset(rid_t rid)
 		{
-			Handle handle = resPool->Match(Resource::FindPredicate<SkeletonAnimation>(rid)) | managerId;
+			handle_t handle = resPool->Match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | managerId;
 			if(handle == HANDLE_NONE) {
 				return false;
 			}
-			SkeletonAnimation *skelAnim = resPool->Get(handle & HANDLE_VALUE_MASK);
-			resPool->Free(handle & HANDLE_VALUE_MASK);
+			skeleton_animation_t *skelAnim = resPool->get(handle & handle_value_mask_);
+			resPool->free(handle & handle_value_mask_);
 
 			if(rid != RID_NONE) {
-				skelAnim->~SkeletonAnimation();
-				new(skelAnim) SkeletonAnimation();
-				return skelAnim->Load(rid);
+				skelAnim->~skeleton_animation_t();
+				new(skelAnim) skeleton_animation_t();
+				return skelAnim->load(rid);
 			}
 			return true;
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

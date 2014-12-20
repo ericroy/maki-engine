@@ -1,45 +1,45 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		template<class SubClass>
-		class PseudoSingleton
+		template<class SUBCLASS>
+		class pseudo_singleton_t
 		{
 		public:
-			static inline SubClass *Get() { return current; }
-			static inline SubClass *SetCurrent(SubClass *newCurrent)
+			static inline SUBCLASS *get() { return current_; }
+			static inline SUBCLASS *set_current(SUBCLASS *new_current)
 			{
-				SubClass *oldCurrent = current;
-				current = newCurrent;
-				return oldCurrent;
+				SUBCLASS *old_current = current_;
+				current_ = new_current;
+				return old_current;
 			}
 
 		private:
-			static SubClass *current;
+			static SUBCLASS *current_;
 
 		public:
-			PseudoSingleton()
+			pseudo_singleton_t()
 			{
-				if(current == nullptr) {
-					current = static_cast<SubClass *>(this);
+				if(current_ == nullptr) {
+					current_ = static_cast<SUBCLASS *>(this);
 				}
 			}
 
-			virtual ~PseudoSingleton()
+			virtual ~pseudo_singleton_t()
 			{
-				if(current == static_cast<SubClass *>(this)) {
-					current = nullptr;
+				if(current_ == static_cast<SUBCLASS *>(this)) {
+					current_ = nullptr;
 				}
 			}
 		};
 
-		template<class SubClass>
-		SubClass *PseudoSingleton<SubClass>::current = nullptr;
+		template<class SUBCLASS>
+		SUBCLASS *pseudo_singleton_t<SUBCLASS>::current_ = nullptr;
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -2,134 +2,134 @@
 #include "core/MakiArchive.h"
 #include "dependencies/miniz.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		char Archive::buffer[Archive::DECOMPRESSION_BUFFER_SIZE];
+		char archive_t::buffer_[archive_t::decompression_buffer_size_];
 
-		Archive::Archive()
-			: fp(nullptr), ridStart(0), bodyOffset(0)
+		archive_t::archive_t()
+			: fp_(nullptr), rid_start_(0), body_offset_(0)
 		{
 		}
 
-		Archive::Archive(const MoveToken<Archive> &other)
-			: fp(other.obj->fp), ridStart(other.obj->ridStart), bodyOffset(other.obj->bodyOffset)
+		archive_t::archive_t(const move_token_t<archive_t> &other)
+			: fp_(other.obj->fp_), rid_start_(other.obj->rid_start_), body_offset_(other.obj->body_offset_)
 		{
 			std::swap(entries, other.obj->entries);
-			other.obj->fp = nullptr;
-			other.obj->ridStart = 0;
-			other.obj->bodyOffset = 0;
+			other.obj->fp_ = nullptr;
+			other.obj->rid_start_ = 0;
+			other.obj->body_offset_ = 0;
 		}
 
-		Archive::~Archive()
+		archive_t::~archive_t()
 		{
-			if(fp != nullptr) {
-				fclose(fp);
+			if(fp_ != nullptr) {
+				fclose(fp_);
 			}
 		}
 
-		bool Archive::Load(const char *archivePath, uint32 ridStart)
+		bool archive_t::load(const char *archive_path, uint32 rid_start)
 		{
-			this->ridStart = ridStart;
+			rid_start_ = rid_start;
 
-			if(fp != nullptr) {
+			if(fp_ != nullptr) {
 				// Already initialized
 				return false;
 			}
 			
-			fp = fopen(archivePath, "rb");
-			if(fp == nullptr) {
+			fp_ = fopen(archive_path, "rb");
+			if(fp_ == nullptr) {
 				return false;
 			}
 
-			fread(&bodyOffset, sizeof(bodyOffset), 1, fp);
+			fread(&body_offset_, sizeof(body_offset_), 1, fp_);
 			
 			uint32 tocCount = 0;
-			fread(&tocCount, sizeof(tocCount), 1, fp);
-			entries.SetSize(tocCount);
-			entries.Zero();
+			fread(&tocCount, sizeof(tocCount), 1, fp_);
+			entries.set_size(tocCount);
+			entries.zero();
 			
 			// Read table of contents
-			char buffer[FILE_PATH_MAX_LENGTH];
-			uint32 tocOffset = ftell(fp);
+			char buffer_[file_path_max_length_];
+			uint32 tocOffset = ftell(fp_);
 			for(uint32 i = 0; i < tocCount; i++) {
-				Entry &entry = entries[i];
-				fread(&entry.flags, sizeof(entry.flags), 1, fp);
+				entry_t &entry = entries[i];
+				fread(&entry.flags_, sizeof(entry.flags_), 1, fp_);
 
-				uint32 nameLength = 0;
-				fread(&nameLength, sizeof(nameLength), 1, fp);
-				assert(nameLength < FILE_PATH_MAX_LENGTH);
+				uint32 name_length = 0;
+				fread(&name_length, sizeof(name_length), 1, fp_);
+				assert(name_length < file_path_max_length_);
 
-				fread(buffer, sizeof(char), nameLength, fp);
-				entry.fileName = std::string(buffer, nameLength);
+				fread(buffer_, sizeof(char), name_length, fp_);
+				entry.file_name_ = std::string(buffer_, name_length);
 
-				while(ftell(fp) % 8 != 0) { fseek(fp, 1, SEEK_CUR); }
+				while(ftell(fp_) % 8 != 0) { fseek(fp_, 1, SEEK_CUR); }
 
-				fread(&entry.offset, sizeof(entry.offset), 1, fp);
-				fread(&entry.uncompressedLength, sizeof(entry.uncompressedLength), 1, fp);
-				fread(&entry.compressedLength, sizeof(entry.compressedLength), 1, fp);
+				fread(&entry.offset_, sizeof(entry.offset_), 1, fp_);
+				fread(&entry.uncompressed_length_, sizeof(entry.uncompressed_length_), 1, fp_);
+				fread(&entry.compressed_length_, sizeof(entry.compressed_length_), 1, fp_);
 			}
 			return true;
 		}
 
-		char *Archive::AllocRead(const char *path, uint32 *bytesRead) const
+		char *archive_t::alloc_read(const char *path, uint32 *bytes_read) const
 		{
-			assert(fp != nullptr);
+			assert(fp_ != nullptr);
 			for(uint32 i = 0; i < entries.count; i++) {
-				if(entries[i].fileName == path) {
-					uint32 rid = ridStart + i;
-					return AllocRead(TO_RID(rid), bytesRead);
+				if(entries[i].file_name_ == path) {
+					uint32 rid = rid_start_ + i;
+					return alloc_read(TO_RID(rid), bytes_read);
 				}
 			}
 
-			Console::Error("Failed to find resource in archive: %s", path);
+			console_t::error("Failed to find resource in archive: %s", path);
 			return nullptr;
 		}
 
-		char *Archive::AllocRead(Rid rid, uint32 *bytesRead) const
+		char *archive_t::alloc_read(rid_t rid, uint32 *bytes_read) const
 		{
-			assert(fp != nullptr);
-			uint32 i = (uint32)rid - ridStart;
+			assert(fp_ != nullptr);
+			uint32 i = (uint32)rid - rid_start_;
 
-			char *dest = (char *)Allocator::Malloc(entries[i].uncompressedLength+1);
-			dest[entries[i].uncompressedLength] = 0;
+			char *dest = (char *)allocator_t::malloc(entries[i].uncompressed_length_+1);
+			dest[entries[i].uncompressed_length_] = 0;
 
-			if((entries[i].flags & Flag_ZLibCompressed) != 0) {
-				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
+			if((entries[i].flags_ & flag_zlib_compressed_) != 0) {
+				MAKI_FSEEK64(fp_, body_offset_ + entries[i].offset_, SEEK_SET);
 
 				z_stream stream;
 				memset(&stream, 0, sizeof(stream));
 				stream.next_out = (uint8 *)dest;
-				stream.avail_out = entries[i].uncompressedLength;
+				stream.avail_out = entries[i].uncompressed_length_;
 				inflateInit(&stream);
 				
 				int32 status = Z_OK;
-				uint32 remaining = entries[i].compressedLength;
+				uint32 remaining = entries[i].compressed_length_;
 				while(remaining > 0) {
-					stream.next_in = (const uint8 *)buffer;
-					stream.avail_in = fread(buffer, sizeof(char), std::min<uint32>(DECOMPRESSION_BUFFER_SIZE, remaining), fp);
+					stream.next_in = (const uint8 *)buffer_;
+					stream.avail_in = fread(buffer_, sizeof(char), std::min<uint32>(decompression_buffer_size_, remaining), fp_);
 					status = inflate(&stream, Z_SYNC_FLUSH);
 					stream.next_out = (uint8 *)(dest + stream.total_out);
-					stream.avail_out = entries[i].uncompressedLength - stream.total_out;
-					remaining = entries[i].compressedLength - stream.total_in;
+					stream.avail_out = entries[i].uncompressed_length_ - stream.total_out;
+					remaining = entries[i].compressed_length_ - stream.total_in;
 				}
 				assert(status == Z_STREAM_END || status == Z_OK);
 				status = inflateEnd(&stream);
 				assert(status == Z_OK);
 			} else {
-				MAKI_FSEEK64(fp, bodyOffset + entries[i].offset, SEEK_SET);
-				uint32 read = fread(dest, sizeof(char), entries[i].uncompressedLength, fp);
-				assert(read == entries[i].uncompressedLength);
+				MAKI_FSEEK64(fp_, body_offset_ + entries[i].offset_, SEEK_SET);
+				uint32 read = fread(dest, sizeof(char), entries[i].uncompressed_length_, fp_);
+				assert(read == entries[i].uncompressed_length_);
 			}
 
-			if(bytesRead != nullptr) {
-				*bytesRead = entries[i].uncompressedLength;
+			if(bytes_read != nullptr) {
+				*bytes_read = entries[i].uncompressed_length_;
 			}
 			return dest;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

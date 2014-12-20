@@ -1,29 +1,29 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		template<class T>
-		class MoveToken
+		class move_token_t
 		{
 		public:
 			template<class U>
-			inline operator MoveToken<U>()
+			inline operator move_token_t<U>()
 			{
-				assert(dynamic_cast<U *>(obj) != nullptr);
-				return {(U *)obj};
+				assert(dynamic_cast<U *>(obj_) != nullptr);
+				return {(U *)obj_};
 			}
 
 		public:
-			T *obj;
+			T *obj_;
 		};
 
 		template<class T>
-		inline MoveToken<T> Move(T &obj) { MoveToken<T> m; m.obj = &obj; return m; }
+		inline move_token_t<T> maki_move(T &obj) { move_token_t<T> m; m.obj = &obj; return m; }
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

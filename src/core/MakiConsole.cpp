@@ -11,24 +11,24 @@
 
 using namespace std;
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		Console::Console(Level verbosity)
-			: PseudoSingleton<Console>(),
+		console_t::console_t(level_t verbosity)
+			: pseudo_singleton_t<console_t>(),
 			verbosity(verbosity),
 			printCallback(nullptr)
 		{
 			buffer[0] = 0;
 		}
 
-		Console::~Console()
+		console_t::~console_t()
 		{
 		}
 
-		void Console::Write(Level level, bool lineFeed, const char *prefix, const char *format, va_list args)
+		void console_t::write(level_t level, bool lineFeed, const char *prefix, const char *format, va_list args)
 		{
 			if(level < verbosity) {
 				return;
@@ -40,7 +40,7 @@ namespace Maki
 				cursor += strlen(prefix);
 			}
 
-			sprintf_safe(cursor, MAX_BUFFER_SIZE - (cursor - buffer), format, args);
+			sprintf_safe(cursor, max_buffer_size_ - (cursor - buffer), format, args);
 			
 			if(lineFeed) {
 				strcat(buffer, "\n");
@@ -68,6 +68,6 @@ namespace Maki
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -4,12 +4,12 @@
 #include "core/MakiBase64.h"
 #include <sstream>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		const char *Shader::frameUniformNames[FrameUniformCount] = {
+		const char *shader_t::frame_uniform_names[frame_uniform_count_] = {
 			"uView",
 			"uProjection",
 			"uViewProjection",
@@ -24,188 +24,188 @@ namespace Maki
 			"uCameraWithHeightNearFar",
 		};
 	
-		const char *Shader::objectUniformNames[ObjectUniformCount] = {
+		const char *shader_t::object_uniform_names[object_uniform_count_] = {
 			"uModel",
 			"uModelView",
 			"uModelViewProjection"
 		};
 
-		Shader::MaterialUniformLocation::MaterialUniformLocation()
+		shader_t::material_uniform_location_t::material_uniform_location_t()
 			: location(-1)
 		{
 			name[0] = 0;
 		}
 
-		Shader::MaterialUniformLocation::MaterialUniformLocation(int32 location, char *name)
+		shader_t::material_uniform_location_t::material_uniform_location_t(int32 location, char *name)
 			: location(location)
 		{
 			strcpy(this->name, name);
 		}
 
-		Shader::FrameUniform Shader::GetFrameUniformByName(const char *name)
+		shader_t::frame_uniform_t shader_t::get_frame_uniform_by_name(const char *name)
 		{
-			for(int32 i = 0; i < FrameUniformCount; i++) {
-				if(strcmp(frameUniformNames[i], name) == 0) {
-					return (FrameUniform)i;
+			for(int32 i = 0; i < frame_uniform_count_; i++) {
+				if(strcmp(frame_uniform_names[i], name) == 0) {
+					return (frame_uniform_t)i;
 				}
 			}
-			return FrameUniform_None;
+			return frame_uniform_none_;
 		}
 
-		Shader::ObjectUniform Shader::GetObjectUniformByName(const char *name)
+		shader_t::object_uniform_t shader_t::get_object_uniform_by_name(const char *name)
 		{
-			for(int32 i = 0; i < ObjectUniformCount; i++) {
-				if(strcmp(objectUniformNames[i], name) == 0) {
-					return (ObjectUniform)i;
+			for(int32 i = 0; i < object_uniform_count_; i++) {
+				if(strcmp(object_uniform_names[i], name) == 0) {
+					return (object_uniform_t)i;
 				}
 			}
-			return ObjectUniform_None;
+			return object_uniform_none_;
 		}
 
 
 
-		Shader::Shader()
+		shader_t::shader_t()
 			: handle(0),
-			programData(nullptr),
-			programDataBytes(0),
-			engineFrameUniformBytes(0),
-			engineObjectUniformBytes(0),
-			materialUniformBytes(0),
-			frameUniformBufferLocation(-1),
-			objectUniformBufferLocation(-1),
-			materialUniformBufferLocation(-1)
+			program_data_(nullptr),
+			program_data_bytes_(0),
+			engine_frame_uniform_bytes_(0),
+			engine_object_uniform_bytes_(0),
+			material_uniform_bytes_(0),
+			frame_uniform_buffer_location_(-1),
+			object_uniform_buffer_location_(-1),
+			material_uniform_buffer_location_(-1)
 		{
-			memset(engineFrameUniformLocations, -1, sizeof(engineFrameUniformLocations));
-			memset(engineObjectUniformLocations, -1, sizeof(engineObjectUniformLocations));
+			memset(engine_frame_uniform_locations_, -1, sizeof(engine_frame_uniform_locations_));
+			memset(engine_object_uniform_locations_, -1, sizeof(engine_object_uniform_locations_));
 		}
 
-		Shader::~Shader()
+		shader_t::~shader_t()
 		{
-			SAFE_FREE(programData);
+			MAKI_SAFE_FREE(program_data_);
 		}
 
-		bool Shader::Init(Document::Node *shaderNode, const char *dataKey, const char *metaKey)
+		bool shader_t::init(document_t::node_t *shader_node, const char *data_key, const char *meta_key)
 		{
-			Document::Node *dataNode = shaderNode->Resolve(dataKey);
+			document_t::node_t *dataNode = shader_node->resolve(data_key);
 			if(dataNode == nullptr || dataNode->count != 1) {
 				return false;
 			}
 
 			char *encodedData = dataNode->children[0]->value;
 			if(encodedData == nullptr) {
-				Console::Error("Failed to parse shader, no base64 encoded program found in 'data' node");
+				console_t::error("Failed to parse shader, no base64 encoded program found in 'data' node");
 				return false;
 			}
 
 			std::stringstream in(encodedData);
 			std::stringstream out(std::ios::out | std::ios::binary);
-			if(!Base64::Decode(in, out)) {
-				Console::Error("Failed to base64 decode shader program");
+			if(!Base64::decode(in, out)) {
+				console_t::error("Failed to base64 decode shader program");
 				return false;
 			}
 			std::string data = out.str();
-			programDataBytes = data.length();
+			program_data_bytes_ = data.length();
 
-			SAFE_FREE(programData);
-			programData = (char *)Allocator::Malloc(programDataBytes);
-			memcpy(programData, data.c_str(), programDataBytes);
+			MAKI_SAFE_FREE(program_data_);
+			program_data_ = (char *)allocator_t::malloc(program_data_bytes_);
+			memcpy(program_data_, data.c_str(), program_data_bytes_);
 		
 
-			Document::Node *metaNode = shaderNode->Resolve(metaKey);
+			document_t::node_t *metaNode = shader_node->resolve(meta_key);
 			if(metaNode == nullptr) {
 				return true;
 			}
 
-			Document::Node *enginePerFrame = metaNode->Resolve("enginePerFrame");
+			document_t::node_t *enginePerFrame = metaNode->resolve("enginePerFrame");
 			if(enginePerFrame != nullptr) {
-				if(!enginePerFrame->ResolveAsInt("slot.#0", &frameUniformBufferLocation)) {
+				if(!enginePerFrame->resolve_as_int("slot.#0", &frame_uniform_buffer_location_)) {
 					return false;
 				}
 
-				Document::Node *uniforms = enginePerFrame->Resolve("uniforms");
+				document_t::node_t *uniforms = enginePerFrame->resolve("uniforms");
 				if(!uniforms) {
 					return false;
 				}
 
 				for(uint32 i = 0; i < uniforms->count; i++) {
-					Document::Node *uni = uniforms->children[i];
+					document_t::node_t *uni = uniforms->children[i];
 					assert(uni->count == 2 && "uniform must have offset and size");
 
-					FrameUniform c = GetFrameUniformByName(uni->value);
-					if(c == FrameUniform_None) {
+					frame_uniform_t c = get_frame_uniform_by_name(uni->value);
+					if(c == frame_uniform_none_) {
 						return false;
 					}
-					uint32 offset = uni->children[0]->ValueAsUInt();
-					uint32 size = uni->children[1]->ValueAsUInt();
-					engineFrameUniformLocations[c] = (int32)offset;				
-					engineFrameUniformBytes = std::max(offset+size, engineFrameUniformBytes);
+					uint32 offset = uni->children[0]->value_as_uint();
+					uint32 size = uni->children[1]->value_as_uint();
+					engine_frame_uniform_locations_[c] = (int32)offset;				
+					engine_frame_uniform_bytes_ = std::max(offset+size, engine_frame_uniform_bytes_);
 				}		
 			}
 
-			Document::Node *enginePerObject = metaNode->Resolve("enginePerObject");
+			document_t::node_t *enginePerObject = metaNode->resolve("enginePerObject");
 			if(enginePerObject != nullptr) {
-				if(!enginePerObject->ResolveAsInt("slot.#0", &objectUniformBufferLocation)) {
+				if(!enginePerObject->resolve_as_int("slot.#0", &object_uniform_buffer_location_)) {
 					return false;
 				}
 
-				Document::Node *uniforms = enginePerObject->Resolve("uniforms");
+				document_t::node_t *uniforms = enginePerObject->resolve("uniforms");
 				if(!uniforms) {
 					return false;
 				}
 
 				for(uint32 i = 0; i < uniforms->count; i++) {
-					Document::Node *uni = uniforms->children[i];
+					document_t::node_t *uni = uniforms->children[i];
 					assert(uni->count == 2 && "uniform must have offset and size");
 
-					ObjectUniform c = GetObjectUniformByName(uni->value);
-					if(c == ObjectUniform_None) {
+					object_uniform_t c = get_object_uniform_by_name(uni->value);
+					if(c == object_uniform_none_) {
 						return false;
 					}
-					uint32 offset = uni->children[0]->ValueAsUInt();
-					uint32 size = uni->children[1]->ValueAsUInt();
-					engineObjectUniformLocations[c] = (int32)offset;				
-					engineObjectUniformBytes = std::max(offset+size, engineObjectUniformBytes);
+					uint32 offset = uni->children[0]->value_as_uint();
+					uint32 size = uni->children[1]->value_as_uint();
+					engine_object_uniform_locations_[c] = (int32)offset;				
+					engine_object_uniform_bytes_ = std::max(offset+size, engine_object_uniform_bytes_);
 				}		
 			}
 
-			Document::Node *material = metaNode->Resolve("material");
+			document_t::node_t *material = metaNode->resolve("material");
 			if(material != nullptr) {
-				if(!material->ResolveAsInt("slot.#0", &materialUniformBufferLocation)) {
+				if(!material->resolve_as_int("slot.#0", &material_uniform_buffer_location_)) {
 					return false;
 				}
 
-				Document::Node *uniforms = material->Resolve("uniforms");
+				document_t::node_t *uniforms = material->resolve("uniforms");
 				if(!uniforms) {
 					return false;
 				}
 
 				for(uint32 i = 0; i < uniforms->count; i++) {
-					Document::Node *uni = uniforms->children[i];
+					document_t::node_t *uni = uniforms->children[i];
 					assert(uni->count == 2 && "uniform must have offset and size");
 
-					uint32 offset = uni->children[0]->ValueAsUInt();
-					uint32 size = uni->children[1]->ValueAsUInt();
+					uint32 offset = uni->children[0]->value_as_uint();
+					uint32 size = uni->children[1]->value_as_uint();
 				
-					materialUniformLocations.push_back(MaterialUniformLocation((int32)offset, uni->value));
-					materialUniformBytes = std::max(offset+size, materialUniformBytes);
+					material_uniform_locations_.push_back(material_uniform_location_t((int32)offset, uni->value));
+					material_uniform_bytes_ = std::max(offset+size, material_uniform_bytes_);
 				}		
 			}
 
 			return true;
 		}
 
-		int32 Shader::FindMaterialConstantLocation(const char *name)
+		int32 shader_t::find_material_constant_location(const char *name)
 		{
-			const uint32 count = materialUniformLocations.size();
+			const uint32 count = material_uniform_locations_.size();
 			for(uint32 i = 0; i < count; i++) {
-				if(strcmp(name, materialUniformLocations[i].name) == 0) {
-					return materialUniformLocations[i].location;
+				if(strcmp(name, material_uniform_locations_[i].name) == 0) {
+					return material_uniform_locations_[i].location;
 				}
 			}
 			return -1;
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

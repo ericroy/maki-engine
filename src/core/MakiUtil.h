@@ -1,9 +1,9 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		template<class T>
@@ -14,6 +14,6 @@ namespace Maki
 			return x;
 		}
 	
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

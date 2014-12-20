@@ -4,112 +4,112 @@
 #include "core/MakiDrawCommandList.h"
 #include "core/MakiRenderCore.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class ResourceLibrary;
-		class Config;
-		class VertexFormat;
-		class ShaderProgram;
-		class Shader;
-		class PixelShader;
-		class VertexShader;
-		class Texture;
-		class Light;
+		class resource_library_t;
+		class config_t;
+		class vertex_format_t;
+		class shader_program_t;
+		class shader_t;
+		class pixel_shader_t;
+		class vertex_shader_t;
+		class texture_t;
+		class light_t;
 
 		
 		
 
-		// The Renderer is the front-end (main thread) counterpart to the back-end (worker thread) RenderCore.
-		// It accepts render commands and state changes locally, and then sends them to the RenderCore
-		// when you call Submit().
-		class Renderer : public Aligned<SIMD_ALIGN>
+		// The renderer_t is the front-end (main thread) counterpart to the back-end (worker thread) render_core_t.
+		// It accepts render commands and state changes locally, and then sends them to the render_core_t
+		// when you call submit().
+		class renderer_t : public aligned_t<MAKI_SIMD_ALIGN>
 		{
 		public:
-			static const int32 MAX_RENDER_PAYLOADS = 16;
-			static const int32 DEFAULT_MAX_DRAW_COMMANDS_PER_PASS = 1024;
+			static const int32 max_render_payloads_ = 16;
+			static const int32 default_max_draw_commands_per_pass_ = 1024;
 
 		public:
-			Renderer(Window *window, RenderCore *core, const Config *config);
-			virtual ~Renderer();
+			renderer_t(window_t *window, render_core_t *core, const config_t *config);
+			virtual ~renderer_t();
 
 			// Basic frame lifecycle
-			bool Begin();
-			inline void Draw(const DrawCommand &drawCommand, const Matrix44 &m);
-			void Submit();
-			void End();
+			bool begin();
+			inline void draw(const draw_command_t &draw_command, const matrix44_t &m);
+			void submit();
+			void end();
 
 			// Call this to block until the core has finished all its current tasks.
 			// Once this function returns, all the render state objects and draw command
 			// lists will once again be in the posession of this renderer object (in the main thread).
-			void SyncWithCore();
+			void sync_with_core();
 		
 			// State actions
-			inline void ClearDepth(float value);
-			inline void ClearColor(const Vector4 &rgba);
+			inline void clear_depth(float value);
+			inline void clear_color(const vector4_t &rgba);
 
 			// State setters
-			void SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil);
-			inline void SetViewport(const Rect &rect);
-			inline void SetView(const Matrix44 &view);
-			inline void SetCameraMatrix(const Matrix44 &cameraMatrix);
-			void SetPerspectiveProjection(const Frustum &frustum);
-			void SetOrthoProjection(const Frustum &frustum);
-			inline void SetCullMode(RenderState::CullMode mode);
-			inline void SetWireFrameEnabled(bool on);
-			inline void SetDepthWriteEnabled(bool on);
-			inline void SetDepthTest(RenderState::DepthTest test);
-			inline void SetGlobalAmbientColor(const Vector4 &color);
-			inline void SetShaderVariant(ShaderProgram::Variant variant);
+			void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
+			inline void set_viewport(const Rect &rect);
+			inline void set_view(const matrix44_t &view);
+			inline void set_camera_matrix(const matrix44_t &camera_matrix);
+			void set_perspective_projection(const frustum_t &frustum);
+			void set_ortho_projection(const frustum_t &frustum);
+			inline void set_cull_mode(render_state_t::cull_mode_t mode);
+			inline void set_wire_frame_enabled(bool on);
+			inline void set_depth_write_enabled(bool on);
+			inline void set_depth_test(render_state_t::depth_test_t test);
+			inline void set_global_ambient_color(const vector4_t &color);
+			inline void set_shader_variant(shader_program_t::variant_t variant);
 	
-			inline void SetLightCount(uint32 count, uint32 shadowCount = 0, uint32 splitShadowCount = 0);
-			void SetLight(uint32 lightIndex, const RenderState::LightProperties *props = nullptr, const RenderState::ShadowMapProperties *shadProps = nullptr, const Matrix44 *matrix = nullptr, float fov = 0.0f, Handle depthBuffer = HANDLE_NONE);
-			void SetLightCascade(uint32 lightIndex, uint32 cascadeIndex, const Frustum &frustum);
-			inline void SetCameraSplitDistances(uint32 count, float *splitDistances);
+			inline void set_light_count(uint32 count, uint32 shadow_count = 0, uint32 split_shadow_count = 0);
+			void set_light(uint32 light_index, const render_state_t::LightProperties *props = nullptr, const render_state_t::ShadowMapProperties *shad_props = nullptr, const matrix44_t *matrix = nullptr, float fov = 0.0f, handle_t depth_buffer = HANDLE_NONE);
+			void set_light_cascade(uint32 light_index, uint32 cascade_index, const frustum_t &frustum);
+			inline void set_camera_split_distances(uint32 count, float *split_distances);
 
 			// Getters
-			inline Window *GetWindow() const;
-			inline RenderState::CullMode GetCullMode() const;
-			inline bool GetWireframeEnabled() const;
-			inline bool GetDepthWriteEnabled() const;
-			inline RenderState::DepthTest GetDepthTest() const;
-			inline const Vector4 &GetGlobalAmbientColor() const;
-			inline ShaderProgram::Variant GetShaderVariant() const;
-			inline const Matrix44 &GetView() const;
-			inline const Matrix44 &GetCameraMatrix() const;
+			inline window_t *get_window() const;
+			inline render_state_t::cull_mode_t get_cull_mode() const;
+			inline bool get_wire_frame_enabled() const;
+			inline bool get_depth_write_enabled() const;
+			inline render_state_t::depth_test_t get_depth_test() const;
+			inline const vector4_t &get_global_ambient_color() const;
+			inline shader_program_t::variant_t get_shader_variant() const;
+			inline const matrix44_t &get_view() const;
+			inline const matrix44_t &get_camera_matrix() const;
 
 			// GPU resource creation, updates, destruction
 			// These actions are applied synchonously on the core, so they involve acquiring a mutex
-			inline void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged);
-			inline void FreeBuffer(void *buffer);
-			inline bool CreateShaderProgram(ShaderProgram *s);
-			inline void DeleteShaderProgram(ShaderProgram *s);
-			inline bool CreateTexture(Texture *t, char *data, uint32 dataLength);
-			inline bool CreateEmptyTexture(Texture *t, uint8 channels);
-			inline bool CreateRenderTarget(Texture *t);
-			inline bool CreateDepthTexture(Texture *t);
-			inline void DeleteTexture(Texture *t);
-			inline void WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData);
+			inline void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed);
+			inline void free_buffer(void *buffer);
+			inline bool create_shader_program(shader_program_t *s);
+			inline void delete_shader_program(shader_program_t *s);
+			inline bool create_texture(texture_t *t, char *data, uint32 data_length);
+			inline bool create_empty_texture(texture_t *t, uint8 channels);
+			inline bool create_render_target(texture_t *t);
+			inline bool create_depth_texture(texture_t *t);
+			inline void delete_texture(texture_t *t);
+			inline void write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data);
 		
 
 		private:
-			void PrepareNextRenderState();
+			void prepare_next_render_state();
 
 		protected:
-			Window *window;
-			RenderState current;
-			uint32 lightDirtyFlags;
-			RenderState *state;
-			DrawCommandList *commands;
-			std::vector<RenderState *> renderStates;
-			std::vector<DrawCommandList *> commandLists;
-			RenderCore *core;
+			window_t *window_;
+			render_state_t current_;
+			uint32 light_dirty_flags;
+			render_state_t *state;
+			draw_command_list_t *commands;
+			std::vector<render_state_t *> render_states;
+			std::vector<draw_command_list_t *> command_lists;
+			render_core_t *core_;
 
 		private:
 			// Memebers that are used to provide convenience functions but are not part of the renderstate
-			Matrix44 cameraMatrix;
+			matrix44_t camera_matrix_;
 		};
 
 
@@ -117,187 +117,187 @@ namespace Maki
 
 
 
-		inline void Renderer::Draw(const DrawCommand &drawCommand, const Matrix44 &m)
+		inline void renderer_t::draw(const draw_command_t &draw_command, const matrix44_t &m)
 		{
-			commands->Add(drawCommand, m);
+			commands->add(draw_command, m);
 		}
 		
-		inline void Renderer::ClearDepth(float value)
+		inline void renderer_t::clear_depth(float value)
 		{
-			current.clearDepthStencil = true; current.depthClearValue = value;
+			current_.clear_depth_stencil_ = true; current_.depth_clear_value_ = value;
 		}
 	
-		inline void Renderer::ClearColor(const Vector4 &rgba)
+		inline void renderer_t::clear_color(const vector4_t &rgba)
 		{
-			current.clearRenderTarget = true;
-			current.renderTargetClearValue = rgba;
+			current_.clear_render_target_ = true;
+			current_.render_target_clear_value_ = rgba;
 		}
 
-		inline void Renderer::SetViewport(const Rect &rect)
+		inline void renderer_t::set_viewport(const Rect &rect)
 		{
-			current.viewPortRect = rect;
+			current_.view_port_rect_ = rect;
 		}
 
-		inline void Renderer::SetView(const Matrix44 &view)
+		inline void renderer_t::set_view(const matrix44_t &view)
 		{
-			current.view = view;
-			Matrix44::AffineInverse(view, cameraMatrix);
+			current_.view_ = view;
+			matrix44_t::affine_inverse(view, camera_matrix_);
 		}
 
-		inline void Renderer::SetCameraMatrix(const Matrix44 &cameraMatrix)
+		inline void renderer_t::set_camera_matrix(const matrix44_t &camera_matrix)
 		{
-			this->cameraMatrix = cameraMatrix;
-			Matrix44::AffineInverse(cameraMatrix, current.view);
+			camera_matrix_ = camera_matrix;
+			matrix44_t::affine_inverse(camera_matrix, current_.view_);
 		}
 
-		inline void Renderer::SetLightCount(uint32 lightCount, uint32 shadowLightCount, uint32 cascadedShadowLightCount)
+		inline void renderer_t::set_light_count(uint32 light_count, uint32 shadow_light_count, uint32 cascaded_shadow_light_count)
 		{
-			assert(lightCount <= RenderState::MAX_LIGHTS);
-			assert(shadowLightCount <= lightCount);
-			assert(cascadedShadowLightCount <= shadowLightCount);
+			assert(light_count <= render_state_t::max_lights_);
+			assert(shadow_light_count <= light_count);
+			assert(cascaded_shadow_light_count <= shadow_light_count);
 
-			current.lightCount = lightCount;
-			current.shadowLightCount = shadowLightCount;
-			current.cascadedShadowLightCount = cascadedShadowLightCount;
+			current_.light_count_ = light_count;
+			current_.shadow_light_count_ = shadow_light_count;
+			current_.cascaded_shadow_light_count_ = cascaded_shadow_light_count;
 		}
 
-		inline void Renderer::SetCameraSplitDistances(uint32 splitCount, float *splitDistances)
+		inline void renderer_t::set_camera_split_distances(uint32 splitCount, float *split_distances)
 		{
-			assert(splitCount < RenderState::MAX_CASCADES);
-			memcpy(current.cameraSplitDistances.splits, splitDistances, splitCount*sizeof(float));
+			assert(splitCount < render_state_t::MAX_CASCADES);
+			memcpy(current_.cameraSplitDistances.splits, split_distances, splitCount*sizeof(float));
 		}
 
-		inline void Renderer::SetCullMode(RenderState::CullMode mode)
+		inline void renderer_t::set_cull_mode(render_state_t::cull_mode_t mode)
 		{
-			current.cullMode = mode;
+			current_.cull_mode_ = mode;
 		}
 
-		inline void Renderer::SetWireFrameEnabled(bool on)
+		inline void renderer_t::set_wire_frame_enabled(bool on)
 		{
-			current.wireFrame = on;
+			current_.wire_frame_ = on;
 		}
 
-		inline void Renderer::SetDepthWriteEnabled(bool on)
+		inline void renderer_t::set_depth_write_enabled(bool on)
 		{
-			current.depthWrite = on;
+			current_.depth_write_ = on;
 		}
 
-		inline void Renderer::SetDepthTest(RenderState::DepthTest test)
+		inline void renderer_t::set_depth_test(render_state_t::depth_test_t test)
 		{
-			current.depthTest = test;
+			current_.depth_test_ = test;
 		}
 
-		inline void Renderer::SetGlobalAmbientColor(const Vector4 &color)
+		inline void renderer_t::set_global_ambient_color(const vector4_t &color)
 		{
-			current.globalAmbientColor = color;
+			current_.global_ambient_color_ = color;
 		}
 
-		inline void Renderer::SetShaderVariant(ShaderProgram::Variant variant)
+		inline void renderer_t::set_shader_variant(shader_program_t::variant_t variant)
 		{
-			current.shaderVariant = variant;
+			current_.shader_variant_ = variant;
 		}
 	
 
 
 
 
-		inline Window *Renderer::GetWindow() const
+		inline window_t *renderer_t::get_window() const
 		{
 			return window;
 		}
 
-		inline RenderState::CullMode Renderer::GetCullMode() const
+		inline render_state_t::cull_mode_t renderer_t::get_cull_mode() const
 		{
-			return current.cullMode;
+			return current_.cull_mode_;
 		}
 	
-		inline bool Renderer::GetWireframeEnabled() const
+		inline bool renderer_t::get_wire_frame_enabled() const
 		{
-			return current.wireFrame;
+			return current_.wire_frame_;
 		}
 
-		inline bool Renderer::GetDepthWriteEnabled() const
+		inline bool renderer_t::get_depth_write_enabled() const
 		{
-			return current.depthWrite;
+			return current_.depth_write_;
 		}
 
-		inline RenderState::DepthTest Renderer::GetDepthTest() const
+		inline render_state_t::depth_test_t renderer_t::get_depth_test() const
 		{
-			return current.depthTest;
+			return current_.depth_test_;
 		}
 
-		inline const Vector4 &Renderer::GetGlobalAmbientColor() const
+		inline const vector4_t &renderer_t::get_global_ambient_color() const
 		{
-			return current.globalAmbientColor;
+			return current_.global_ambient_color_;
 		}
 
-		inline ShaderProgram::Variant Renderer::GetShaderVariant() const
+		inline shader_program_t::variant_t renderer_t::get_shader_variant() const
 		{
-			return current.shaderVariant;
+			return current_.shader_variant_;
 		}
 
-		inline const Matrix44 &Renderer::GetView() const
+		inline const matrix44_t &renderer_t::get_view() const
 		{
-			return current.view;
+			return current_.view_;
 		}
 
-		inline const Matrix44 &Renderer::GetCameraMatrix() const
+		inline const matrix44_t &renderer_t::get_camera_matrix() const
 		{
-			return cameraMatrix;
+			return camera_matrix_;
 		}
 
 
 
-		inline void *Renderer::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
+		inline void *renderer_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed)
 		{
-			return core->UploadBuffer(buffer, vf, vertexData, vertexCount, indexData, faceCount, indicesPerFace, bytesPerIndex, dynamic, lengthChanged);
-		}
-	
-		inline void Renderer::FreeBuffer(void *buffer)
-		{
-			core->FreeBuffer(buffer);
-		}
-
-		inline bool Renderer::CreateShaderProgram(ShaderProgram *s)
-		{
-			return core->CreateShaderProgram(s);
+			return core_->upload_buffer(buffer, vf, vertex_data, vertex_count, index_data, face_count, indices_per_face, bytes_per_index, dynamic, length_changed);
 		}
 	
-		inline void Renderer::DeleteShaderProgram(ShaderProgram *s)
+		inline void renderer_t::free_buffer(void *buffer)
 		{
-			core->DeleteShaderProgram(s);
+			core_->free_buffer(buffer);
 		}
 
-		inline bool Renderer::CreateTexture(Texture *t, char *data, uint32 dataLength)
+		inline bool renderer_t::create_shader_program(shader_program_t *s)
 		{
-			return core->CreateTexture(t, data, dataLength);
+			return core_->create_shader_program(s);
+		}
+	
+		inline void renderer_t::delete_shader_program(shader_program_t *s)
+		{
+			core_->delete_shader_program(s);
 		}
 
-		inline bool Renderer::CreateEmptyTexture(Texture *t, uint8 channels)
+		inline bool renderer_t::create_texture(texture_t *t, char *data, uint32 data_length)
 		{
-			return core->CreateEmptyTexture(t, channels);
+			return core_->create_texture(t, data, data_length);
 		}
 
-		inline bool Renderer::CreateRenderTarget(Texture *t)
+		inline bool renderer_t::create_empty_texture(texture_t *t, uint8 channels)
 		{
-			return core->CreateRenderTarget(t);
+			return core_->create_empty_texture(t, channels);
 		}
 
-		inline bool Renderer::CreateDepthTexture(Texture *t)
+		inline bool renderer_t::create_render_target(texture_t *t)
 		{
-			return core->CreateDepthTexture(t);
+			return core_->create_render_target(t);
 		}
 
-		inline void Renderer::DeleteTexture(Texture *t)
+		inline bool renderer_t::create_depth_texture(texture_t *t)
 		{
-			core->DeleteTexture(t);
+			return core_->create_depth_texture(t);
 		}
 
-		inline void Renderer::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
+		inline void renderer_t::delete_texture(texture_t *t)
 		{
-			core->WriteToTexture(t, dstX, dstY, srcX, srcY, srcWidth, srcHeight, srcPitch, channels, srcData);
+			core_->delete_texture(t);
 		}
 
-	} // namespace Core
+		inline void renderer_t::write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data)
+		{
+			core_->write_to_texture(t, dst_x, dst_y, src_x, src_y, src_width, src_height, src_pitch, channels, src_data);
+		}
 
-} // namespace Maki
+	} // namespace core
+
+} // namespace maki

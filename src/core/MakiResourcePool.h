@@ -2,9 +2,9 @@
 #include "core/core_stdafx.h"
 #include <functional>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		
@@ -18,211 +18,211 @@ namespace Maki
 		out, and decreased whenever a handle is freed.
 		*/
 		template<class T>
-		class ResourcePool
+		class resource_pool_t
 		{
 		private:
-			struct Node
+			struct node_t
 			{
-				uint32 next, prev;
+				uint32 next_, prev_;
 			};
 
 		public:
-			class Iterator
+			class iterator_t
 			{
-				friend class ResourcePool<T>;
+				friend class resource_pool_t<T>;
 			public:
-				inline void operator++() { current = nodes[current].next; }
-				inline bool operator==(const Iterator &iter) const { return iter.current == current; }
-				inline bool operator!=(const Iterator &iter) const { return iter.current != current; }
-				inline const T &operator*() const { return data[current]; }
-				inline T *Ptr() const { return &data[current]; }
-				inline uint32 Index() const { return current; }
-				inline uint16 RefCount() const { return refCounts[current]; }
+				inline void operator++() { current_ = nodes_[current_].next_; }
+				inline bool operator==(const iterator_t &iter) const { return iter.current_ == current_; }
+				inline bool operator!=(const iterator_t &iter) const { return iter.current_ != current_; }
+				inline const T &operator*() const { return data_[current_]; }
+				inline T *Ptr() const { return &data_[current_]; }
+				inline uint32 Index() const { return current_; }
+				inline uint16 RefCount() const { return ref_counts_[current_]; }
 		
 			private:
-				Iterator(Node *nodes, T *data, uint16 *refCounts, uint32 current)
-				:	nodes(nodes), data(data), refCounts(refCounts), current(current) {}
+				iterator_t(node_t *nodes_, T *data_, uint16 *ref_counts, uint32 current_)
+				:	nodes_(nodes_), data_(data_), ref_counts_(ref_counts), current_(current_) {}
 
 			private:
-				Node *nodes;
-				T *data;
-				uint16 *refCounts;
-				uint32 current;
+				node_t *nodes_;
+				T *data_;
+				uint16 *ref_counts_;
+				uint32 current_;
 			};
 
-			inline Iterator Begin() const { return Iterator(nodes, data, referenceCounts, head); }
-			inline const Iterator End() const { return Iterator(nodes, data, referenceCounts, end); }
+			inline iterator_t begin() const { return iterator_t(nodes_, data_, reference_counts_, head_); }
+			inline const iterator_t end_() const { return iterator_t(nodes_, data_, reference_counts_, end_); }
 
 		public:
-			ResourcePool(uint32 maxSize, const char *debugName)
-				: data(0), count(0)
+			resource_pool_t(uint32 max_size, const char *debug_name)
+				: data_(0), count_(0)
 			{
 
-				capacity = maxSize;
+				capacity_ = max_size;
 
-				data = (T*)Allocator::Malloc(sizeof(T) * capacity, std::alignment_of<T>::value);
-				referenceCounts = new uint16[capacity];
+				data_ = (T*)allocator_t::malloc(sizeof(T) * capacity_, std::alignment_of<T>::value_);
+				reference_counts_ = new uint16[capacity_];
 		
-				// Allocate one extra node as the "end" element
-				nodes = new Node[capacity+1];
+				// Allocate one extra node as the "end_" element
+				nodes_ = new node_t[capacity_+1];
 
-				// Link up the nodes
-				for(uint32 i = 0; i < capacity; i++)
+				// Link up the nodes_
+				for(uint32 i = 0; i < capacity_; i++)
 				{
-					nodes[i].next = i+1;
-					nodes[i].prev = i-1;
+					nodes_[i].next_ = i+1;
+					nodes_[i].prev_ = i-1;
 				}
 
-				// First element's prev ponts to end
-				nodes[0].prev = capacity;
+				// First element's prev ponts to end_
+				nodes_[0].prev_ = capacity_;
 		
-				// End element's next and prev point to itself
-				end = capacity;
-				nodes[end].next = nodes[end].prev = capacity;
+				// end_ element's next and prev point to itself
+				end_ = capacity_;
+				nodes_[end_].next_ = nodes_[end_].prev_ = capacity_;
 		
-				head = end;
-				freeHead = 0;
+				head_ = end_;
+				free_head_ = 0;
 
 
-				assert(data && nodes && referenceCounts);	
-				memset(static_cast<void *>(data), 0, capacity*sizeof(T));
-				memset(referenceCounts, 0, capacity*sizeof(uint16));
+				assert(data_ && nodes_ && reference_counts_);	
+				memset(static_cast<void *>(data_), 0, capacity_*sizeof(T));
+				memset(reference_counts_, 0, capacity_*sizeof(uint16));
 
 #if _DEBUG
-				this->debugName = debugName;
+				debug_name_ = debug_name;
 #endif
 			}
 
-			~ResourcePool()
+			~resource_pool_t()
 			{
 	#ifdef _DEBUG
-				for(uint32 i = 0; i < count; i++) {
-					if(referenceCounts[i] > 0) {
-						Console::Warning("~ResourcePool() \"%s\": Warning, item at index=%u still allocated. (refcount=%d)", debugName.c_str(), i, referenceCounts[i]);
+				for(uint32 i = 0; i < count_; i++) {
+					if(reference_counts_[i] > 0) {
+						console_t::warning("~resource_pool_t() \"%s\": warning, item at index=%u still allocated. (refcount=%d)", debug_name_.c_str(), i, reference_counts_[i]);
 					}
 				}
 	#endif
-				if(data != nullptr) {
-					Allocator::Free(data);
+				if(data_ != nullptr) {
+					allocator_t::free(data_);
 				}
-				SAFE_DELETE_ARRAY(nodes);
-				SAFE_DELETE_ARRAY(referenceCounts);
-				end = head = freeHead = -1;
+				MAKI_SAFE_DELETE_ARRAY(nodes_);
+				MAKI_SAFE_DELETE_ARRAY(reference_counts_);
+				end_ = head_ = free_head_ = -1;
 			}
 
-			inline Handle Alloc(const MoveToken<T> &value)
+			inline handle_t alloc(const move_token_t<T> &value)
 			{
-				Handle handle = Alloc();
+				handle_t handle = alloc();
 				assert(handle != HANDLE_NONE);
-				T *mem = Get(handle);
+				T *mem = get(handle);
 				assert(mem);
 				// Use placement new to call move constructor
 				new(mem) T(value);
 				return handle;
 			}
 
-			inline Handle Alloc(const T &value)
+			inline handle_t alloc(const T &value)
 			{
-				Handle handle = Alloc();
+				handle_t handle = alloc();
 				assert(handle != HANDLE_NONE);
-				T *mem = Get(handle);
+				T *mem = get(handle);
 				assert(mem);
 				// Use placement new to call copy constructor
 				new(mem) T(value);
 				return handle;
 			}
 
-			Handle Alloc()
+			handle_t alloc()
 			{
-				Handle handle = HANDLE_NONE;
-				if(freeHead != end) {
-					handle = freeHead;
+				handle_t handle = HANDLE_NONE;
+				if(free_head_ != end_) {
+					handle = free_head_;
 
-					// Move the free head to the next free element
-					freeHead = nodes[freeHead].next;
+					// maki_move the free head_ to the next free element
+					free_head_ = nodes_[free_head_].next_;
 
-					// insert the new element at the head
-					uint32 oldHead = head;
-					head = handle;
-					if(oldHead != end) {
-						nodes[oldHead].prev = head;
+					// insert the new element at the head_
+					uint32 oldHead = head_;
+					head_ = handle;
+					if(oldHead != end_) {
+						nodes_[oldHead].prev_ = head_;
 					}
-					nodes[head].next = oldHead;
-					nodes[head].prev = end;
+					nodes_[head_].next_ = oldHead;
+					nodes_[head_].prev_ = end_;
 
 					// Adjust ref counts
-					assert(referenceCounts[handle] == 0);
-					referenceCounts[handle]++;
+					assert(reference_counts_[handle] == 0);
+					reference_counts_[handle]++;
 
-					count++;
+					count_++;
 				} else {
-					assert(false && "Resource pool depleted");
+					assert(false && "resource_t pool depleted");
 				}
 				return handle;
 			}
 
-			void Free(Handle handle)
+			void free(handle_t handle)
 			{
-				assert(handle < capacity);
-				assert(referenceCounts[handle] > 0);
+				assert(handle < capacity_);
+				assert(reference_counts_[handle] > 0);
 		
 				// Remove a reference from this item
-				referenceCounts[handle]--;
+				reference_counts_[handle]--;
 
 				// Actually mark this object as deallocated if nobody else has a ref to it
-				if(referenceCounts[handle] == 0) {
-					count--;
+				if(reference_counts_[handle] == 0) {
+					count_--;
 			
 					// Remove this element from allocated list
-					if(handle == head) {
-						head = nodes[handle].next;
+					if(handle == head_) {
+						head_ = nodes_[handle].next_;
 					}
-					if(nodes[handle].next != end) {
-						nodes[nodes[handle].next].prev = nodes[handle].prev;
+					if(nodes_[handle].next_ != end_) {
+						nodes_[nodes_[handle].next_].prev_ = nodes_[handle].prev_;
 					}
-					if(nodes[handle].prev != end) {
-						nodes[nodes[handle].prev].next = nodes[handle].next;
+					if(nodes_[handle].prev_ != end_) {
+						nodes_[nodes_[handle].prev_].next_ = nodes_[handle].next_;
 					}
 
 
-					// Insert this element at the free head
-					if(freeHead != end) {
-						nodes[freeHead].prev = handle;
+					// Insert this element at the free head_
+					if(free_head_ != end_) {
+						nodes_[free_head_].prev_ = handle;
 					}
-					nodes[handle].next = freeHead;
-					nodes[handle].prev = end;
-					freeHead = handle;
+					nodes_[handle].next_ = free_head_;
+					nodes_[handle].prev_ = end_;
+					free_head_ = handle;
 			
 
 					// Deconstruct the object
-					data[handle].~T();
+					data_[handle].~T();
 				}
 			}
 	
-			inline T *Get(Handle handle) const
+			inline T *get(handle_t handle) const
 			{
 	#if _DEBUG
-				if(handle < capacity) {
-					assert(referenceCounts[handle] > 0);
-					return &data[handle];
+				if(handle < capacity_) {
+					assert(reference_counts_[handle] > 0);
+					return &data_[handle];
 				} else {
 					return nullptr;
 				}
 	#endif
-				return &data[handle];			
+				return &data_[handle];			
 			}
 
 			// Fnds out if item is n this list, and returns its index (or -1 if not found).
 			// Note: this method adds a reference to the item if it is found.
-			Handle Find(const T &item)
+			handle_t find(const T &item)
 			{
-				const Iterator iterEnd = End();
-				for(Iterator iter = Begin(); iter != iterEnd; ++iter) {
+				const iterator_t iterEnd = end_();
+				for(iterator_t iter = begin(); iter != iterEnd; ++iter) {
 					if(item == *iter) {
-						assert(referenceCounts[iter.current] > 0);
+						assert(reference_counts_[iter.current_] > 0);
 						// increase the ref count for this object
-						referenceCounts[iter.current]++;
-						return iter.current;
+						reference_counts_[iter.current_]++;
+						return iter.current_;
 					}
 				}
 				return HANDLE_NONE;
@@ -230,63 +230,63 @@ namespace Maki
 
 			// Returns a handle to the first item for which predicate is true.
 			// Note: this method adds a reference to the item if it is found.
-			Handle Match(std::function<bool(const T *)> predicate)
+			handle_t Match(std::function<bool(const T *)> predicate)
 			{
-				const Iterator iterEnd = End();
-				for(Iterator iter = Begin(); iter != iterEnd; ++iter) {
+				const iterator_t iterEnd = end_();
+				for(iterator_t iter = begin(); iter != iterEnd; ++iter) {
 					if(predicate(iter.Ptr())) {
-						assert(referenceCounts[iter.current] > 0);
+						assert(reference_counts_[iter.current_] > 0);
 						// increase the ref count for this object
-						referenceCounts[iter.current]++;
-						return iter.current;
+						reference_counts_[iter.current_]++;
+						return iter.current_;
 					}
 				}
 				return HANDLE_NONE;
 			}
 
-			inline void AddRef(Handle handle)
+			inline void add_ref(handle_t handle)
 			{
-				if(handle < capacity) {
-					assert(referenceCounts[handle] > 0);
-					referenceCounts[handle]++;
+				if(handle < capacity_) {
+					assert(reference_counts_[handle] > 0);
+					reference_counts_[handle]++;
 				}
 			}
 
-			inline uint16 GetRefCount(Handle handle)
+			inline uint16 GetRefCount(handle_t handle)
 			{
-				if(handle < capacity) {
-					assert(referenceCounts[handle] > 0);
-					return referenceCounts[handle];
+				if(handle < capacity_) {
+					assert(reference_counts_[handle] > 0);
+					return reference_counts_[handle];
 				}
 				return 0;
 			}
 
-			inline uint32 GetCapacity() const { return capacity; }
-			inline uint32 GetSize() const { return count; }
-			inline const T *GetBaseAddr() const { return data; }
+			inline uint32 get_capacity() const { return capacity_; }
+			inline uint32 get_size() const { return count_; }
+			inline const T *get_base_addr() const { return data_; }
 
 		private:
-			// The array of data
-			T *data;
+			// The array of data_
+			T *data_;
 
-			// Array of lnked nodes
-			Node *nodes;
-			uint32 head;
-			uint32 freeHead;
-			uint32 end;
+			// array_t of lnked nodes_
+			node_t *nodes_;
+			uint32 head_;
+			uint32 free_head_;
+			uint32 end_;
 
 			// The reference count for each object
-			uint16 *referenceCounts;
+			uint16 *reference_counts_;
 
-			uint32 count;
-			uint32 capacity;
+			uint32 count_;
+			uint32 capacity_;
 
 #if _DEBUG
 		public:
-			std::string debugName;
+			std::string debug_name_;
 #endif
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

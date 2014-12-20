@@ -2,34 +2,34 @@
 #include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Texture : public Resource
+		class texture_t : public resource_t
 		{
 		public:
-			enum TextureType
+			enum texture_type_t
 			{
-				TextureType_Regular = 0,
-				TextureType_DepthStencil,
-				TextureType_RenderTarget,
+				texture_type_regular_ = 0,
+				texture_type_depth_stencil_,
+				texture_type_render_target_,
 			};
 
 		public:
-			Texture();
-			Texture(const MoveToken<Texture> &) { assert(false && "Texture move construction not allowed"); }
-			Texture(const Texture &) { assert(false && "Texture copy construction not allowed"); }
-			~Texture();
+			texture_t();
+			texture_t(const move_token_t<texture_t> &) { assert(false && "texture_t move construction not allowed"); }
+			texture_t(const texture_t &) { assert(false && "texture_t copy construction not allowed"); }
+			~texture_t();
 
 		public:
-			TextureType type;
-			uint32 width;
-			uint32 height;
-			uint32 handle;
+			texture_type_t type_;
+			uint32 width_;
+			uint32 height_;
+			uint32 handle_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

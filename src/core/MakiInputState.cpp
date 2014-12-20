@@ -1,35 +1,35 @@
 #include "core/core_stdafx.h"
 #include "core/MakiInputState.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		InputState::InputState()
+		input_state_t::input_state_t()
 			: controllerCount(0)
 		{
 			memset(controllers, 0, sizeof(controllers));
 			memset(players, 0, sizeof(players));
 
-			for(uint8 i = 0; i < MAX_PLAYERS; i++) {
-				players[i].SetMappingIdentity();
-				controllers[i].SetMappingIdentity();
+			for(uint8 i = 0; i < max_players_; i++) {
+				players[i].set_identity_mapping();
+				controllers[i].set_identity_mapping();
 			}
 		}
 
-		InputState::~InputState()
+		input_state_t::~input_state_t()
 		{
 		}
 
-		void InputState::ConnectController(uint8 controllerIndex)
+		void input_state_t::ConnectController(uint8 controllerIndex)
 		{
-			assert(controllerCount < MAX_PLAYERS);
+			assert(controllerCount < max_players_);
 			if(!controllers[controllerIndex].connected) {
 				controllers[controllerIndex].connected = true;
 			
-				// Find the next free player to associate this controller with
-				for(uint8 playerIndex = 0; playerIndex < MAX_PLAYERS; playerIndex++) {
+				// find the next free player to associate this controller with
+				for(uint8 playerIndex = 0; playerIndex < max_players_; playerIndex++) {
 					if(players[playerIndex].controller == nullptr) {
 						players[playerIndex].controller = &controllers[controllerIndex];
 						controllers[controllerIndex].playerIndex = playerIndex;
@@ -39,14 +39,14 @@ namespace Maki
 			}
 		}
 
-		void InputState::DisconnectController(uint8 controllerIndex)
+		void input_state_t::DisconnectController(uint8 controllerIndex)
 		{
-			Controller &c = controllers[controllerIndex];
+			controller_t &c = controllers[controllerIndex];
 			c.connected = false;
 			players[c.playerIndex].controller = nullptr;
 			c.playerIndex = (uint8)-1;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

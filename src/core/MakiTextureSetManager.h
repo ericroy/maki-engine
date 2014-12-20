@@ -3,34 +3,34 @@
 #include "core/MakiTextureSet.h"
 #include "core/MakiManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class TextureSetManager;
+		class texture_set_manager_t;
 		
 
-		class TextureSetManager : public Manager<TextureSet, TextureSetManager>
+		class texture_set_manager_t : public manager_t<texture_set_t, texture_set_manager_t>
 		{
 		private:
-			struct Predicate : public std::unary_function<const TextureSet *, bool>
+			struct predicate_t : public std::unary_function<const texture_set_t *, bool>
 			{
-				inline bool operator()(const TextureSet *ts) const;
+				inline bool operator()(const texture_set_t *ts) const;
 				uint8 count;
-				Rid *textureRids;
+				rid_t *textureRids;
 			};
 
 		public:
-			static const int32 DEFAULT_SIZE = 128;
+			static const int32 default_size_ = 128;
 
 		public:
-			TextureSetManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~TextureSetManager();	
-			Handle Load(uint8 count, Rid *textureRids);
+			texture_set_manager_t(uint32 size = default_size_);	
+			virtual ~texture_set_manager_t();	
+			handle_t load(uint8 count, rid_t *textureRids);
 		};
 
 
-		inline bool TextureSetManager::Predicate::operator()(const TextureSet *ts) const
+		inline bool texture_set_manager_t::predicate_t::operator()(const texture_set_t *ts) const
 		{
 			if(count != ts->textureCount) {
 				return false;
@@ -43,6 +43,6 @@ namespace Maki
 			return true;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

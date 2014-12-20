@@ -2,23 +2,23 @@
 #include "core/core_stdafx.h"
 #include <thread>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 		
 
-		class Thread
+		class thread_t
 		{
 		private:
-			static void RunDispatch(Thread *instance)
+			static void RunDispatch(thread_t *instance)
 			{
-				instance->Run();
+				instance->run();
 			}
 
 		public:
-			Thread() {}
-			virtual ~Thread() {}
+			thread_t() {}
+			virtual ~thread_t() {}
 		
 			inline void Start()
 			{
@@ -34,12 +34,12 @@ namespace Maki
 				}
 			}
 
-			virtual void Run() = 0;
+			virtual void run() = 0;
 
 		protected:
 			std::thread thread;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

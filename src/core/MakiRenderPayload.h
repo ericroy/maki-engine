@@ -1,36 +1,36 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class RenderState;
-		class DrawCommandList;
-		class CoreManagers;
+		class render_state_t;
+		class draw_command_list_t;
+		class core_managers_t;
 
-		class RenderPayload
+		class render_payload_t
 		{
 		public:
-			enum Command
+			enum command_t
 			{
-				Command_Abort = 0,
-				Command_Init,
-				Command_Draw,
-				Command_Present,
+				command_abort_ = 0,
+				command_init_,
+				command_draw_,
+				command_present_,
 			};
 
 		public:
-			RenderPayload() : cmd(Command_Abort), state(nullptr), commands(nullptr) {}
-			RenderPayload(Command cmd) : cmd(cmd), state(nullptr), commands(nullptr) {}
+			render_payload_t() : cmd_(command_abort_), state_(nullptr), commands_(nullptr) {}
+			render_payload_t(command_t cmd) : cmd_(cmd), state_(nullptr), commands_(nullptr) {}
 
 		public:
-			Command cmd;
-			RenderState *state;
-			DrawCommandList *commands;
+			command_t cmd_;
+			render_state_t *state_;
+			draw_command_list_t *commands_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

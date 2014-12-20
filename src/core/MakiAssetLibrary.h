@@ -1,44 +1,44 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		class AssetManifest;
-		class Archive;
+		class asset_manifest_t;
+		class archive_t;
 
-		class AssetLibrary
+		class asset_library_t
 		{
 		private:
-			struct Group
+			struct group_t
 			{
-				Group() : manifest(nullptr), archive(nullptr) {}
-				AssetManifest *manifest;
-				Archive *archive;
+				group_t() : manifest_(nullptr), archive_(nullptr) {}
+				asset_manifest_t *manifest_;
+				archive_t *archive_;
 			};
 
 		public:
-			AssetLibrary();
-			virtual ~AssetLibrary();
+			asset_library_t();
+			virtual ~asset_library_t();
 
-			bool Mount(AssetManifest *manifest, const char *archivePath = nullptr);
-			Rid PathToRid(const char *path) const;
-			Rid FullPathToRid(const char *path) const;
-			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
+			bool mount(asset_manifest_t *manifest, const char *archive_path = nullptr);
+			rid_t path_to_rid(const char *path) const;
+			rid_t full_path_to_rid(const char *path) const;
+			char *alloc_read(rid_t rid, uint32 *bytes_read = nullptr) const;
 
 		public:
 			// Allow a path prefix to be applied for all assets, but only in debug mode
-			std::string debugModePathAdjustment;
+			std::string debug_mode_path_adjustment_;
 
 		private:
-			uint32 totalAssetCount;
-			std::vector<Group> groups;
+			uint32 total_asset_count_;
+			std::vector<group_t> groups_;
 		};
 
 		
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

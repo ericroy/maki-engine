@@ -3,33 +3,33 @@
 #include "core/MakiFont.h"
 #include "core/MakiManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class FontManager;
+		class font_manager_t;
 		
 
-		class FontManager : public Manager<Font, FontManager>
+		class font_manager_t : public Manager<font_t, font_manager_t>
 		{
 		private:
-			struct Predicate : std::unary_function<const Font *, bool>
+			struct predicate_t : std::unary_function<const font_t *, bool>
 			{
-				inline bool operator()(const Font *font) const;
-				Rid shaderProgramRid;
-				Rid fontRid;
-				uint32 pixelSize;
+				inline bool operator()(const font_t *font) const;
+				rid_t shader_program_rid_;
+				rid_t font_rid_;
+				uint32 pixel_size_;
 			};
 		
 		public:
-			static const int32 DEFAULT_SIZE = 8;
+			static const int32 default_size_ = 8;
 
 		public:
-			FontManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~FontManager();
-			Handle Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);
+			font_manager_t(uint32 size = default_size_);	
+			virtual ~font_manager_t();
+			handle_t load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size);
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

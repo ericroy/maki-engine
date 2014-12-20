@@ -3,24 +3,24 @@
 #include "core/MakiEngine.h"
 #include "core/MakiDrawCommand.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		template class Manager<VertexFormat, VertexFormatManager>;
+		template class manager_t<vertex_format_t, vertex_format_manager_t>;
 
-		VertexFormatManager::VertexFormatManager(uint32 size)
-			: Manager<VertexFormat, VertexFormatManager>(size, "VertexFormatManager")
+		vertex_format_manager_t::vertex_format_manager_t(uint32 size)
+			: manager_t<vertex_format_t, vertex_format_manager_t>(size, "vertex_format_manager_t")
 		{
-			assert(size <= (1<<DrawCommand::BITS_PER_VERTEX_FORMAT) && "VertexFormatManager too large, add more bits in DrawCommand");
+			assert(size <= (1<<draw_command_t::bits_per_vertex_format_) && "vertex_format_manager_t too large, add more bits in draw_command_t");
 		}
 	
-		VertexFormatManager::~VertexFormatManager()
+		vertex_format_manager_t::~vertex_format_manager_t()
 		{
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

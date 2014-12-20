@@ -3,38 +3,38 @@
 #include "core/MakiManager.h"
 #include "core/MakiShaderProgram.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class ShaderProgramManager;
+		class shader_program_manager_t;
 		
 
-		class ShaderProgramManager : public Manager<ShaderProgram, ShaderProgramManager>
+		class shader_program_manager_t : public manager_t<shader_program_t, shader_program_manager_t>
 		{
 		public:
-			struct FindPredicate : public std::unary_function<const ShaderProgram *, bool>
+			struct find_predicate_t : public std::unary_function<const shader_program_t *, bool>
 			{
-				FindPredicate(Rid rid, ShaderProgram::Variant variant) : rid(rid), variant(variant) {}
-				inline bool operator()(const ShaderProgram *res) const
+				find_predicate_t(rid_t rid, shader_program_t::variant_t variant) : rid_(rid), variant_(variant) {}
+				inline bool operator()(const shader_program_t *res) const
 				{
-					return res->rid == rid && res->variant == variant;
+					return res->rid_ == rid_ && res->variant_ == variant_;
 				}
-				Rid rid;
-				ShaderProgram::Variant variant;
+				rid_t rid_;
+				shader_program_t::variant_t variant_;
 			};
 
-			static const int32 DEFAULT_SIZE = 64;
+			static const int32 default_size_ = 64;
 
 		public:
-			ShaderProgramManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~ShaderProgramManager();
-			Handle Load(Rid rid, ShaderProgram::Variant variant = ShaderProgram::Variant_Normal);
-			void ReloadAssets();
-			bool ReloadAsset(Rid rid);
+			shader_program_manager_t(uint32 size = default_size_);	
+			virtual ~shader_program_manager_t();
+			handle_t load(rid_t rid, shader_program_t::variant_t variant = shader_program_t::variant_normal_);
+			void reload_assets();
+			bool reload_asset(rid_t rid);
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

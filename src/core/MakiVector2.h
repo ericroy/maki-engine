@@ -2,11 +2,11 @@
 #include "core/core_stdafx.h"
 #include "core/MakiVector4.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class Matrix44;
+		class matrix44_t;
 
 		class Vector2
 		{
@@ -17,14 +17,14 @@ namespace Maki
 
 			// Member vector operations
 
-			inline float Length() const { return Length(*this); }
+			inline float length() const { return length(*this); }
 			inline float LengthSquared() const { return LengthSquared(*this); }
-			inline float Dot(const Vector2 &v) const { return Dot(*this, v); }
-			inline float Cross(const Vector2 &rhs) const { return Cross(*this, rhs); }
-			inline void Normalize() { Normalize(*this); }
+			inline float dot(const Vector2 &v) const { return dot(*this, v); }
+			inline float cross(const Vector2 &rhs) const { return cross(*this, rhs); }
+			inline void normalize() { normalize(*this); }
 
 			// Operator overloads
-			inline float operator*(const Vector2 &v) const { return x*v.x + y*v.y; }
+			inline float operator*(const Vector2 &v) const { return x*v.x_ + y*v.y_; }
 
 			inline Vector2 operator*(float s) const { return Vector2(x*s, y*s); }
 			inline void operator*=(float s) { x*=s; y*=s; }
@@ -32,22 +32,22 @@ namespace Maki
 			inline Vector2 operator/(float s) const { assert(s != 0); return Vector2(x/s, y/s); }
 			inline void operator/=(float s) { assert(s != 0); x/=s; y/=s; }
 
-			inline Vector2 operator-(const Vector2 &v) const { return Vector2(x-v.x, y-v.y); }
-			inline void operator-=(const Vector2 &v) { x-=v.x; y-=v.y; }
+			inline Vector2 operator-(const Vector2 &v) const { return Vector2(x-v.x_, y-v.y_); }
+			inline void operator-=(const Vector2 &v) { x-=v.x_; y-=v.y_; }
 
-			inline Vector2 operator+(const Vector2 &v) const { return Vector2(x+v.x, y+v.y); }
-			inline void operator+=(const Vector2 &v) { x+=v.x; y+=v.y; }
+			inline Vector2 operator+(const Vector2 &v) const { return Vector2(x+v.x_, y+v.y_); }
+			inline void operator+=(const Vector2 &v) { x+=v.x_; y+=v.y_; }
 
 			inline Vector2 operator-() const { return Vector2(-x, -y); }
 
-			inline bool operator==(const Vector2 &v) { return x == v.x && y == v.y; }
-			inline bool operator!=(const Vector2 &v) { return x != v.x || y != v.y; }
+			inline bool operator==(const Vector2 &v) { return x == v.x_ && y == v.y_; }
+			inline bool operator!=(const Vector2 &v) { return x != v.x_ || y != v.y_; }
 
 			// Static methods
-			static inline float Dot(const Vector2 &v1, const Vector2 &v2);
-			static inline void Normalize(Vector2 &v);
-			static inline float Cross(const Vector2 &a, const Vector2 &b);
-			static inline float Length(const Vector2 &v);
+			static inline float dot(const Vector2 &v1, const Vector2 &v2);
+			static inline void normalize(Vector2 &v);
+			static inline float cross(const Vector2 &a, const Vector2 &b);
+			static inline float length(const Vector2 &v);
 			static inline float LengthSquared(const Vector2 &v);
 
 		public:
@@ -61,32 +61,32 @@ namespace Maki
 			};
 		};
 
-		float Vector2::Dot(const Vector2 &v1, const Vector2 &v2)
+		float Vector2::dot(const Vector2 &v1, const Vector2 &v2)
 		{
-			return v1.x * v2.x + v1.y * v2.y;
+			return v1.x_ * v2.x_ + v1.y_ * v2.y_;
 		}
 
-		void Vector2::Normalize(Vector2 &v)
+		void Vector2::normalize(Vector2 &v)
 		{
-			float invLen = 1.f / sqrt(v.x*v.x + v.y*v.y);
+			float invLen = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_);
 			v *= invLen;
 		}
 
-		float Vector2::Cross(const Vector2 &a, const Vector2 &b)
+		float Vector2::cross(const Vector2 &a, const Vector2 &b)
 		{
-			return a.x*b.y-a.y*b.x;
+			return a.x_*b.y_-a.y_*b.x_;
 		}
 	
-		float Vector2::Length(const Vector2 &v)
+		float Vector2::length(const Vector2 &v)
 		{
-			return sqrt(v.x*v.x + v.y*v.y);
+			return sqrt(v.x_*v.x_ + v.y_*v.y_);
 		}
 
 		float Vector2::LengthSquared(const Vector2 &v)
 		{
-			return v.x*v.x + v.y*v.y;
+			return v.x_*v.x_ + v.y_*v.y_;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

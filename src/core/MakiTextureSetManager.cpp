@@ -1,41 +1,41 @@
 #include "core/core_stdafx.h"
 #include "core/MakiTextureSetManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		TextureSetManager::TextureSetManager(uint32 size)
-			: Manager<TextureSet, TextureSetManager>(size, "TextureSetManager")
+		texture_set_manager_t::texture_set_manager_t(uint32 size)
+			: manager_t<texture_set_t, texture_set_manager_t>(size, "texture_set_manager_t")
 		{
 		}
 	
-		TextureSetManager::~TextureSetManager()
+		texture_set_manager_t::~texture_set_manager_t()
 		{
 		}
 	
-		Handle TextureSetManager::Load(uint8 count, Rid *textureRids)
+		handle_t texture_set_manager_t::load(uint8 count, rid_t *textureRids)
 		{
-			Predicate p;
-			p.count = count;
+			predicate_t p;
+			p.count_ = count;
 			p.textureRids = textureRids;
-			Handle handle = resPool->Match(p) | managerId;
+			handle_t handle = resPool->Match(p) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			TextureSet *ts = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(ts) TextureSet();
-			if(!ts->Load(count, textureRids)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			handle = resPool->alloc() | managerId;
+			texture_set_t *ts = resPool->get(handle & handle_value_mask_);
+			new(ts) texture_set_t();
+			if(!ts->load(count, textureRids)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 			return handle;
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -5,12 +5,12 @@
 #include "core/MakiTextureManager.h"
 
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		TextureSet::TextureSet() : textureCount(0)
+		texture_set_t::texture_set_t() : textureCount(0)
 		{
 			for(uint8 i = 0; i < MAX_TEXTURES_PER_SET; i++) {
 				textures[i] = HANDLE_NONE;
@@ -18,7 +18,7 @@ namespace Maki
 			}
 		}
 	
-		TextureSet::TextureSet(const MoveToken<TextureSet> &other)
+		texture_set_t::texture_set_t(const move_token_t<texture_set_t> &other)
 			: textureCount(other.obj->textureCount)
 		{
 			memcpy(textures, other.obj->textures, sizeof(textures));
@@ -31,19 +31,19 @@ namespace Maki
 			other.obj->textureCount = 0;
 		}
 
-		TextureSet::~TextureSet()
+		texture_set_t::~texture_set_t()
 		{
-			TextureManager::Free(textureCount, textures);
+			texture_manager_t::free(textureCount, textures);
 		}
 
-		bool TextureSet::Load(uint8 count, Rid *textureRids)
+		bool texture_set_t::load(uint8 count, rid_t *textureRids)
 		{
-			CoreManagers *res = CoreManagers::Get();
+			core_managers_t *res = core_managers_t::get();
 
 			textureCount = count;
 			for(uint8 i = 0; i < count; i++) {
 				this->textureRids[i] = textureRids[i];
-				this->textures[i] = res->textureManager->Load(textureRids[i]);
+				this->textures[i] = res->texture_manager_->load(textureRids[i]);
 				if(this->textures[i] == HANDLE_NONE) {
 					goto failed;
 				}
@@ -51,10 +51,10 @@ namespace Maki
 			return true;
 
 		failed:
-			TextureManager::Free(textureCount, textures);
+			texture_manager_t::free(textureCount, textures);
 			return false;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -1,32 +1,32 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class TextureSet
+		class texture_set_t
 		{
 		public:
 			static const int32 MAX_TEXTURES_PER_SET = 4;
 
 		public:
-			TextureSet();
-			TextureSet(const MoveToken<TextureSet> &other);
-			TextureSet(const TextureSet &) { assert(false && "TextureSet copy construction not allowed"); }
-			~TextureSet();
-			bool Load(uint8 count, Rid *textureRids);
-			inline bool operator==(const TextureSet &other) const;
+			texture_set_t();
+			texture_set_t(const move_token_t<texture_set_t> &other);
+			texture_set_t(const texture_set_t &) { assert(false && "texture_set_t copy construction not allowed"); }
+			~texture_set_t();
+			bool load(uint8 count, rid_t *textureRids);
+			inline bool operator==(const texture_set_t &other) const;
 			
 		public:
 			uint8 textureCount;
-			Handle textures[MAX_TEXTURES_PER_SET];
-			Rid textureRids[MAX_TEXTURES_PER_SET];
+			handle_t textures[MAX_TEXTURES_PER_SET];
+			rid_t textureRids[MAX_TEXTURES_PER_SET];
 		};
 
 
-		bool TextureSet::operator==(const TextureSet &other) const
+		bool texture_set_t::operator==(const texture_set_t &other) const
 		{
 			if(textureCount != other.textureCount) {
 				return false;
@@ -39,6 +39,6 @@ namespace Maki
 			return true;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

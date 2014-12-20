@@ -3,27 +3,27 @@
 #include "core/MakiManager.h"
 #include "core/MakiSkeleton.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class SkeletonManager;
+		class skeleton_manager_t;
 		
 
-		class SkeletonManager : public Manager<Skeleton, SkeletonManager>
+		class skeleton_manager_t : public manager_t<skeleton_t, skeleton_manager_t>
 		{
 		public:
-			static const int32 DEFAULT_SIZE = 8;
+			static const int32 default_size_ = 8;
 
 		public:
-			SkeletonManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~SkeletonManager();
-			Handle Load(Rid rid);
-			void ReloadAssets();
-			bool ReloadAsset(Rid rid);
+			skeleton_manager_t(uint32 size = default_size_);	
+			virtual ~skeleton_manager_t();
+			handle_t load(rid_t rid);
+			void reload_assets();
+			bool reload_asset(rid_t rid);
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

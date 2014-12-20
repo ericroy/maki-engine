@@ -1,9 +1,9 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 		class Rect
 		{
@@ -11,57 +11,57 @@ namespace Maki
 			Rect() {}
 		
 			Rect(float left, float right, float top, float bottom)
-				: left(left), right(right), top(top), bottom(bottom)
+				: left_(left), right_(right), top_(top), bottom_(bottom)
 			{
 			}
 
 			Rect(float width, float height, bool centered = false)
 			{
-				Set(width, height, centered);
+				set(width, height, centered);
 			}
 
-			Rect(const Vector2 &widthHeight, bool centered = false)
+			Rect(const Vector2 &width_height, bool centered = false)
 			{
-				Set(widthHeight, centered);
+				set(width_height, centered);
 			}
 
-			inline void Set(float left, float right, float top, float bottom)
+			inline void set(float left, float right, float top, float bottom)
 			{
-				left = left;
-				right = right;
-				top = top;
-				bottom = bottom;
+				left_ = left;
+				right_ = right;
+				top_ = top;
+				bottom_ = bottom;
 			}
 
-			inline void Set(float width, float height, bool centered = false)
+			inline void set(float width, float height, bool centered = false)
 			{
 				if(centered) {
 					float wo2 = width / 2;
 					float ho2 = height / 2;
-					left = -wo2;
-					right = wo2;
-					top = -ho2;
-					bottom = ho2;
+					left_ = -wo2;
+					right_ = wo2;
+					top_ = -ho2;
+					bottom_ = ho2;
 				} else {
-					left = 0.0f;
-					top = 0.0f;
-					right = width;
-					bottom = height;
+					left_ = 0.0f;
+					top_ = 0.0f;
+					right_ = width;
+					bottom_ = height;
 				}
 			}
 
-			inline void Set(const Vector2 &widthHeight, bool centered = false)
+			inline void set(const Vector2 &width_height, bool centered = false)
 			{
-				Set(widthHeight.x, widthHeight.y, centered);
+				set(width_height.x_, width_height.y_, centered);
 			}
 
-			inline float GetWidth() const { return right - left; }
-			inline float GetHeight() const { return bottom - top; }
+			inline float get_width() const { return right_ - left_; }
+			inline float get_height() const { return bottom_ - top_; }
 
 		public:
-			float left, right, top, bottom;
+			float left_, right_, top_, bottom_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -3,32 +3,32 @@
 #include "core/MakiMaterial.h"
 #include "core/MakiManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class MaterialManager;
+		class material_manager_t;
 		
 
-		class MaterialManager : public Manager<Material, MaterialManager>
+		class material_manager_t : public manager_t<material_t, material_manager_t>
 		{
 		public:
-			static Handle DuplicateIfShared(Handle handle);
+			static handle_t DuplicateIfShared(handle_t handle);
 
 		public:
-			static const int32 DEFAULT_SIZE = 64;
+			static const int32 default_size_ = 64;
 
 		public:
-			MaterialManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~MaterialManager();	
-			Handle Load(Rid rid);
-			void ReloadAssets();
-			bool ReloadAsset(Rid rid);
+			material_manager_t(uint32 size = default_size_);	
+			virtual ~material_manager_t();	
+			handle_t load(rid_t rid);
+			void reload_assets();
+			bool reload_asset(rid_t rid);
 
 		private:
-			void Reload(Material *mat);
+			void Reload(material_t *mat);
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

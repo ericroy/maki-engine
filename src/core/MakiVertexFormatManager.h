@@ -3,33 +3,33 @@
 #include "core/MakiVertexFormat.h"
 #include "core/MakiManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class VertexFormatManager;
+		class vertex_format_manager_t;
 		
 
-		class VertexFormatManager : public Manager<VertexFormat, VertexFormatManager>
+		class vertex_format_manager_t : public manager_t<vertex_format_t, vertex_format_manager_t>
 		{
 		public:
-			static const int32 DEFAULT_SIZE = 8;
+			static const int32 default_size_ = 8;
 
 		public:
-			inline Handle FindOrAdd(const VertexFormat &vf)
+			inline handle_t FindOrAdd(const vertex_format_t &vf)
 			{
-				Handle vertexFormat = Find(vf);
-				if(vertexFormat == HANDLE_NONE) {
-					return Add(vf);
+				handle_t vertex_format_ = find(vf);
+				if(vertex_format_ == HANDLE_NONE) {
+					return add(vf);
 				}
-				return vertexFormat;
+				return vertex_format_;
 			}
 
 		public:
-			VertexFormatManager(uint32 size = DEFAULT_SIZE);	
-			virtual ~VertexFormatManager();
+			vertex_format_manager_t(uint32 size = default_size_);	
+			virtual ~vertex_format_manager_t();
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

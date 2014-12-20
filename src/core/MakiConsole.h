@@ -3,64 +3,63 @@
 #include "core/MakiPseudoSingleton.h"
 #include <cstdarg>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-#define _MAKI_DEFINE_CONSOLE_METHOD(_methodName, _level, _prefix, _lineFeed) \
-		static void _methodName(const char *format, ...) { \
+#define MAKI_DEFINE_CONSOLE_METHOD(METHOD_NAME, LEVEL, PREFIX, LINE_FEED) \
+		static void METHOD_NAME(const char *format, ...) { \
 			va_list args; \
 			va_start(args, format); \
-			Console *c = Get(); \
+			console_t *c = Get(); \
 			if(c != nullptr) { \
-				c->Write(_level, _lineFeed, _prefix, format, args); \
+				c->write(LEVEL, LINE_FEED, PREFIX, format, args); \
 			} \
 			va_end(args); \
 		}
 
 		
 
-		class Console : public PseudoSingleton<Console>
+		class console_t : public pseudo_singleton_t<console_t>
 		{
 		public:
-			enum Level
+			enum level_t
 			{
-				Level_Info = 0,
-				Level_Warning,
-				Level_Error,
-				Level_Die,
+				level_info_ = 0,
+				level_warning_,
+				level_error_,
+				level_die_,
 			};
 		
 		public:
-			static const int32 MAX_BUFFER_SIZE = 8192;
+			static const int32 max_buffer_size_ = 8192;
 		
 		public:
-			_MAKI_DEFINE_CONSOLE_METHOD(Info,		Level_Info,		"INFO  : ", true)
-			_MAKI_DEFINE_CONSOLE_METHOD(Lua,		Level_Info,		"LUA   : ", true)
-			_MAKI_DEFINE_CONSOLE_METHOD(Warning,	Level_Warning,	"WARN  : ", true)
-			_MAKI_DEFINE_CONSOLE_METHOD(LuaError,	Level_Error,	"LUAERR: ", true)
-			_MAKI_DEFINE_CONSOLE_METHOD(Error,		Level_Error,	"ERROR : ", true)			
-			_MAKI_DEFINE_CONSOLE_METHOD(Die,		Level_Die,		"DIE   : ", true)
-
+			MAKI_DEFINE_CONSOLE_METHOD(info, level_info_,       "INFO  : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(lua, level_info_,        "LUA   : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(warning, level_warning_, "WARN  : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(lua_error, level_error_, "LUAERR: ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(error, level_error_,     "ERROR : ", true)			
+			MAKI_DEFINE_CONSOLE_METHOD(die, level_die_,         "DIE   : ", true)
 		public:
-			Console(Level verbosity = Level_Info);
-			virtual ~Console();
+			console_t(level_t verbosity_ = level_info_);
+			virtual ~console_t();
 
-			inline void SetVerbosity(Level level) { verbosity = level; }
-			inline void SetPrintCallback(std::function<void(const char *)> func) { printCallback = func; }
-
-		private:
-			void Write(Level level, bool lineFeed, const char *prefix, const char *format, va_list args);
+			inline void set_verbosity(level_t level) { verbosity_ = level; }
+			inline void set_print_callback(std::function<void(const char *)> func) { print_callback_ = func; }
 
 		private:
-			std::function<void(const char *)> printCallback;
-			char buffer[MAX_BUFFER_SIZE];
-			Level verbosity;
+			void write(level_t level, bool lineFeed, const char *prefix, const char *format, va_list args);
+
+		private:
+			std::function<void(const char *)> print_callback_;
+			char buffer_[max_buffer_size_];
+			level_t verbosity_;
 		};
 
-#undef _MAKI_DEFINE_CONSOLE_METHOD
+#undef MAKI_DEFINE_CONSOLE_METHOD
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

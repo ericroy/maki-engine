@@ -1,114 +1,114 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		class BoundingBox
+		class bounding_box_t
 		{
 		private:
-			static const Vector4 cornerCoeffs[8];
+			static const vector4_t corner_coeffs_[8];
 
 		public:
-			BoundingBox()
-				: empty(true), pos(0.0f), radii(0.0f)
+			bounding_box_t()
+				: empty_(true), pos_(0.0f), radii_(0.0f)
 			{
 			}
-			BoundingBox(const Vector4 &pos, const Vector3 &radii)
-				: empty(false), pos(pos), radii(radii.x, radii.y, radii.z, 1.0f)
+			bounding_box_t(const vector4_t &pos, const Vector3 &radii)
+				: empty_(false), pos_(pos), radii_(radii.x, radii.y, radii.z, 1.0f)
 			{
 			}
-			BoundingBox(const Vector4 &pos, const Vector4 &radii)
-				: empty(false), pos(pos), radii(radii)
+			bounding_box_t(const vector4_t &pos, const vector4_t &radii)
+				: empty_(false), pos_(pos), radii_(radii)
 			{
 			}
 
-			inline void Merge(const BoundingBox &other)
+			inline void merge(const bounding_box_t &other)
 			{
-				if(empty) {
-					pos = other.pos;
-					radii = other.radii;
-					empty = other.empty;
+				if(empty_) {
+					pos_ = other.pos_;
+					radii_ = other.radii_;
+					empty_ = other.empty_;
 					return;
 				}
 
-				Vector4 maxCorner(
-					std::max<float>(pos.x+radii.x, other.pos.x+other.radii.x),
-					std::max<float>(pos.y+radii.y, other.pos.y+other.radii.y),
-					std::max<float>(pos.z+radii.z, other.pos.z+other.radii.z),
+				vector4_t max_corner(
+					std::max<float>(pos_.x+radii_.x, other.pos_.x+other.radii_.x),
+					std::max<float>(pos_.y+radii_.y, other.pos_.y+other.radii_.y),
+					std::max<float>(pos_.z+radii_.z, other.pos_.z+other.radii_.z),
 					1.0f);
-				Vector4 minCorner(
-					std::min<float>(pos.x-radii.x, other.pos.x-other.radii.x),
-					std::min<float>(pos.y-radii.y, other.pos.y-other.radii.y),
-					std::min<float>(pos.z-radii.z, other.pos.z-other.radii.z),
+				vector4_t min_corner(
+					std::min<float>(pos_.x-radii_.x, other.pos_.x-other.radii_.x),
+					std::min<float>(pos_.y-radii_.y, other.pos_.y-other.radii_.y),
+					std::min<float>(pos_.z-radii_.z, other.pos_.z-other.radii_.z),
 					1.0f);
-				pos = (maxCorner + minCorner) / 2.0f;
-				radii = maxCorner - pos;
+				pos_ = (max_corner + min_corner) / 2.0f;
+				radii_ = max_corner - pos_;
 			}
 
-			inline void Merge(float x, float y, float z)
+			inline void merge(float x, float y, float z)
 			{
-				if(empty) {
-					pos = Vector4(x, y, z, 1.0f);
-					empty = false;
+				if(empty_) {
+					pos_ = vector4_t(x, y, z, 1.0f);
+					empty_ = false;
 					return;
 				}
 
-				Vector4 maxCorner(
-					std::max<float>(pos.x+radii.x, x),
-					std::max<float>(pos.y+radii.y, y),
-					std::max<float>(pos.z+radii.z, z),
+				vector4_t max_corner(
+					std::max<float>(pos_.x+radii_.x, x),
+					std::max<float>(pos_.y+radii_.y, y),
+					std::max<float>(pos_.z+radii_.z, z),
 					1.0f);
-				Vector4 minCorner(
-					std::min<float>(pos.x-radii.x, x),
-					std::min<float>(pos.y-radii.y, y),
-					std::min<float>(pos.z-radii.z, z),
+				vector4_t min_corner(
+					std::min<float>(pos_.x-radii_.x, x),
+					std::min<float>(pos_.y-radii_.y, y),
+					std::min<float>(pos_.z-radii_.z, z),
 					1.0f);
-				pos = (maxCorner + minCorner) / 2.0f;
-				radii = maxCorner - pos;
+				pos_ = (max_corner + min_corner) / 2.0f;
+				radii_ = max_corner - pos_;
 			}
-			inline void Merge(const Vector4 &point) { Merge(point.x, point.y, point.z); }
-			inline void Merge(const Vector3 &point) { Merge(point.x, point.y, point.z); }
+			inline void merge(const vector4_t &point) { merge(point.x, point.y, point.z); }
+			inline void merge(const Vector3 &point) { merge(point.x, point.y, point.z); }
 		
-			inline void Merge(const Vector4 &point, float radius)
+			inline void merge(const vector4_t &point, float radius)
 			{
-				Merge(point.x+radius, point.y+radius, point.z+radius);
-				Merge(point.x-radius, point.y-radius, point.z-radius);
+				merge(point.x+radius, point.y+radius, point.z+radius);
+				merge(point.x-radius, point.y-radius, point.z-radius);
 			}
 
-			inline void Reset()
+			inline void reset()
 			{
-				empty = true;
-				pos = Vector4(0.0f);
-				radii = Vector4(0.0f);
+				empty_ = true;
+				pos_ = vector4_t(0.0f);
+				radii_ = vector4_t(0.0f);
 			}
 
-			inline Vector4 GetMaxCorner() const { return pos + radii; }
-			inline Vector4 GetMinCorner() const { return pos - radii; }
-			inline Vector4 GetCorner(uint32 i) const
+			inline vector4_t get_max_corner() const { return pos_ + radii_; }
+			inline vector4_t get_min_corner() const { return pos_ - radii_; }
+			inline vector4_t get_corner(uint32 i) const
 			{
 				assert(i < 8);
-				return pos + cornerCoeffs[i] * radii;
+				return pos_ + corner_coeffs_[i] * radii_;
 			}
 
-			inline float GetRadius() const { return radii.Length(); }
-			inline float GetRadiusSq() const { return radii.LengthSquared(); }
+			inline float GetRadius() const { return radii_.length(); }
+			inline float GetRadiusSq() const { return radii_.LengthSquared(); }
 
 		public:
-			Vector4 pos;
-			Vector4 radii;
-			bool empty;
+			vector4_t pos_;
+			vector4_t radii_;
+			bool empty_;
 		};
 
 
-		inline BoundingBox operator*(float scale, const BoundingBox &bounds)
+		inline bounding_box_t operator*(float scale, const bounding_box_t &bounds)
 		{
-			return BoundingBox(bounds.pos*scale, bounds.radii*scale);
+			return bounding_box_t(bounds.pos_*scale, bounds.radii_*scale);
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

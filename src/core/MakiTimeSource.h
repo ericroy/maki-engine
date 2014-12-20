@@ -1,16 +1,16 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class TimeSource
+		class time_source_t
 		{
 		public:
-			TimeSource();
-			virtual ~TimeSource();
+			time_source_t();
+			virtual ~time_source_t();
 
 			uint64 GetTimeMicro();
 
@@ -20,6 +20,6 @@ namespace Maki
 		};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

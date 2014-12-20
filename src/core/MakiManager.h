@@ -2,144 +2,144 @@
 #include "core/core_stdafx.h"
 #include "core/MakiResourcePool.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		template<class T, class SubClass>
-		class Manager
+		template<class T, class SUBCLASS>
+		class manager_t
 		{
 		public:
-			static inline SubClass *GetOwner(Handle handle) { return managers[(handle & MANAGER_ID_MASK)>>MANAGER_ID_SHIFT]; }
+			static inline SUBCLASS *get_owner(handle_t handle) { return managers_[(handle & manager_id_mask_) >> manager_id_shift_]; }
 
-			static inline T *Get(Handle handle)
+			static inline T *get(handle_t handle)
 			{
 				if(handle == HANDLE_NONE) {
 					return nullptr;
 				}
-				return managers[handle>>MANAGER_ID_SHIFT]->resPool->Get(handle & HANDLE_VALUE_MASK);
+				return managers_[handle >> manager_id_shift_]->res_pool_->get(handle & handle_value_mask_);
 			}
 
-			static inline void AddRef(Handle handle)
+			static inline void add_ref(handle_t handle)
 			{
 				if(handle == HANDLE_NONE) {
 					return;
 				}
-				managers[handle>>MANAGER_ID_SHIFT]->resPool->AddRef(handle & HANDLE_VALUE_MASK);
+				managers_[handle >> manager_id_shift_]->res_pool_->add_ref(handle & handle_value_mask_);
 			}
 
-			static inline void Free(Handle &handle)
+			static inline void free(handle_t &handle)
 			{
 				if(handle != HANDLE_NONE) {
-					managers[handle>>MANAGER_ID_SHIFT]->resPool->Free(handle & HANDLE_VALUE_MASK);
+					managers_[handle >> manager_id_shift_]->res_pool_->free(handle & handle_value_mask_);
 					handle = HANDLE_NONE;
 				}
 			}
 
-			static inline void Free(uint32 count, Handle *handles)
+			static inline void free(uint32 count, handle_t *handles)
 			{
 				for(uint32 i = 0; i < count; i++) {
-					Free(handles[i]);
+					free(handles[i]);
 				}
 			}
 
 		public:
-			static const uint32 BITS_PER_MANAGER_ID = 3;
+			static const uint32 bits_per_manager_id_ = 3;
 		
 			// Must subtract one here, because we can't have a manager id that is all ones.
 			// If such a manager id was paired with a maximum resource index, then the
 			// resulting (valid) handle would be equal to HANDLE_NONE.  Can't have that.
-			static const uint32 MAX_MANAGERS_PER_RESOURCE_TYPE = (1<<BITS_PER_MANAGER_ID)-1;
-			static const uint32 MANAGER_ID_SHIFT = 32-BITS_PER_MANAGER_ID;
-			static const uint32 MANAGER_ID_MASK = MAX_MANAGERS_PER_RESOURCE_TYPE << MANAGER_ID_SHIFT;
-			static const uint32 HANDLE_VALUE_MASK = ~MANAGER_ID_MASK;
+			static const uint32 max_managers_per_resource_type_ = (1<<bits_per_manager_id_)-1;
+			static const uint32 manager_id_shift_ = 32-bits_per_manager_id_;
+			static const uint32 manager_id_mask_ = max_managers_per_resource_type_ << manager_id_shift_;
+			static const uint32 handle_value_mask_ = ~manager_id_mask_;
 		
 		private:
-			static SubClass *managers[MAX_MANAGERS_PER_RESOURCE_TYPE];
+			static SUBCLASS *managers_[max_managers_per_resource_type_];
 		
 		public:
-			Manager(uint32 size, const char *debugName)
+			manager_t(uint32 size, const char *debug_name)
 			{
-				assert(size <= (1<<MANAGER_ID_SHIFT)-1 && "Cannot create a manager this large");
+				assert(size <= (1 << manager_id_shift_) - 1 && "Cannot create a manager this large");
 
-				// Find the first unused manager id and mark it as used
-				managerId = (uint32)-1;
-				for(uint32 i = 0; i < MAX_MANAGERS_PER_RESOURCE_TYPE; i++) {
-					if(managers[i] == nullptr) {
-						managers[i] = static_cast<SubClass *>(this);
-						managerId = i << MANAGER_ID_SHIFT;
+				// find the first unused manager id and mark it as used
+				manager_id_ = (uint32)-1;
+				for(uint32 i = 0; i < max_managers_per_resource_type_; i++) {
+					if(managers_[i] == nullptr) {
+						managers_[i] = static_cast<SUBCLASS *>(this);
+						manager_id_ = i << manager_id_shift_;
 						break;
 					}
 				}
-				assert(managerId != (uint32)-1 && "Too many managers for this resource type");
+				assert(manager_id_ != (uint32)-1 && "Too many managers_ for this resource type");
 
-				resPool = new ResourcePool<T>(size, debugName);
+				res_pool_ = new resource_pool_t<T>(size, debug_name);
 			}
 
-			virtual ~Manager()
+			virtual ~manager_t()
 			{
 				// Mark our manager id as available again
-				managers[managerId>>MANAGER_ID_SHIFT] = nullptr;
-				SAFE_DELETE(resPool);
+				managers_[manager_id_>>manager_id_shift_] = nullptr;
+				MAKI_SAFE_DELETE(res_pool_);
 			}
 
-			inline uint32 GetSize() { return resPool->GetSize(); }
-			inline uint32 GetCapacity() { return resPool->GetCapacity(); }
+			inline uint32 get_size() { return res_pool_->get_size(); }
+			inline uint32 get_capacity() { return res_pool_->get_capacity(); }
 
 			// Finds an item using resource's equality operator
 			// Adds a reference
-			inline Handle Find(const T &item) { return resPool->Find(item) | managerId; }
+			inline handle_t find(const T &item) { return res_pool_->find(item) | manager_id_; }
 
 			// Adds an item to the resource pool using move semantics
 			// Adds a reference
-			inline Handle Add(const MoveToken<T> &item) { return resPool->Alloc(item) | managerId; }
+			inline handle_t add(const move_token_t<T> &item) { return res_pool_->alloc(item) | manager_id_; }
 
 			// Adds an item to the resource pool, relying on copy constructor
 			// Adds a reference
-			inline Handle Add(const T &item) { return resPool->Alloc(item) | managerId; }
+			inline handle_t add(const T &item) { return res_pool_->alloc(item) | manager_id_; }
 
-			virtual void Reset()
+			virtual void reset()
 			{
-				uint32 size = resPool->GetCapacity();
+				uint32 size = res_pool_->get_capacity();
 #if _DEBUG
-				std::string debugName = resPool->debugName;
-				SAFE_DELETE(resPool);
-				resPool = new ResourcePool<T>(size, debugName.c_str());
+				std::string debug_name = res_pool_->debug_name;
+				MAKI_SAFE_DELETE(res_pool_);
+				res_pool_ = new resource_pool_t<T>(size, debug_name.c_str());
 #else
-				SAFE_DELETE(resPool);
-				resPool = new ResourcePool<T>(size, nullptr);
+				MAKI_SAFE_DELETE(res_pool_);
+				res_pool_ = new resource_pool_t<T>(size, nullptr);
 #endif
 			}
 
-			void DumpStats(const char *label)
+			void dump_stats(const char *label)
 			{
-				uint32 size = resPool->GetSize();
-				uint32 cap = resPool->GetCapacity();
-				Console::Info("%s: %d/%d (%d b / %d b)", label, size, cap, sizeof(T)*size, sizeof(T)*cap);
+				uint32 size = res_pool_->get_size();
+				uint32 cap = res_pool_->get_capacity();
+				console_t::info("%s: %d/%d (%d b / %d b)", label, size, cap, sizeof(T)*size, sizeof(T)*cap);
 			}
 
-			void DumpItems()
+			void dump_items()
 			{
-				Console::Info("Manager items:");
-				const typename ResourcePool<T>::Iterator end = resPool->End();
-				for(typename ResourcePool<T>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-					Console::Info("Item handle=%d refcount=%d", iter.Index(), iter.RefCount());
+				console_t::info("manager_t items:");
+				const typename resource_pool_t<T>::iterator_t end = res_pool_->End();
+				for(typename resource_pool_t<T>::iterator_t iter = res_pool_->Begin(); iter != end; ++iter) {
+					console_t::info("Item handle=%d refcount=%d", iter.Index(), iter.RefCount());
 				}
 			}
 
 		protected:
-			// A number to differentiate managers which hold the same type of resources
+			// A number to differentiate managers_ which hold the same type of resources
 			// Each handle value has the manager id in the topmost 5 bits
-			uint32 managerId;
+			uint32 manager_id_;
 
-			ResourcePool<T> *resPool;
+			resource_pool_t<T> *res_pool_;
 		};
 
-		template<class T, class SubClass>
-		SubClass *Manager<T, SubClass>::managers[MAX_MANAGERS_PER_RESOURCE_TYPE] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+		template<class T, class SUBCLASS>
+		SUBCLASS *manager_t<T, SUBCLASS>::managers_[max_managers_per_resource_type_] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -7,63 +7,63 @@
 #include "core/MakiShaderProgramManager.h"
 #include "core/MakiTextureSetManager.h"
 
-namespace Maki
+namespace maki
 {
-	namespace D3D
+	namespace d3d
 	{
-		class D3DRenderCore;
+		class d3d_render_core_t;
 	}
 
-	namespace OGL
+	namespace ogl
 	{
-		class OGLRenderCore;
+		class ogl_render_core_t;
 	}
 
-	namespace Core
+	namespace core
 	{	
-		class Mesh;
-		class Material;
+		class mesh_t;
+		class material_t;
 
-		class __declspec(align(16)) DrawCommand : public Aligned<16>
+		class __declspec(align(16)) draw_command_t : public aligned_t<16>
 		{
-		friend class RenderCore;
-		friend class D3D::D3DRenderCore;
-		friend class OGL::OGLRenderCore;
+		friend class render_core_t;
+		friend class d3d::d3d_render_core_t;
+		friend class ogl::ogl_render_core_t;
 		
-		friend class DrawCommandList;
+		friend class draw_command_list_t;
 
 		public:
-			static const int32 BITS_PER_MESH = 12;
-			static const int32 BITS_PER_MATERIAL = 8;
-			static const int32 BITS_PER_TEXTURE_SET = 7;
-			static const int32 BITS_PER_SHADER_PROGRAM = 6;
-			static const int32 BITS_PER_VERTEX_FORMAT = 4;
+			static const int32 bits_per_mesh_ = 12;
+			static const int32 bits_per_material_ = 8;
+			static const int32 bits_per_texture_set_ = 7;
+			static const int32 bits_per_shader_program_ = 6;
+			static const int32 bits_per_vertex_format_ = 4;
 
-			enum TranslucencyType
+			enum translucency_type_t
 			{
-				TranslucencyType_Opaque = 0,
-				TranslucencyType_Translucent,
+				translucency_type_opaque_ = 0,
+				translucency_type_translucent_,
 			};
 
 			// Listed from low to high bits (low to high sorting priority)
-			struct KeyFields
+			struct key_fields_t
 			{
 				// These fields contain the actual handle value to a resource.
 				// Make sure there are enough bits to represent every handle up to the maximum size of the manager's pool.
-				uint64 mesh : BITS_PER_MESH;
-				uint64 meshManagerId : MeshManager::BITS_PER_MANAGER_ID;
+				uint64 mesh : bits_per_mesh_;
+				uint64 meshManagerId : mesh_manager_t::bits_per_manager_id_;
 
-				uint64 material : BITS_PER_MATERIAL;
-				uint64 materialManagerId : MaterialManager::BITS_PER_MANAGER_ID;
+				uint64 material_ : bits_per_material_;
+				uint64 materialManagerId : material_manager_t::bits_per_manager_id_;
 
-				uint64 textureSet : BITS_PER_TEXTURE_SET;
-				uint64 textureSetManagerId : TextureSetManager::BITS_PER_MANAGER_ID;
+				uint64 textureSet : bits_per_texture_set_;
+				uint64 textureSetManagerId : texture_set_manager_t::bits_per_manager_id_;
 
-				uint64 shaderProgram : BITS_PER_SHADER_PROGRAM;
-				uint64 shaderProgramManagerId : ShaderProgramManager::BITS_PER_MANAGER_ID;
+				uint64 shaderProgram : bits_per_shader_program_;
+				uint64 shaderProgramManagerId : shader_program_manager_t::bits_per_manager_id_;
 
-				uint64 vertexFormat : BITS_PER_VERTEX_FORMAT;
-				uint64 vertexFormatManagerId : VertexFormatManager::BITS_PER_MANAGER_ID;
+				uint64 vertexFormat : bits_per_vertex_format_;
+				uint64 vertexFormatManagerId : vertex_format_manager_t::bits_per_manager_id_;
 
 				uint64 inverseDepth : 11;
 
@@ -72,66 +72,66 @@ namespace Maki
 			};
 
 		public:
-			DrawCommand();
-			DrawCommand(const MoveToken<DrawCommand> &other);
-			~DrawCommand();
+			draw_command_t();
+			draw_command_t(const move_token_t<draw_command_t> &other);
+			~draw_command_t();
 
-			inline uint64 GetKey() const { return key; }
-			void SetMesh(Handle mesh);
-			void SetMaterial(Handle material);
-			inline void Clear();
-			inline void Copy(const DrawCommand &other);
+			inline uint64 get_key() const { return key; }
+			void set_mesh(handle_t mesh);
+			void set_material(handle_t material);
+			inline void clear();
+			inline void copy(const draw_command_t &other);
 
 		private:
-			DrawCommand(const DrawCommand &other) {}
+			draw_command_t(const draw_command_t &other) {}
 
 		private:
 			union
 			{
-				KeyFields fields;	
-				uint64 key;
+				key_fields_t fields_;	
+				uint64 key_;
 			};
 		
-			Handle mesh;
-			Handle material;
-			Handle textureSet;
-			Handle shaderProgram;
-			Handle vertexFormat;
+			handle_t mesh_;
+			handle_t material_;
+			handle_t texture_set_;
+			handle_t shader_program_;
+			handle_t vertex_format_;
 		};
 
-		static_assert(sizeof(DrawCommand::KeyFields) == 8, "DrawCommand key has exceeded 64 bits");
+		static_assert(sizeof(draw_command_t::key_fields_t) == 8, "draw_command_t key has exceeded 64 bits");
 
 
 
-		inline void DrawCommand::Copy(const DrawCommand &other)
+		inline void draw_command_t::copy(const draw_command_t &other)
 		{
-			key = other.key;
+			key_ = other.key_;
 
-			mesh = other.mesh;
-			material = other.material;
-			shaderProgram = other.shaderProgram;
-			textureSet = other.textureSet;
-			vertexFormat = other.vertexFormat;
+			mesh_ = other.mesh_;
+			material_ = other.material_;
+			shader_program_ = other.shader_program_;
+			texture_set_ = other.texture_set_;
+			vertex_format_ = other.vertex_format_;
 
-			MeshManager::AddRef(mesh);
-			MaterialManager::AddRef(material);
-			ShaderProgramManager::AddRef(shaderProgram);
-			TextureSetManager::AddRef(textureSet);
-			VertexFormatManager::AddRef(vertexFormat);
+			mesh_manager_t::add_ref(mesh);
+			material_manager_t::add_ref(material);
+			shader_program_manager_t::add_ref(shader_program_);
+			texture_set_manager_t::add_ref(texture_set_);
+			vertex_format_manager_t::add_ref(vertex_format_);
 		}
 	
-		inline void DrawCommand::Clear()
+		inline void draw_command_t::clear()
 		{
-			key = 0;
+			key_ = 0;
 
-			MeshManager::Free(mesh);
-			MaterialManager::Free(material);
-			ShaderProgramManager::Free(shaderProgram);
-			TextureSetManager::Free(textureSet);
-			VertexFormatManager::Free(vertexFormat);
+			mesh_manager_t::free(mesh_);
+			material_manager_t::free(material_);
+			shader_program_manager_t::free(shader_program_);
+			texture_set_manager_t::free(texture_set_);
+			vertex_format_manager_t::free(vertex_format_);
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

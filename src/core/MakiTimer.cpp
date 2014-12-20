@@ -2,12 +2,12 @@
 #include "core/MakiTimer.h"
 #include "core/MakiTimeSource.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		Timer::Timer(TimeSource *source)
+		timer_t::timer_t(time_source_t *source)
 			: source(source)
 		{
 			lastTime = source->GetTimeMicro();
@@ -22,7 +22,7 @@ namespace Maki
 			elapsedMicros = 0;
 		}
 
-		void Timer::UpdateHistory()
+		void timer_t::UpdateHistory()
 		{
 			uint32 index = updateCount % N_FRAME_AVERAGE;
 
@@ -40,7 +40,7 @@ namespace Maki
 			deltaHistory[index] = deltaSeconds;
 		}
 
-		void Timer::Tick() {
+		void timer_t::tick() {
 			updateCount++;
 
 			uint64 now = source->GetTimeMicro();
@@ -58,6 +58,6 @@ namespace Maki
 			UpdateHistory();
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

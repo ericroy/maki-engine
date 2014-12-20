@@ -1,278 +1,278 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class InputState
+		class input_state_t
 		{
 		public:
-			static const int32 MAX_PLAYERS = 4;
+			static const int32 max_players_ = 4;
 
-			enum Key
+			enum key_t
 			{
-				Key_LButton = 0x01,
-				Key_RButton = 0x02,
-				Key_Cancel = 0x03,
-				Key_MButton = 0x04,
-				Key_XButton1 = 0x05,
-				Key_XButton2 = 0x06,
-				Key_Back = 0x08,
-				Key_Tab = 0x09,
-				Key_Clear = 0x0c,
-				Key_Return = 0x0d,
-				Key_Shift = 0x10,
-				Key_Control = 0x11,
-				Key_Menu = 0x12,
-				Key_Pause = 0x13,
-				Key_Capital = 0x14,
-				Key_Escape = 0x1b,
-				Key_Convert = 0x1c,
-				Key_Nonconvert = 0x1d,
-				Key_Accept = 0x1e,
-				Key_Modechange = 0x1f,
-				Key_Space = 0x20,
-				Key_Prior = 0x21,
-				Key_Next = 0x22,
-				Key_End = 0x23,
-				Key_Home = 0x24,
-				Key_Left = 0x25,
-				Key_Up = 0x26,
-				Key_Right = 0x27,
-				Key_Down = 0x28,
-				Key_Select = 0x29,
-				Key_Print = 0x2a,
-				Key_Execute = 0x2b,
-				Key_Snapshot = 0x2c,
-				Key_Insert = 0x2d,
-				Key_Delete = 0x2e,
-				Key_Help = 0x2f,
-				Key_0 = 0x30,
-				Key_1 = 0x31,
-				Key_2 = 0x32,
-				Key_3 = 0x33,
-				Key_4 = 0x34,
-				Key_5 = 0x35,
-				Key_6 = 0x36,
-				Key_7 = 0x37,
-				Key_8 = 0x38,
-				Key_9 = 0x39,
-				Key_A = 0x41,
-				Key_B = 0x42,
-				Key_C = 0x43,
-				Key_D = 0x44,
-				Key_E = 0x45,
-				Key_F = 0x46,
-				Key_G = 0x47,
-				Key_H = 0x48,
-				Key_I = 0x49,
-				Key_J = 0x4a,
-				Key_K = 0x4b,
-				Key_L = 0x4c,
-				Key_M = 0x4d,
-				Key_N = 0x4e,
-				Key_O = 0x4f,
-				Key_P = 0x50,
-				Key_Q = 0x51,
-				Key_R = 0x52,
-				Key_S = 0x53,
-				Key_T = 0x54,
-				Key_U = 0x55,
-				Key_V = 0x56,
-				Key_W = 0x57,
-				Key_X = 0x58,
-				Key_Y = 0x59,
-				Key_Z = 0x5a,
-				Key_Lwin = 0x5b,
-				Key_Rwin = 0x5c,
-				Key_Apps = 0x5d,
-				Key_Sleep = 0x5f,
-				Key_Numpad0 = 0x60,
-				Key_Numpad1 = 0x61,
-				Key_Numpad2 = 0x62,
-				Key_Numpad3 = 0x63,
-				Key_Numpad4 = 0x64,
-				Key_Numpad5 = 0x65,
-				Key_Numpad6 = 0x66,
-				Key_Numpad7 = 0x67,
-				Key_Numpad8 = 0x68,
-				Key_Numpad9 = 0x69,
-				Key_Multiply = 0x6a,
-				Key_Add = 0x6b,
-				Key_Separator = 0x6c,
-				Key_Subtract = 0x6d,
-				Key_Decimal = 0x6e,
-				Key_Divide = 0x6f,
-				Key_F1 = 0x70,
-				Key_F2 = 0x71,
-				Key_F3 = 0x72,
-				Key_F4 = 0x73,
-				Key_F5 = 0x74,
-				Key_F6 = 0x75,
-				Key_F7 = 0x76,
-				Key_F8 = 0x77,
-				Key_F9 = 0x78,
-				Key_F10 = 0x79,
-				Key_F11 = 0x7a,
-				Key_F12 = 0x7b,
-				Key_F13 = 0x7c,
-				Key_F14 = 0x7d,
-				Key_F15 = 0x7e,
-				Key_F16 = 0x7f,
-				Key_F17 = 0x80,
-				Key_F18 = 0x81,
-				Key_F19 = 0x82,
-				Key_F20 = 0x83,
-				Key_F21 = 0x84,
-				Key_F22 = 0x85,
-				Key_F23 = 0x86,
-				Key_F24 = 0x87,
-				Key_Numlock = 0x90,
-				Key_Scroll = 0x91,
-				Key_LShift = 0xa0,
-				Key_RShift = 0xa1,
-				Key_LControl = 0xa2,
-				Key_RControl = 0xa3,
-				Key_LMenu = 0xa4,
-				Key_RMenu = 0xa5,
-				Key_Browser_back = 0xa6,
-				Key_BrowserForward = 0xa7,
-				Key_BrowserRefresh = 0xa8,
-				Key_BrowserStop = 0xa9,
-				Key_BrowserSearch = 0xaa,
-				Key_BrowserFavorites = 0xab,
-				Key_BrowserHome = 0xac,
-				Key_VolumeMute = 0xad,
-				Key_VolumeDown = 0xae,
-				Key_VolumeUp = 0xaf,
-				Key_MediaNextTrack = 0xb0,
-				Key_MediaPrevTrack = 0xb1,
-				Key_MediaStop = 0xb2,
-				Key_MediaPlayPause = 0xb3,
+				key_l_button_ = 0x01,
+				key_r_button_ = 0x02,
+				key_cancel_ = 0x03,
+				key_m_button_ = 0x04,
+				key_x_button1_ = 0x05,
+				key_x_button2_ = 0x06,
+				key_back_ = 0x08,
+				key_tab_ = 0x09,
+				key_clear_ = 0x0c,
+				key_return_ = 0x0d,
+				key_shift_ = 0x10,
+				key_control_ = 0x11,
+				key_menu_ = 0x12,
+				key_pause_ = 0x13,
+				key_capital_ = 0x14,
+				key_escape_ = 0x1b,
+				key_convert_ = 0x1c,
+				key_nonconvert_ = 0x1d,
+				key_accept_ = 0x1e,
+				key_modechange_ = 0x1f,
+				key_space_ = 0x20,
+				key_prior_ = 0x21,
+				key_next_ = 0x22,
+				key_end_ = 0x23,
+				key_home_ = 0x24,
+				key_left_ = 0x25,
+				key_up_ = 0x26,
+				key_right_ = 0x27,
+				key_down_ = 0x28,
+				key_select_ = 0x29,
+				key_print_ = 0x2a,
+				key_execute_ = 0x2b,
+				key_snapshot_ = 0x2c,
+				key_insert_ = 0x2d,
+				key_delete_ = 0x2e,
+				key_help_ = 0x2f,
+				key_0_ = 0x30,
+				key_1_ = 0x31,
+				key_2_ = 0x32,
+				key_3_ = 0x33,
+				key_4_ = 0x34,
+				key_5_ = 0x35,
+				key_6_ = 0x36,
+				key_7_ = 0x37,
+				key_8_ = 0x38,
+				key_9_ = 0x39,
+				key_a_ = 0x41,
+				key_b_ = 0x42,
+				key_c_ = 0x43,
+				key_d_ = 0x44,
+				key_e_ = 0x45,
+				key_f_ = 0x46,
+				key_g_ = 0x47,
+				key_h_ = 0x48,
+				key_i_ = 0x49,
+				key_j_ = 0x4a,
+				key_k_ = 0x4b,
+				key_l_ = 0x4c,
+				key_m_ = 0x4d,
+				key_n_ = 0x4e,
+				key_o_ = 0x4f,
+				key_p_ = 0x50,
+				key_q_ = 0x51,
+				key_r_ = 0x52,
+				key_s_ = 0x53,
+				key_t_ = 0x54,
+				key_u_ = 0x55,
+				key_v_ = 0x56,
+				key_w_ = 0x57,
+				key_x_ = 0x58,
+				key_y_ = 0x59,
+				key_z_ = 0x5a,
+				key_l_win_ = 0x5b,
+				key_r_win_ = 0x5c,
+				key_apps_ = 0x5d,
+				key_sleep_ = 0x5f,
+				key_numpad0_ = 0x60,
+				key_numpad1_ = 0x61,
+				key_numpad2_ = 0x62,
+				key_numpad3_ = 0x63,
+				key_numpad4_ = 0x64,
+				key_numpad5_ = 0x65,
+				key_numpad6_ = 0x66,
+				key_numpad7_ = 0x67,
+				key_numpad8_ = 0x68,
+				key_numpad9_ = 0x69,
+				key_multiply_ = 0x6a,
+				key_add_ = 0x6b,
+				key_separator_ = 0x6c,
+				key_subtract_ = 0x6d,
+				key_decimal_ = 0x6e,
+				key_divide_ = 0x6f,
+				key_f1_ = 0x70,
+				key_f2_ = 0x71,
+				key_f3_ = 0x72,
+				key_f4_ = 0x73,
+				key_f5_ = 0x74,
+				key_f6_ = 0x75,
+				key_f7_ = 0x76,
+				key_f8_ = 0x77,
+				key_f9_ = 0x78,
+				key_f10_ = 0x79,
+				key_f11_ = 0x7a,
+				key_f12_ = 0x7b,
+				key_f13_ = 0x7c,
+				key_f14_ = 0x7d,
+				key_f15_ = 0x7e,
+				key_f16_ = 0x7f,
+				key_f17_ = 0x80,
+				key_f18_ = 0x81,
+				key_f19_ = 0x82,
+				key_f20_ = 0x83,
+				key_f21_ = 0x84,
+				key_f22_ = 0x85,
+				key_f23_ = 0x86,
+				key_f24_ = 0x87,
+				key_numlock_ = 0x90,
+				key_scroll_ = 0x91,
+				key_l_shift_ = 0xa0,
+				key_r_shift_ = 0xa1,
+				key_l_control_ = 0xa2,
+				key_r_control_ = 0xa3,
+				key_l_menu_ = 0xa4,
+				key_r_menu_ = 0xa5,
+				key_browser_back_ = 0xa6,
+				key_browser_forward_ = 0xa7,
+				key_browser_refresh_ = 0xa8,
+				key_browser_stop_ = 0xa9,
+				key_browser_search_ = 0xaa,
+				key_browser_favorites_ = 0xab,
+				key_browser_home_ = 0xac,
+				key_volume_mute_ = 0xad,
+				key_Volume_down_ = 0xae,
+				key_Volume_up_ = 0xaf,
+				key_media_next_track_ = 0xb0,
+				key_media_prev_track_ = 0xb1,
+				key_media_stop_ = 0xb2,
+				key_media_play_pause_ = 0xb3,
 
-				Key_Unknown = 0xff
+				key_unknown_ = 0xff
 			};
 
-			enum Button
+			enum button_t
 			{
-				Button_Invalid = -1,
+				button_invalid_ = -1,
 
-				// Digital stuff, values 0 or 1
-				Button_DPadUp = 0, Button_DPadDown, Button_DPadLeft, Button_DPadRight,
-				Button_Start, Button_Back,
-				Button_LeftThumb, Button_RightThumb,
-				Button_LeftShoulder, Button_RightShoulder,
-				Button_A, Button_B, Button_X, Button_Y,
+				// digital stuff, values_ 0 or 1
+				button_dpad_up_ = 0, button_dpad_down_, button_dpad_left_, button_dpad_right_,
+				button_start_, button_back_,
+				button_left_thumb_, button_right_thumb_,
+				button_left_shoulder_, button_right_shoulder_,
+				button_a_, button_b_, button_x_, button_y_,
 
-				// Potentially analog stuff, values [0, 1]
-				Button_LeftTrigger, Button_RightTrigger,
-				Button_LeftThumbX, Button_LeftThumbY,
-				Button_RightThumbX, Button_RightThumbY,
+				// Potentially analog stuff, values_ [0, 1]
+				button_left_trigger_, button_right_trigger_,
+				button_left_thumb_x_, button_left_thumb_y_,
+				button_right_thumb_x_, button_right_thumb_y_,
 
-				ButtonCount
+				button_count_
 			};
 
 			// Reports the history of a key since the last tick
-			struct KeyStateReport
+			struct key_state_report_t
 			{
-				inline void Set(bool on)
+				inline void set(bool on)
 				{
-					this->on = on ? 1 : 0;
-					transitionCount++;
+					on_ = on ? 1 : 0;
+					transition_count_++;
 				}
 
-				uint8 on : 1;
-				uint8 transitionCount : 7;
+				uint8 on_ : 1;
+				uint8 transition_count_ : 7;
 			};
 
 
-			struct Controller
+			struct controller_t
 			{
 			public:
-				inline float GetFloat(Button b) const { return values[mapping[b]]; }
-				inline bool GetBool(Button b) const { return values[mapping[b]] == 1.0f; }
-				inline void MapButton(Button hardwareButton, Button virtualButton) { mapping[virtualButton] = hardwareButton; }
+				inline float get_float(button_t b) const { return values_[mapping_[b]]; }
+				inline bool get_bool(button_t b) const { return values_[mapping_[b]] == 1.0f; }
+				inline void map_button(button_t hardwareButton, button_t virtualButton) { mapping_[virtualButton] = hardwareButton; }
 
-				inline void SetMappingIdentity()
+				inline void set_identity_mapping()
 				{
-					for(uint8 i = 0; i < ButtonCount; i++) {
-						mapping[i] = i;
+					for(uint8 i = 0; i < button_count_; i++) {
+						mapping_[i] = i;
 					}
 				}
 
 			public:
-				bool connected;
-				uint8 playerIndex;
+				bool connected_;
+				uint8 player_index_;
 
-				float values[ButtonCount];
-				uint8 mapping[ButtonCount];
+				float values_[button_count_];
+				uint8 mapping_[button_count_];
 			};
 
-			struct Player
+			struct player_t
 			{
 			private:
-				struct KeyState
+				struct key_state_t
 				{
 					// True if the key is currently depressed
-					uint8 on : 1;
+					uint8 on_ : 1;
 
 					// True if the key went down in the last tick
-					uint8 pressed : 1;
+					uint8 pressed_ : 1;
 			
 					// True if the key went up in the last tick
-					uint8 released : 1;
+					uint8 released_ : 1;
 				};
 
 			public:
 
 				// Returns true if the key is currently held down
-				inline bool GetKey(Key k) const { return keyStates[keyMapping[k]].on != 0; }
+				inline bool get_key(key_t k) const { return key_states_[key_mapping_[k]].on_ != 0; }
 			
 				// Returns true if the key became depressed during the last tick
-				inline bool GetKeyPressed(Key k) const { return keyStates[keyMapping[k]].pressed != 0; }
+				inline bool GetKeyPressed(key_t k) const { return key_states_[key_mapping_[k]].pressed_ != 0; }
 
 				// Returns true if the key was released during the last tick
-				inline bool GetKeyReleased(Key k) const { return keyStates[keyMapping[k]].released != 0; }
+				inline bool GetKeyReleased(key_t k) const { return key_states_[key_mapping_[k]].released_ != 0; }
 
-				inline void MapKey(Key hardwareKey, Key virtualKey) { keyMapping[virtualKey] = hardwareKey; }
+				inline void MapKey(key_t hardwareKey, key_t virtualKey) { key_mapping_[virtualKey] = hardwareKey; }
 
-				inline void SetMappingIdentity()
+				inline void set_identity_mapping()
 				{
 					for(uint32 i = 0; i < 256; i++) {
-						keyMapping[i] = i;
+						key_mapping_[i] = i;
 					}
 				}
 
-				void SetKeyStates(const KeyStateReport states[256])
+				void set_key_states(const key_state_report_t states[256])
 				{
 					for(uint32 i = 0; i < 256; i++) {
-						if(keyStates[i].on == states[i].on && states[i].transitionCount == 0) {
+						if(key_states_[i].on_ == states[i].on_ && states[i].transition_count_ == 0) {
 							// Nothing happened with this key
-							keyStates[i].pressed = 0;
-							keyStates[i].released = 0;
+							key_states_[i].pressed_ = 0;
+							key_states_[i].released_ = 0;
 						} else {
 							// Something happened
 							// The key may have changed its 'on' state since last frame.
 							// It is also possible that the key has the same 'on' state as last frame, but there was one
 							// (or more) intra-frame up-down events.
-							keyStates[i].on = states[i].on;
-							if(states[i].on) {
-								if(states[i].transitionCount == 1) {
-									keyStates[i].pressed = 1;
-									keyStates[i].released = 0;
+							key_states_[i].on_ = states[i].on_;
+							if(states[i].on_) {
+								if(states[i].transition_count_ == 1) {
+									key_states_[i].pressed_ = 1;
+									key_states_[i].released_ = 0;
 								} else {
-									keyStates[i].pressed = 1;
-									keyStates[i].released = 1;
+									key_states_[i].pressed_ = 1;
+									key_states_[i].released_ = 1;
 								}
 							} else {
-								if(states[i].transitionCount == 1) {
-									keyStates[i].released = 1;
-									keyStates[i].pressed = 0;
+								if(states[i].transition_count_ == 1) {
+									key_states_[i].released_ = 1;
+									key_states_[i].pressed_ = 0;
 								} else {
-									keyStates[i].released = 1;
-									keyStates[i].pressed = 1;
+									key_states_[i].released_ = 1;
+									key_states_[i].pressed_ = 1;
 								}
 							}
 						}
@@ -280,33 +280,33 @@ namespace Maki
 				}
 
 			public:
-				Controller *controller;
+				controller_t *controller_;
 		
 			private:
-				uint8 keyMapping[256];
-				KeyState keyStates[256];
+				uint8 key_mapping_[256];
+				key_state_t key_states_[256];
 			};
 
 		public:
-			InputState();
-			virtual ~InputState();
+			input_state_t();
+			virtual ~input_state_t();
 		
 			// Hold a reference to the player object
-			inline Player *GetPlayer(uint8 index) { assert(index < MAX_PLAYERS); return &players[index]; }
+			inline player_t *GetPlayer(uint8 index) { assert(index < max_players_); return &players_[index]; }
 
 			// Don't hold a reference to the controller object - get it each time from the player
 			// in case the controller associated with the player changes
-			inline Controller &GetController(uint8 index) { assert(index < MAX_PLAYERS); return controllers[index]; }
+			inline controller_t &GetController(uint8 index) { assert(index < max_players_); return controllers_[index]; }
 
 			void ConnectController(uint8 controllerIndex);
 			void DisconnectController(uint8 controllerIndex);
 
 		private:
-			uint8 controllerCount;
-			Controller controllers[MAX_PLAYERS];
-			Player players[MAX_PLAYERS];
+			uint8 controller_count_;
+			controller_t controllers_[max_players_];
+			player_t players_[max_players_];
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

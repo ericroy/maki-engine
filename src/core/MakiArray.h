@@ -1,77 +1,77 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
 		template<typename T>
-		class Array
+		class array_t
 		{
 		public:
-			Array()
-				: data(nullptr),
-				count(0)
+			array_t()
+				: data_(nullptr),
+				count_(0)
 			{
 			}
 		
-			Array(uint32 size)
-				: data(nullptr),
-				count(0)
+			array_t(uint32 size)
+				: data_(nullptr),
+				count_(0)
 			{
-				SetSize(size);
+				set_size(size);
 			}
 
-			Array(const MoveToken<Array> &other)
-				: count(other.obj->count), data(other.obj->data)
+			array_t(const move_token_t<array_t> &other)
+				: count_(other.obj->count_), data_(other.obj->data_)
 			{
-				other.obj->count = 0;
-				other.obj->data = nullptr;
+				other.obj->count_ = 0;
+				other.obj->data_ = nullptr;
 			}
 
-			~Array()
+			~array_t()
 			{
-				SAFE_FREE(data);
+				SAFE_FREE(data_);
 			}
 
-			inline void SetSize(uint32 size)
+			inline void set_size(uint32 size)
 			{
-				if(size == count) {
+				if(size == count_) {
 					return;
 				}
-				SAFE_FREE(data);
-				data = (T *)Allocator::Malloc(sizeof(T)*size, std::alignment_of<T>::value);
-				count = size;
+				SAFE_FREE(data_);
+				data_ = (T *)allocator_t::malloc(sizeof(T)*size, std::alignment_of<T>::value);
+				count_ = size;
 			}
 
-			inline void Zero()
+			inline void zero()
 			{
-				memset(data, 0, sizeof(T)*count);
+				memset(data_, 0, sizeof(T)*count_);
 			}
 
-			inline void Delete()
+			inline void free()
 			{
-				SAFE_FREE(data);
-				count = 0;
+				SAFE_FREE(data_);
+				count_ = 0;
 			}
 
 			inline T &operator[](uint32 index)
 			{
-				return data[index];
+				return data_[index];
 			}
 
 			inline const T &operator[](uint32 index) const
 			{
-				return data[index];
+				return data_[index];
 			}
 
 		public:
-			T *data;
-			uint32 count;
+			T *data_;
+			uint32 count_;
 		};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

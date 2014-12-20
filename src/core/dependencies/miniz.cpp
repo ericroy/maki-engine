@@ -22,7 +22,7 @@
       level_and_flags can now be set to MZ_DEFAULT_COMPRESSION. Thanks to Bruce Dawson <bruced@valvesoftware.com> for the feedback/bug report.
      5/28/11 v1.11 - Added statement from unlicense.org
      5/27/11 v1.10 - Substantial compressor optimizations:
-      Level 1 is now ~4x faster than before. The L1 compressor's throughput now varies between 70-110MB/sec. on a
+      level_t 1 is now ~4x faster than before. The L1 compressor's throughput now varies between 70-110MB/sec. on a
       Core i7 (actual throughput varies depending on the type of data, and x64 vs. x86).
       Improved baseline L2-L9 compression perf. Also, greatly improved compression perf. issues on some file types.
       Refactored the compression code for better readability and maintainability.
@@ -69,7 +69,7 @@
      one archive to another. It supports archives located in memory or the heap, on disk (using stdio.h),
      or you can specify custom file read/write callbacks.
 
-     - Archive reading: Just call this function to read a single file from a disk archive:
+     - archive_t reading: Just call this function to read a single file from a disk archive:
 
       void *mz_zip_extract_archive_file_to_heap(const char *pZip_filename, const char *pArchive_name,
         size_t *pSize, mz_uint zip_flags);
@@ -88,7 +88,7 @@
      Alternately, you can iterate through all the files in an archive (using mz_zip_reader_get_num_files()) and
      retrieve detailed info on each file by calling mz_zip_reader_file_stat().
 
-     - Archive creation: Use the "mz_zip_writer" functions. The ZIP writer immediately writes compressed file data
+     - archive_t creation: Use the "mz_zip_writer" functions. The ZIP writer immediately writes compressed file data
      to disk and builds an exact image of the central directory in memory. The central directory image is written
      all at once at the end of the archive file when the archive is finalized.
 
@@ -97,7 +97,7 @@
      arbitrary data blobs at the very beginning of ZIP archives. Archives written using either feature are still
      readable by any ZIP tool.
 
-     - Archive appending: The simple way to add a single file to an archive is to call this function:
+     - archive_t appending: The simple way to add a single file to an archive is to call this function:
 
       mz_bool mz_zip_add_mem_to_archive_file_in_place(const char *pZip_filename, const char *pArchive_name,
         const void *pBuf, size_t buf_size, const void *pComment, mz_uint16 comment_size, mz_uint level_and_flags);
@@ -174,17 +174,17 @@
 #endif
 
 #if (__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__) || MINIZ_X86_OR_X64_CPU
-// Set MINIZ_LITTLE_ENDIAN to 1 if the processor is little endian.
+// set MINIZ_LITTLE_ENDIAN to 1 if the processor is little endian.
 #define MINIZ_LITTLE_ENDIAN 1
 #endif
 
 #if MINIZ_X86_OR_X64_CPU
-// Set MINIZ_USE_UNALIGNED_LOADS_AND_STORES to 1 on CPU's that permit efficient integer loads and stores from unaligned addresses.
+// set MINIZ_USE_UNALIGNED_LOADS_AND_STORES to 1 on CPU's that permit efficient integer loads and stores from unaligned addresses.
 #define MINIZ_USE_UNALIGNED_LOADS_AND_STORES 1
 #endif
 
 #if defined(_M_X64) || defined(_WIN64) || defined(__MINGW64__) || defined(_LP64) || defined(__LP64__) || defined(__ia64__) || defined(__x86_64__)
-// Set MINIZ_HAS_64BIT_REGISTERS to 1 if operations on 64-bit integers are reasonably fast (and don't involve compiler generated calls to helper functions).
+// set MINIZ_HAS_64BIT_REGISTERS to 1 if operations on 64-bit integers are reasonably fast (and don't involve compiler generated calls to helper functions).
 #define MINIZ_HAS_64BIT_REGISTERS 1
 #endif
 
@@ -238,7 +238,7 @@ enum { MZ_OK = 0, MZ_STREAM_END = 1, MZ_NEED_DICT = 2, MZ_ERRNO = -1, MZ_STREAM_
 // Compression levels: 0-9 are the standard zlib-style levels, 10 is best possible compression (not zlib compatible, and may be very slow), MZ_DEFAULT_COMPRESSION=MZ_DEFAULT_LEVEL.
 enum { MZ_NO_COMPRESSION = 0, MZ_BEST_SPEED = 1, MZ_BEST_COMPRESSION = 9, MZ_UBER_COMPRESSION = 10, MZ_DEFAULT_LEVEL = 6, MZ_DEFAULT_COMPRESSION = -1 };
 
-// Window bits
+// window_t bits
 #define MZ_DEFAULT_WINDOW_BITS 15
 
 struct mz_internal_state;
@@ -742,7 +742,7 @@ struct tinfl_decompressor_tag
 
 // ------------------- Low-level Compression API Definitions
 
-// Set TDEFL_LESS_MEMORY to 1 to use less memory (compression will be slightly slower, and raw/dynamic blocks will be output more frequently).
+// set TDEFL_LESS_MEMORY to 1 to use less memory (compression will be slightly slower, and raw/dynamic blocks will be output more frequently).
 #define TDEFL_LESS_MEMORY 0
 
 // tdefl_init() compression flags logically OR'd together (low 12 bits contain the max. number of probes per dictionary search):
@@ -754,7 +754,7 @@ enum
 
 // TDEFL_WRITE_ZLIB_HEADER: If set, the compressor outputs a zlib header before the deflate data, and the Adler-32 of the source data at the end. Otherwise, you'll get raw deflate data.
 // TDEFL_COMPUTE_ADLER32: Always compute the adler-32 of the input data (even when not writing zlib headers).
-// TDEFL_GREEDY_PARSING_FLAG: Set to use faster greedy parsing, instead of more efficient lazy parsing.
+// TDEFL_GREEDY_PARSING_FLAG: set to use faster greedy parsing, instead of more efficient lazy parsing.
 // TDEFL_NONDETERMINISTIC_PARSING_FLAG: Enable to decrease the compressor's initialization time to the minimum, but the output may vary from run to run given the same input (depending on the contents of memory).
 // TDEFL_RLE_MATCHES: Only look for RLE matches (matches with a distance of 1)
 // TDEFL_FILTER_MATCHES: Discards matches <= 5 chars if enabled.
@@ -890,7 +890,7 @@ mz_uint tdefl_create_comp_flags_from_zip_params(int level, int window_bits, int 
 
 #endif // MINIZ_HEADER_INCLUDED
 
-// ------------------- End of Header: Implementation follows. (If you only want the header, define MINIZ_HEADER_FILE_ONLY.)
+// ------------------- end of Header: Implementation follows. (If you only want the header, define MINIZ_HEADER_FILE_ONLY.)
 
 #ifndef MINIZ_HEADER_FILE_ONLY
 
@@ -2557,7 +2557,7 @@ static mz_bool tdefl_compress_normal(tdefl_compressor *d)
     {
       d->m_saved_lit = d->m_dict[MZ_MIN(cur_pos, sizeof(d->m_dict) - 1)]; d->m_saved_match_dist = cur_match_dist; d->m_saved_match_len = cur_match_len;
     }
-    // Move the lookahead forward by len_to_move bytes.
+    // maki_move the lookahead forward by len_to_move bytes.
     d->m_lookahead_pos += len_to_move;
     MZ_ASSERT(d->m_lookahead_size >= len_to_move);
     d->m_lookahead_size -= len_to_move;
@@ -2913,7 +2913,7 @@ enum
   MZ_ZIP_LDH_SIG_OFS = 0, MZ_ZIP_LDH_VERSION_NEEDED_OFS = 4, MZ_ZIP_LDH_BIT_FLAG_OFS = 6, MZ_ZIP_LDH_METHOD_OFS = 8, MZ_ZIP_LDH_FILE_TIME_OFS = 10,
   MZ_ZIP_LDH_FILE_DATE_OFS = 12, MZ_ZIP_LDH_CRC32_OFS = 14, MZ_ZIP_LDH_COMPRESSED_SIZE_OFS = 18, MZ_ZIP_LDH_DECOMPRESSED_SIZE_OFS = 22,
   MZ_ZIP_LDH_FILENAME_LEN_OFS = 26, MZ_ZIP_LDH_EXTRA_LEN_OFS = 28,
-  // End of central directory offsets
+  // end of central directory offsets
   MZ_ZIP_ECDH_SIG_OFS = 0, MZ_ZIP_ECDH_NUM_THIS_DISK_OFS = 4, MZ_ZIP_ECDH_NUM_DISK_CDIR_OFS = 6, MZ_ZIP_ECDH_CDIR_NUM_ENTRIES_ON_DISK_OFS = 8,
   MZ_ZIP_ECDH_CDIR_TOTAL_ENTRIES_OFS = 10, MZ_ZIP_ECDH_CDIR_SIZE_OFS = 12, MZ_ZIP_ECDH_CDIR_OFS_OFS = 16, MZ_ZIP_ECDH_COMMENT_SIZE_OFS = 20,
 };
@@ -3127,7 +3127,7 @@ static mz_bool mz_zip_reader_read_central_dir(mz_zip_archive *pZip, mz_uint32 fl
   // Basic sanity checks - reject files which are too small, and check the first 4 bytes of the file to make sure a local header is there.
   if (pZip->m_archive_size < MZ_ZIP_END_OF_CENTRAL_DIR_HEADER_SIZE)
     return MZ_FALSE;
-  // Find the end of central directory record by scanning the file from the end towards the beginning.
+  // find the end of central directory record by scanning the file from the end towards the beginning.
   cur_file_ofs = MZ_MAX((mz_int64)pZip->m_archive_size - (mz_int64)sizeof(buf_u32), 0);
   for ( ; ; )
   {
@@ -3353,7 +3353,7 @@ mz_bool mz_zip_reader_file_stat(mz_zip_archive *pZip, mz_uint file_index, mz_zip
   pStat->m_external_attr = MZ_READ_LE32(p + MZ_ZIP_CDH_EXTERNAL_ATTR_OFS);
   pStat->m_local_header_ofs = MZ_READ_LE32(p + MZ_ZIP_CDH_LOCAL_HEADER_OFS);
 
-  // Copy as much of the filename and comment as possible.
+  // copy as much of the filename and comment as possible.
   n = MZ_READ_LE16(p + MZ_ZIP_CDH_FILENAME_LEN_OFS); n = MZ_MIN(n, MZ_ZIP_MAX_ARCHIVE_FILENAME_SIZE - 1);
   memcpy(pStat->m_filename, p + MZ_ZIP_CENTRAL_DIR_HEADER_SIZE, n); pStat->m_filename[n] = '\0';
 
@@ -4019,7 +4019,7 @@ mz_bool mz_zip_writer_init_from_reader(mz_zip_archive *pZip, const char *pFilena
 #ifdef MINIZ_NO_STDIO
     pFilename; return MZ_FALSE;
 #else
-    // Archive is being read from stdio - try to reopen as writable.
+    // archive_t is being read from stdio - try to reopen as writable.
     if (pZip->m_pIO_opaque != pZip)
       return MZ_FALSE;
     if (!pFilename)
@@ -4035,13 +4035,13 @@ mz_bool mz_zip_writer_init_from_reader(mz_zip_archive *pZip, const char *pFilena
   }
   else if (pState->m_pMem)
   {
-    // Archive lives in a memory block. Assume it's from the heap that we can resize using the realloc callback.
+    // archive_t lives in a memory block. Assume it's from the heap that we can resize using the realloc callback.
     if (pZip->m_pIO_opaque != pZip)
       return MZ_FALSE;
     pState->m_mem_capacity = pState->m_mem_size;
     pZip->m_pWrite = mz_zip_heap_write_func;
   }
-  // Archive is being read via a user provided read function - make sure the user has specified a write function too.
+  // archive_t is being read via a user provided read function - make sure the user has specified a write function too.
   else if (!pZip->m_pWrite)
     return MZ_FALSE;
 
@@ -4227,7 +4227,7 @@ mz_bool mz_zip_writer_add_mem_ex(mz_zip_archive *pZip, const char *pArchive_name
 
   if ((archive_name_size) && (pArchive_name[archive_name_size - 1] == '/'))
   {
-    // Set DOS Subdirectory attribute bit.
+    // set DOS Subdirectory attribute bit.
     ext_attributes |= 0x10;
     // Subdirectories cannot contain data.
     if ((buf_size) || (uncomp_size))
@@ -4576,7 +4576,7 @@ mz_bool mz_zip_writer_add_from_zip_reader(mz_zip_archive *pZip, mz_zip_archive *
   bit_flags = MZ_READ_LE16(pLocal_header + MZ_ZIP_LDH_BIT_FLAG_OFS);
   if (bit_flags & 8)
   {
-    // Copy data descriptor
+    // copy data descriptor
     if (pSource_zip->m_pRead(pSource_zip->m_pIO_opaque, cur_src_file_ofs, pBuf, sizeof(mz_uint32) * 4) != sizeof(mz_uint32) * 4)
     {
       pZip->m_pFree(pZip->m_pAlloc_opaque, pBuf);
@@ -4647,7 +4647,7 @@ mz_bool mz_zip_writer_finalize_archive(mz_zip_archive *pZip)
   central_dir_size = 0;
   if (pZip->m_total_files)
   {
-    // Write central directory
+    // write central directory
     central_dir_ofs = pZip->m_archive_size;
     central_dir_size = pState->m_central_dir.m_size;
     pZip->m_central_directory_file_ofs = central_dir_ofs;
@@ -4656,7 +4656,7 @@ mz_bool mz_zip_writer_finalize_archive(mz_zip_archive *pZip)
     pZip->m_archive_size += central_dir_size;
   }
 
-  // Write end of central directory record
+  // write end of central directory record
   MZ_CLEAR_OBJ(hdr);
   MZ_WRITE_LE32(hdr + MZ_ZIP_ECDH_SIG_OFS, MZ_ZIP_END_OF_CENTRAL_DIR_HEADER_SIG);
   MZ_WRITE_LE16(hdr + MZ_ZIP_ECDH_CDIR_NUM_ENTRIES_ON_DISK_OFS, pZip->m_total_files);

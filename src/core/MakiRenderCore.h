@@ -9,218 +9,218 @@
 #include "core/MakiDrawCommand.h"
 #include "core/MakiDrawCommandList.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class VertexFormat;
-		class Material;
+		class vertex_format_t;
+		class material_t;
 
-		class RenderCore : public Thread
+		class render_core_t : public thread_t
 		{
 		public:
-			enum Type
+			enum type_t
 			{
-				Type_D3D = 0,
-				Type_OGL,
+				type_d3d_ = 0,
+				type_ogl_,
 			};
 
 		public:
-			RenderCore();
-			virtual ~RenderCore();
-			void Run();
+			render_core_t();
+			virtual ~render_core_t();
+			void run();
 
 			// GPU resource creation, updates, destruction
 			// These all acquire the execution mutex for the render core
-			virtual void *UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged) = 0;
-			virtual void FreeBuffer(void *buffer) = 0;
-			virtual bool CreateShaderProgram(ShaderProgram *s) = 0;
-			virtual void DeleteShaderProgram(ShaderProgram *s) = 0;
-			virtual bool CreateTexture(Texture *t, char *data, uint32 dataLength) = 0;
-			virtual bool CreateEmptyTexture(Texture *t, uint8 channels) = 0;
-			virtual bool CreateRenderTarget(Texture *t) = 0;
-			virtual bool CreateDepthTexture(Texture *t) = 0;
-			virtual void WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData) = 0;
-			virtual void DeleteTexture(Texture *t) = 0;
+			virtual void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed) = 0;
+			virtual void free_buffer(void *buffer) = 0;
+			virtual bool create_shader_program(shader_program_t *s) = 0;
+			virtual void delete_shader_program(shader_program_t *s) = 0;
+			virtual bool create_texture(texture_t *t, char *data, uint32 data_length) = 0;
+			virtual bool create_empty_texture(texture_t *t, uint8 channels) = 0;
+			virtual bool create_render_target(texture_t *t) = 0;
+			virtual bool create_depth_texture(texture_t *t) = 0;
+			virtual void write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data) = 0;
+			virtual void delete_texture(texture_t *t) = 0;
 
 		protected:
-			virtual void Init() = 0;
-			virtual void Present() = 0;
-			virtual void Draw(const RenderState &state, const DrawCommandList &commands) = 0;
+			virtual void init() = 0;
+			virtual void present() = 0;
+			virtual void draw(const render_state_t &state, const draw_command_list_t &commands) = 0;
 
 			template<class Derived>
-			void GenericDraw(const RenderState &state, const DrawCommandList &commands);
+			void GenericDraw(const render_state_t &state, const draw_command_list_t &commands);
 
-			void SetPerFrameConstants(const Core::RenderState &state, const Core::Shader *s, char *buffer);
-			void SetPerObjectConstants(const Core::Shader *s, char *buffer, const Core::Matrix44 &model, const Core::Matrix44 &modelView, const Core::Matrix44 &modelViewProjection);
-			void BindMaterialConstants(const Core::Shader *s, bool isVertexShader, char *buffer, const Core::Material *mat);
+			void SetPerFrameConstants(const core::render_state_t &state, const core::shader_t *s, char *buffer);
+			void SetPerObjectConstants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection);
+			void BindMaterialConstants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat);
 
 		public:
 			SafeQueue<RenderPayload> input;
 			SafeQueue<RenderPayload> output;
 
 		protected:
-			uint32 windowWidth;
-			uint32 windowHeight;
+			uint32 window_width_;
+			uint32 window_height_;
 		};
 
 
 		template<class Derived>
-		void RenderCore::GenericDraw(const RenderState &state, const DrawCommandList &commands)
+		void render_core_t::GenericDraw(const render_state_t &state, const draw_command_list_t &commands)
 		{
 			Derived *derived = static_cast<Derived *>(this);
 			derived->AcquireContext();
 
 			// Resize screen buffers if necessary
-			if(windowWidth != state.windowWidth || windowHeight != state.windowHeight) {
-				Console::Info("Renderer resizing to %dx%d", state.windowWidth, state.windowHeight);
-				derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
-				derived->Resized(state.windowWidth, state.windowHeight);
-				windowWidth = state.windowWidth;
-				windowHeight = state.windowHeight;
+			if(window_width_ != state.window_width_ || window_height_ != state.window_height_) {
+				console_t::info("renderer_t resizing to %dx%d", state.window_width_, state.window_height_);
+				derived->set_render_target_and_depth_stencil(render_state_t::RenderTarget_Null, HANDLE_NONE, render_state_t::DepthStencil_Null, HANDLE_NONE);
+				derived->Resized(state.window_width_, state.window_height_);
+				window_width = state.window_width_;
+				window_height = state.window_height_;
 			}
 
-			derived->SetRenderTargetAndDepthStencil(state.renderTargetType, state.renderTarget, state.depthStencilType, state.depthStencil);
-			derived->SetViewport(state.viewPortRect);
-			derived->SetDepthState(state.depthTest, state.depthWrite);
-			derived->SetRasterizerState(state.cullMode, state.wireFrame);
+			derived->set_render_target_and_depth_stencil(state.render_target_type_, state.render_target_, state.depth_stencil_type_, state.depth_stencil_);
+			derived->SetViewport(state.view_port_rect_);
+			derived->set_depth_state(state.depth_test_, state.depth_write_);
+			derived->SetRasterizerState(state.cull_mode_, state.wire_frame_);
 
-			derived->Clear(state.clearRenderTarget, state.renderTargetClearValue.vals, state.clearDepthStencil, state.depthClearValue);
+			derived->clear(state.clear_render_target_, state.render_target_clear_value_.vals_, state.clear_depth_stencil_, state.depth_clear_value_);
 						
-			uint32 currentTranslucencyType = DrawCommand::TranslucencyType_Opaque;
-			derived->SetBlendState(false);
+			uint32 current_translucency_type = draw_command_t::translucency_type_opaque_;
+			derived->set_blend_state(false);
 
-			void *currentBuffer = nullptr;
-			uint32 currentLayer = 0;
+			void *current_buffer = nullptr;
+			uint32 current_layer = 0;
 			
-			Handle currentVertexFormat = HANDLE_NONE;
-			Handle currentShaderProgram = HANDLE_NONE;		
-			Handle currentTextureSet = HANDLE_NONE;
-			Handle currentMesh = HANDLE_NONE;
-			Handle currentMaterial = HANDLE_NONE;
+			handle_t current_vertex_format = HANDLE_NONE;
+			handle_t current_shader_program = HANDLE_NONE;		
+			handle_t current_texture_set = HANDLE_NONE;
+			handle_t current_mesh = HANDLE_NONE;
+			handle_t current_material = HANDLE_NONE;
 
-			bool setLayout = false;
+			bool set_layout = false;
 
-			for(uint32 i = 0; i < commands.count; ++i) {
-				const DrawCommandList::ValueEntry &ve = commands.values[commands.keys[i].index];
-				const DrawCommand *dc = &ve.drawCommand;
-				const Matrix44 &matrix = ve.m;
+			for(uint32 i = 0; i < commands.count_; ++i) {
+				const draw_command_list_t::value_entry_t &ve = commands.values_[commands.keys_[i].index_];
+				const draw_command_t *dc = &ve.draw_command;
+				const matrix44_t &matrix = ve.m;
 
-				const VertexFormat *vf = VertexFormatManager::Get(dc->vertexFormat);
-				const ShaderProgram *baseShader = ShaderProgramManager::Get(dc->shaderProgram);
+				const vertex_format_t *vf = vertex_format_manager_t::get(dc->vertex_format_);
+				const shader_program_t *base_shader = shader_program_manager_t::get(dc->shader_program_);
 			
-				assert(baseShader->variant == ShaderProgram::Variant_Normal && "can only get variants from a normal shader program");
-				const ShaderProgram *shader = baseShader;
-				if(state.shaderVariant != ShaderProgram::Variant_Normal) {
-					Handle h = baseShader->variants[state.shaderVariant-1];
+				assert(base_shader->variant_ == shader_program_t::Variant_Normal && "can only get variants from a normal shader program");
+				const shader_program_t *shader = base_shader;
+				if(state.shader_variant_ != shader_program_t::Variant_Normal) {
+					handle_t h = base_shader->variants_[state.shader_variant_-1];
 					if(h == HANDLE_NONE) {
 						// No such variant for this shader, skip
 						continue;
 					}
-					shader = ShaderProgramManager::Get(h);
+					shader = shader_program_manager_t::get(h);
 				}
 
-				if(currentTranslucencyType != dc->fields.translucencyType) {
-					if(dc->fields.translucencyType == DrawCommand::TranslucencyType_Translucent) {
+				if(current_translucency_type != dc->fields_.translucency_type_) {
+					if(dc->fields_.translucency_type_ == draw_command_t::translucency_type_translucent_) {
 						// Enable blending, disable depth write
-						derived->SetDepthState(state.depthTest, false);
-						derived->SetBlendState(true);
+						derived->set_depth_state(state.depth_test_, false);
+						derived->set_blend_state(true);
 					} else {
 						// Disable blending, restore depth write
-						derived->SetDepthState(state.depthTest, state.depthWrite);
-						derived->SetBlendState(false);
+						derived->set_depth_state(state.depth_test_, state.depth_write_);
+						derived->set_blend_state(false);
 					}
-					currentTranslucencyType = dc->fields.translucencyType;
+					current_translucency_type = dc->fields_.translucency_type_;
 				}
 
-				if(currentVertexFormat != dc->vertexFormat) {
-					currentVertexFormat = dc->vertexFormat;
-					setLayout = true;
+				if(current_vertex_format != dc->vertex_format_) {
+					current_vertex_format = dc->vertex_format_;
+					set_layout = true;
 				}
 
-				if(currentShaderProgram != dc->shaderProgram) {
+				if(current_shader_program != dc->shader_program_) {
 				
 					// Unbind all textures from current shader
-					if(currentShaderProgram != HANDLE_NONE) {
-						derived->UnbindAllTextures();
+					if(current_shader_program != HANDLE_NONE) {
+						derived->unbind_all_textures();
 					}
 
 					// Bind the new shader and set per-frame constants
-					derived->BindShaders(shader);
-					currentShaderProgram = dc->shaderProgram;
-					if(shader->vertexShader.frameUniformBufferLocation != -1) {
-						derived->SetPerFrameVertexShaderConstants(state, shader);
+					derived->bind_shaders(shader);
+					current_shader_program = dc->shader_program_;
+					if(shader->vertex_shader_.frame_uniform_buffer_location_ != -1) {
+						derived->set_per_frame_vertex_shader_constants(state, shader);
 					}
-					if(shader->pixelShader.frameUniformBufferLocation != -1) {
-						derived->SetPerFramePixelShaderConstants(state, shader);
+					if(shader->pixel_shader_.frame_uniform_buffer_location_ != -1) {
+						derived->set_per_frame_pixel_shader_constants(state, shader);
 					}
 					derived->BindShadowMaps(shader, state);
 
-					currentMaterial = HANDLE_NONE;
-					currentTextureSet = HANDLE_NONE;
-					currentBuffer = nullptr;
-					setLayout = true;
+					current_material = HANDLE_NONE;
+					current_texture_set = HANDLE_NONE;
+					current_buffer = nullptr;
+					set_layout = true;
 				}
 
-				// Get or create the input layout for this vertexformat+vertexshader combination
-				if(setLayout) {
-					if(shader->inputAttributeCount != vf->attrCount) {
-						Console::Warning("Shader takes %u input attributes, but current vertex format has %u", shader->inputAttributeCount, vf->attrCount);
+				// get or create the input layout for this vertexformat+vertexshader combination
+				if(set_layout) {
+					if(shader->input_attribute_count_ != vf->attrCount) {
+						console_t::warning("shader_t takes %u input attributes, but current vertex format has %u", shader->input_attribute_count_, vf->attrCount);
 					}
 					derived->SetInputLayout(shader, vf);
-					setLayout = false;
+					set_layout = false;
 				}
 
-				if(currentMaterial != dc->material) {
-					Material *mat = MaterialManager::Get(dc->material);
-					if(shader->vertexShader.materialUniformBufferLocation != -1) {
-						derived->SetMaterialVertexShaderConstants(shader, mat);
+				if(current_material != dc->material_) {
+					material_t *mat = material_manager_t::get(dc->material_);
+					if(shader->vertex_shader_.material_uniform_buffer_location_ != -1) {
+						derived->set_material_vertex_shader_constants(shader, mat);
 					}
-					if(shader->pixelShader.materialUniformBufferLocation != -1) {
-						derived->SetMaterialPixelShaderConstants(shader, mat);
+					if(shader->pixel_shader_.material_uniform_buffer_location_ != -1) {
+						derived->set_material_pixel_shader_constants(shader, mat);
 					}
-					currentMaterial = dc->material;
-					if(currentTextureSet != dc->textureSet) {
-						derived->BindTextures(shader, TextureSetManager::Get(dc->textureSet));
-						currentTextureSet = dc->textureSet;
+					current_material = dc->material_;
+					if(current_texture_set != dc->texture_set_) {
+						derived->bind_textures(shader, texture_set_manager_t::get(dc->texture_set_));
+						current_texture_set = dc->texture_set_;
 					}
 				}
 			
-				if(shader->vertexShader.objectUniformBufferLocation != -1 || shader->pixelShader.objectUniformBufferLocation != -1) {
-					Matrix44 mv = state.view * matrix;
-					Matrix44 mvp = state.projection * mv;
+				if(shader->vertex_shader_.object_uniform_buffer_location_ != -1 || shader->pixel_shader_.object_uniform_buffer_location_ != -1) {
+					matrix44_t mv = state.view_ * matrix;
+					matrix44_t mvp = state.projection_ * mv;
 
-					if(shader->vertexShader.objectUniformBufferLocation != -1) {
-						derived->SetPerObjectVertexShaderConstants(state, shader, matrix, mv, mvp);
+					if(shader->vertex_shader_.object_uniform_buffer_location_ != -1) {
+						derived->set_per_object_vertex_shader_constants(state, shader, matrix, mv, mvp);
 					}
-					if(shader->pixelShader.objectUniformBufferLocation != -1) {
-						derived->SetPerObjectPixelShaderConstants(state, shader, matrix, mv, mvp);
+					if(shader->pixel_shader_.object_uniform_buffer_location_ != -1) {
+						derived->set_per_object_pixel_shader_constants(state, shader, matrix, mv, mvp);
 					}
 				}
 
 				// Bind buffers again if they have changed
-				void *b = MeshManager::Get(dc->mesh)->GetBuffer();
-				if(currentBuffer != b) {
-					derived->BindBuffer(b, vf);
-					currentBuffer = b;
+				void *b = mesh_manager_t::get(dc->mesh_)->get_buffer();
+				if(current_buffer != b) {
+					derived->bind_buffer(b, vf);
+					current_buffer = b;
 				}
 
 				// Actually submit the vertex/index data
-				derived->DrawBuffer(b);
+				derived->draw_buffer(b);
 			}
 
-			derived->BindBuffer(nullptr, nullptr);
+			derived->bind_buffer(nullptr, nullptr);
 
-			if(currentShaderProgram != HANDLE_NONE) {
-				derived->UnbindAllTextures();
-				derived->BindShaders(nullptr);
+			if(current_shader_program != HANDLE_NONE) {
+				derived->unbind_all_textures();
+				derived->bind_shaders(nullptr);
 			}
 
-			derived->SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Null, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
-			derived->ReleaseContext();
+			derived->set_render_target_and_depth_stencil(render_state_t::RenderTarget_Null, HANDLE_NONE, render_state_t::DepthStencil_Null, HANDLE_NONE);
+			derived->release_context();
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

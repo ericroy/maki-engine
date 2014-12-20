@@ -1,20 +1,20 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class TimeSource;
+		class time_source_t;
 
-		class Timer
+		class timer_t
 		{
 		public:
 			static const int32 N_FRAME_AVERAGE = 30;
 
 		public:
-			Timer(TimeSource *source);
-			void Tick();
+			timer_t(time_source_t *source);
+			void tick();
 
 		private:
 			void UpdateHistory();
@@ -32,10 +32,10 @@ namespace Maki
 			uint64 lastTime;
 			uint64 updateCount;
 			float deltaHistory[N_FRAME_AVERAGE];
-			TimeSource *source;
+			time_source_t *source;
 		};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

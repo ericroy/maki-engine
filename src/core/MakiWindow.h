@@ -10,27 +10,27 @@
 #include <Xinput.h>
 #endif
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class Config;
-		class Engine;
+		class config_t;
+		class engine_t;
 
-		class Window
+		class window_t
 		{
 		public:
-			Window(RenderCore::Type renderCoreType, const Config *config);
-			virtual ~Window();
-			int Pump(Engine *engine);
-			void PollInput(InputState *state);
-			inline float GetAspect() { return height == 0 ? (float)width : width / (float)height; };
+			window_t(render_core_t::type_t renderCoreType, const config_t *config);
+			virtual ~window_t();
+			int Pump(engine_t *engine);
+			void poll_input(input_state_t *state);
+			inline float get_aspect() { return height == 0 ? (float)width : width / (float)height; };
 
 		private:
 			void ConnectGameController(int32 i); 
 			inline int32 GetControllerIndex(int32 instanceId)
 			{
-				for(int32 i = 0; i < InputState::MAX_PLAYERS; i++) {
+				for(int32 i = 0; i < input_state_t::max_players_; i++) {
 					if(controllerInstanceIds[i] == instanceId) { return i; }
 				}
 				return -1;
@@ -43,12 +43,12 @@ namespace Maki
 			SDL_Window *window;
 
 		private:
-			InputState::KeyStateReport keyStates[256];
-			SDL_GameController *controllerHandles[InputState::MAX_PLAYERS];
-			InputState::Controller controllers[InputState::MAX_PLAYERS];
-			int32 controllerInstanceIds[InputState::MAX_PLAYERS];
+			input_state_t::key_state_report_t keyStates[256];
+			SDL_GameController *controllerHandles[input_state_t::max_players_];
+			input_state_t::controller_t controllers[input_state_t::max_players_];
+			int32 controllerInstanceIds[input_state_t::max_players_];
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

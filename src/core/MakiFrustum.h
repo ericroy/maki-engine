@@ -2,120 +2,120 @@
 #include "core/core_stdafx.h"
 #include "core/MakiVector2.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		class Frustum
+		class frustum_t
 		{
 		public:
-			Frustum() {}
+			frustum_t() {}
 		
-			Frustum(float left, float right, float bottom, float top, float nearPlane, float farPlane, float fov = 0.0f)
-				: left(left), right(right), bottom(bottom), top(top), nearPlane(nearPlane), farPlane(farPlane), fov(fov)
+			frustum_t(float left, float right, float bottom, float top, float near_plane, float far_plane, float fov = 0.0f)
+				: left_(left), right_(right), bottom_(bottom), top_(top), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
 			{
 			}
 
-			Frustum(float width, float height, float nearPlane, float farPlane, float fov = 0.0f)
-				: left(-width/2), right(width/2), bottom(-height/2), top(height/2), nearPlane(nearPlane), farPlane(farPlane), fov(fov)
+			frustum_t(float width, float height, float near_plane, float far_plane, float fov = 0.0f)
+				: left_(-width/2), right_(width/2), bottom_(-height/2), top_(height/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
 			{
 			}
 
-			Frustum(const Vector2 &widthHeight, float nearPlane, float farPlane, float fov = 0.0f)
-				: left(-widthHeight.x/2), right(widthHeight.x/2), bottom(-widthHeight.y/2), top(widthHeight.y/2), nearPlane(nearPlane), farPlane(farPlane), fov(fov)
+			frustum_t(const Vector2 &width_height, float near_plane, float far_plane, float fov = 0.0f)
+				: left_(-width_height.x/2), right_(width_height.x/2), bottom_(-width_height.y/2), top_(width_height.y/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
 			{
 			}
 
-			inline void Set(float width, float height, float nearPlane, float farPlane, float fov = 0.0f)
+			inline void set(float width, float height, float near_plane, float far_plane, float fov = 0.0f)
 			{
 				float wo2 = width / 2.0f;
 				float ho2 = height / 2.0f;
-				left = -wo2;
-				right = wo2;
-				bottom = -ho2;
-				top = ho2;
-				this->nearPlane = nearPlane;
-				this->farPlane = farPlane;
-				this->fov = fov;
+				left_ = -wo2;
+				right_ = wo2;
+				bottom_ = -ho2;
+				top_ = ho2;
+				near_plane_ = near_plane;
+				far_plane_ = far_plane;
+				fov_ = fov;
 			}
-			inline void Set(const Vector2 &widthHeight, float nearPlane, float farPlane, float fov = 0.0f) { Set(widthHeight.x, widthHeight.y, nearPlane, farPlane, fov); }
-			inline void Set(float width, float height) { Set(width, height, this->nearPlane, this->farPlane, this->fov); }		
-			inline void Set(const Vector2 &widthHeight) { Set(widthHeight.x, widthHeight.y, this->nearPlane, this->farPlane, this->fov); }
+			inline void set(const Vector2 &width_height, float near_plane, float far_plane, float fov = 0.0f) { set(width_height.x, width_height.y, near_plane, far_plane, fov); }
+			inline void set(float width, float height) { set(width, height, near_plane_, far_plane_, fov_); }		
+			inline void set(const Vector2 &width_height) { set(width_height.x, width_height.y, near_plane_, far_plane_, fov_); }
 
-			inline void Set(float left, float right, float bottom, float top, float nearPlane, float farPlane, float fov = 0.0f)
+			inline void set(float left, float right, float bottom, float top, float near_plane, float far_plane, float fov = 0.0f)
 			{
-				this->left = left;
-				this->right = right;
-				this->bottom = bottom;
-				this->top = top;
-				this->nearPlane = nearPlane;
-				this->farPlane = farPlane;
-				this->fov = fov;
+				left_ = left;
+				right_ = right;
+				bottom_ = bottom;
+				top_ = top;
+				near_plane_ = near_plane;
+				far_plane_ = far_plane;
+				fov_ = fov;
 			}
-			inline void Set(float left, float right, float bottom, float top) { Set(left, right, bottom, top, this->nearPlane, this->farPlane, this->fov); }
+			inline void set(float left, float right, float bottom, float top) { set(left, right, bottom, top, near_plane_, far_plane_, fov_); }
 
 
-			inline float GetWidth() const { return right - left; }
-			inline float GetHeight() const { return top - bottom; }
-			inline float GetAspect() const
+			inline float get_width() const { return right_ - left_; }
+			inline float get_height() const { return top_ - bottom_; }
+			inline float get_aspect() const
 			{
-				float h = top - bottom;
-				return h != 0.0f ? (right - left) / h : 1.0f;
+				float h = top_ - bottom_;
+				return h != 0.0f ? (right_ - left_) / h : 1.0f;
 			}
 
-			void ExtractPlanes(Vector4 planes[6]) const
+			void extract_planes(vector4_t planes[6]) const
 			{
 				// Near, Far
-				planes[0] = Vector4(0.0f, 0.0f, 1.0f, -nearPlane); 
-				planes[1] = Vector4(0.0f, 0.0f, -1.0f, farPlane);
+				planes[0] = vector4_t(0.0f, 0.0f, 1.0f, -near_plane_); 
+				planes[1] = vector4_t(0.0f, 0.0f, -1.0f, far_plane_);
 
-				if(fov == 0.0f) {
+				if(fov_ == 0.0f) {
 					// Left, right
-					planes[2] = Vector4(-1.0f, 0.0f, 0.0f, -left); 
-					planes[3] = Vector4(1.0f, 0.0f, 0.0f, right);
+					planes[2] = vector4_t(-1.0f, 0.0f, 0.0f, -left_); 
+					planes[3] = vector4_t(1.0f, 0.0f, 0.0f, right_);
 
 					// Top, bottom
-					planes[4] = Vector4(0.0f, 1.0f, 0.0f, top); 
-					planes[5] = Vector4(0.0f, -1.0f, 0.0f, -bottom);
+					planes[4] = vector4_t(0.0f, 1.0f, 0.0f, top_);
+					planes[5] = vector4_t(0.0f, -1.0f, 0.0f, -bottom_);
 				} else {
-					float hh = farPlane * std::tan(fov * MAKI_DEG_TO_RAD / 2.0f);
-					float hw = hh * GetAspect();
+					float hh = far_plane_ * std::tan(fov_ * MAKI_DEG_TO_RAD / 2.0f);
+					float hw = hh * get_aspect();
 
-					Vector4 farTopRight(hw, hh, farPlane, 1.0f);
-					Vector4 farTopLeft(-hw, hh, farPlane, 1.0f);
-					Vector4 farBottomLeft(-hw, -hh, farPlane, 1.0f);
-					Vector4 farBottomRight(hw, -hh, farPlane, 1.0f);
+					vector4_t far_top_right(hw, hh, far_plane_, 1.0f);
+					vector4_t far_top_left(-hw, hh, far_plane_, 1.0f);
+					vector4_t far_bottom_left(-hw, -hh, far_plane_, 1.0f);
+					vector4_t far_bottom_right(hw, -hh, far_plane_, 1.0f);
 
 					// Left, right
-					planes[2] = farTopLeft.Cross(farBottomLeft);
-					planes[2].Normalize();
+					planes[2] = far_top_left.cross(far_bottom_left);
+					planes[2].normalize();
 					planes[2].w = 0.0f;
-					planes[3] = farBottomRight.Cross(farTopRight);
-					planes[3].Normalize();
+					planes[3] = far_bottom_right.cross(far_top_right);
+					planes[3].normalize();
 					planes[3].w = 0.0f;
 
 					// Top, bottom
-					planes[4] = farTopRight.Cross(farTopLeft);
-					planes[4].Normalize();
+					planes[4] = far_top_right.cross(far_top_left);
+					planes[4].normalize();
 					planes[4].w = 0.0f;
-					planes[5] = farBottomLeft.Cross(farBottomRight);
-					planes[5].Normalize();
+					planes[5] = far_bottom_left.cross(far_bottom_right);
+					planes[5].normalize();
 					planes[5].w = 0.0f;
 				}
 			}
 
 		public:
-			float left;
-			float right;
-			float bottom;
-			float top;
-			float nearPlane;
-			float farPlane;
-			// Zero implies orthographic
-			float fov;
+			float left_;
+			float right_;
+			float bottom_;
+			float top_;
+			float near_plane_;
+			float far_plane_;
+			// zero implies orthographic
+			float fov_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

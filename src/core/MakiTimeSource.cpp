@@ -3,28 +3,28 @@
 
 #include "SDL.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		TimeSource::TimeSource()
+		time_source_t::time_source_t()
 		{
 			uint64 ticksPerSecond = SDL_GetPerformanceFrequency();
 
 			// Ticks per microsecond
 			frequency = ticksPerSecond / 1e6;
-			Console::Info("Clock frequency is %f ticks per microsecond", frequency);
+			console_t::info("Clock frequency is %f ticks per microsecond", frequency);
 			assert(frequency != 0 && "Platform clock doesn't give microsecond resolution");
 
 			start = SDL_GetPerformanceCounter();
 		}
 
-		TimeSource::~TimeSource()
+		time_source_t::~time_source_t()
 		{
 		}
 
-		uint64 TimeSource::GetTimeMicro()
+		uint64 time_source_t::GetTimeMicro()
 		{
 			uint64 now = SDL_GetPerformanceCounter();
 			if(now < start) {
@@ -34,6 +34,6 @@ namespace Maki
 		}
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

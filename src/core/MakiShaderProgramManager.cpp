@@ -3,89 +3,89 @@
 #include "core/MakiEngine.h"
 #include "core/MakiRenderer.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		ShaderProgramManager::ShaderProgramManager(uint32 size)
-			: Manager<ShaderProgram, ShaderProgramManager>(size, "ShaderProgramManager")
+		shader_program_manager_t::shader_program_manager_t(uint32 size)
+			: manager_t<shader_program_t, shader_program_manager_t>(size, "shader_program_manager_t")
 		{
-			assert(size <= (1<<DrawCommand::BITS_PER_SHADER_PROGRAM) && "ShaderProgramManager too large, add more bits in DrawCommand");
+			assert(size <= (1<<draw_command_t::bits_per_shader_program_) && "shader_program_manager_t too large, add more bits in draw_command_t");
 		}
 	
-		ShaderProgramManager::~ShaderProgramManager()
+		shader_program_manager_t::~shader_program_manager_t()
 		{
 		}
 
-		Handle ShaderProgramManager::Load(Rid rid, ShaderProgram::Variant variant)
+		handle_t shader_program_manager_t::load(rid_t rid, shader_program_t::variant_t variant)
 		{
-			Handle handle = resPool->Match(FindPredicate(rid, variant)) | managerId;
+			handle_t handle = resPool->Match(find_predicate_t(rid, variant)) | managerId;
 			if(handle != HANDLE_NONE) {
 				return handle;
 			}
 
-			handle = resPool->Alloc() | managerId;
-			ShaderProgram *shader = resPool->Get(handle & HANDLE_VALUE_MASK);
-			new(shader) ShaderProgram();
+			handle = resPool->alloc() | managerId;
+			shader_program_t *shader = resPool->get(handle & handle_value_mask_);
+			new(shader) shader_program_t();
 		
-			if(!shader->Load(rid, variant)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			if(!shader->load(rid, variant)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
-			Engine *eng = Engine::Get();
-			if(!eng->renderer->CreateShaderProgram(shader)) {
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+			engine_t *eng = engine_t::get();
+			if(!eng->renderer_->create_shader_program(shader)) {
+				resPool->free(handle & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
 			return handle;
 		}
 
-		void ShaderProgramManager::ReloadAssets()
+		void shader_program_manager_t::reload_assets()
 		{
-			Engine *eng = Engine::Get();
-			const ResourcePool<ShaderProgram>::Iterator end = resPool->End();
-			for(ResourcePool<ShaderProgram>::Iterator iter = resPool->Begin(); iter != end; ++iter) {
-				ShaderProgram *shader = iter.Ptr();
-				Rid rid = shader->rid;
-				ShaderProgram::Variant variant = shader->variant;
+			engine_t *eng = engine_t::get();
+			const resource_pool_t<shader_program_t>::iterator_t end = resPool->end();
+			for(resource_pool_t<shader_program_t>::iterator_t iter = resPool->begin(); iter != end; ++iter) {
+				shader_program_t *shader = iter.Ptr();
+				rid_t rid = shader->rid_;
+				shader_program_t::variant_t variant = shader->variant_;
 
 				if(rid != RID_NONE) {
-					shader->~ShaderProgram();
-					new(shader) ShaderProgram();
-					if(shader->Load(rid, variant)) {
-						eng->renderer->CreateShaderProgram(shader);
+					shader->~shader_program_t();
+					new(shader) shader_program_t();
+					if(shader->load(rid, variant)) {
+						eng->renderer_->create_shader_program(shader);
 					}
 				}
 			}
 		}
 	
-		bool ShaderProgramManager::ReloadAsset(Rid rid)
+		bool shader_program_manager_t::reload_asset(rid_t rid)
 		{
 			bool found = false;
-			for(uint32 variant = ShaderProgram::Variant_Normal; variant < ShaderProgram::VariantCount; variant++) {
-				Handle handle = resPool->Match(FindPredicate(rid, (ShaderProgram::Variant)variant)) | managerId;
+			for(uint32 variant = shader_program_t::variant_normal_; variant < shader_program_t::variant_count_; variant++) {
+				handle_t handle = resPool->Match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | managerId;
 				if(handle == HANDLE_NONE) {
 					continue;
 				}
 				found = true;
 
-				ShaderProgram *shader = resPool->Get(handle & HANDLE_VALUE_MASK);
-				resPool->Free(handle & HANDLE_VALUE_MASK);
+				shader_program_t *shader = resPool->get(handle & handle_value_mask_);
+				resPool->free(handle & handle_value_mask_);
 
 				if(rid != RID_NONE) {
-					shader->~ShaderProgram();
-					new(shader) ShaderProgram();
-					if(shader->Load(rid, (ShaderProgram::Variant)variant)) {
-						Engine::Get()->renderer->CreateShaderProgram(shader);
+					shader->~shader_program_t();
+					new(shader) shader_program_t();
+					if(shader->load(rid, (shader_program_t::variant_t)variant)) {
+						engine_t::get()->renderer_->create_shader_program(shader);
 					}
 				}
 			}
 			return found;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

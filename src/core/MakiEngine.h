@@ -3,54 +3,54 @@
 #include "core/MakiPseudoSingleton.h"
 #include "core/MakiTimer.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		class Config;
-		class AssetLibrary;
-		class Renderer;
-		class RenderCore;
-		class Window;
-		class InputState;
-		class Timer;
-		class TimeSource;
+		class config_t;
+		class asset_library_t;
+		class renderer_t;
+		class render_core_t;
+		class window_t;
+		class input_state_t;
+		class timer_t;
+		class time_source_t;
 
 		
 		
 
-		class Engine : public PseudoSingleton<Engine>
+		class engine_t : public pseudo_singleton_t<engine_t>
 		{
 		public:
-			static const uint32 DEFAULT_UPDATES_PER_SECOND = 60;
-			static const uint32 DEFAULT_MAX_SKIPPED_FRAMES = 6;
+			static const uint32 default_updates_per_second_ = 60;
+			static const uint32 default_max_skipped_frames_ = 6;
 
 		public:
-			Engine(Window *window, TimeSource *timeSource, RenderCore *core, const AssetLibrary *assets, const Config *config);
-			virtual ~Engine();
-			void Tick();
+			engine_t(window_t *window, time_source_t *time_source, render_core_t *core, const asset_library_t *assets, const config_t *config);
+			virtual ~engine_t();
+			void tick();
 
 		public:
-			std::function<void(float)> FrameUpdate;
-			std::function<void()> FrameDraw;
-			const Config *config;
-			const AssetLibrary *assets;
+			std::function<void(float)> frame_update_;
+			std::function<void()> frame_draw_;
+			const config_t *config_;
+			const asset_library_t *assets_;
 		
-			Timer updateTimer;
-			Timer renderTimer;
+			timer_t update_timer_;
+			timer_t render_timer_;
 		
-			InputState *inputState;
-			Renderer *renderer;
-			Window *window;
+			input_state_t *input_state_;
+			renderer_t *renderer_;
+			window_t *window_;
 
 		private:
-			TimeSource *timeSource;
-			int64 nextUpdate;
-			uint32 microsPerUpdate;
-			uint32 maxSkippedFrames;
+			time_source_t *time_source_;
+			int64 next_update_;
+			uint32 micros_per_update_;
+			uint32 max_skipped_frames_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

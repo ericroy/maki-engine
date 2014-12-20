@@ -2,14 +2,14 @@
 #include "core/MakiVertexFormat.h"
 #include "core/MakiEngine.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		const uint8 VertexFormat::DataTypeSizes[DataTypeCount] = {4, 4, 2, 1};
+		const uint8 vertex_format_t::DataTypeSizes[DataTypeCount] = {4, 4, 2, 1};
 
-		VertexFormat::VertexFormat()
+		vertex_format_t::vertex_format_t()
 			: stride(0),
 			attrCount(0),
 			attrFlags(0)
@@ -17,7 +17,7 @@ namespace Maki
 			memset(formats, 0, sizeof(formats));
 		}
 
-		VertexFormat::VertexFormat(const VertexFormat &other)
+		vertex_format_t::vertex_format_t(const vertex_format_t &other)
 			: stride(other.stride),
 			attrCount(other.attrCount),
 			attrFlags(other.attrFlags)
@@ -25,19 +25,19 @@ namespace Maki
 			memcpy(formats, other.formats, sizeof(formats));
 		}
 
-		VertexFormat::~VertexFormat() {
+		vertex_format_t::~vertex_format_t() {
 		}
 
-		void VertexFormat::PushAttribute(Attribute attr, DataType type, uint8 count)
+		void vertex_format_t::PushAttribute(Attribute attr, DataType type, uint8 count)
 		{
 			assert(count <= 64);
 			attrFlags |= 1<<attr;
-			formats[attr].type = type;
-			formats[attr].count = count;
+			formats[attr].type_ = type;
+			formats[attr].count_ = count;
 			stride += DataTypeSizes[type]*count;
 			attrCount++;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

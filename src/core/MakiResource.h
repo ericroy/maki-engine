@@ -1,40 +1,40 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Resource
+		class resource_t
 		{
 		public:
 			template<typename T>
-			struct FindPredicate : public std::unary_function<const T *, bool>
+			struct find_predicate_t : public std::unary_function<const T *, bool>
 			{
-				FindPredicate(Rid rid) : rid(rid) {}
+				find_predicate_t(rid_t rid) : rid(rid) {}
 				inline bool operator()(const T *res) const
 				{
 					return res->rid == rid;
 				}
-				Rid rid;
+				rid_t rid;
 			};
 
 		public:
-			Resource() : rid(RID_NONE) {}
-			Resource(const MoveToken<Resource> &other);
-			explicit Resource(const Resource &other) { rid = other.rid; }
-			virtual ~Resource() {}
+			resource_t() : rid_(RID_NONE) {}
+			resource_t(const move_token_t<resource_t> &other);
+			explicit resource_t(const resource_t &other) { rid_ = other.rid_; }
+			virtual ~resource_t() {}
 
-			inline bool operator==(const Resource &other) const { return rid == other.rid; }
+			inline bool operator==(const resource_t &other) const { return rid_ == other.rid_; }
 
 		public:
-			// Resource id
-			// This is an index into the data in the programmatically generated ResourceLibrary class
-			Rid rid;
+			// resource_t id
+			// This is an index into the data in the programmatically generated resource_library_t class
+			rid_t rid_;
 		};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

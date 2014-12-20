@@ -2,12 +2,12 @@
 #include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class VertexFormat
+		class vertex_format_t
 		{
 		public:
 			enum Attribute
@@ -56,11 +56,11 @@ namespace Maki
 			static const uint8 DATA_COUNT_MASK = 0xff-DATA_TYPE_MASK;
 
 		public:
-			VertexFormat();
-			VertexFormat(const VertexFormat &other);
-			VertexFormat(const MoveToken<VertexFormat> &) { assert(false && "VertexFormat move construction not allowed"); }
-			~VertexFormat();
-			inline bool operator==(const VertexFormat &other) const;
+			vertex_format_t();
+			vertex_format_t(const vertex_format_t &other);
+			vertex_format_t(const move_token_t<vertex_format_t> &) { assert(false && "vertex_format_t move construction not allowed"); }
+			~vertex_format_t();
+			inline bool operator==(const vertex_format_t &other) const;
 			inline bool HasAttribute(Attribute attr) const;
 			inline DataType GetDataType(Attribute attr) const;
 			inline uint8 GetDataCount(Attribute attr) const;
@@ -86,7 +86,7 @@ namespace Maki
 
 
 
-		inline bool VertexFormat::operator==(const VertexFormat &other) const
+		inline bool vertex_format_t::operator==(const vertex_format_t &other) const
 		{
 			if(attrFlags != other.attrFlags) {
 				return false;
@@ -94,31 +94,31 @@ namespace Maki
 			return memcmp(formats, other.formats, sizeof(formats)) == 0;
 		}
 
-		bool VertexFormat::HasAttribute(Attribute attr) const
+		bool vertex_format_t::HasAttribute(Attribute attr) const
 		{
 			return (attrFlags & (1<<attr)) != 0;
 		}
 
-		VertexFormat::DataType VertexFormat::GetDataType(Attribute attr) const
+		vertex_format_t::DataType vertex_format_t::GetDataType(Attribute attr) const
 		{
-			return (DataType)formats[attr].type;
+			return (DataType)formats[attr].type_;
 		}
 
-		uint8 VertexFormat::GetDataCount(Attribute attr) const
+		uint8 vertex_format_t::GetDataCount(Attribute attr) const
 		{
-			return formats[attr].count;
+			return formats[attr].count_;
 		}
 
-		int32 VertexFormat::GetStride() const
+		int32 vertex_format_t::GetStride() const
 		{
 			return stride;
 		}
 
-		int32 VertexFormat::GetAttributeCount() const
+		int32 vertex_format_t::GetAttributeCount() const
 		{
 			return attrCount;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

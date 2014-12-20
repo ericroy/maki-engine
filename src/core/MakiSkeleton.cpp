@@ -3,86 +3,86 @@
 #include "core/MakiDocument.h"
 #include "core/MakiSkeleton.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		Skeleton::Skeleton() : Resource() {}
-		Skeleton::~Skeleton() {}
+		skeleton_t::skeleton_t() : resource_t() {}
+		skeleton_t::~skeleton_t() {}
 
-		bool Skeleton::Load(Rid rid) {
-			bones.Delete();
+		bool skeleton_t::load(rid_t rid) {
+			bones.free();
 		
-			Document doc;
-			if(!doc.Load(rid)) {
-				Console::Error("Could not parse file as document <rid %d>", rid);
+			document_t doc;
+			if(!doc.load(rid)) {
+				console_t::error("Could not parse file as document <rid %d>", rid);
 				return false;
 			}
 
-			bones.SetSize(doc.root->count);
-			bones.Zero();
+			bones.set_size(doc.root->count);
+			bones.zero();
 
-			Array<Joint> joints(doc.root->count);
+			array_t<joint_t> joints(doc.root->count);
 
-			for(uint32 i = 0; i < bones.count; i++) {
-				Document::Node *n = doc.root->children[i];
+			for(uint32 i = 0; i < bones.count_; i++) {
+				document_t::node_t *n = doc.root->children[i];
 				Bone *b = &bones[i];
-				Joint *j = &joints[i];
+				joint_t *j = &joints[i];
 			
-				int32 parentIndex = n->ResolveAsInt("#0");
+				int32 parentIndex = n->resolve_as_int("#0");
 				if(parentIndex >= 0) {
-					assert(bones[parentIndex].childCount < MAX_CHILDREN_PER_BONE);
-					bones[parentIndex].children[bones[parentIndex].childCount++] = b;
+					assert(bones[parentIndex].child_count_ < MAX_CHILDREN_PER_BONE);
+					bones[parentIndex].children_[bones[parentIndex].child_count_++] = b;
 				}
 
-				j->offset = Vector3(n->children[1]->ValueAsFloat(), n->children[2]->ValueAsFloat(), n->children[3]->ValueAsFloat());
+				j->offset = vector3_t(n->children[1]->value_as_float(), n->children[2]->value_as_float(), n->children[3]->value_as_float());
 
-				Vector3 eulerAngles(
-					n->children[4]->ValueAsFloat() * MAKI_DEG_TO_RAD,
-					n->children[5]->ValueAsFloat() * MAKI_DEG_TO_RAD,
-					n->children[6]->ValueAsFloat() * MAKI_DEG_TO_RAD
+				vector3_t euler_angles(
+					n->children[4]->value_as_float() * MAKI_DEG_TO_RAD,
+					n->children[5]->value_as_float() * MAKI_DEG_TO_RAD,
+					n->children[6]->value_as_float() * MAKI_DEG_TO_RAD
 				);
-				j->rot.FromEulerAngles(eulerAngles);
+				j->rot.from_euler_angles(euler_angles);
 			}
 
-			this->rid = rid;
+			this->rid_ = rid;
 
-			inverseBindPose.Delete();
-			inverseBindPose.SetSize(joints.count);
-			CalculateInverseBindPose(joints.data, inverseBindPose.data);
+			inverse_bind_pose.free();
+			inverse_bind_pose.set_size(joints.count_);
+			calculate_inverse_bind_pose(joints.data_, inverse_bind_pose.data_);
 
 			return true;
 		}
 
-		void Skeleton::CalculateInverseBindPose(Joint *jointStates, Matrix44 *out) {
+		void skeleton_t::calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out) {
 			uint32 index = 0;
-			CalculatePoseRecursive(index, Matrix44::Identity, jointStates, out);
-			for(uint32 i = 0; i < bones.count; i++) {
-				Matrix44::AffineInverse(out[i], out[i]);
+			calculate_pos_recursive(index, matrix44_t::identity_, joint_states, out);
+			for(uint32 i = 0; i < bones.count_; i++) {
+				matrix44_t::affine_inverse(out[i], out[i]);
 			}
 		}
 
-		void Skeleton::CalculateWorldPose(Joint *jointStates, Matrix44 *out) {
+		void skeleton_t::calculate_world_pose(joint_t *joint_states, matrix44_t *out) {
 			uint32 index = 0;
-			CalculatePoseRecursive(index, Matrix44::Identity, jointStates, out);
+			calculate_pos_recursive(index, matrix44_t::identity_, joint_states, out);
 		}
 
-		void Skeleton::CalculatePoseRecursive(uint32 &index, const Matrix44 &current, Joint *jointStates, Matrix44 *out) {
-			Matrix44 rot;
-			jointStates[index].rot.ToMatrix(rot);
-			Matrix44::Translation(jointStates[index].offset, rot);
+		void skeleton_t::calculate_pos_recursive(uint32 &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out) {
+			matrix44_t rot;
+			joint_states[index].rot_.to_matrix(rot);
+			matrix44_t::translation(joint_states[index].offset_, rot);
 		
 			out[index] = current * rot;
-			const Matrix44 &newCurrent = out[index];
+			const matrix44_t &newCurrent = out[index];
 
 			const Bone *b = &bones[index];
 			index++;
 			for(uint32 i = 0; i < b->childCount; i++) {
-				CalculatePoseRecursive(index, newCurrent, jointStates, out);
+				calculate_pos_recursive(index, newCurrent, joint_states, out);
 			}
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

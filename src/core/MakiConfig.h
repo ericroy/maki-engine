@@ -1,30 +1,30 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		class AssetLibrary;
-		class Document;
+		class asset_library_t;
+		class document_t;
 
-		class Config
+		class config_t
 		{
 		public:
-			Config(AssetLibrary *lib, Rid rid);
-			virtual ~Config();
+			config_t(asset_library_t *lib, rid_t rid);
+			virtual ~config_t();
 
-			const char *GetString(const char *keyPath, const char *defaultValue) const;
-			int32 GetInt(const char *keyPath, int32 defaultValue) const;
-			uint32 GetUint(const char *keyPath, uint32 defaultValue) const;
-			bool GetBool(const char *keyPath, bool defaultValue) const;
-			float GetFloat(const char *keyPath, float defaultValue) const;
+			const char *get_string(const char *key_path, const char *default_value) const;
+			int32 get_int(const char *key_path, int32 default_value) const;
+			uint32 get_uint(const char *key_path, uint32 default_value) const;
+			bool get_bool(const char *key_path, bool default_value) const;
+			float get_float(const char *key_path, float default_value) const;
 
 		private:
-			Document *doc;
+			document_t *doc_;
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -5,7 +5,7 @@ Parts of this file based on OGRE quaterion class, the OGRE license appears below
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
+    (object_t-oriented Graphics Rendering engine_t)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2013 Torus Knot Software Ltd
@@ -42,17 +42,17 @@ THE SOFTWARE.
 #include "core/core_stdafx.h"
 #include "core/MakiQuaternion.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		const float Quaternion::Epsilon = 1e-03f;
-		const Quaternion Quaternion::Zero(0.0f, 0.0f, 0.0f, 0.0f);
-		const Quaternion Quaternion::Identity(1.0f, 0.0f, 0.0f, 0.0f);
+		const float quaternion_t::epsilon_ = 1e-03f;
+		const quaternion_t quaternion_t::zero_(0.0f, 0.0f, 0.0f, 0.0f);
+		const quaternion_t quaternion_t::identity_(1.0f, 0.0f, 0.0f, 0.0f);
 
 
-		void Quaternion::ToMatrix(Matrix44 &out) const
+		void quaternion_t::to_matrix(matrix44_t &out) const
 		{
 			const float tx  = x+x;
 			const float ty  = y+y;
@@ -86,10 +86,10 @@ namespace Maki
 			out.cols[2][3] = 0.0f;
 		}
 
-		void Quaternion::FromMatrix(const Matrix44 &m)
+		void quaternion_t::from_matrix(const matrix44_t &m)
 		{
 			// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
-			// article "Quaternion Calculus and Fast Animation".
+			// article "quaternion_t Calculus and Fast Animation".
 			float trace = m.cols[0][0] + m.cols[1][1] + m.cols[2][2];
 			float root;
 
@@ -124,10 +124,10 @@ namespace Maki
 			}
 		}
 	
-		void Quaternion::FromEulerAngles(float thetaX, float thetaY, float thetaZ) {
-			float hx = thetaX / 2.0f;
-			float hy = thetaY / 2.0f;
-			float hz = thetaZ / 2.0f;
+		void quaternion_t::from_euler_angles(float theta_x, float theta_y, float theta_z) {
+			float hx = theta_x / 2.0f;
+			float hy = theta_y / 2.0f;
+			float hz = theta_z / 2.0f;
 
 			float cx = cos(hx);
 			float cy = cos(hy);
@@ -153,7 +153,7 @@ namespace Maki
 		; Parameters:
 		;
 		;	Qx#, Qy#, Qz#, Qw#:
-		;		Quaternion to convert to Euler angles.
+		;		quaternion_t to convert to Euler angles.
 		;
 		; -------------------------------------------------------------------------------------------------------------------
 		Function QuatToEuler(Qx#, Qy#, Qz#, Qw#)
@@ -193,12 +193,12 @@ namespace Maki
 			QuatLib_Yaw#   =  ATan2(Sin_F#, Cos_F#)
 			QuatLib_Roll#  = -ATan2(Sin_V#, Cos_V#)
 
-		End Function
+		end Function
 
 		*/
 
 		
-		void Quaternion::ToEulerAngles(Vector3 &angles) const
+		void quaternion_t::to_euler_angles(vector3_t &angles) const
 		{
 			// Adapted from code found here:
 			// http://grezeszak.com/basics-of-quaternions-and-euler-angles/2011/
@@ -213,22 +213,22 @@ namespace Maki
 		
 			// 0.4999999f will correspond to 89.96376 degrees
 			if(test > 0.4999999f) {
-				angles.x = -2.0f * atan2(w, x);
-				angles.y = MAKI_PI/2.0f;
-				angles.z = MAKI_PI;
+				angles.x_ = -2.0f * atan2(w, x);
+				angles.y_ = MAKI_PI/2.0f;
+				angles.z_ = MAKI_PI;
 			} else if(test < -0.4999999f) {
-				angles.x = -2.0f * atan2(w, x);
-				angles.y = -MAKI_PI/2.0f;
-				angles.z = MAKI_PI;
+				angles.x_ = -2.0f * atan2(w, x);
+				angles.y_ = -MAKI_PI/2.0f;
+				angles.z_ = MAKI_PI;
 			} else {
-				angles.x = atan2(2.0f * (w * x + y * z), 1.0f - 2.0f * (xx + yy) );
-				angles.y = asin (2.0f * test);
-				angles.z = atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (yy + zz) );
+				angles.x_ = atan2(2.0f * (w * x + y * z), 1.0f - 2.0f * (xx + yy) );
+				angles.y_ = asin (2.0f * test);
+				angles.z_ = atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (yy + zz) );
 			}
 		}
 		
 
-		void Quaternion::FromAngleAxis(float theta, const Vector3 &axis)
+		void quaternion_t::from_angle_axis(float theta, const vector3_t &axis)
 		{
 			// assert:  axis is unit length
 			//
@@ -238,12 +238,12 @@ namespace Maki
 			float halfAngle(0.5f*theta);
 			float s = sin(halfAngle);
 			w = cos(halfAngle);
-			x = s*axis.x;
-			y = s*axis.y;
-			z = s*axis.z;
+			x = s*axis.x_;
+			y = s*axis.y_;
+			z = s*axis.z_;
 		}
 
-		void Quaternion::FromAngleAxis(float theta, const Vector4 &axis)
+		void quaternion_t::from_angle_axis(float theta, const vector4_t &axis)
 		{
 			// assert:  axis is unit length
 			//
@@ -253,12 +253,12 @@ namespace Maki
 			float halfAngle(0.5f*theta);
 			float s = sin(halfAngle);
 			w = cos(halfAngle);
-			x = s*axis.x;
-			y = s*axis.y;
-			z = s*axis.z;
+			x = s*axis.x_;
+			y = s*axis.y_;
+			z = s*axis.z_;
 		}
 
-		void Quaternion::ToAngleAxis(float &theta, Vector3 &axis) const
+		void quaternion_t::to_angle_axis(float &theta, vector3_t &axis) const
 		{
 			// The quaternion representing the rotation is
 			//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
@@ -267,19 +267,19 @@ namespace Maki
 			if(lenSq > 0.0f) {
 				theta = 2.0f*acos(w);
 				float invLen = 1.0f/sqrt(lenSq);
-				axis.x = x*invLen;
-				axis.y = y*invLen;
-				axis.z = z*invLen;
+				axis.x_ = x*invLen;
+				axis.y_ = y*invLen;
+				axis.z_ = z*invLen;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
-				axis.x = 1.0f;
-				axis.y = 0.0f;
-				axis.z = 0.0f;
+				axis.x_ = 1.0f;
+				axis.y_ = 0.0f;
+				axis.z_ = 0.0f;
 			}
 		}
 
-		void Quaternion::ToAngleAxis(float &theta, Vector4 &axis) const
+		void quaternion_t::to_angle_axis(float &theta, vector4_t &axis) const
 		{
 			// The quaternion representing the rotation is
 			//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
@@ -288,46 +288,46 @@ namespace Maki
 			if(lenSq > 0.0f) {
 				theta = 2.0f*acos(w);
 				float invLen = 1.0f/sqrt(lenSq);
-				axis.x = x*invLen;
-				axis.y = y*invLen;
-				axis.z = z*invLen;
+				axis.x_ = x*invLen;
+				axis.y_ = y*invLen;
+				axis.z_ = z*invLen;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
-				axis.x = 1.0f;
-				axis.y = 0.0f;
-				axis.z = 0.0f;
+				axis.x_ = 1.0f;
+				axis.y_ = 0.0f;
+				axis.z_ = 0.0f;
 			}
 		}
 
-		void Quaternion::FromRotationArc(const Vector3 &start, const Vector3 &end)
+		void quaternion_t::from_rotation_arc(const vector3_t &start, const vector3_t &end)
 		{
 			// Calculate the quaternion that will rotate vector "start" to vector "end"
-			Vector3 perp = start.Cross(end);
-			x = perp.x; y = perp.y; z = perp.z;
-			w = sqrt(start.LengthSquared() * end.LengthSquared()) + start.Dot(end);
-			Normalize();
+			vector3_t perp = start.cross(end);
+			x = perp.x_; y = perp.y_; z = perp.z_;
+			w = sqrt(start.LengthSquared() * end.LengthSquared()) + start.dot(end);
+			normalize();
 		}
 
-		Quaternion Quaternion::Inverse() const
+		quaternion_t quaternion_t::inverse() const
 		{
 			float norm = w*w + x*x + y*y + z*z;
 			if(norm > 0.0f) {
 				float invNorm = 1.0f/norm;
-				return Quaternion(w*invNorm, -x*invNorm, -y*invNorm, -z*invNorm);
+				return quaternion_t(w*invNorm, -x*invNorm, -y*invNorm, -z*invNorm);
 			} else {
 				// return an invalid result to flag the error
-				return Zero;
+				return zero;
 			}
 		}
 
-		Quaternion Quaternion::UnitInverse() const
+		quaternion_t quaternion_t::unit_inverse() const
 		{
 			// assert:  'this' is unit length
-			return Quaternion(w, -x, -y, -z);
+			return quaternion_t(w, -x, -y, -z);
 		}
 
-		Quaternion Quaternion::Exp() const
+		quaternion_t quaternion_t::exp() const
 		{
 			// If q = A*(x*i+y*j+z*k) where (x,y,z) is unit length, then
 			// exp(q) = cos(A)+sin(A)*(x*i+y*j+z*k).  If sin(A) is near zero,
@@ -336,101 +336,101 @@ namespace Maki
 			float angle = sqrt(x*x + y*y + z*z);
 			float s = sin(angle);
 
-			Quaternion result;
-			result.w = cos(angle);
+			quaternion_t result;
+			result.w_ = cos(angle);
 
-			if(fabs(s) >= Epsilon)
+			if(fabs(s) >= epsilon_)
 			{
 				float coeff = s/angle;
-				result.x = coeff*x;
-				result.y = coeff*y;
-				result.z = coeff*z;
+				result.x_ = coeff*x;
+				result.y_ = coeff*y;
+				result.z_ = coeff*z;
 			}
 			else
 			{
-				result.x = x;
-				result.y = y;
-				result.z = z;
+				result.x_ = x;
+				result.y_ = y;
+				result.z_ = z;
 			}
 
 			return result;
 		}
 
-		Quaternion Quaternion::Log() const
+		quaternion_t quaternion_t::log() const
 		{
 			// If q = cos(A)+sin(A)*(x*i+y*j+z*k) where (x,y,z) is unit length, then
 			// log(q) = A*(x*i+y*j+z*k).  If sin(A) is near zero, use log(q) =
 			// sin(A)*(x*i+y*j+z*k) since sin(A)/A has limit 1.
 
-			Quaternion result;
-			result.w = 0.0f;
+			quaternion_t result;
+			result.w_ = 0.0f;
 
 			if(fabs(w) < 1.0f) {
 				float angle = acos(w);
 				float s = sin(angle);
-				if(fabs(s) >= Epsilon) {
+				if(fabs(s) >= epsilon_) {
 					float coeff = angle/s;
-					result.x = coeff*x;
-					result.y = coeff*y;
-					result.z = coeff*z;
+					result.x_ = coeff*x;
+					result.y_ = coeff*y;
+					result.z_ = coeff*z;
 					return result;
 				}
 			}
 
-			result.x = x;
-			result.y = y;
-			result.z = z;
+			result.x_ = x;
+			result.y_ = y;
+			result.z_ = z;
 			return result;
 		}
 
-		Vector3 Quaternion::operator*(const Vector3 &v) const
+		vector3_t quaternion_t::operator*(const vector3_t &v) const
 		{
 			// nVidia SDK implementation
-			Vector3 uv, uuv;
-			Vector3 qvec(x, y, z);
-			uv = qvec.Cross(v);
-			uuv = qvec.Cross(uv);
+			vector3_t uv, uuv;
+			vector3_t qvec(x, y, z);
+			uv = qvec.cross(v);
+			uuv = qvec.cross(uv);
 			uv *= (2.0f * w);
 			uuv *= 2.0f;
 			return v + uv + uuv;
 		}
 
-		Vector4 Quaternion::operator*(const Vector4 &v) const
+		vector4_t quaternion_t::operator*(const vector4_t &v) const
 		{
 			// nVidia SDK implementation
-			Vector4 uv, uuv;
-			Vector4 qvec(x, y, z, 1.0f);
-			uv = qvec.Cross(v);
-			uuv = qvec.Cross(uv);
+			vector4_t uv, uuv;
+			vector4_t qvec(x, y, z, 1.0f);
+			uv = qvec.cross(v);
+			uuv = qvec.cross(uv);
 			uv *= (2.0f * w);
 			uuv *= 2.0f;
 			return v + uv + uuv;
 		}
 
 	
-		void Quaternion::Intermediate(const Quaternion &q0, const Quaternion &q1, const Quaternion &q2, Quaternion &a, Quaternion &b)
+		void quaternion_t::intermediate(const quaternion_t &q0, const quaternion_t &q1, const quaternion_t &q2, quaternion_t &a, quaternion_t &b)
 		{
 			// assert:  q0, q1, q2 are unit quaternions
-			Quaternion q0inv = q0.UnitInverse();
-			Quaternion q1inv = q1.UnitInverse();
-			Quaternion p0 = q0inv*q1;
-			Quaternion p1 = q1inv*q2;
-			Quaternion arg = 0.25f*(p0.Log()-p1.Log());
+			quaternion_t q0inv = q0.unit_inverse();
+			quaternion_t q1inv = q1.unit_inverse();
+			quaternion_t p0 = q0inv*q1;
+			quaternion_t p1 = q1inv*q2;
+			quaternion_t arg = 0.25f*(p0.log()-p1.log());
 
-			a = q1 * arg.Exp();
-			b = q1 * (-arg).Exp();
+			a = q1 * arg.exp();
+			b = q1 * (-arg).exp();
 		}
 
 
-		Quaternion Quaternion::Squad(float t, const Quaternion &p, const Quaternion &a, const Quaternion &b, const Quaternion &q)
+		quaternion_t quaternion_t::squad(float t, const quaternion_t &p, const quaternion_t &a, const quaternion_t &b, const quaternion_t &q)
 		{
 			float slerpT = 2.0f*t*(1.0f-t);
-			Quaternion slerpP = Slerp(t, p, q);
-			Quaternion slerpQ = Slerp(t, a, b);
-			return Slerp(slerpT, slerpP ,slerpQ);
+			quaternion_t slerpP = slerp(t, p, q);
+			quaternion_t slerpQ = slerp(t, a, b);
+			return slerp(slerpT, slerpP ,slerpQ);
 		}
 
-		void Quaternion::ComputeW()
+		void quaternion_t::compute_w()
 		{
 			float t = 1.0f - (x*x) - (y*y) - (z*z);
 			if(t < 0.0f) {
@@ -440,6 +440,6 @@ namespace Maki
 			}
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

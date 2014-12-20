@@ -4,232 +4,232 @@
 #include "core/MakiRenderPayload.h"
 #include "core/MakiRenderCore.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		Renderer::Renderer(Window *window, RenderCore *core, const Config *config)
+		renderer_t::renderer_t(window_t *window, render_core_t *core, const config_t *config)
 		:	window(window),
 			core(core),
-			lightDirtyFlags(0),
+			light_dirty_flags(0),
 			state(nullptr),
 			commands(nullptr)
 		{
-			uint32 maxDrawCommands = config->GetUint("engine.max_draw_commands_per_pass", DEFAULT_MAX_DRAW_COMMANDS_PER_PASS);
-			for(uint32 i = 0; i < MAX_RENDER_PAYLOADS; i++) {
-				renderStates.push_back(new RenderState());
-				commandLists.push_back(new DrawCommandList(maxDrawCommands));
+			uint32 maxDrawCommands = config->get_uint("engine.max_draw_commands_per_pass", default_max_draw_commands_per_pass_);
+			for(uint32 i = 0; i < max_render_payloads_; i++) {
+				render_states.push_back(new render_state_t());
+				command_lists.push_back(new draw_command_list_t(maxDrawCommands));
 			}
 
-			current.windowWidth = window->width;
-			current.windowHeight = window->height;
-			PrepareNextRenderState();
+			current.window_height_ = window->width;
+			current.window_height_ = window->height;
+			prepare_next_render_state();
 
 			// Kickoff the core thread, and make sure that it is initialized before we continue
 			core->Start();
-			RenderPayload payload(RenderPayload::Command_Init);
-			core->input.Put(payload);
-			core->output.Get(payload);
-			assert(payload.cmd == RenderPayload::Command_Init);
+			render_payload_t payload(render_payload_t::command_init_);
+			core->input.put(payload);
+			core->output.get(payload);
+			assert(payload.cmd == render_payload_t::command_init_);
 
-			if(config->GetBool("engine.wire_frame", false)) {
-				SetWireFrameEnabled(true);
+			if(config->get_bool("engine.wire_frame", false)) {
+				set_wire_frame_enabled(true);
 			}
 		}
 	
-		Renderer::~Renderer()
+		renderer_t::~renderer_t()
 		{
 			if(core != nullptr) {
-				core->input.Put(RenderPayload(RenderPayload::Command_Abort));
+				core->input.put(render_payload_t(render_payload_t::command_abort_));
 				core->Join();
-				SyncWithCore();
+				sync_with_core();
 			}
 
-			for(uint32 i = 0; i < renderStates.size(); i++) {
-				SAFE_DELETE(renderStates[i]);
-				SAFE_DELETE(commandLists[i]);
+			for(uint32 i = 0; i < render_states.size(); i++) {
+				MAKI_SAFE_DELETE(render_states[i]);
+				MAKI_SAFE_DELETE(command_lists[i]);
 			}
 
-			state->Clear();
-			commands->Clear();
+			state->clear();
+			commands->clear();
 
-			SAFE_DELETE(state);
-			SAFE_DELETE(commands);
+			MAKI_SAFE_DELETE(state);
+			MAKI_SAFE_DELETE(commands);
 		}
 
-		bool Renderer::Begin()
+		bool renderer_t::begin()
 		{
 			if(core != nullptr) {
-				SyncWithCore();
-				current.windowWidth = window->width;
-				current.windowHeight = window->height;
-				current.clearRenderTarget = false;
-				current.clearDepthStencil = false;
+				sync_with_core();
+				current.window_height_ = window->width;
+				current.window_height_ = window->height;
+				current.clear_render_target_ = false;
+				current.clear_depth_stencil_ = false;
 				return true;
 			}
 			return false;
 		}
 
-		void Renderer::End()
+		void renderer_t::end()
 		{
-			RenderPayload payload(RenderPayload::Command_Present);
-			core->input.Put(payload);
+			render_payload_t payload(render_payload_t::command_present_);
+			core->input.put(payload);
 		}
 
-		void Renderer::SyncWithCore()
+		void renderer_t::sync_with_core()
 		{
-			uint32 outstanding = MAX_RENDER_PAYLOADS - renderStates.size() - 1;
+			uint32 outstanding = max_render_payloads_ - render_states.size() - 1;
 			while(outstanding != 0) {
-				RenderPayload temp;
-				core->output.Get(temp);
-				if(temp.state != nullptr) {
-					temp.state->Clear();
-					temp.commands->Clear();
-					renderStates.push_back(temp.state);
-					commandLists.push_back(temp.commands);
+				render_payload_t temp;
+				core->output.get(temp);
+				if(temp.state_ != nullptr) {
+					temp.state_->clear();
+					temp.commands_->clear();
+					render_states.push_back(temp.state_);
+					command_lists.push_back(temp.commands_);
 					outstanding--;
 				}
 			}
 		}
 
-		void Renderer::PrepareNextRenderState()
+		void renderer_t::prepare_next_render_state()
 		{
-			assert(renderStates.size() > 0);
+			assert(render_states.size() > 0);
 
-			state = renderStates.back();
-			renderStates.pop_back();
-			commands = commandLists.back();
-			commandLists.pop_back();
+			state = render_states.back();
+			render_states.pop_back();
+			commands = command_lists.back();
+			command_lists.pop_back();
 		}
 
-		void Renderer::SetRenderTargetAndDepthStencil(RenderState::RenderTarget renderTargetType, Handle renderTarget, RenderState::DepthStencil depthStencilType, Handle depthStencil)
+		void renderer_t::set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil)
 		{
-			current.renderTargetType = renderTargetType;
-			if(renderTargetType == RenderState::RenderTarget_Custom) {
-				TextureManager::AddRef(renderTarget);
-				TextureManager::Free(current.renderTarget);
-				current.renderTarget = renderTarget;
+			current.render_target_type_ = render_target_type;
+			if(render_target_type == render_state_t::render_target_custom_) {
+				texture_manager_t::add_ref(render_target);
+				texture_manager_t::free(current.render_target_);
+				current.render_target_ = render_target;
 			} else {
-				TextureManager::Free(current.renderTarget);
+				texture_manager_t::free(current.render_target_);
 			}
 
-			current.depthStencilType = depthStencilType;
-			if(depthStencilType == RenderState::DepthStencil_Custom) {
-				TextureManager::AddRef(depthStencil);
-				TextureManager::Free(current.depthStencil);
-				current.depthStencil = depthStencil;
+			current.depth_stencil_type_ = depth_stencil_type;
+			if(depth_stencil_type == render_state_t::depth_stencil_custom_) {
+				texture_manager_t::add_ref(depth_stencil);
+				texture_manager_t::free(current.depth_stencil_);
+				current.depth_stencil_ = depth_stencil;
 			} else {
-				TextureManager::Free(current.depthStencil);
+				texture_manager_t::free(current.depth_stencil_);
 			}
 		}
 
-		void Renderer::SetOrthoProjection(const Frustum &frustum)
+		void renderer_t::set_ortho_projection(const frustum_t &frustum)
 		{
-			current.cameraWidthHeightNearFar = Vector4(frustum.GetWidth(), frustum.GetHeight(), frustum.nearPlane, frustum.farPlane);
-			Matrix44::Ortho(frustum, current.projection);
+			current.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
+			matrix44_t::ortho(frustum, current.projection_);
 		}
 
-		void Renderer::SetPerspectiveProjection(const Frustum &frustum)
+		void renderer_t::set_perspective_projection(const frustum_t &frustum)
 		{
-			current.cameraWidthHeightNearFar = Vector4(frustum.GetWidth(), frustum.GetHeight(), frustum.nearPlane, frustum.farPlane);
-			Matrix44::Perspective(frustum, current.projection);
+			current.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
+			matrix44_t::perspective(frustum, current.projection_);
 		}
 
-		void Renderer::SetLight(uint32 lightIndex, const RenderState::LightProperties *props, const RenderState::ShadowMapProperties *shadProps, const Matrix44 *matrix, float fov, Handle depthBuffer)
+		void renderer_t::set_light(uint32 light_index, const render_state_t::light_properties_t *props, const render_state_t::shadow_map_properties_t *shad_props, const matrix44_t *matrix, float fov, handle_t depth_buffer)
 		{
-			lightDirtyFlags |= (1<<lightIndex);
+			light_dirty_flags |= (1<<light_index);
 
-			if(props == nullptr || (props->flags & RenderState::LightFlag_On) == 0) {
-				current.lightProperties[lightIndex].flags &= ~RenderState::LightFlag_On;
-				memset(&current.lightProperties[lightIndex], 0, sizeof(RenderState::LightProperties));
-				TextureManager::Free(current.shadowMaps[lightIndex]);
+			if(props == nullptr || (props->flags & render_state_t::light_flag_on_) == 0) {
+				current.light_properties[light_index].flags &= ~render_state_t::light_flag_on_;
+				memset(&current.light_properties[light_index], 0, sizeof(render_state_t::light_properties_t));
+				texture_manager_t::free(current.shadow_maps[light_index]);
 				return;
 			}
 
-			memcpy(&current.lightProperties[lightIndex], props, sizeof(RenderState::LightProperties));
+			memcpy(&current.light_properties[light_index], props, sizeof(render_state_t::light_properties_t));
 		
 			assert(matrix != nullptr);
-			current.lightWorld[lightIndex] = *matrix;
-			Matrix44::AffineInverse(*matrix, current.lightView[lightIndex]);
+			current.light_world[light_index] = *matrix;
+			matrix44_t::affine_inverse(*matrix, current.light_view[light_index]);
 
 			if(fov == 0.0f) {
-				float wo2 = props->widthHeightNearFar.x / 2.0f;
-				float ho2 = props->widthHeightNearFar.y / 2.0f;
-				Matrix44::Ortho(-wo2, wo2, -ho2, ho2, props->widthHeightNearFar.z, props->widthHeightNearFar.w, current.lightProj[lightIndex]);
+				float wo2 = props->width_height_near_far.x_ / 2.0f;
+				float ho2 = props->width_height_near_far.y_ / 2.0f;
+				matrix44_t::ortho(-wo2, wo2, -ho2, ho2, props->width_height_near_far.z_, props->width_height_near_far.w_, current.light_proj[light_index]);
 			} else {
-				Matrix44::Perspective(fov, props->widthHeightNearFar.x / props->widthHeightNearFar.y, props->widthHeightNearFar.z, props->widthHeightNearFar.w, current.lightProj[lightIndex]);
+				matrix44_t::perspective(fov, props->width_height_near_far.x_ / props->width_height_near_far.y_, props->width_height_near_far.z_, props->width_height_near_far.w_, current.light_proj[light_index]);
 			}
 		
-			if((props->flags & RenderState::LightFlag_Shadow) != 0 && depthBuffer != HANDLE_NONE) {
-				assert(lightIndex < RenderState::MAX_SHADOW_LIGHTS);
-				TextureManager::AddRef(depthBuffer);
-				TextureManager::Free(current.shadowMaps[lightIndex]);
-				current.shadowMaps[lightIndex] = depthBuffer;
-				current.shadowMapProperties[lightIndex] = *shadProps;
+			if((props->flags & render_state_t::light_flag_shadow_) != 0 && depth_buffer != HANDLE_NONE) {
+				assert(light_index < render_state_t::max_shadow_lights_);
+				texture_manager_t::add_ref(depth_buffer);
+				texture_manager_t::free(current.shadow_maps[light_index]);
+				current.shadow_maps[light_index] = depth_buffer;
+				current.shadow_map_properties[light_index] = *shad_props;
 			} else {
-				if(lightIndex < RenderState::MAX_SHADOW_LIGHTS) {
-					current.shadowMapProperties[lightIndex].size = Vector2(0.0f);
-					TextureManager::Free(current.shadowMaps[lightIndex]);
+				if(light_index < render_state_t::max_shadow_lights_) {
+					current.shadow_map_properties[light_index].size = Vector2(0.0f);
+					texture_manager_t::free(current.shadow_maps[light_index]);
 				}
 			}
 		}
 
-		void Renderer::SetLightCascade(uint32 lightIndex, uint32 cascadeIndex, const Frustum &frustum)
+		void renderer_t::set_light_cascade(uint32 light_index, uint32 cascade_index, const frustum_t &frustum)
 		{
-			assert(lightIndex < current.cascadedShadowLightCount);
-			assert(cascadeIndex < RenderState::MAX_CASCADES);
+			assert(light_index < current.cascaded_shadow_light_count_);
+			assert(cascade_index < render_state_t::max_cascades_);
 
-			RenderState::LightSplitRegion &region = current.lightSplitRegions[lightIndex][cascadeIndex];
+			render_state_t::light_split_region_t &region = current.light_split_regions[light_index][cascade_index];
 
-			Matrix44::Ortho(frustum, region.viewProj);
+			matrix44_t::ortho(frustum, region.view_proj_);
 
-			// Light must have been set already!!!!!!
-			region.viewProj = region.viewProj * current.lightView[lightIndex];
+			// light_t must have been set already!!!!!!
+			region.view_proj_ = region.view_proj_ * current.light_view[light_index];
 		
-			region.widthHeightNearFar = Vector4(frustum.GetWidth(), frustum.GetHeight(), frustum.nearPlane, frustum.farPlane);
+			region.width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
 		}
 
-		void Renderer::Submit()
+		void renderer_t::submit()
 		{
 
 			// Finish preparing lighting info now that view matrix is certain
-			//if(lightDirtyFlags != 0) {
-				const Vector4 pos(0.0f);
-				const Vector4 dir(0.0f, 0.0f, -1.0f, 0.0f);
-				for(uint32 i = 0; i < current.lightCount; i++) {
-					//if((lightDirtyFlags & (1<<i)) != 0 && (current.lightProperties[i].flags & RenderState::LightFlag_On) != 0) {
-						Matrix44 toViewSpace = current.view * current.lightWorld[i];
-						current.lightPositions[i] = toViewSpace * pos;
-						current.lightDirections[i] = toViewSpace * dir;
-						current.lightViewProj[i] = current.lightProj[i] * current.lightView[i];
+			//if(light_dirty_flags != 0) {
+				const vector4_t pos(0.0f);
+				const vector4_t dir(0.0f, 0.0f, -1.0f, 0.0f);
+				for(uint32 i = 0; i < current.light_count_; i++) {
+					//if((light_dirty_flags & (1<<i)) != 0 && (current.light_properties[i].flags & render_state_t::light_flag_on_) != 0) {
+						matrix44_t toViewSpace = current.view_ * current.light_world[i];
+						current.light_positions[i] = toViewSpace * pos;
+						current.light_directions[i] = toViewSpace * dir;
+						current.light_view_proj[i] = current.light_proj[i] * current.light_view[i];
 					//}
 				}
-				lightDirtyFlags = 0;
+				light_dirty_flags = 0;
 			//}
 
 			// Duplicate our current renderstate (to be sent with the payload)
-			state->Copy(current);
+			state->copy(current);
 
 	#if !MAKI_SORT_DRAW_COMMANDS_IN_RENDER_THREAD
-			commands->Sort();
+			commands->sort();
 	#endif
 
 			// Send renderstate and commands to the core for processing
-			RenderPayload payload(RenderPayload::Command_Draw);
-			payload.state = state;
-			payload.commands = commands;
-			core->input.Put(payload);
+			render_payload_t payload(render_payload_t::command_draw_);
+			payload.state_ = state;
+			payload.commands_ = commands;
+			core->input.put(payload);
 
 			state = nullptr;
 			commands = nullptr;
 
-			current.clearRenderTarget = false;
-			current.clearDepthStencil = false;
+			current.clear_render_target_ = false;
+			current.clear_depth_stencil_ = false;
 
-			PrepareNextRenderState();
+			prepare_next_render_state();
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -7,7 +7,7 @@ Parts of this file based on OGRE quaterion class, the OGRE license appears below
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
+    (object_t-oriented Graphics Rendering engine_t)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2013 Torus Knot Software Ltd
@@ -41,136 +41,136 @@ THE SOFTWARE.
 
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Quaternion
+		class quaternion_t
 		{
-			friend Quaternion operator*(float s, const Quaternion &q);
+			friend quaternion_t operator*(float s, const quaternion_t &q);
     
 		public:
 			// Create the quaternion necessary to billboard a quad
 			// toCamera: The direction from the sprite's world position to the camera's world position (normalized)
 			// spriteFaceAxis: The axis along which the untransformed sprite faces (normalized)
 			// spritePivotAxis: The axis around which the sprite is allowed to pivot (normalized)
-			static inline Quaternion BillboardFace(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spriteUpAxis);
-			static inline Quaternion BillboardPivot(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis);
+			static inline quaternion_t billboard_face(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spriteUpAxis);
+			static inline quaternion_t billboard_pivot(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spritePivotAxis);
 
 			// Performs Spherical linear interpolation between two quaternions, and returns the result.
-			static inline Quaternion Slerp(float t, const Quaternion &v0, const Quaternion &v1);
-			static inline Quaternion Nlerp(float t, const Quaternion &v0, const Quaternion &v1);
+			static inline quaternion_t slerp(float t, const quaternion_t &v0, const quaternion_t &v1);
+			static inline quaternion_t nlerp(float t, const quaternion_t &v0, const quaternion_t &v1);
 
 			// Setup for spherical quadratic interpolation
-			static void Intermediate(const Quaternion &q0, const Quaternion &q1, const Quaternion &q2, Quaternion &a, Quaternion &b);
+			static void intermediate(const quaternion_t &q0, const quaternion_t &q1, const quaternion_t &q2, quaternion_t &a, quaternion_t &b);
 
 			// Spherical quadratic interpolation
-			static Quaternion Squad(float t, const Quaternion& p, const Quaternion& a, const Quaternion& b, const Quaternion& q);
+			static quaternion_t squad(float t, const quaternion_t& p, const quaternion_t& a, const quaternion_t& b, const quaternion_t& q);
 
 			// Cutoff for sine near zero
-			static const float Epsilon;
-			static const Quaternion Zero;
-			static const Quaternion Identity;
+			static const float epsilon_;
+			static const quaternion_t zero_;
+			static const quaternion_t identity_;
 
 
 			// Default constructor, initializes to identity rotation (aka 0 rads)
-			inline Quaternion() : w(1), x(0), y(0), z(0) {}
-			inline Quaternion(float thetaX, float thetaY, float thetaZ) { FromEulerAngles(thetaX, thetaY, thetaZ); }
-			inline Quaternion(const Vector3 &eulerAngles) { FromEulerAngles(eulerAngles); }
-			inline Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
+			inline quaternion_t() : w(1), x(0), y(0), z(0) {}
+			inline quaternion_t(float theta_x, float theta_y, float theta_z) { from_euler_angles(theta_x, theta_y, theta_z); }
+			inline quaternion_t(const vector3_t &euler_angles) { from_euler_angles(euler_angles); }
+			inline quaternion_t(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
 
-			void ToMatrix(Matrix44 &rot) const;
-			void FromMatrix(const Matrix44 &m);
+			void to_matrix(matrix44_t &rot) const;
+			void from_matrix(const matrix44_t &m);
 
-			void FromEulerAngles(float thetaX, float thetaY, float thetaZ);
-			inline void FromEulerAngles(const Vector3 &angles) { FromEulerAngles(angles.x, angles.y, angles.z); }
-			void ToEulerAngles(Vector3 &angles) const;
+			void from_euler_angles(float theta_x, float theta_y, float theta_z);
+			inline void from_euler_angles(const vector3_t &angles) { from_euler_angles(angles.x_, angles.y_, angles.z_); }
+			void to_euler_angles(vector3_t &angles) const;
 
-			void FromAngleAxis(float theta, const Vector3 &axis);
-			void FromAngleAxis(float theta, const Vector4 &axis);
-			void ToAngleAxis(float &theta, Vector3 &axis) const;
-			void ToAngleAxis(float &theta, Vector4 &axis) const;
+			void from_angle_axis(float theta, const vector3_t &axis);
+			void from_angle_axis(float theta, const vector4_t &axis);
+			void to_angle_axis(float &theta, vector3_t &axis) const;
+			void to_angle_axis(float &theta, vector4_t &axis) const;
 
 			// Start and end must be normalized!
-			void FromRotationArc(const Vector3 &start, const Vector3 &end);
+			void from_rotation_arc(const vector3_t &start, const vector3_t &end);
 
-			inline Quaternion operator+(const Quaternion &q) const;
-			inline Quaternion operator-(const Quaternion &q) const;
-			inline Quaternion operator*(const Quaternion &q) const;
-			inline Quaternion operator*(float s) const;
-			inline Quaternion operator-() const;
+			inline quaternion_t operator+(const quaternion_t &q) const;
+			inline quaternion_t operator-(const quaternion_t &q) const;
+			inline quaternion_t operator*(const quaternion_t &q) const;
+			inline quaternion_t operator*(float s) const;
+			inline quaternion_t operator-() const;
 
 			// functions of a quaternion
 			// Returns the dot product of the quaternion
-			inline float Dot(const Quaternion &q) const;
+			inline float dot(const quaternion_t &q) const;
 
 			// Returns the normal length of this quaternion.
-			inline float Norm() const;
+			inline float norm() const;
 
 			// Normalizes this quaternion, and returns the previous length
-			inline void Normalize(); 
-			Quaternion Inverse() const;  // apply to non-zero quaternion
-			Quaternion UnitInverse() const;  // apply to unit-length quaternion
-			Quaternion Exp() const;
-			Quaternion Log() const;
+			inline void normalize(); 
+			quaternion_t inverse() const;  // apply to non-zero quaternion
+			quaternion_t unit_inverse() const;  // apply to unit-length quaternion
+			quaternion_t exp() const;
+			quaternion_t log() const;
 
-			void ComputeW();
+			void compute_w();
 
 			// Rotation of a vector by a quaternion
-			Vector3 operator*(const Vector3 &v) const;
-			Vector4 operator*(const Vector4 &v) const;
+			vector3_t operator*(const vector3_t &v) const;
+			vector4_t operator*(const vector4_t &v) const;
 
 		public:
-			float w, x, y, z;
+			float w_, x_, y_, z_;
 		};
 
 
-		Quaternion Quaternion::operator+(const Quaternion &q) const
+		quaternion_t quaternion_t::operator+(const quaternion_t &q) const
 		{
-			return Quaternion(w+q.w, x+q.x, y+q.y, z+q.z);
+			return quaternion_t(w+q.w_, x+q.x_, y+q.y_, z+q.z_);
 		}
 
-		Quaternion Quaternion::operator-(const Quaternion &q) const
+		quaternion_t quaternion_t::operator-(const quaternion_t &q) const
 		{
-			return Quaternion(w-q.w, x-q.x, y-q.y, z-q.z);
+			return quaternion_t(w-q.w_, x-q.x_, y-q.y_, z-q.z_);
 		}
 
-		Quaternion Quaternion::operator*(float s) const
+		quaternion_t quaternion_t::operator*(float s) const
 		{
-			return Quaternion(s*w,s*x,s*y,s*z);
+			return quaternion_t(s*w,s*x,s*y,s*z);
 		}
 
-		Quaternion Quaternion::operator*(const Quaternion &q) const
+		quaternion_t quaternion_t::operator*(const quaternion_t &q) const
 		{
 			// NOTE:  Multiplication is not generally commutative, so in most
 			// cases p*q != q*p.
-			return Quaternion(
-				w * q.w - x * q.x - y * q.y - z * q.z,
-				w * q.x + x * q.w + y * q.z - z * q.y,
-				w * q.y + y * q.w + z * q.x - x * q.z,
-				w * q.z + z * q.w + x * q.y - y * q.x
+			return quaternion_t(
+				w * q.w_ - x * q.x_ - y * q.y_ - z * q.z_,
+				w * q.x_ + x * q.w_ + y * q.z_ - z * q.y_,
+				w * q.y_ + y * q.w_ + z * q.x_ - x * q.z_,
+				w * q.z_ + z * q.w_ + x * q.y_ - y * q.x_
 			);
 		}
 
-		Quaternion Quaternion::operator-() const
+		quaternion_t quaternion_t::operator-() const
 		{
-			return Quaternion(-w, -x, -y, -z);
+			return quaternion_t(-w, -x, -y, -z);
 		}
 
-		float Quaternion::Dot(const Quaternion& q) const
+		float quaternion_t::dot(const quaternion_t& q) const
 		{
-			return w*q.w + x*q.x + y*q.y + z*q.z;
+			return w*q.w_ + x*q.x_ + y*q.y_ + z*q.z_;
 		}
 
-		float Quaternion::Norm() const
+		float quaternion_t::norm() const
 		{
 			return w*w + x*x + y*y + z*z;
 		}
 
-		void Quaternion::Normalize(void)
+		void quaternion_t::normalize(void)
 		{
-			float factor = 1.0f / sqrt(Norm());
+			float factor = 1.0f / sqrt(norm());
 			w *= factor;
 			x *= factor;
 			y *= factor;
@@ -178,22 +178,22 @@ namespace Maki
 		}
 
 
-		inline Quaternion operator*(float s, const Quaternion &q)
+		inline quaternion_t operator*(float s, const quaternion_t &q)
 		{
-			return Quaternion(s*q.w, s*q.x, s*q.y, s*q.z);
+			return quaternion_t(s*q.w_, s*q.x_, s*q.y_, s*q.z_);
 		}
 
 
 		// Based on Jonathan Blow's code presented here:
 		// http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
 		//
-		Quaternion Quaternion::Slerp(float t, const Quaternion &v0, const Quaternion &v1)
+		quaternion_t quaternion_t::slerp(float t, const quaternion_t &v0, const quaternion_t &v1)
 		{
 			// assert: v0, v1 are unit length
-			float dot = v0.Dot(v1);
+			float dot = v0.dot(v1);
 
 			// Do we need to invert rotation?
-			Quaternion dst(v1);
+			quaternion_t dst(v1);
 			if(dot < 0.0f) {
 				dot = -dot;
 				dst = -v1;
@@ -201,8 +201,8 @@ namespace Maki
 
 			if(dot > 0.9995f) {
 				// Inputs are very close - linearly interpolate and normalize
-				Quaternion res = v0 * (1.0f - t) + dst * t;
-				res.Normalize();
+				quaternion_t res = v0 * (1.0f - t) + dst * t;
+				res.normalize();
 				return res;
 			}
 
@@ -220,58 +220,58 @@ namespace Maki
 			float theta = std::acos(dot) * t;
 
 			// This makes {v0, v2} an orthonormal basis
-			Quaternion v2 = dst - v0 * dot;
-			v2.Normalize();
+			quaternion_t v2 = dst - v0 * dot;
+			v2.normalize();
 				
 			return v0 * std::cos(theta) + v2 * std::sin(theta);
 		}
 
-		Quaternion Quaternion::Nlerp(float t, const Quaternion &v0, const Quaternion &v1)
+		quaternion_t quaternion_t::nlerp(float t, const quaternion_t &v0, const quaternion_t &v1)
 		{
 			// assert: v0, v1 are unit length
-			float dot = v0.Dot(v1);
+			float dot = v0.dot(v1);
 
 			// Do we need to invert rotation?
-			Quaternion dst(v1);
+			quaternion_t dst(v1);
 			if(dot < 0.0f) {
 				dot = -dot;
 				dst = -v1;
 			}
 
-			Quaternion res = v0 * (1.0f - t) + dst * t;
-			res.Normalize();
+			quaternion_t res = v0 * (1.0f - t) + dst * t;
+			res.normalize();
 			return res;
 		}
 
 
-		Quaternion Quaternion::BillboardFace(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spriteUpAxis)
+		quaternion_t quaternion_t::billboard_face(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spriteUpAxis)
 		{
 			// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
-			Quaternion ret;
-			ret.FromRotationArc(spriteFaceAxis, toCamera);
+			quaternion_t ret;
+			ret.from_rotation_arc(spriteFaceAxis, toCamera);
 			return ret;
 		}
 
-		Quaternion Quaternion::BillboardPivot(const Vector4 &toCamera, const Vector4 &spriteFaceAxis, const Vector4 &spritePivotAxis)
+		quaternion_t quaternion_t::billboard_pivot(const vector4_t &toCamera, const vector4_t &spriteFaceAxis, const vector4_t &spritePivotAxis)
 		{
 			// toCamera, spriteFaceAxis, and spritePivotAxis must be normalized
 		
-			// Find the destination facing direction, as for normal billboarding.
+			// find the destination facing direction, as for normal billboarding.
 			// Remove any component of that vector that is along the axis direction.
 			// Renormalize.
-			float axisComponent = toCamera.Dot(spritePivotAxis);
+			float axisComponent = toCamera.dot(spritePivotAxis);
 			if(fabs(axisComponent) > 0.99999f) {
 				// Degenerate case, desired facing direction is along the pivot axis
-				return Quaternion();
+				return quaternion_t();
 			}
-			Vector4 dst = toCamera - spritePivotAxis * axisComponent;
-			dst.Normalize();
+			vector4_t dst = toCamera - spritePivotAxis * axisComponent;
+			dst.normalize();
 		
-			Quaternion ret;
-			ret.FromRotationArc(spriteFaceAxis, dst);
+			quaternion_t ret;
+			ret.from_rotation_arc(spriteFaceAxis, dst);
 			return ret;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

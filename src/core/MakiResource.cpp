@@ -1,17 +1,17 @@
 #include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 		
-		Resource::Resource(const MoveToken<Resource> &other)
+		resource_t::resource_t(const move_token_t<resource_t> &other)
 		{
-			rid = other.obj->rid;
-			other.obj->rid = RID_NONE;
+			rid = other.obj->rid_;
+			other.obj->rid_ = RID_NONE;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

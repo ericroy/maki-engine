@@ -3,65 +3,65 @@
 #include "core/MakiResource.h"
 #include "core/MakiSkeleton.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class Skeleton;
+		class skeleton_t;
 
 		
 
-		class SkeletonAnimation : public Resource
+		class skeleton_animation_t : public resource_t
 		{
 		public:
-			struct State
+			struct state_t
 			{
 			public:
-				State(uint32 size);
-				State();
-				void SetSize(uint32 size);
+				state_t(uint32 size);
+				state_t();
+				void set_size(uint32 size);
 
 			public:
-				Array<uint32> currentKeyFrames;
-				float currentFrame;
+				array_t<uint32> current_key_frames_;
+				float current_frame_;
 			};
 
 		private:
-			struct KeyFrame : public Skeleton::Joint
+			struct key_frame_t : public skeleton_t::joint_t
 			{
-				uint32 frame;
+				uint32 frame_;
 			};
 
 		public:
-			static float debugRateCoeff;
+			static float debug_rate_coeff_;
 
 		public:
-			SkeletonAnimation();
-			SkeletonAnimation(const MoveToken<SkeletonAnimation> &) { assert(false && "SkeletonAnimation move construction not allowed"); }
-			SkeletonAnimation(const SkeletonAnimation &) { assert(false && "SkeletonAnimation copy construction not allowed"); }
-			~SkeletonAnimation();
-			bool Load(Rid rid);
-			void AdvanceState(float timeDelta, State &state, Array<Skeleton::Joint> &pose, bool loop, float rateCoeff);
-			inline uint32 GetBoneCount() const;
+			skeleton_animation_t();
+			skeleton_animation_t(const move_token_t<skeleton_animation_t> &) { assert(false && "skeleton_animation_t move construction not allowed"); }
+			skeleton_animation_t(const skeleton_animation_t &) { assert(false && "skeleton_animation_t copy construction not allowed"); }
+			~skeleton_animation_t();
+			bool load(rid_t rid);
+			void AdvanceState(float timeDelta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rateCoeff);
+			inline uint32 get_bone_count() const;
 
 		public:
-			float frameRate;
-			uint32 frameCount;
+			float frame_rate_;
+			uint32 frame_count_;
 
 			// Indexed as data[boneIndex][keyframeIndex]
 
-			Array< Array<KeyFrame> > data;
+			array_t< array_t<key_frame_t> > data_;
 
 		};
 
-		uint32 SkeletonAnimation::GetBoneCount() const
+		uint32 skeleton_animation_t::get_bone_count() const
 		{
-			return data.count;
+			return data_.count_;
 		}
 
 		
 		
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

@@ -1,56 +1,56 @@
 #pragma once
 #include "core/core_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Archive
+		class archive_t
 		{
 		private:
-			enum Flag
+			enum flag_t
 			{
-				Flag_ZLibCompressed = 1<<0,
+				flag_zlib_compressed_ = 1<<0,
 			};
 
-			struct Entry
+			struct entry_t
 			{
-				uint64 offset;
-				uint32 compressedLength;
-				uint32 uncompressedLength;
-				std::string fileName;
-				uint32 flags;
+				uint64 offset_;
+				uint32 compressed_length_;
+				uint32 uncompressed_length_;
+				std::string file_name_;
+				uint32 flags_;
 			};
 
-			static const uint32 FILE_PATH_MAX_LENGTH = 260;
-			static const uint32 DECOMPRESSION_BUFFER_SIZE = 32 * 1024;
-			static char buffer[DECOMPRESSION_BUFFER_SIZE];
+			static const uint32 file_path_max_length_ = 260;
+			static const uint32 decompression_buffer_size_ = 32 * 1024;
+			static char buffer_[decompression_buffer_size_];
 
 		public:
-			Archive();
-			Archive(const MoveToken<Archive> &other);
-			virtual ~Archive();
+			archive_t();
+			archive_t(const move_token_t<archive_t> &other);
+			virtual ~archive_t();
 
-			inline bool IsLoaded() const { return fp != nullptr; }
-			inline void SetRidStart(uint32 ridStart) { this->ridStart = ridStart; }
-			inline bool Contains(Rid rid) const { return (uint32)rid >= ridStart && (uint32)rid < ridStart + entries.count; }
-			bool Load(const char *archivePath, uint32 ridStart = 0);
-			char *AllocRead(const char *path, uint32 *bytesRead = nullptr) const;
-			char *AllocRead(Rid rid, uint32 *bytesRead = nullptr) const;
-
-		private:
-			Archive(const Archive &other) {}
+			inline bool is_loaded() const { return fp_ != nullptr; }
+			inline void set_rid_start(uint32 rid_start) { rid_start_ = rid_start; }
+			inline bool contains(rid_t rid) const { return (uint32)rid >= rid_start_ && (uint32)rid < rid_start_ + entries.count; }
+			bool load(const char *archive_path, uint32 rid_start = 0);
+			char *alloc_read(const char *path, uint32 *bytes_read = nullptr) const;
+			char *alloc_read(rid_t rid, uint32 *bytes_read = nullptr) const;
 
 		private:
-			FILE *fp;
-			uint32 ridStart;
-			uint32 bodyOffset;
-			Array<Entry> entries;
+			archive_t(const archive_t &other) {}
+
+		private:
+			FILE *fp_;
+			uint32 rid_start_;
+			uint32 body_offset_;
+			array_t<entry_t> entries;
 		};
 
 		
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

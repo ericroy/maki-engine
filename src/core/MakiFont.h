@@ -4,42 +4,42 @@
 #include "core/MakiResource.h"
 
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Mesh;
+		class mesh_t;
 
-		class Font : public Resource
+		class font_t : public resource_t
 		{
-			friend class FontManager;
+			friend class font_manager_t;
 	
 		private:
-			static const int32 MIN_CHAR_CODE = 32;
-			static const int32 MAX_CHAR_CODE = 126;
-			static const int32 CHAR_CODE_COUNT = MAX_CHAR_CODE - MIN_CHAR_CODE + 1;
+			static const int32 min_char_code_ = 32;
+			static const int32 max_char_code_ = 126;
+			static const int32 char_code_count_ = max_char_code_ - min_char_code_ + 1;
 
 		public:
-			Font();
-			Font(const MoveToken<Font> &) { assert(false && "Font move construction not allowed"); }
-			Font(const Font &) { assert(false && "Font copy construction not allowed"); }
-			virtual ~Font();
-			bool operator==(const Font &other) const;
-			bool Load(Rid shaderProgramRid, Rid fontRid, uint32 pixelSize);
-			void RenderAsMesh(const char *s, Mesh *m);
+			font_t();
+			font_t(const move_token_t<font_t> &) { assert(false && "font_t move construction not allowed"); }
+			font_t(const font_t &) { assert(false && "font_t copy construction not allowed"); }
+			virtual ~font_t();
+			bool operator==(const font_t &other) const;
+			bool load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size);
+			void render_as_mesh(const char *s, mesh_t *m);
 
 		public:
-			Handle material;
-			Rid shaderProgramRid;
-			uint32 pixelSize;
+			handle_t material_;
+			rid_t shader_program_rid_;
+			uint32 pixel_size_;
 	
 		private:
-			uint32 textureWidth;
-			uint32 textureHeight;
-			stbtt_bakedchar bakedChars[CHAR_CODE_COUNT];
+			uint32 texture_width_;
+			uint32 texture_height_;
+			stbtt_bakedchar baked_chars_[char_code_count_];
 		};
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

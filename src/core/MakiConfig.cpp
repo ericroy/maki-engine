@@ -3,93 +3,93 @@
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiDocument.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 	
-		Config::Config(AssetLibrary *lib, Rid rid)
+		config_t::config_t(asset_library_t *lib, rid_t rid)
 		{
-			doc = new Document();
+			doc = new document_t();
 
 			uint32 bytes;
-			char *data = lib->AllocRead(rid, &bytes);
+			char *data = lib->alloc_read(rid, &bytes);
 			if(data == nullptr) {
-				Console::Error("Failed to open config file");
-				SAFE_DELETE(doc);
-				SAFE_FREE(data);
+				console_t::error("Failed to open config file");
+				MAKI_SAFE_DELETE(doc);
+				MAKI_SAFE_FREE(data);
 				return;
 			}
-			if(!doc->Load(data, bytes)) {
-				Console::Error("Failed to parse config file");
-				SAFE_DELETE(doc);
-				SAFE_FREE(data);
+			if(!doc->load(data, bytes)) {
+				console_t::error("Failed to parse config file");
+				MAKI_SAFE_DELETE(doc);
+				MAKI_SAFE_FREE(data);
 				return;
 			}
 
-			SAFE_FREE(data);
+			MAKI_SAFE_FREE(data);
 		}
 
-		Config::~Config()
+		config_t::~config_t()
 		{
-			SAFE_DELETE(doc);
+			MAKI_SAFE_DELETE(doc);
 		}
 
-		const char *Config::GetString(const char *keyPath, const char *defaultValue) const
+		const char *config_t::get_string(const char *key_path, const char *default_value) const
 		{
-			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr || n->count == 0) { return defaultValue; }
+			document_t::node_t *n = doc->root->resolve(key_path);
+			if(n == nullptr || n->count == 0) { return default_value; }
 			return n->children[0]->value;
 		}
 
-		int32 Config::GetInt(const char *keyPath, int32 defaultValue) const
+		int32 config_t::get_int(const char *key_path, int32 default_value) const
 		{
-			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr || n->count == 0) { return defaultValue; }
+			document_t::node_t *n = doc->root->resolve(key_path);
+			if(n == nullptr || n->count == 0) { return default_value; }
 			int32 out;
-			if(!n->children[0]->ValueAsInt(&out)) {
-				Console::Warning("Config value '%s' was not an int", keyPath);
-				return defaultValue;
+			if(!n->children[0]->value_as_int(&out)) {
+				console_t::warning("config_t value '%s' was not an int", key_path);
+				return default_value;
 			}
 			return out;
 		}
 
-		uint32 Config::GetUint(const char *keyPath, uint32 defaultValue) const
+		uint32 config_t::get_uint(const char *key_path, uint32 default_value) const
 		{
-			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr || n->count == 0) { return defaultValue; }
+			document_t::node_t *n = doc->root->resolve(key_path);
+			if(n == nullptr || n->count == 0) { return default_value; }
 			uint32 out;
-			if(!n->children[0]->ValueAsUInt(&out)) {
-				Console::Warning("Config value '%s' was not a uint", keyPath);
-				return defaultValue;
+			if(!n->children[0]->value_as_uint(&out)) {
+				console_t::warning("config_t value '%s' was not a uint", key_path);
+				return default_value;
 			}
 			return out;
 		}
 
-		bool Config::GetBool(const char *keyPath, bool defaultValue) const
+		bool config_t::get_bool(const char *key_path, bool default_value) const
 		{
-			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr || n->count == 0) { return defaultValue; }
+			document_t::node_t *n = doc->root->resolve(key_path);
+			if(n == nullptr || n->count == 0) { return default_value; }
 			bool out;
-			if(!n->children[0]->ValueAsBool(&out)) {
-				Console::Warning("Config value '%s' was not a bool", keyPath);
-				return defaultValue;
+			if(!n->children[0]->value_as_bool(&out)) {
+				console_t::warning("config_t value '%s' was not a bool", key_path);
+				return default_value;
 			}
 			return out;
 		}
 
-		float Config::GetFloat(const char *keyPath, float defaultValue) const
+		float config_t::get_float(const char *key_path, float default_value) const
 		{
-			Document::Node *n = doc->root->Resolve(keyPath);
-			if(n == nullptr || n->count == 0) { return defaultValue; }
+			document_t::node_t *n = doc->root->resolve(key_path);
+			if(n == nullptr || n->count == 0) { return default_value; }
 			float out;
-			if(!n->children[0]->ValueAsFloat(&out)) {
-				Console::Warning("Config value '%s' was not a float", keyPath);
-				return defaultValue;
+			if(!n->children[0]->value_as_float(&out)) {
+				console_t::warning("config_t value '%s' was not a float", key_path);
+				return default_value;
 			}
 			return out;
 		}
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki

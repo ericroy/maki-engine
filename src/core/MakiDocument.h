@@ -2,66 +2,66 @@
 #include "core/core_stdafx.h"
 #include <cstdlib>
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 
-		class Document
+		class document_t
 		{
-			friend class DocumentTextSerializer;
-			friend class DocumentBinarySerializer;
+			friend class document_text_serializer_t;
+			friend class document_binary_serializer_t;
 
 		public:
-			class Node
+			class node_t
 			{
-				friend class Document;
-				friend class DocumentTextSerializer;
-				friend class DocumentBinarySerializer;
+				friend class document_t;
+				friend class document_text_serializer_t;
+				friend class document_binary_serializer_t;
 		
 			public:
-				Node(const char *data, uint32 length);
-				Node(char *data, uint32 length, bool shouldCloneData);
-				~Node();
+				node_t(const char *data, uint32 length);
+				node_t(char *data, uint32 length, bool should_clone_data);
+				~node_t();
 
-				void AppendChild(Node *n);
-				inline void AppendSibling(Node *n) { assert(parent != nullptr); parent->AppendChild(n); }
-				Node *RemoveChild(uint32 index);
-				bool RemoveChild(Node *n);
-				void Detach();
+				void append_child(node_t *n);
+				inline void append_sibling(node_t *n) { assert(parent_ != nullptr); parent_->append_child(n); }
+				node_t *remove_child(uint32 index);
+				bool remove_child(node_t *n);
+				void detach();
 
-				inline bool ValueEquals(const char *v) const { return strcmp(v, value) == 0; }
+				inline bool value_equals(const char *v) const { return strcmp(v, value_) == 0; }
 			
-				int32 ValueAsInt(int32 defaultValue = 0) const;
-				bool ValueAsInt(int32 *out) const;
+				int32 value_as_int(int32 default_value = 0) const;
+				bool value_as_int(int32 *out) const;
 
-				uint32 ValueAsUInt(uint32 defaultValue = 0) const;
-				bool ValueAsUInt(uint32 *out) const;
+				uint32 value_as_uint(uint32 default_value = 0) const;
+				bool value_as_uint(uint32 *out) const;
 
-				float ValueAsFloat(float defaultValue = 0.0f) const;
-				bool ValueAsFloat(float *out) const;
+				float value_as_float(float default_value = 0.0f) const;
+				bool value_as_float(float *out) const;
 
-				bool ValueAsBool(bool defaultValue = false) const;
-				bool ValueAsBool(bool *out) const;
+				bool value_as_bool(bool default_value = false) const;
+				bool value_as_bool(bool *out) const;
 			
 				// Path resolution helpers:
-				Node *Resolve(const char *nodePath);
-				inline char *ResolveValue(const char *nodePath) { Document::Node *n = Resolve(nodePath); if(n) { return n->value; } return nullptr; }
-				inline bool ResolveAsInt(const char *nodePath, int32 *out) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsInt(out); } return false; }
-				inline int32 ResolveAsInt(const char *nodePath, int32 defaultValue = 0) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsInt(defaultValue); } return defaultValue; }
-				inline bool ResolveAsUInt(const char *nodePath, uint32 *out) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsUInt(out); } return false; }
-				inline uint32 ResolveAsUInt(const char *nodePath, uint32 defaultValue = 0) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsUInt(defaultValue); } return defaultValue; }
-				inline bool ResolveAsFloat(const char *nodePath, float *out) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsFloat(out); } return false; }
-				inline float ResolveAsFloat(const char *nodePath, float defaultValue = 0.0f) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsFloat(defaultValue); } return defaultValue; }
-				inline bool ResolveAsBool(const char *nodePath, bool *out) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsBool(out); } return false; }
-				inline bool ResolveAsBool(const char *nodePath, bool defaultValue = false) { Document::Node *n = Resolve(nodePath); if(n) { return n->ValueAsBool(defaultValue); } return defaultValue; }
+				node_t *resolve(const char *node_path);
+				inline char *resolve_value(const char *node_path) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_; } return nullptr; }
+				inline bool resolve_as_int(const char *node_path, int32 *out) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_int(out); } return false; }
+				inline int32 resolve_as_int(const char *node_path, int32 default_value = 0) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_int(default_value); } return default_value; }
+				inline bool resolve_as_uint(const char *node_path, uint32 *out) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_uint(out); } return false; }
+				inline uint32 resolve_as_uint(const char *node_path, uint32 default_value = 0) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_uint(default_value); } return default_value; }
+				inline bool resolve_as_float(const char *node_path, float *out) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_float(out); } return false; }
+				inline float resolve_as_float(const char *node_path, float default_value = 0.0f) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_float(default_value); } return default_value; }
+				inline bool resolve_as_bool(const char *node_path, bool *out) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_bool(out); } return false; }
+				inline bool resolve_as_bool(const char *node_path, bool default_value = false) { document_t::node_t *n = resolve(node_path); if(n) { return n->value_as_bool(default_value); } return default_value; }
 			
-				inline bool ResolveAsVectorN(const char *nodePath, uint32 count, float *out) {
-					Document::Node *n = Resolve(nodePath);
+				inline bool resolve_as_vector_n(const char *node_path, uint32 count, float *out) {
+					document_t::node_t *n = resolve(node_path);
 					if(n) {
-						assert(n->count >= count);
+						assert(n->count_ >= count);
 						for(uint32 i = 0; i < count; i++) {
-							out[i] = n->children[i]->ValueAsFloat();
+							out[i] = n->children_[i]->value_as_float();
 						}
 						return true;
 					}
@@ -69,52 +69,52 @@ namespace Maki
 				}
 
 			public:
-				Node *parent;
-				char *value;
-				uint32 count;
-				uint32 capacity;
-				Node **children;
+				node_t *parent_;
+				char *value_;
+				uint32 count_;
+				uint32 capacity_;
+				node_t **children_;
 			};
 	
 	
 		public:
-			Document();
-			virtual ~Document();
+			document_t();
+			virtual ~document_t();
 		
-			void Print(const char *indentToken = "  ");
-			bool Load(char *data, uint32 length);
+			void print(const char *indent_token = "  ");
+			bool load(char *data, uint32 length);
 	#ifndef MAKI_TOOLS
-			bool Load(Rid rid);
+			bool load(rid_t rid);
 	#endif
 
 		public:
-			Node *root;
+			node_t *root_;
 		};
 
 
-		class DocumentTextSerializer
+		class document_text_serializer_t
 		{
 		private:
-			static const int32 STACK_CHILDREN_COUNT_THRESHOLD = 4;
+			static const int32 stack_children_count_threshold_ = 4;
 
 		public:
-			DocumentTextSerializer(Document &doc);
-			~DocumentTextSerializer();
+			document_text_serializer_t(document_t &doc);
+			~document_text_serializer_t();
 
-			bool Serialize(char *path, const char *indentToken = "\t");
-			bool Serialize(std::ostream &out, const char *indentToken = "\t");
-			bool Deserialize(char *data, uint32 length);
-
-		private:
-			bool AddNode(Document::Node *n, int32 indentLevel, Document::Node **previous, int32 &previousIndentLevel, bool &cleanLine, bool &appendSibling);
-			void SerializeNode(Document::Node *n, uint32 depth, std::ostream &out, bool stacking, bool firstInStack, bool lastInStack, const char *indentToken);
+			bool serialize(char *path, const char *indent_token = "\t");
+			bool serialize(std::ostream &out, const char *indent_token = "\t");
+			bool deserialize(char *data, uint32 length);
 
 		private:
-			Document &doc;
+			bool add_node(document_t::node_t *n, int32 indentLevel, document_t::node_t **previous, int32 &previous_indent_level, bool &cleanLine, bool &append_sibling);
+			void serialize_node(document_t::node_t *n, uint32 depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token);
+
+		private:
+			document_t &doc_;
 		};
 
 
-		class DocumentBinarySerializer
+		class document_binary_serializer_t
 		{
 		private:
 			static const uint8 BINARY_HEADER[4];
@@ -123,22 +123,22 @@ namespace Maki
 			static bool IsBinaryDocument(char *data, uint32 length);
 
 		public:
-			DocumentBinarySerializer(Document &doc);
-			~DocumentBinarySerializer();
+			document_binary_serializer_t(document_t &doc);
+			~document_binary_serializer_t();
 
-			bool Serialize(char *path);
-			bool Serialize(std::ostream &out);
-			bool Deserialize(char *data, uint32 length);
-
-		private:
-			uint16 GetOrAdd(std::vector<std::string> &stringTable, char *str);
-			void SerializeNode(Document::Node *n, std::ostream &body, std::vector<std::string> &stringTable, uint32 &level);
+			bool serialize(char *path);
+			bool serialize(std::ostream &out);
+			bool deserialize(char *data, uint32 length);
 
 		private:
-			Document &doc;
+			uint16 get_or_add(std::vector<std::string> &string_table, char *str);
+			void serialize_node(document_t::node_t *n, std::ostream &body, std::vector<std::string> &string_table, uint32 &level);
+
+		private:
+			document_t &doc_;
 		};
 
 
-	} // namespace Core
+	} // namespace core
 
-} // namespace Maki
+} // namespace maki
