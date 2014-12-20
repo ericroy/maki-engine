@@ -42,8 +42,8 @@ namespace maki
 		{
 			// While we are overdue for the next update...
 			int64 now = 0;
-			uint32 skippedFrames = 0;
-			while((now = time_source_->get_time_micro()) > next_update_ && skippedFrames < max_skipped_frames_) {
+			uint32 skipped_frames = 0;
+			while((now = time_source_->get_time_micro()) > next_update_ && skipped_frames < max_skipped_frames_) {
 				update_timer_.tick();
 				
 				window_->poll_input(input_state_);
@@ -52,7 +52,7 @@ namespace maki
 				}
 
 				next_update_ = now + micros_per_update_;
-				skippedFrames++;
+				skipped_frames++;
 			}
 
 			render_timer_.tick();

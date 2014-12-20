@@ -126,13 +126,13 @@ namespace maki
 
 		void renderer_t::set_ortho_projection(const frustum_t &frustum)
 		{
-			current_.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
+			current_.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.near_plane_, frustum.far_plane_);
 			matrix44_t::ortho(frustum, current_.projection_);
 		}
 
 		void renderer_t::set_perspective_projection(const frustum_t &frustum)
 		{
-			current_.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
+			current_.camera_width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.near_plane_, frustum.far_plane_);
 			matrix44_t::perspective(frustum, current_.projection_);
 		}
 
@@ -187,7 +187,7 @@ namespace maki
 			// light_t must have been set already!!!!!!
 			region.view_proj_ = region.view_proj_ * current_.light_view[light_index];
 		
-			region.width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.nearPlane, frustum.farPlane);
+			region.width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.near_plane_, frustum.far_plane_);
 		}
 
 		void renderer_t::submit()

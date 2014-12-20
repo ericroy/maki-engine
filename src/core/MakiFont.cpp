@@ -13,7 +13,7 @@ namespace maki
 	namespace core
 	{
 
-		inline uint32 NextPowerOfTwo(uint32 v)
+		inline uint32 next_power_of_two(uint32 v)
 		{
 			v--;
 			v |= v >> 1;
@@ -53,7 +53,7 @@ namespace maki
 			}
 
 			texture_width_ = 512;
-			texture_height_ = NextPowerOfTwo(pixel_size);
+			texture_height_ = next_power_of_two(pixel_size);
 			uint8 *pixels = (uint8 *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
 
 			int ret;
@@ -92,7 +92,7 @@ namespace maki
 		{
 			m->set_vertex_attributes(vertex_format_t::attribute_flag_text_coord_);
 			m->set_index_attributes(3, 2);
-			m->set_mesh_flag(mesh_t::MeshFlag_HasTranslucency);
+			m->set_mesh_flag(mesh_t::mesh_flag_has_translucency_);
 
 			float pen_x = 0.0f;
 			float pen_y = 0.0f;

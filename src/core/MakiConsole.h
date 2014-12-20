@@ -50,7 +50,7 @@ namespace maki
 			inline void set_print_callback(std::function<void(const char *)> func) { print_callback_ = func; }
 
 		private:
-			void write(level_t level, bool lineFeed, const char *prefix, const char *format, va_list args);
+			void write(level_t level, bool line_feed, const char *prefix, const char *format, va_list args);
 
 		private:
 			std::function<void(const char *)> print_callback_;

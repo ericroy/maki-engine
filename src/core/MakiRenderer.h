@@ -161,10 +161,10 @@ namespace maki
 			current_.cascaded_shadow_light_count_ = cascaded_shadow_light_count;
 		}
 
-		inline void renderer_t::set_camera_split_distances(uint32 splitCount, float *split_distances)
+		inline void renderer_t::set_camera_split_distances(uint32 split_count, float *split_distances)
 		{
-			assert(splitCount < render_state_t::max_cascades_);
-			memcpy(current_.camera_split_distances_.splits_, split_distances, splitCount*sizeof(float));
+			assert(split_count < render_state_t::max_cascades_);
+			memcpy(current_.camera_split_distances_.splits_, split_distances, split_count*sizeof(float));
 		}
 
 		inline void renderer_t::set_cull_mode(render_state_t::cull_mode_t mode)

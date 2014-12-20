@@ -17,13 +17,13 @@ namespace maki
 		public:
 			enum mesh_flag_t
 			{
-				 MeshFlag_HasTranslucency = 1 << 0,
+				 mesh_flag_has_translucency_ = 1 << 0,
 			};
 
 			enum object_t
 			{
-				Object_Rect = 0,
-				ObjectCount,
+				object_rect_ = 0,
+				object_count_,
 			};
 
 			struct object_args_t {};
@@ -51,21 +51,21 @@ namespace maki
 			void set_index_attributes(uint8 indices_per_face_, uint8 bytes_per_index_);
 			
 			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
-			void push_vertex_data(uint32 sizeInBytes, char *data);
-			void push_index_data(uint32 sizeInBytes, char *data);
+			void push_vertex_data(uint32 size_in_bytes, char *data);
+			void push_index_data(uint32 size_in_bytes, char *data);
 			
 			void clear_data();
 
-			inline uint8 GetMeshFlag(mesh_flag_t flag) const { return (mesh_flags_ & flag) != 0; }
+			inline uint8 get_mesh_flag(mesh_flag_t flag) const { return (mesh_flags_ & flag) != 0; }
 			inline void set_mesh_flag(mesh_flag_t flag, bool on = true) { if(on) { mesh_flags_ |= flag; } else { mesh_flags_ &= ~flag; } }
 
 			// Retrieves the gpu buffer_ associated with this mesh (creating it if necessary)
 			inline void *get_buffer() { if(buffer_ == nullptr) { upload(); } return buffer_; }
 
-			inline uint8 GetVertexStride() const { return vertex_stride_; }
-			inline uint32 GetVertexCount() const { return vertex_count_; }
-			//inline void SetVertexCount(uint32 count) { vertex_count_ = count; }
-			inline char *GetVertexData() { return vertex_data_; }
+			inline uint8 get_vertex_stride() const { return vertex_stride_; }
+			inline uint32 get_vertex_count() const { return vertex_count_; }
+			//inline void set_vertex_count(uint32 count) { vertex_count_ = count; }
+			inline char *get_vertex_data() { return vertex_data_; }
 			int32 get_attribute_offset(vertex_format_t::attribute_t attr);
 
 			inline uint8 get_bytes_per_index() const { return bytes_per_index_; }

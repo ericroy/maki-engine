@@ -46,15 +46,15 @@ namespace maki
 
 			fread(&body_offset_, sizeof(body_offset_), 1, fp_);
 			
-			uint32 tocCount = 0;
-			fread(&tocCount, sizeof(tocCount), 1, fp_);
-			entries.set_size(tocCount);
+			uint32 toc_count = 0;
+			fread(&toc_count, sizeof(toc_count), 1, fp_);
+			entries.set_size(toc_count);
 			entries.zero();
 			
 			// Read table of contents
 			char buffer_[file_path_max_length_];
 			uint32 tocOffset = ftell(fp_);
-			for(uint32 i = 0; i < tocCount; i++) {
+			for(uint32 i = 0; i < toc_count; i++) {
 				entry_t &entry = entries[i];
 				fread(&entry.flags_, sizeof(entry.flags_), 1, fp_);
 

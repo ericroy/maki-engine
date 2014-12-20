@@ -69,8 +69,8 @@ namespace maki
 			void push_attribute(attribute_t attr, data_type_t type, uint8 count);
 			
 		public:
-			uint16 stride;
-			uint8 attrCount;
+			uint16 stride_;
+			uint8 attr_count_;
 			union
 			{
 				struct
@@ -88,35 +88,35 @@ namespace maki
 
 		inline bool vertex_format_t::operator==(const vertex_format_t &other) const
 		{
-			if(attr_flags != other.attr_flags_) {
+			if(attr_flags_ != other.attr_flags_) {
 				return false;
 			}
-			return memcmp(formats, other.formats_, sizeof(formats)) == 0;
+			return memcmp(formats_, other.formats_, sizeof(formats_)) == 0;
 		}
 
 		bool vertex_format_t::has_attribute(attribute_t attr) const
 		{
-			return (attr_flags & (1<<attr)) != 0;
+			return (attr_flags_ & (1<<attr)) != 0;
 		}
 
 		vertex_format_t::data_type_t vertex_format_t::get_data_type(attribute_t attr) const
 		{
-			return (data_type_t)formats[attr].type_;
+			return (data_type_t)formats_[attr].type_;
 		}
 
 		uint8 vertex_format_t::get_data_count(attribute_t attr) const
 		{
-			return formats[attr].count_;
+			return formats_[attr].count_;
 		}
 
 		int32 vertex_format_t::get_stride() const
 		{
-			return stride;
+			return stride_;
 		}
 
 		int32 vertex_format_t::get_attribute_count() const
 		{
-			return attrCount;
+			return attr_count_;
 		}
 
 	} // namespace core

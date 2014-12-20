@@ -43,19 +43,19 @@ namespace maki
 		}
 
 	
-		void draw_command_t::set_mesh(handle_t meshHandle)
+		void draw_command_t::set_mesh(handle_t mesh_handle)
 		{
 			mesh_manager_t::free(mesh_);
 			vertex_format_manager_t::free(vertex_format_);
 		
-			if(meshHandle != HANDLE_NONE) {
-				mesh_manager_t::add_ref(meshHandle);
-				mesh_ = meshHandle;
+			if(mesh_handle != HANDLE_NONE) {
+				mesh_manager_t::add_ref(mesh_handle);
+				mesh_ = mesh_handle;
 				fields_.mesh_ = mesh_ & mesh_manager_t::handle_value_mask_;
 				fields_.mesh_manager_id_ = mesh_ >> mesh_manager_t::manager_id_shift_;
 		
 				const mesh_t *m = mesh_manager_t::get(mesh_);
-				if(m->GetMeshFlag(mesh_t::MeshFlag_HasTranslucency)) {
+				if(m->get_mesh_flag(mesh_t::mesh_flag_has_translucency_)) {
 					fields_.translucency_type_ = translucency_type_translucent_;
 				}
 			
@@ -68,15 +68,15 @@ namespace maki
 			}
 		}
 
-		void draw_command_t::set_material(handle_t materialHandle)
+		void draw_command_t::set_material(handle_t material_handle)
 		{
 			material_manager_t::free(material_);
 			texture_set_manager_t::free(texture_set_);
 			shader_program_manager_t::free(shader_program_);
 
-			if(materialHandle != HANDLE_NONE) {
-				material_manager_t::add_ref(materialHandle);
-				material_ = materialHandle;
+			if(material_handle != HANDLE_NONE) {
+				material_manager_t::add_ref(material_handle);
+				material_ = material_handle;
 				fields_.material_ = material_ & material_manager_t::handle_value_mask_;
 				fields_.material_manager_id_ = material_ >> material_manager_t::manager_id_shift_;
 

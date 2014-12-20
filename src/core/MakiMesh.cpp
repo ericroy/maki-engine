@@ -139,53 +139,53 @@ namespace maki
 			siblings_.clear();
 		}
 
-		void mesh_t::push_vertex_data(uint32 sizeInBytes, char *data)
+		void mesh_t::push_vertex_data(uint32 size_in_bytes, char *data)
 		{
-			assert(sizeInBytes % vertex_stride_ == 0);
+			assert(size_in_bytes % vertex_stride_ == 0);
 
-			if(vertex_insertion_index_+sizeInBytes > vertex_data_size_) {
+			if(vertex_insertion_index_+size_in_bytes > vertex_data_size_) {
 				// Enlarge by some margin
-				uint32 overflow = vertex_insertion_index_ + sizeInBytes - vertex_data_size_;
+				uint32 overflow = vertex_insertion_index_ + size_in_bytes - vertex_data_size_;
 				uint32 more = std::max(std::max(overflow, 256U), vertex_data_size_/2);
 				vertex_data_size_ += more;
 				vertex_data_ = (char *)allocator_t::realloc(vertex_data_, vertex_data_size_);
 				assert(vertex_data_);
 			}
-			assert(vertex_insertion_index_+sizeInBytes <= vertex_data_size_);
+			assert(vertex_insertion_index_+size_in_bytes <= vertex_data_size_);
 
 			if(data != nullptr) {
-				memcpy(&vertex_data_[vertex_insertion_index_], data, sizeInBytes);
+				memcpy(&vertex_data_[vertex_insertion_index_], data, size_in_bytes);
 			}
-			vertex_insertion_index_ += sizeInBytes;
-			vertex_count_ += sizeInBytes / vertex_stride_;
+			vertex_insertion_index_ += size_in_bytes;
+			vertex_count_ += size_in_bytes / vertex_stride_;
 		}
 
-		void mesh_t::push_index_data(uint32 sizeInBytes, char *data)
+		void mesh_t::push_index_data(uint32 size_in_bytes, char *data)
 		{
-			assert(sizeInBytes % (bytes_per_index_ * indices_per_face_) == 0);
+			assert(size_in_bytes % (bytes_per_index_ * indices_per_face_) == 0);
 
-			if(index_insertion_index_+sizeInBytes > index_data_size_) {
+			if(index_insertion_index_+size_in_bytes > index_data_size_) {
 				// Enlarge by some margin
-				uint32 overflow = index_insertion_index_ + sizeInBytes - index_data_size_;
+				uint32 overflow = index_insertion_index_ + size_in_bytes - index_data_size_;
 				uint32 more = std::max(std::max(overflow, 256U), index_data_size_/2);
 				index_data_size_ += more;
 				index_data_ = (char *)allocator_t::realloc(index_data_, index_data_size_);
 				assert(index_data_);
 			}
-			assert(index_insertion_index_+sizeInBytes <= index_data_size_);
+			assert(index_insertion_index_+size_in_bytes <= index_data_size_);
 
 			if(data != nullptr) {
-				memcpy(&index_data_[index_insertion_index_], data, sizeInBytes);
+				memcpy(&index_data_[index_insertion_index_], data, size_in_bytes);
 			}
-			index_insertion_index_ += sizeInBytes;
-			face_count_ += sizeInBytes / (indices_per_face_ * bytes_per_index_);
+			index_insertion_index_ += size_in_bytes;
+			face_count_ += size_in_bytes / (indices_per_face_ * bytes_per_index_);
 		}
 
 		bool mesh_t::load(rid_t rid, bool upload)
 		{
-			uint32 bytesRead;
+			uint32 bytes_read;
 			char *data;
-			char *start = data = engine_t::get()->assets_->alloc_read(rid, &bytesRead);
+			char *start = data = engine_t::get()->assets_->alloc_read(rid, &bytes_read);
 			if(start == nullptr) {
 				return false;
 			}
@@ -197,23 +197,23 @@ namespace maki
 			}
 			data += sizeof(uint8)*8;
 
-			const uint32 meshCount = *(uint32 *)data;
+			const uint32 mesh_count = *(uint32 *)data;
 			data += sizeof(uint32);
 
 			core_managers_t *res = core_managers_t::get();
 			data += load_mesh_data(data, upload);
-			for(uint32 i = 1; i < meshCount; i++) {
-				mesh_t nextMesh;
-				data += nextMesh.load_mesh_data(data, upload);
-				siblings_.push_back(res->mesh_manager_->add(maki_move(nextMesh)));
+			for(uint32 i = 1; i < mesh_count; i++) {
+				mesh_t next_mesh;
+				data += next_mesh.load_mesh_data(data, upload);
+				siblings_.push_back(res->mesh_manager_->add(maki_move(next_mesh)));
 			}
 
-			if((uint32)(data - start) > bytesRead) {
+			if((uint32)(data - start) > bytes_read) {
 				console_t::error("Read past the end of the mesh data!");
-			} else if((uint32)(data - start) < bytesRead) {
+			} else if((uint32)(data - start) < bytes_read) {
 				console_t::error("Still more bytes to be read in the mesh data!");
 			}
-			assert(data == start + bytesRead);
+			assert(data == start + bytes_read);
 			MAKI_SAFE_FREE(start);
 
 			calculate_bounds();
@@ -382,9 +382,9 @@ namespace maki
 			buffer_ = engine_t::get()->renderer_->upload_buffer(buffer_, &vf, vertex_data_, vertex_count_, index_data_, face_count_, indices_per_face_, bytes_per_index_, dynamic_, length_changed);
 
 			// get or create vertex format
-			handle_t newVertexFormat = core_managers_t::get()->vertex_format_manager_->find_or_add(vf);
+			handle_t new_vertex_format = core_managers_t::get()->vertex_format_manager_->find_or_add(vf);
 			vertex_format_manager_t::free(vertex_format_);
-			vertex_format_ = newVertexFormat;
+			vertex_format_ = new_vertex_format;
 
 			// Record the data sizes so if upload is called again later, we can see if the buffers have changed length
 			old_vertex_data_size_ = vertex_data_size_;
@@ -404,8 +404,8 @@ namespace maki
 				}
 			}
 
-			const uint32 siblingCount = siblings_.size();
-			for(uint32 i = 0; i < siblingCount; i++) {
+			const uint32 sibling_count = siblings_.size();
+			for(uint32 i = 0; i < sibling_count; i++) {
 				mesh_t *m = mesh_manager_t::get(siblings_[i]);
 				m->calculate_bounds();
 				bounds_.merge(m->bounds_);

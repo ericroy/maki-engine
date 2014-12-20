@@ -46,9 +46,9 @@ namespace maki
 			memcpy(uniform_values_, other.uniform_values_, sizeof(uniform_value_t)*uniform_count_);
 			for(uint32 i = 0; i < uniform_count_; i++) {
 				uniform_value_t &val = uniform_values_[i];
-				char *oldData = val.data_;
+				char *old_data = val.data_;
 				val.data_ = (char *)allocator_t::malloc(val.bytes_);
-				memcpy(val.data_, oldData, val.bytes_);
+				memcpy(val.data_, old_data, val.bytes_);
 			}
 		}
 
@@ -58,18 +58,18 @@ namespace maki
 			texture_set_manager_t::free(texture_set_);
 		}
 
-		void material_t::set_shader_program(rid_t shaderRid)
+		void material_t::set_shader_program(rid_t shader_rid)
 		{
-			handle_t newShaderProgram = core_managers_t::get()->shader_program_manager_->load(shaderRid);
+			handle_t new_shader_program = core_managers_t::get()->shader_program_manager_->load(shader_rid);
 			shader_program_manager_t::free(shader_program_);
-			shader_program_ = newShaderProgram;
+			shader_program_ = new_shader_program;
 		}
 	
 		void material_t::set_textures(uint8 count, rid_t *texture_rids)
 		{
-			handle_t newTextureSet = core_managers_t::get()->texture_set_manager_->load(count, texture_rids);
+			handle_t new_texture_set = core_managers_t::get()->texture_set_manager_->load(count, texture_rids);
 			texture_set_manager_t::free(texture_set_);
-			texture_set_ = newTextureSet;
+			texture_set_ = new_texture_set;
 		}
 
 		int32 material_t::push_constant(const char *key, uint32 bytes, char *data)
@@ -144,18 +144,18 @@ namespace maki
 		
 			n = doc.root_->resolve("texture_set_");
 			if(n != nullptr) {
-				rid_t textureSetRids[texture_set_t::max_textures_per_set_];
-				uint32 textureSetSize = n->count_;
-				assert(textureSetSize < texture_set_t::max_textures_per_set_);
+				rid_t texture_set_rids[texture_set_t::max_textures_per_set_];
+				uint32 texture_set_size = n->count_;
+				assert(texture_set_size < texture_set_t::max_textures_per_set_);
 				for(uint32 i = 0; i < n->count_; i++) {
-					rid_t texRid = eng->assets_->path_to_rid(n->children_[i]->value_);
-					if(texRid == RID_NONE) {
+					rid_t tex_rid = eng->assets_->path_to_rid(n->children_[i]->value_);
+					if(tex_rid == RID_NONE) {
 						console_t::error("Could not resolve rid from texture path: %s", n->children_[i]->value_);
 						goto failed;
 					}
-					textureSetRids[i] = texRid;
+					texture_set_rids[i] = tex_rid;
 				}
-				texture_set_ = res->texture_set_manager_->load(textureSetSize, textureSetRids);
+				texture_set_ = res->texture_set_manager_->load(texture_set_size, texture_set_rids);
 				if(texture_set_ == HANDLE_NONE) {
 					console_t::error("Failed to construct texture set from rid list");
 					goto failed;
@@ -171,28 +171,28 @@ namespace maki
 						console_t::error("Uniform node must have a single child specifying data type");
 						goto failed;
 					}
-					document_t::node_t *dataType = uniform->children_[0];
-					if(dataType->count_ == 0) {
+					document_t::node_t *data_type = uniform->children_[0];
+					if(data_type->count_ == 0) {
 						console_t::error("Uniform data type node must have at least one child");
 						goto failed;
 					}
 
-					uint32 valueCount = dataType->count_;
-					char *buffer = (char *)allocator_t::malloc(valueCount*4);
-					for(uint32 i = 0; i < valueCount; i++) {
-						if(dataType->value_[0] == 'f') {
-							((float *)buffer)[i] = dataType->children_[i]->value_as_float();
-						} else if(dataType->value_[0] == 'u') {
-							((uint32 *)buffer)[i] = (uint32)dataType->children_[i]->value_as_int();
-						} else if(dataType->value_[0] == 'i') {
-							((int32 *)buffer)[i] = (int32)dataType->children_[i]->value_as_int();
+					uint32 value_count = data_type->count_;
+					char *buffer = (char *)allocator_t::malloc(value_count*4);
+					for(uint32 i = 0; i < value_count; i++) {
+						if(data_type->value_[0] == 'f') {
+							((float *)buffer)[i] = data_type->children_[i]->value_as_float();
+						} else if(data_type->value_[0] == 'u') {
+							((uint32 *)buffer)[i] = (uint32)data_type->children_[i]->value_as_int();
+						} else if(data_type->value_[0] == 'i') {
+							((int32 *)buffer)[i] = (int32)data_type->children_[i]->value_as_int();
 						} else {
 							MAKI_SAFE_DELETE_ARRAY(buffer);
-							console_t::error("Unrecognized uniform data type: %s", dataType->value_);
+							console_t::error("Unrecognized uniform data type: %s", data_type->value_);
 							goto failed;
 						}
 					}
-					if(push_constant(uniform->value_, valueCount*4, buffer) == -1) {
+					if(push_constant(uniform->value_, value_count*4, buffer) == -1) {
 						console_t::warning("warning, material has unbound uniforms <rid %d>", rid);
 					}
 				}

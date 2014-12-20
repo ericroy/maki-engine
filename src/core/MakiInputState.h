@@ -193,7 +193,7 @@ namespace maki
 			public:
 				inline float get_float(button_t b) const { return values_[mapping_[b]]; }
 				inline bool get_bool(button_t b) const { return values_[mapping_[b]] == 1.0f; }
-				inline void map_button(button_t hardwareButton, button_t virtualButton) { mapping_[virtualButton] = hardwareButton; }
+				inline void map_button(button_t hardware_button, button_t virtual_button) { mapping_[virtual_button] = hardware_button; }
 
 				inline void set_identity_mapping()
 				{
@@ -231,12 +231,12 @@ namespace maki
 				inline bool get_key(key_t k) const { return key_states_[key_mapping_[k]].on_ != 0; }
 			
 				// Returns true if the key became depressed during the last tick
-				inline bool GetKeyPressed(key_t k) const { return key_states_[key_mapping_[k]].pressed_ != 0; }
+				inline bool get_key_pressed(key_t k) const { return key_states_[key_mapping_[k]].pressed_ != 0; }
 
 				// Returns true if the key was released during the last tick
-				inline bool GetKeyReleased(key_t k) const { return key_states_[key_mapping_[k]].released_ != 0; }
+				inline bool get_key_released(key_t k) const { return key_states_[key_mapping_[k]].released_ != 0; }
 
-				inline void MapKey(key_t hardwareKey, key_t virtualKey) { key_mapping_[virtualKey] = hardwareKey; }
+				inline void map_key(key_t hardware_key, key_t virtual_key) { key_mapping_[virtual_key] = hardware_key; }
 
 				inline void set_identity_mapping()
 				{
@@ -292,14 +292,14 @@ namespace maki
 			virtual ~input_state_t();
 		
 			// Hold a reference to the player object
-			inline player_t *GetPlayer(uint8 index) { assert(index < max_players_); return &players_[index]; }
+			inline player_t *get_player(uint8 index) { assert(index < max_players_); return &players_[index]; }
 
 			// Don't hold a reference to the controller object - get it each time from the player
 			// in case the controller associated with the player changes
 			inline controller_t &get_controller(uint8 index) { assert(index < max_players_); return controllers_[index]; }
 
-			void connect_controller(uint8 controllerIndex);
-			void DisconnectController(uint8 controllerIndex);
+			void connect_controller(uint8 controller_index);
+			void disconnect_controller(uint8 controller_index);
 
 		private:
 			uint8 controller_count_;

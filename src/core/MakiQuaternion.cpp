@@ -156,7 +156,7 @@ namespace maki
 		;		quaternion_t to convert to Euler angles.
 		;
 		; -------------------------------------------------------------------------------------------------------------------
-		Function QuatToEuler(Qx#, Qy#, Qz#, Qw#)
+		Function quat_to_euler(Qx#, Qy#, Qz#, Qw#)
 
 			Qx2# = Qx# * 2.0
 			Qy2# = Qy# * 2.0
@@ -235,9 +235,9 @@ namespace maki
 			// The quaternion representing the rotation is
 			//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
-			float halfAngle(0.5f*theta);
-			float s = sin(halfAngle);
-			w_ = cos(halfAngle);
+			float half_angle(0.5f*theta);
+			float s = sin(half_angle);
+			w_ = cos(half_angle);
 			x_ = s*axis.x_;
 			y_ = s*axis.y_;
 			z_ = s*axis.z_;
@@ -250,9 +250,9 @@ namespace maki
 			// The quaternion representing the rotation is
 			//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
-			float halfAngle(0.5f*theta);
-			float s = sin(halfAngle);
-			w_ = cos(halfAngle);
+			float half_angle(0.5f*theta);
+			float s = sin(half_angle);
+			w_ = cos(half_angle);
 			x_ = s*axis.x_;
 			y_ = s*axis.y_;
 			z_ = s*axis.z_;
@@ -266,10 +266,10 @@ namespace maki
 			float len_sq = x_*x_+y_*y_+z_*z_;
 			if(len_sq > 0.0f) {
 				theta = 2.0f*acos(w_);
-				float invLen = 1.0f/sqrt(len_sq);
-				axis.x_ = x_*invLen;
-				axis.y_ = y_*invLen;
-				axis.z_ = z_*invLen;
+				float inv_len = 1.0f/sqrt(len_sq);
+				axis.x_ = x_*inv_len;
+				axis.y_ = y_*inv_len;
+				axis.z_ = z_*inv_len;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
@@ -287,10 +287,10 @@ namespace maki
 			float len_sq = x_*x_+y_*y_+z_*z_;
 			if(len_sq > 0.0f) {
 				theta = 2.0f*acos(w_);
-				float invLen = 1.0f/sqrt(len_sq);
-				axis.x_ = x_*invLen;
-				axis.y_ = y_*invLen;
-				axis.z_ = z_*invLen;
+				float inv_len = 1.0f/sqrt(len_sq);
+				axis.x_ = x_*inv_len;
+				axis.y_ = y_*inv_len;
+				axis.z_ = z_*inv_len;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
@@ -313,8 +313,8 @@ namespace maki
 		{
 			float norm = w_*w_ + x_*x_ + y_*y_ + z_*z_;
 			if(norm > 0.0f) {
-				float invNorm = 1.0f/norm;
-				return quaternion_t(w_*invNorm, -x_*invNorm, -y_*invNorm, -z_*invNorm);
+				float inv_norm = 1.0f/norm;
+				return quaternion_t(w_*inv_norm, -x_*inv_norm, -y_*inv_norm, -z_*inv_norm);
 			} else {
 				// return an invalid result to flag the error
 				return zero_;
@@ -424,10 +424,10 @@ namespace maki
 
 		quaternion_t quaternion_t::squad(float t, const quaternion_t &p, const quaternion_t &a, const quaternion_t &b, const quaternion_t &q)
 		{
-			float slerpT = 2.0f*t*(1.0f-t);
-			quaternion_t slerpP = slerp(t, p, q);
-			quaternion_t slerpQ = slerp(t, a, b);
-			return slerp(slerpT, slerpP ,slerpQ);
+			float t_slerp = 2.0f*t*(1.0f-t);
+			quaternion_t p_slerp = slerp(t, p, q);
+			quaternion_t q_slerp = slerp(t, a, b);
+			return slerp(t_slerp, p_slerp, q_slerp);
 		}
 
 		void quaternion_t::compute_w()

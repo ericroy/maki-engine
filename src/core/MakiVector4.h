@@ -90,14 +90,14 @@ namespace maki
 
 		void vector4_t::normalize3(vector4_t &v)
 		{
-			float invLen = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_);
-			v *= invLen;
+			float inv_len = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_);
+			v *= inv_len;
 		}
 
 		void vector4_t::normalize4(vector4_t &v)
 		{
-			float invLen = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_ + v.w_*v.w_);
-			v *= invLen;
+			float inv_len = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_ + v.z_*v.z_ + v.w_*v.w_);
+			v *= inv_len;
 		}
 
 		vector4_t vector4_t::cross3(const vector4_t &a, const vector4_t &b)

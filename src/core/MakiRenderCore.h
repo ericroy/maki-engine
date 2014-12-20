@@ -49,11 +49,11 @@ namespace maki
 			virtual void draw(const render_state_t &state, const draw_command_list_t &commands) = 0;
 
 			template<class Derived>
-			void GenericDraw(const render_state_t &state, const draw_command_list_t &commands);
+			void generic_draw(const render_state_t &state, const draw_command_list_t &commands);
 
-			void SetPerFrameConstants(const core::render_state_t &state, const core::shader_t *s, char *buffer);
-			void SetPerObjectConstants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection);
-			void BindMaterialConstants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat);
+			void set_per_frame_constants(const core::render_state_t &state, const core::shader_t *s, char *buffer);
+			void set_per_object_constants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection);
+			void bind_material_constants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat);
 
 		public:
 			safe_queue_t<render_payload_t> input;
@@ -66,10 +66,10 @@ namespace maki
 
 
 		template<class Derived>
-		void render_core_t::GenericDraw(const render_state_t &state, const draw_command_list_t &commands)
+		void render_core_t::generic_draw(const render_state_t &state, const draw_command_list_t &commands)
 		{
 			Derived *derived = static_cast<Derived *>(this);
-			derived->AcquireContext();
+			derived->acquire_context();
 
 			// Resize screen buffers if necessary
 			if(window_width_ != state.window_width_ || window_height_ != state.window_height_) {
@@ -83,7 +83,7 @@ namespace maki
 			derived->set_render_target_and_depth_stencil(state.render_target_type_, state.render_target_, state.depth_stencil_type_, state.depth_stencil_);
 			derived->set_viewport(state.view_port_rect_);
 			derived->set_depth_state(state.depth_test_, state.depth_write_);
-			derived->SetRasterizerState(state.cull_mode_, state.wire_frame_);
+			derived->set_rasterizer_state(state.cull_mode_, state.wire_frame_);
 
 			derived->clear(state.clear_render_target_, state.render_target_clear_value_.vals_, state.clear_depth_stencil_, state.depth_clear_value_);
 						
@@ -154,7 +154,7 @@ namespace maki
 					if(shader->pixel_shader_.frame_uniform_buffer_location_ != -1) {
 						derived->set_per_frame_pixel_shader_constants(state, shader);
 					}
-					derived->BindShadowMaps(shader, state);
+					derived->bind_shadow_maps(shader, state);
 
 					current_material = HANDLE_NONE;
 					current_texture_set = HANDLE_NONE;
@@ -164,10 +164,10 @@ namespace maki
 
 				// get or create the input layout for this vertexformat+vertexshader combination
 				if(set_layout) {
-					if(shader->input_attribute_count_ != vf->attrCount) {
-						console_t::warning("shader_t takes %u input attributes, but current vertex format has %u", shader->input_attribute_count_, vf->attrCount);
+					if(shader->input_attribute_count_ != vf->attr_count_) {
+						console_t::warning("shader_t takes %u input attributes, but current vertex format has %u", shader->input_attribute_count_, vf->attr_count_);
 					}
-					derived->SetInputLayout(shader, vf);
+					derived->set_input_layout(shader, vf);
 					set_layout = false;
 				}
 

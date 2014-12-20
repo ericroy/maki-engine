@@ -74,12 +74,12 @@ namespace maki
 			matrix44_t::translation(joint_states[index].offset_, rot);
 		
 			out[index] = current * rot;
-			const matrix44_t &newCurrent = out[index];
+			const matrix44_t &new_current = out[index];
 
 			const Bone *b = &bones_[index];
 			index++;
 			for(uint32 i = 0; i < b->child_count_; i++) {
-				calculate_pos_recursive(index, newCurrent, joint_states, out);
+				calculate_pos_recursive(index, new_current, joint_states, out);
 			}
 		}
 

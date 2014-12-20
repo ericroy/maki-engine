@@ -101,9 +101,9 @@ namespace maki
 			return true;
 		}
 
-		void skeleton_animation_t::AdvanceState(float timeDelta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rateCoeff)
+		void skeleton_animation_t::advance_state(float time_delta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rate_coeff)
 		{
-			state.current_frame_ += timeDelta * rateCoeff * debug_rate_coeff_ * frame_rate_;
+			state.current_frame_ += time_delta * rate_coeff * debug_rate_coeff_ * frame_rate_;
 			if(state.current_frame_ >= frame_count_) {
 				if(loop) {
 					state.current_frame_ = state.current_frame_ - ((uint32)state.current_frame_ / frame_count_)*frame_count_;

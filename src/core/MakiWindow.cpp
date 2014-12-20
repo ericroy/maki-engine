@@ -31,7 +31,7 @@ namespace maki
 			}
 		}
 
-		input_state_t::button_t SDLButtonToMakiButton[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
+		input_state_t::button_t sdl_button_to_maki_button_[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
 			input_state_t::button_a, // SDL_CONTROLLER_BUTTON_A,
 			input_state_t::button_b, // SDL_CONTROLLER_BUTTON_B,
 			input_state_t::button_x, // SDL_CONTROLLER_BUTTON_X,
@@ -301,7 +301,7 @@ namespace maki
 		void window_t::poll_input(input_state_t *state)
 		{
 			for(uint32 i = 0; i < input_state_t::max_players_; i++) {
-				state->GetPlayer(i)->set_key_states(key_states_);
+				state->get_player(i)->set_key_states(key_states_);
 
 				if(controller_handles_[i] != nullptr) {
 					if(!state->get_controller(i).connected_) {
@@ -311,7 +311,7 @@ namespace maki
 					memcpy(state->get_controller(i).values_, controllers_[i].values_, sizeof(controllers_[i].values_));
 				} else if(state->get_controller(i).connected_) {
 					// Just disconnected
-					state->DisconnectController(i);
+					state->disconnect_controller(i);
 				}
 			}
 		}
@@ -347,7 +347,7 @@ namespace maki
 						{
 							int32 i = get_controller_index(e.cbutton.which);
 							if(i >= 0) {
-								input_state_t::button_t btn = SDLButtonToMakiButton[e.cbutton.button];
+								input_state_t::button_t btn = sdl_button_to_maki_button_[e.cbutton.button];
 								if(btn != input_state_t::button_invalid_) {
 									controllers_[i].values_[btn] = e.cbutton.state * 1.0f;
 								}

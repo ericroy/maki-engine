@@ -228,7 +228,7 @@ namespace maki
 
 		bool document_t::load(char *data, uint32 length)
 		{
-			if(document_binary_serializer_t::IsBinaryDocument(data, length)) {
+			if(document_binary_serializer_t::is_binary_document(data, length)) {
 				document_binary_serializer_t serial(*this);
 				return serial.deserialize(data, length);
 			} else {
@@ -484,7 +484,7 @@ namespace maki
 
 		const uint8 document_binary_serializer_t::BINARY_HEADER[4] = {'\0', 'H', 'D', '\0'};
 
-		bool document_binary_serializer_t::IsBinaryDocument(char *data, uint32 length)
+		bool document_binary_serializer_t::is_binary_document(char *data, uint32 length)
 		{
 			return data != nullptr && length >= sizeof(BINARY_HEADER) && memcmp(data, BINARY_HEADER, sizeof(BINARY_HEADER)) == 0;
 		}
@@ -539,14 +539,14 @@ namespace maki
 			offset += sizeof(BINARY_HEADER);
 
 			// write string table count_
-			uint32 stringCount = table.size();
-			assert(stringCount < 1<<16);
-			uint16 sc = stringCount;
+			uint32 string_count = table.size();
+			assert(string_count < 1<<16);
+			uint16 sc = string_count;
 			out.write((char *)&sc, sizeof(sc));
 			offset += sizeof(sc);
 		
 			// write each string, null terminated
-			for(uint32 i = 0; i < stringCount; i++) {
+			for(uint32 i = 0; i < string_count; i++) {
 				const std::string &s = table[i];
 				uint32 bytes = s.size()+1;
 				out.write(s.c_str(), bytes);
@@ -561,8 +561,8 @@ namespace maki
 			}		
 
 			// write the document
-			std::string bodyString = body.str();
-			out.write(bodyString.c_str(), bodyString.size());
+			std::string body_string = body.str();
+			out.write(body_string.c_str(), body_string.size());
 		
 			return true;
 		}
@@ -587,8 +587,8 @@ namespace maki
 			body.write((char *)&l, sizeof(l));
 		
 			// write node value_ (index into string table actually)
-			uint16 stringIndex = get_or_add(string_table, n->value_);
-			body.write((char *)&stringIndex, sizeof(stringIndex));
+			uint16 string_index = get_or_add(string_table, n->value_);
+			body.write((char *)&string_index, sizeof(string_index));
 
 			level++;
 			for(uint32 i = 0; i < n->count_; i++) {
@@ -599,7 +599,7 @@ namespace maki
 
 		bool document_binary_serializer_t::deserialize(char *data, uint32 length)
 		{
-			if(!IsBinaryDocument(data, length)) {
+			if(!is_binary_document(data, length)) {
 				console_t::error("Data did not contain a binary document");
 				return false;
 			}
@@ -627,7 +627,7 @@ namespace maki
 				p++;
 			}	
 
-			int32 previousLevel = -1;
+			int32 previous_level = -1;
 			document_t::node_t *previous = doc_.root_;
 
 			while(p < data+length) {
@@ -635,21 +635,21 @@ namespace maki
 				uint16 level = *(uint16 *)p; p += sizeof(uint16);
 
 				// Read string table index which specifies the node value_
-				uint16 stringIndex = *(uint16 *)p; p += sizeof(uint16);
+				uint16 string_index = *(uint16 *)p; p += sizeof(uint16);
 
-				document_t::node_t *n = new document_t::node_t(string_table_start+string_table_offsets[stringIndex], string_table_offsets[stringIndex+1]-string_table_offsets[stringIndex], true);
-				if(level > previousLevel) {
+				document_t::node_t *n = new document_t::node_t(string_table_start+string_table_offsets[string_index], string_table_offsets[string_index+1]-string_table_offsets[string_index], true);
+				if(level > previous_level) {
 					previous->append_child(n);
 				} else {
-					while(level <= previousLevel) {
+					while(level <= previous_level) {
 						previous = previous->parent_;
 						assert(previous != nullptr);
-						previousLevel--;
+						previous_level--;
 					}
 					previous->append_child(n);
 				}
 				previous = n;
-				previousLevel = level;
+				previous_level = level;
 			}
 
 			MAKI_SAFE_DELETE_ARRAY(string_table_offsets);

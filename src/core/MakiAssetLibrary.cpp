@@ -28,7 +28,7 @@ namespace maki
 			// Stomp out the archive_ path in debug mode so we will always load loose files from disk
 			archive_path = nullptr;
 
-			// In debug mode, the debugModePathPrefix is used to make all assets load from a modified location
+			// In debug mode, the path adjustment is used to make all assets load from a modified location
 			manifest->debug_mode_path_adjustment_ = debug_mode_path_adjustment_;
 #endif
 

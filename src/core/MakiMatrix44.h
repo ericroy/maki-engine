@@ -34,7 +34,7 @@ namespace maki
 			static void frustum(float l, float r, float b, float t, float n, float f, matrix44_t &m);
 			inline static void frustum(const core::frustum_t &f, matrix44_t &m) { matrix44_t::frustum(f.left_, f.right_, f.bottom_, f.top_, f.near_plane_, f.far_plane_, m); }
 		
-			static void perspective(float fovY, float aspect, float near_plane_, float far_plane_, matrix44_t &m);
+			static void perspective(float fov_y, float aspect, float near_plane, float far_plane, matrix44_t &m);
 			inline static void perspective(const core::frustum_t &f, matrix44_t &m) { perspective(f.fov_, f.get_aspect(), f.near_plane_, f.far_plane_, m); }
 
 			static void ortho(float l, float r, float b, float t, float n, float f, matrix44_t &m);

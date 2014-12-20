@@ -44,18 +44,18 @@ namespace maki
 		handle_t material_manager_t::duplicate_if_shared(handle_t handle)
 		{
 			material_manager_t *owner = get_owner(handle);
-			if(handle != HANDLE_NONE && owner->res_pool_->GetRefCount(handle & handle_value_mask_) > 1) {
+			if(handle != HANDLE_NONE && owner->res_pool_->get_ref_count(handle & handle_value_mask_) > 1) {
 				// Allocate a new item, relying on the item's copy constructor to duplicate it
-				handle_t newHandle = owner->res_pool_->alloc(*owner->res_pool_->get(handle)) | owner->manager_id_;
+				handle_t new_handle = owner->res_pool_->alloc(*owner->res_pool_->get(handle)) | owner->manager_id_;
 				owner->res_pool_->free(handle & handle_value_mask_);
 
 				// Must clear the rid_t on cloned resources, since they are no longer hot-swappable.
 				// Duplicating usually implies an intent to modify the resource, and if you hot-swapped
 				// in a new one, those modifications would be lost.
-				material_t *mat = owner->res_pool_->get(newHandle & handle_value_mask_);
+				material_t *mat = owner->res_pool_->get(new_handle & handle_value_mask_);
 				mat->rid_ = RID_NONE;
 
-				return newHandle;
+				return new_handle;
 			}
 			return handle;
 		}

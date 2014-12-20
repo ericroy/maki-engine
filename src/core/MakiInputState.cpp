@@ -22,26 +22,26 @@ namespace maki
 		{
 		}
 
-		void input_state_t::connect_controller(uint8 controllerIndex)
+		void input_state_t::connect_controller(uint8 controller_index)
 		{
 			assert(controller_count_ < max_players_);
-			if(!controllers_[controllerIndex].connected_) {
-				controllers_[controllerIndex].connected_ = true;
+			if(!controllers_[controller_index].connected_) {
+				controllers_[controller_index].connected_ = true;
 			
 				// find the next free player to associate this controller with
-				for(uint8 playerIndex = 0; playerIndex < max_players_; playerIndex++) {
-					if(players_[playerIndex].controller_ == nullptr) {
-						players_[playerIndex].controller_ = &controllers_[controllerIndex];
-						controllers_[controllerIndex].player_index_ = playerIndex;
+				for(uint8 player_index = 0; player_index < max_players_; player_index++) {
+					if(players_[player_index].controller_ == nullptr) {
+						players_[player_index].controller_ = &controllers_[controller_index];
+						controllers_[controller_index].player_index_ = player_index;
 						return;
 					}
 				}
 			}
 		}
 
-		void input_state_t::DisconnectController(uint8 controllerIndex)
+		void input_state_t::disconnect_controller(uint8 controller_index)
 		{
-			controller_t &c = controllers_[controllerIndex];
+			controller_t &c = controllers_[controller_index];
 			c.connected_ = false;
 			players_[c.player_index_].controller_ = nullptr;
 			c.player_index_ = (uint8)-1;

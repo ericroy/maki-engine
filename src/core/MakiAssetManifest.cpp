@@ -32,16 +32,16 @@ namespace maki
 
 		rid_t asset_manifest_t::path_to_rid(const char *path) const
 		{
-			std::string fullPath = common_path_prefix_ + path;
+			std::string full_path = common_path_prefix_ + path;
 			for(uint32 i = 0; i < count_; i++) {
-				if(fullPath == path_array_[i]) {
+				if(full_path == path_array_[i]) {
 					return MAKI_TO_RID(rid_array_[i]);
 				}
 			}
 			return RID_NONE;
 		}
 
-		char *asset_manifest_t::alloc_read(rid_t rid, uint32 *bytesRead) const
+		char *asset_manifest_t::alloc_read(rid_t rid, uint32 *bytes_read) const
 		{
 			if(rid == RID_NONE) {
 				return nullptr;
@@ -49,8 +49,8 @@ namespace maki
 			const char *path = get_path(rid);
 
 #if _DEBUG
-			std::string fullPath = debug_mode_path_adjustment_ + path;
-			path = fullPath.c_str();
+			std::string full_path = debug_mode_path_adjustment_ + path;
+			path = full_path.c_str();
 #endif
 
 			FILE *fp = fopen(path, "rb");
@@ -68,8 +68,8 @@ namespace maki
 			fclose(fp);
 			buffer[size] = 0;
 
-			if(bytesRead != nullptr) {
-				*bytesRead = size;
+			if(bytes_read != nullptr) {
+				*bytes_read = size;
 			}
 			return buffer;
 		}

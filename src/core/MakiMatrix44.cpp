@@ -97,30 +97,30 @@ namespace maki
 		}
 
 		void matrix44_t::look_at(const vector4_t &eye, const vector4_t &target, const vector4_t &up, matrix44_t &out) {
-			vector4_t nZ = eye-target;
-			nZ.normalize();
-			vector4_t nX = vector4_t::cross(up, nZ);
-			nX.normalize();
-			vector4_t nY = vector4_t::cross(nZ, nX);
+			vector4_t nz = eye-target;
+			nz.normalize();
+			vector4_t nx = vector4_t::cross(up, nz);
+			nx.normalize();
+			vector4_t ny = vector4_t::cross(nz, nx);
 		
-			out.cols_[0][0] = nX.vals_[0];
-			out.cols_[0][1] = nY.vals_[0];
-			out.cols_[0][2] = nZ.vals_[0];
+			out.cols_[0][0] = nx.vals_[0];
+			out.cols_[0][1] = ny.vals_[0];
+			out.cols_[0][2] = nz.vals_[0];
 			out.cols_[0][3] = 0.0f;
 
-			out.cols_[1][0] = nX.vals_[1];
-			out.cols_[1][1] = nY.vals_[1];
-			out.cols_[1][2] = nZ.vals_[1];
+			out.cols_[1][0] = nx.vals_[1];
+			out.cols_[1][1] = ny.vals_[1];
+			out.cols_[1][2] = nz.vals_[1];
 			out.cols_[1][3] = 0.0f;
 
-			out.cols_[2][0] = nX.vals_[2];
-			out.cols_[2][1] = nY.vals_[2];
-			out.cols_[2][2] = nZ.vals_[2];
+			out.cols_[2][0] = nx.vals_[2];
+			out.cols_[2][1] = ny.vals_[2];
+			out.cols_[2][2] = nz.vals_[2];
 			out.cols_[2][3] = 0.0f;
 
-			out.cols_[3][0] = -nX.dot(eye);
-			out.cols_[3][1] = -nY.dot(eye);
-			out.cols_[3][2] = -nZ.dot(eye);
+			out.cols_[3][0] = -nx.dot(eye);
+			out.cols_[3][1] = -ny.dot(eye);
+			out.cols_[3][2] = -nz.dot(eye);
 			out.cols_[3][3] = 1.0f;
 		}
 
@@ -146,16 +146,16 @@ namespace maki
 			out.cols_[3][3] = 0.0f;
 		}
 
-		void matrix44_t::perspective(float fovY, float aspect, float nearPlane, float farPlane, matrix44_t &out) {
-			float t = std::tan(fovY / 2.0f * MAKI_DEG_TO_RAD);
+		void matrix44_t::perspective(float fov_y, float aspect, float near_plane, float far_plane, matrix44_t &out) {
+			float t = std::tan(fov_y / 2.0f * MAKI_DEG_TO_RAD);
 		
 			// Half height of near plane
-			float hh = nearPlane * t;
+			float hh = near_plane * t;
 		
 			// Half width of near plane
 			float hw = hh * aspect;
 		
-			frustum(-hw, hw, -hh, hh, nearPlane, farPlane, out);
+			frustum(-hw, hw, -hh, hh, near_plane, far_plane, out);
 		}
 
 		void matrix44_t::ortho(float l, float r, float b, float t, float n, float f, matrix44_t &out) {
@@ -206,17 +206,17 @@ namespace maki
 			const float t20 = + (v4 * m10 - v2 * m11 + v0 * m13);
 			const float t30 = - (v3 * m10 - v1 * m11 + v0 * m12);
 
-			const float invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
+			const float inv_det = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
 
-			const float d00 = t00 * invDet;
-			const float d10 = t10 * invDet;
-			const float d20 = t20 * invDet;
-			const float d30 = t30 * invDet;
+			const float d00 = t00 * inv_det;
+			const float d10 = t10 * inv_det;
+			const float d20 = t20 * inv_det;
+			const float d30 = t30 * inv_det;
 
-			const float d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-			const float d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-			const float d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-			const float d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+			const float d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * inv_det;
+			const float d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * inv_det;
+			const float d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * inv_det;
+			const float d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * inv_det;
 
 			v0 = m10 * m31 - m11 * m30;
 			v1 = m10 * m32 - m12 * m30;
@@ -225,10 +225,10 @@ namespace maki
 			v4 = m11 * m33 - m13 * m31;
 			v5 = m12 * m33 - m13 * m32;
 
-			const float d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-			const float d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-			const float d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-			const float d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+			const float d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * inv_det;
+			const float d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * inv_det;
+			const float d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * inv_det;
+			const float d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * inv_det;
 
 			v0 = m21 * m10 - m20 * m11;
 			v1 = m22 * m10 - m20 * m12;
@@ -237,10 +237,10 @@ namespace maki
 			v4 = m23 * m11 - m21 * m13;
 			v5 = m23 * m12 - m22 * m13;
 
-			const float d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-			const float d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-			const float d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-			const float d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+			const float d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * inv_det;
+			const float d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * inv_det;
+			const float d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * inv_det;
+			const float d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * inv_det;
 
 			out.cols_[0][0] = d00;	out.cols_[1][0] = d01;	out.cols_[2][0] = d02;	out.cols_[3][0] = d03;
 			out.cols_[0][1] = d10;	out.cols_[1][1] = d11;	out.cols_[2][1] = d12;	out.cols_[3][1] = d13;
@@ -290,11 +290,11 @@ namespace maki
 
 			float m00 = m.cols_[0][0], m01 = m.cols_[1][0], m02 = m.cols_[2][0];
 
-			float invDet = 1.0f / (m00 * t00 + m01 * t10 + m02 * t20);
+			float inv_det = 1.0f / (m00 * t00 + m01 * t10 + m02 * t20);
 
-			t00 *= invDet; t10 *= invDet; t20 *= invDet;
+			t00 *= inv_det; t10 *= inv_det; t20 *= inv_det;
 
-			m00 *= invDet; m01 *= invDet; m02 *= invDet;
+			m00 *= inv_det; m01 *= inv_det; m02 *= inv_det;
 
 			float r00 = t00;
 			float r01 = m02 * m21 - m01 * m22;

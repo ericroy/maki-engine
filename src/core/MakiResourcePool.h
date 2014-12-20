@@ -35,13 +35,13 @@ namespace maki
 				inline bool operator==(const iterator_t &iter) const { return iter.current_ == current_; }
 				inline bool operator!=(const iterator_t &iter) const { return iter.current_ != current_; }
 				inline const T &operator*() const { return data_[current_]; }
-				inline T *Ptr() const { return &data_[current_]; }
-				inline uint32 Index() const { return current_; }
-				inline uint16 RefCount() const { return ref_counts_[current_]; }
+				inline T *ptr() const { return &data_[current_]; }
+				inline uint32 index() const { return current_; }
+				inline uint16 ref_count() const { return ref_counts_[current_]; }
 		
 			private:
-				iterator_t(node_t *nodes_, T *data_, uint16 *ref_counts, uint32 current_)
-				:	nodes_(nodes_), data_(data_), ref_counts_(ref_counts), current_(current_) {}
+				iterator_t(node_t *nodes, T *data, uint16 *ref_counts, uint32 current)
+				:	nodes_(nodes), data_(data), ref_counts_(ref_counts), current_(current) {}
 
 			private:
 				node_t *nodes_;
@@ -216,8 +216,8 @@ namespace maki
 			// Note: this method adds a reference to the item if it is found.
 			handle_t find(const T &item)
 			{
-				const iterator_t iterEnd = end_();
-				for(iterator_t iter = begin(); iter != iterEnd; ++iter) {
+				const iterator_t iter_end = end_();
+				for(iterator_t iter = begin(); iter != iter_end; ++iter) {
 					if(item == *iter) {
 						assert(reference_counts_[iter.current_] > 0);
 						// increase the ref count for this object
@@ -232,9 +232,9 @@ namespace maki
 			// Note: this method adds a reference to the item if it is found.
 			handle_t match(std::function<bool(const T *)> predicate)
 			{
-				const iterator_t iterEnd = end_();
-				for(iterator_t iter = begin(); iter != iterEnd; ++iter) {
-					if(predicate(iter.Ptr())) {
+				const iterator_t iter_end = end_();
+				for(iterator_t iter = begin(); iter != iter_end; ++iter) {
+					if(predicate(iter.ptr())) {
 						assert(reference_counts_[iter.current_] > 0);
 						// increase the ref count for this object
 						reference_counts_[iter.current_]++;
@@ -252,7 +252,7 @@ namespace maki
 				}
 			}
 
-			inline uint16 GetRefCount(handle_t handle)
+			inline uint16 get_ref_count(handle_t handle)
 			{
 				if(handle < capacity_) {
 					assert(reference_counts_[handle] > 0);

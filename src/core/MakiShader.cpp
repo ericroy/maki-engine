@@ -86,18 +86,18 @@ namespace maki
 
 		bool shader_t::init(document_t::node_t *shader_node, const char *data_key, const char *meta_key)
 		{
-			document_t::node_t *dataNode = shader_node->resolve(data_key);
-			if(dataNode == nullptr || dataNode->count_ != 1) {
+			document_t::node_t *data_node = shader_node->resolve(data_key);
+			if(data_node == nullptr || data_node->count_ != 1) {
 				return false;
 			}
 
-			char *encodedData = dataNode->children_[0]->value_;
-			if(encodedData == nullptr) {
+			char *encoded_data = data_node->children_[0]->value_;
+			if(encoded_data == nullptr) {
 				console_t::error("Failed to parse shader, no base64 encoded program found in 'data' node");
 				return false;
 			}
 
-			std::stringstream in(encodedData);
+			std::stringstream in(encoded_data);
 			std::stringstream out(std::ios::out | std::ios::binary);
 			if(!base64::decode(in, out)) {
 				console_t::error("Failed to base64 decode shader program");

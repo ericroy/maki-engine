@@ -28,7 +28,7 @@ namespace maki
 		{
 		}
 
-		void console_t::write(level_t level, bool lineFeed, const char *prefix, const char *format, va_list args)
+		void console_t::write(level_t level, bool line_feed, const char *prefix, const char *format, va_list args)
 		{
 			if(level < verbosity_) {
 				return;
@@ -42,7 +42,7 @@ namespace maki
 
 			sprintf_safe(cursor, max_buffer_size_ - (cursor - buffer_), format, args);
 			
-			if(lineFeed) {
+			if(line_feed) {
 				strcat(buffer_, "\n");
 			}
 
