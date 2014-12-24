@@ -68,8 +68,8 @@ namespace maki
 
 		void vector2_t::normalize(vector2_t &v)
 		{
-			float invLen = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_);
-			v *= invLen;
+			float inv_len = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_);
+			v *= inv_len;
 		}
 
 		float vector2_t::cross(const vector2_t &a, const vector2_t &b)

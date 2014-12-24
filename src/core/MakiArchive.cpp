@@ -53,7 +53,7 @@ namespace maki
 			
 			// Read table of contents
 			char buffer_[file_path_max_length_];
-			uint32 tocOffset = ftell(fp_);
+			uint32 toc_offset = ftell(fp_);
 			for(uint32 i = 0; i < toc_count; i++) {
 				entry_t &entry = entries[i];
 				fread(&entry.flags_, sizeof(entry.flags_), 1, fp_);

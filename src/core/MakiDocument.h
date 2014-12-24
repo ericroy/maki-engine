@@ -120,7 +120,7 @@ namespace maki
 			static const uint8 BINARY_HEADER[4];
 
 		public:
-			static bool IsBinaryDocument(char *data, uint32 length);
+			static bool is_binary_document(char *data, uint32 length);
 
 		public:
 			document_binary_serializer_t(document_t &doc);

@@ -55,7 +55,7 @@ namespace maki
 			// to_camera: The direction from the sprite's world position to the camera's world position (normalized)
 			// sprite_face_axis: The axis along which the untransformed sprite faces (normalized)
 			// sprite_pivot_axis: The axis around which the sprite is allowed to pivot (normalized)
-			static inline quaternion_t billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &spriteUpAxis);
+			static inline quaternion_t billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_up_axis);
 			static inline quaternion_t billboard_pivot(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_pivot_axis);
 
 			// Performs Spherical linear interpolation between two quaternions, and returns the result.
@@ -244,7 +244,7 @@ namespace maki
 		}
 
 
-		quaternion_t quaternion_t::billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &spriteUpAxis)
+		quaternion_t quaternion_t::billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_up_axis)
 		{
 			// to_camera, sprite_face_axis, and sprite_pivot_axis must be normalized
 			quaternion_t ret;

@@ -51,7 +51,7 @@ namespace maki
 			};
 
 			inline iterator_t begin() const { return iterator_t(nodes_, data_, reference_counts_, head_); }
-			inline const iterator_t end_() const { return iterator_t(nodes_, data_, reference_counts_, end_); }
+			inline const iterator_t end() const { return iterator_t(nodes_, data_, reference_counts_, end_); }
 
 		public:
 			resource_pool_t(uint32 max_size, const char *debug_name)
@@ -142,12 +142,12 @@ namespace maki
 					free_head_ = nodes_[free_head_].next_;
 
 					// insert the new element at the head_
-					uint32 oldHead = head_;
+					uint32 old_head = head_;
 					head_ = handle;
-					if(oldHead != end_) {
-						nodes_[oldHead].prev_ = head_;
+					if(old_head != end_) {
+						nodes_[old_head].prev_ = head_;
 					}
-					nodes_[head_].next_ = oldHead;
+					nodes_[head_].next_ = old_head;
 					nodes_[head_].prev_ = end_;
 
 					// Adjust ref counts

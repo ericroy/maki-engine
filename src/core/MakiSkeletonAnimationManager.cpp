@@ -41,7 +41,7 @@ namespace maki
 
 			const resource_pool_t<skeleton_animation_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<skeleton_animation_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				skeleton_animation_t *skel_anim = iter.Ptr();
+				skeleton_animation_t *skel_anim = iter.ptr();
 				rid_t rid = skel_anim->rid_;
 				if(rid != RID_NONE) {
 					skel_anim->~skeleton_animation_t();

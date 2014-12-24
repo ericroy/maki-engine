@@ -1,8 +1,8 @@
-#include "core_/core_stdafx.h"
-#include "core_/MakiRenderer.h"
-#include "core_/MakiConfig.h"
-#include "core_/MakiRenderPayload.h"
-#include "core_/MakiRenderCore.h"
+#include "core/core_stdafx.h"
+#include "core/MakiRenderer.h"
+#include "core/MakiConfig.h"
+#include "core/MakiRenderPayload.h"
+#include "core/MakiRenderCore.h"
 
 namespace maki
 {

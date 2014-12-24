@@ -41,7 +41,7 @@ namespace maki
 
 			const resource_pool_t<skeleton_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<skeleton_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				skeleton_t *skel = iter.Ptr();
+				skeleton_t *skel = iter.ptr();
 				rid_t rid = skel->rid_;
 				if(rid != RID_NONE) {
 					skel->~skeleton_t();

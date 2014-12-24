@@ -64,7 +64,7 @@ namespace maki
 		{
 			const resource_pool_t<material_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<material_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				material_t *mat = iter.Ptr();
+				material_t *mat = iter.ptr();
 				rid_t rid = mat->rid_;
 				if(rid != RID_NONE) {
 					reload(mat);

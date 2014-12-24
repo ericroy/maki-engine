@@ -148,8 +148,8 @@ namespace maki
 			// Camera data
 			matrix44_t view_;
 			matrix44_t projection_;
-			camera_split_distances_t camera_split_distances;
-			vector4_t camera_width_height_near_far;
+			camera_split_distances_t camera_split_distances_;
+			vector4_t camera_width_height_near_far_;
 
 			// light_t and shadow data
 			uint32 light_count_;

@@ -93,8 +93,8 @@ namespace maki
 				return pos_ + corner_coeffs_[i] * radii_;
 			}
 
-			inline float GetRadius() const { return radii_.length(); }
-			inline float GetRadiusSq() const { return radii_.length_squared(); }
+			inline float get_radius() const { return radii_.length(); }
+			inline float get_radius_sq() const { return radii_.length_squared(); }
 
 		public:
 			vector4_t pos_;

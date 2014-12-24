@@ -86,7 +86,7 @@ namespace maki
 			return RID_NONE;
 		}
 
-		char *asset_library_t::alloc_read(rid_t rid, uint32 *bytesRead) const
+		char *asset_library_t::alloc_read(rid_t rid, uint32 *bytes_read) const
 		{
 			if(rid == RID_NONE) {
 				return nullptr;
@@ -97,9 +97,9 @@ namespace maki
 				const group_t &group = groups_[i];
 				if(group.manifest_->contains(rid)) {
 					if(group.archive_ != nullptr) {
-						return group.archive_->alloc_read(rid, bytesRead);
+						return group.archive_->alloc_read(rid, bytes_read);
 					}
-					return group.manifest_->alloc_read(rid, bytesRead);
+					return group.manifest_->alloc_read(rid, bytes_read);
 				}
 			}
 			return nullptr;

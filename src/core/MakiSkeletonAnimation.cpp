@@ -79,14 +79,14 @@ namespace maki
 			}
 		
 			for(uint32 i = 3; i < doc.root_->count_; i++) {
-				document_t::node_t *boneNode = doc.root_->children_[i];
+				document_t::node_t *bone_node = doc.root_->children_[i];
 				uint32 bone = i-3;
 
-				data_[bone].set_size(boneNode->count_);
+				data_[bone].set_size(bone_node->count_);
 				data_[bone].zero();
 
-				for(uint32 j = 0; j < boneNode->count_; j++) {
-					document_t::node_t *n = boneNode->children_[j];
+				for(uint32 j = 0; j < bone_node->count_; j++) {
+					document_t::node_t *n = bone_node->children_[j];
 					key_frame_t &kf = data_[bone][j];
 
 					kf.frame_ = n->value_as_uint();

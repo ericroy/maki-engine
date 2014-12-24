@@ -49,7 +49,7 @@ namespace maki
 		}
 
 
-		void render_core_t::SetPerFrameConstants(const core::render_state_t &state, const core::shader_t *s, char *buffer)
+		void render_core_t::set_per_frame_constants(const core::render_state_t &state, const core::shader_t *s, char *buffer)
 		{
 			using namespace core;
 
@@ -105,7 +105,7 @@ namespace maki
 		}
 
 
-		void render_core_t::SetPerObjectConstants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection)
+		void render_core_t::set_per_object_constants(const core::shader_t *s, char *buffer, const core::matrix44_t &model, const core::matrix44_t &model_view, const core::matrix44_t &model_view_projection)
 		{
 			using namespace core;
 
@@ -125,7 +125,7 @@ namespace maki
 			}
 		}
 
-		void render_core_t::BindMaterialConstants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat)
+		void render_core_t::bind_material_constants(const core::shader_t *s, bool is_vertex_shader, char *buffer, const core::material_t *mat)
 		{
 			using namespace core;
 

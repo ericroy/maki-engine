@@ -17,7 +17,7 @@ namespace maki
 			inline const char *get_path(rid_t rid) const { return path_array_[rid - rid_start_]; }
 			void set_rid_start(uint32 rid_start);
 			rid_t path_to_rid(const char *path) const;
-			char *alloc_read(rid_t rid, uint32 *bytesRead = nullptr) const;
+			char *alloc_read(rid_t rid, uint32 *bytes_read = nullptr) const;
 
 		public:
 			std::string common_path_prefix_;

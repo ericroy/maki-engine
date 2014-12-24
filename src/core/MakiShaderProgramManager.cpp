@@ -48,7 +48,7 @@ namespace maki
 			engine_t *eng = engine_t::get();
 			const resource_pool_t<shader_program_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<shader_program_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				shader_program_t *shader = iter.Ptr();
+				shader_program_t *shader = iter.ptr();
 				rid_t rid = shader->rid_;
 				shader_program_t::variant_t variant = shader->variant_;
 

@@ -30,10 +30,10 @@ namespace maki
 				Bone *b = &bones_[i];
 				joint_t *j = &joints[i];
 			
-				int32 parentIndex = n->resolve_as_int("#0");
-				if(parentIndex >= 0) {
-					assert(bones_[parentIndex].child_count_ < MAX_CHILDREN_PER_BONE);
-					bones_[parentIndex].children_[bones_[parentIndex].child_count_++] = b;
+				int32 parent_index = n->resolve_as_int("#0");
+				if(parent_index >= 0) {
+					assert(bones_[parent_index].child_count_ < MAX_CHILDREN_PER_BONE);
+					bones_[parent_index].children_[bones_[parent_index].child_count_++] = b;
 				}
 
 				j->offset_ = vector3_t(n->children_[1]->value_as_float(), n->children_[2]->value_as_float(), n->children_[3]->value_as_float());

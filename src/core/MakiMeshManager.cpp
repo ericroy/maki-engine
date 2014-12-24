@@ -38,7 +38,7 @@ namespace maki
 		{
 			const resource_pool_t<mesh_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<mesh_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				mesh_t *mesh = iter.Ptr();
+				mesh_t *mesh = iter.ptr();
 				rid_t rid = mesh->rid_;
 				if(rid != RID_NONE) {
 					mesh->~mesh_t();

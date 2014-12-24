@@ -77,10 +77,10 @@ namespace maki
 		{
 			engine_t *eng = engine_t::get();
 
-			uint32 bytesRead;
-			char *data = eng->assets_->alloc_read(rid, &bytesRead);
+			uint32 bytes_read;
+			char *data = eng->assets_->alloc_read(rid, &bytes_read);
 
-			if(!eng->renderer_->create_texture(tex, (char *)data, bytesRead)) {
+			if(!eng->renderer_->create_texture(tex, (char *)data, bytes_read)) {
 				console_t::error("Failed to create texture <rid %d>", rid);
 				MAKI_SAFE_FREE(data);
 				return false;
@@ -95,7 +95,7 @@ namespace maki
 		{
 			const resource_pool_t<texture_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<texture_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				texture_t *tex = iter.Ptr();
+				texture_t *tex = iter.ptr();
 				rid_t rid = tex->rid_;
 				if(rid != RID_NONE) {
 					tex->~texture_t();
