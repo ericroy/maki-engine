@@ -1,6 +1,6 @@
 #pragma once
 #include "core/core_stdafx.h"
-#include <mutex_>
+#include <mutex>
 #include <condition_variable>
 #include <assert.h>
 #include "core/MakiArray.h"
@@ -93,7 +93,7 @@ namespace maki
 		private:
 			uint32 available_;
 		
-			std::mutex_ mutex_;
+			std::mutex mutex_;
 			std::condition_variable cond_data_available_;
 			std::condition_variable cond_space_available_;
 

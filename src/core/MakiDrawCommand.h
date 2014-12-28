@@ -57,7 +57,7 @@ namespace maki
 				uint64 material_manager_id_ : material_manager_t::bits_per_manager_id_;
 
 				uint64 texture_set_ : bits_per_texture_set_;
-				uint64 material_manager_id_ : texture_set_manager_t::bits_per_manager_id_;
+				uint64 texture_set_manager_id_ : texture_set_manager_t::bits_per_manager_id_;
 
 				uint64 shader_program_ : bits_per_shader_program_;
 				uint64 shader_program_manager_id_ : shader_program_manager_t::bits_per_manager_id_;

@@ -38,13 +38,13 @@ namespace maki
 
 			inline void add(const draw_command_t &draw_command, const matrix44_t &m)
 			{
-				assert(count < keys.count_);
+				assert(count_ < keys_.count_);
 
-				values[count].draw_command_.copy(draw_command);
-				values[count].m_ = m;
-				keys[count].key_ = draw_command.get_key();
-				keys[count].index_ = count;
-				count++;
+				values_[count_].draw_command_.copy(draw_command);
+				values_[count_].m_ = m;
+				keys_[count_].key_ = draw_command.get_key();
+				keys_[count_].index_ = count_;
+				count_++;
 			}
 
 			inline void sort()

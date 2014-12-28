@@ -33,7 +33,7 @@ namespace maki
 
 			inline bool operator==(const shader_program_t &other) const
 			{
-				return rid_ == other.rid_ && variant == other.variant_;
+				return rid_ == other.rid_ && variant_ == other.variant_;
 			}
 
 		public:

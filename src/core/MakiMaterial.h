@@ -21,7 +21,7 @@ namespace maki
 				}
 				~uniform_value_t()
 				{
-					MAKI_SAFE_FREE(data);
+					MAKI_SAFE_FREE(data_);
 				}
 
 				// Offset within the shader
