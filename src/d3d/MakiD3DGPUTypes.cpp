@@ -2,81 +2,81 @@
 #include "d3d/MakiD3DGPUTypes.h"
 #include "d3d/MakiD3DCommon.h"
 
-using namespace Maki::Core;
+using namespace maki::core;
 
-namespace Maki
+namespace maki
 {
-	namespace D3D
+	namespace d3d
 	{
 
-		GPUVertexShader::GPUVertexShader(uint32 vertexFormatsPerVertexShader)
-			: blob(nullptr),
-			blobSize(0),
+		gpu_vertex_shader_t::gpu_vertex_shader_t(uint32 vertex_formats_per_vertex_shader)
+			: blob_(nullptr),
+			blob_size_(0),
 			vs(nullptr),
-			perFrameConstants(nullptr),
-			perObjectConstants(nullptr),
-			materialConstants(nullptr),
-			inputLayouts(nullptr),
-			inputLayoutCount(0),
-			inputLayoutCapacity(vertexFormatsPerVertexShader)
+			per_frame_constants_(nullptr),
+			per_object_constants_(nullptr),
+			material_constants_(nullptr),
+			input_layouts_(nullptr),
+			input_layout_count_(0),
+			input_layout_capacity_(vertex_formats_per_vertex_shader)
 		{
-			inputLayouts = (InputLayout *)Allocator::Malloc(sizeof(InputLayout) * inputLayoutCapacity);
-			memset(inputLayouts, 0, sizeof(InputLayout)*inputLayoutCapacity);
+			input_layouts_ = (input_layout_t *)Allocator::Malloc(sizeof(input_layout_t) * input_layout_capacity_);
+			memset(input_layouts_, 0, sizeof(input_layout_t)*input_layout_capacity_);
 		}
 
-		GPUVertexShader::~GPUVertexShader()
+		gpu_vertex_shader_t::~gpu_vertex_shader_t()
 		{
-			for(uint32 i = 0; i < inputLayoutCount; i++) {
-				SAFE_RELEASE(inputLayouts[i].inputLayout);
+			for(uint32 i = 0; i < input_layout_count_; i++) {
+				SAFE_RELEASE(input_layouts_[i].input_layout_);
 			}
-			SAFE_FREE(inputLayouts);
+			SAFE_FREE(input_layouts_);
 
 			SAFE_RELEASE(vs);
-			SAFE_FREE(blob);
-			SAFE_RELEASE(perFrameConstants);
-			SAFE_RELEASE(perObjectConstants);
-			SAFE_RELEASE(materialConstants);
+			SAFE_FREE(blob_);
+			SAFE_RELEASE(per_frame_constants_);
+			SAFE_RELEASE(per_object_constants_);
+			SAFE_RELEASE(material_constants_);
 		}
 
-		ID3D11InputLayout *GPUVertexShader::GetOrCreateInputLayout(ID3D11Device *device, const VertexFormat *vf) {
-			for(uint32 i = 0; i < inputLayoutCount; i++) {
-				if(inputLayouts[i].vertexFormatKey == vf->equalityKey) {
-					return inputLayouts[i].inputLayout;
+		ID3D11InputLayout *gpu_vertex_shader_t::get_or_create_input_layout(ID3D11Device *device_, const vertex_format_t *vf) {
+			for(uint32 i = 0; i < input_layout_count_; i++) {
+				if(input_layouts_[i].vertex_format_key_ == vf->equalityKey) {
+					return input_layouts_[i].input_layout_;
 				}
 			}
 
 			// Else create this layout and cache it
-			assert(inputLayoutCount < inputLayoutCapacity && "Too many vertex formats for this vertex shader");
+			assert(input_layout_count_ < input_layout_capacity_ && "Too many vertex formats for this vertex shader");
 
 			uint32 offset = 0;
 			uint32 index = 0;
-			D3D11_INPUT_ELEMENT_DESC layoutData[VertexFormat::AttributeCount];
-			for(uint8 i = 0; i < VertexFormat::AttributeCount; i++) {
-				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
+			D3D11_INPUT_ELEMENT_DESC layoutData[vertex_format_t::attribute_count_];
+			for(uint8 i = 0; i < vertex_format_t::attribute_count_; i++) {
+				vertex_format_t::Attribute attr = (vertex_format_t::Attribute)i;
 				if(vf->HasAttribute(attr)) {
 
-					VertexFormat::DataType dataType = vf->GetDataType(attr);
+					vertex_format_t::DataType dataType = vf->GetDataType(attr);
 					uint8 dataCount = vf->GetDataCount(attr);
 
-					layoutData[index].SemanticName = attrToSemanticString[attr];
-					layoutData[index].SemanticIndex = attrToSemanticIndex[attr];
-					layoutData[index].Format = typeAndCountAndNormToFormat[dataType][dataCount][normalizeAttribute[attr]];
+					layoutData[index].SemanticName = attr_to_semantic_string[attr];
+					layoutData[index].SemanticIndex = attr_to_semantic_index[attr];
+					layoutData[index].Format = type_and_count_and_norm_to_format[dataType][dataCount][normalize_attribute[attr]];
 					layoutData[index].InputSlot = 0;
 					layoutData[index].AlignedByteOffset = offset;
 					layoutData[index].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 					layoutData[index].InstanceDataStepRate = 0;
 
-					offset += dataCount * VertexFormat::DataTypeSizes[dataType];
+					offset += dataCount * vertex_format_t::DataTypeSizes[dataType];
 					index++;
 				}
 			}
 
-			if(MAKI_D3D_FAILED(device->CreateInputLayout(layoutData, index, blob, blobSize, &inputLayouts[inputLayoutCount].inputLayout))) {
-				Console::Error("Failed to create input layout");
+			if(MAKI_D3D_FAILED(device_->CreateInputLayout(layoutData, index, blob_, blob_size_, &input_layouts_[input_layout_count_].input_layout_))) {
+				console_t::error("Failed to create input layout");
 				return nullptr;
 			}
-			inputLayouts[inputLayoutCount].vertexFormatKey = vf->equalityKey;
-			return inputLayouts[inputLayoutCount++].inputLayout;
+			input_layouts_[input_layout_count_].vertex_format_key_ = vf->equalityKey;
+			return input_layouts_[input_layout_count_++].input_layout_;
 		}
 		
 			
@@ -84,42 +84,42 @@ namespace Maki
 
 
 
-		GPUPixelShader::GPUPixelShader()
+		gpu_pixel_shader_t::gpu_pixel_shader_t()
 			: ps(nullptr),
-			perFrameConstants(nullptr),
-			perObjectConstants(nullptr),
-			materialConstants(nullptr)
+			per_frame_constants_(nullptr),
+			per_object_constants_(nullptr),
+			material_constants_(nullptr)
 		{
 		}
 
-		GPUPixelShader::~GPUPixelShader()
+		gpu_pixel_shader_t::~gpu_pixel_shader_t()
 		{
 			SAFE_RELEASE(ps);
-			SAFE_RELEASE(perFrameConstants);
-			SAFE_RELEASE(perObjectConstants);
-			SAFE_RELEASE(materialConstants);
+			SAFE_RELEASE(per_frame_constants_);
+			SAFE_RELEASE(per_object_constants_);
+			SAFE_RELEASE(material_constants_);
 		}
 			
 
 
 
 
-		GPUTexture::GPUTexture()
-			: shaderResourceView(nullptr),
-			samplerState(nullptr),
-			depthStencilView(nullptr),
-			renderTargetView(nullptr)
+		gpu_texture_t::gpu_texture_t()
+			: shader_resource_view_(nullptr),
+			sampler_state_(nullptr),
+			depth_stencil_view_(nullptr),
+			render_target_view_(nullptr)
 		{
 		}
 
-		GPUTexture::~GPUTexture()
+		gpu_texture_t::~gpu_texture_t()
 		{
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
-			SAFE_RELEASE(depthStencilView);
-			SAFE_RELEASE(renderTargetView);
+			SAFE_RELEASE(shader_resource_view_);
+			SAFE_RELEASE(sampler_state_);
+			SAFE_RELEASE(depth_stencil_view_);
+			SAFE_RELEASE(render_target_view_);
 		}
 
-	} // namespace D3D
+	} // namespace d3d
 
-} // namespace Maki
+} // namespace maki

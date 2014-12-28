@@ -5,53 +5,53 @@
 #include "d3d/DDSTextureLoader.h"
 #include "SDL_syswm.h"
 
-using namespace Maki::Core;
+using namespace maki::core;
 
-namespace Maki
+namespace maki
 {
-	namespace D3D
+	namespace d3d
 	{
 
-		D3DRenderCore::D3DRenderCore(Window *window, const Config *config)
-			:	RenderCore(),
-				swapChain(nullptr),
-				device(nullptr),
-				context(nullptr),
-				defaultRenderTargetView(nullptr),
-				defaultDepthStencilView(nullptr),
-				currentRenderTargetView(nullptr),
-				currentDepthStencilView(nullptr),
-				rasterizerState(nullptr),
-				rasterizerStateCullBack(nullptr),
-				rasterizerStateCullFront(nullptr),
-				rasterizerStateWireFrame(nullptr),
-				rasterizerStateWireFrameCullBack(nullptr),
-				rasterizerStateWireFrameCullFront(nullptr),
-				depthState(nullptr),
-				depthStateWrite(nullptr),
-				depthStateLess(nullptr),
-				depthStateLessWrite(nullptr),
-				depthStateEqual(nullptr),
-				depthStateEqualWrite(nullptr),
-				depthStateLessEqual(nullptr),
-				depthStateLessEqualWrite(nullptr),
-				blendEnabled(nullptr),
-				blendDisabled(nullptr)
+		d3d_render_core_t::d3d_render_core_t(window_t *window, const config_ *config)
+			:	render_core_t(),
+				swap_chain_(nullptr),
+				device_(nullptr),
+				context_(nullptr),
+				default_render_target_view_(nullptr),
+				default_depth_stencil_view_(nullptr),
+				current_render_target_view_(nullptr),
+				current_depth_stencil_view_(nullptr),
+				rasterizer_state_(nullptr),
+				rasterizer_state_cull_back_(nullptr),
+				rasterizer_state_cull_front_(nullptr),
+				rasterizer_state_wire_frame_(nullptr),
+				rasterizer_state_wire_frame_cull_back_(nullptr),
+				rasterizer_state_wire_frame_cull_front_(nullptr),
+				depth_state_(nullptr),
+				depth_state_write_(nullptr),
+				depth_state_less_(nullptr),
+				depth_state_less_write_(nullptr),
+				depth_state_equal_(nullptr),
+				depth_state_equal_write_(nullptr),
+				depth_state_less_equal_(nullptr),
+				depth_state_less_equal_write_(nullptr),
+				blend_enabled_(nullptr),
+				blend_disabled_(nullptr)
 		{
-			memset(nullArray, 0, sizeof(nullArray));
+			memset(null_array_, 0, sizeof(null_array_));
 
-			vsync = config->GetBool("engine.vsync", false);
-			maxVertexFormatsPerVertexShader = config->GetUint("d3d.max_vertex_formats_per_vertex_shader", 6);
+			vsync_ = config->GetBool("engine.vsync_", false);
+			max_vertex_formats_per_vertex_shader_ = config->GetUint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
 			// Check supported resolutions
 			uint32 refreshNumer = 0;
 			uint32 refreshDenom = 0;
-			if(!IsModeSupported(window->width, window->height, &refreshNumer, &refreshDenom))
+			if(!is_mode_supported(window->width, window->height, &refreshNumer, &refreshDenom))
 			{
-				Console::Warning("Mode not supported: %dx%d", window->width, window->height);
+				console_t::Warning("Mode not supported: %dx%d", window->width, window->height);
 			}
 
-			// Get hwnd from SDL window
+			// get hwnd from SDL window
 			SDL_SysWMinfo sdlInfo;
 			SDL_version sdlVer;
 			SDL_VERSION(&sdlVer);
@@ -75,7 +75,7 @@ namespace Maki
 			UINT flags = 0;
 			
 			if(config->GetBool("d3d.debug_context", false)) {
-				Console::Info("Requesting Direct3D debug context");
+				console_t::Info("Requesting Direct3D debug context_");
 				flags |= D3D11_CREATE_DEVICE_DEBUG;
 			}
 
@@ -97,60 +97,60 @@ namespace Maki
 				featureLevel = D3D_FEATURE_LEVEL_11_1;
 				break;
 			default:
-				Console::Error("Unsupported Direct3D major/minor version, using defaults instead");
+				console_t::error("Unsupported Direct3D major/minor version, using defaults instead");
 			}
 
-			Console::Info("Creating Direct3D %d.%d context", major, minor);
+			console_t::Info("Creating Direct3D %d.%d context_", major, minor);
 
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1,
-				D3D11_SDK_VERSION, &scd, &swapChain, &device, nullptr, &context);
-			if(_Failed(ret)) {
-				Console::Error("Failed to create device and swap chain");
+				D3D11_SDK_VERSION, &scd, &swap_chain_, &device_, nullptr, &context_);
+			if(__failed(ret)) {
+				console_t::error("Failed to create device_ and swap chain");
 			}
 		}
 
-		D3DRenderCore::~D3DRenderCore() {
-			if(swapChain != nullptr) {
-				swapChain->SetFullscreenState(false, nullptr);
+		d3d_render_core_t::~d3d_render_core_t() {
+			if(swap_chain_ != nullptr) {
+				swap_chain_->SetFullscreenState(false, nullptr);
 			}
 
-			SAFE_RELEASE(rasterizerState);
-			SAFE_RELEASE(rasterizerStateCullBack);
-			SAFE_RELEASE(rasterizerStateCullFront);
-			SAFE_RELEASE(rasterizerStateWireFrame);
-			SAFE_RELEASE(rasterizerStateWireFrameCullBack);
-			SAFE_RELEASE(rasterizerStateWireFrameCullFront);
+			SAFE_RELEASE(rasterizer_state_);
+			SAFE_RELEASE(rasterizer_state_cull_back_);
+			SAFE_RELEASE(rasterizer_state_cull_front_);
+			SAFE_RELEASE(rasterizer_state_wire_frame_);
+			SAFE_RELEASE(rasterizer_state_wire_frame_cull_back_);
+			SAFE_RELEASE(rasterizer_state_wire_frame_cull_front_);
 
-			SAFE_RELEASE(depthState);
-			SAFE_RELEASE(depthStateWrite);
-			SAFE_RELEASE(depthStateLess);
-			SAFE_RELEASE(depthStateLessWrite);
-			SAFE_RELEASE(depthStateEqual);
-			SAFE_RELEASE(depthStateEqualWrite);
-			SAFE_RELEASE(depthStateLessEqual);
-			SAFE_RELEASE(depthStateLessEqualWrite);
+			SAFE_RELEASE(depth_state_);
+			SAFE_RELEASE(depth_state_write_);
+			SAFE_RELEASE(depth_state_less_);
+			SAFE_RELEASE(depth_state_less_write_);
+			SAFE_RELEASE(depth_state_equal_);
+			SAFE_RELEASE(depth_state_equal_write_);
+			SAFE_RELEASE(depth_state_less_equal_);
+			SAFE_RELEASE(depth_state_less_equal_write_);
 
-			SAFE_RELEASE(blendEnabled);
-			SAFE_RELEASE(blendDisabled);
+			SAFE_RELEASE(blend_enabled_);
+			SAFE_RELEASE(blend_disabled_);
 
-			SAFE_RELEASE(defaultRenderTargetView);
-			SAFE_RELEASE(defaultDepthStencilView);
-			SAFE_RELEASE(swapChain);		
-			SAFE_RELEASE(context);
-			SAFE_RELEASE(device);
+			SAFE_RELEASE(default_render_target_view_);
+			SAFE_RELEASE(default_depth_stencil_view_);
+			SAFE_RELEASE(swap_chain_);		
+			SAFE_RELEASE(context_);
+			SAFE_RELEASE(device_);
 
-			Console::Info("Direct3D renderer destroyed");
+			console_t::Info("Direct3D renderer destroyed");
 		}
 
-		void D3DRenderCore::Init()
+		void d3d_render_core_t::init()
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
 			// Setup rasterizer state
 			D3D11_RASTERIZER_DESC rasterizerDesc;
 			ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 			rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-			rasterizerDesc.CullMode = D3D11_CULL_NONE;
+			rasterizerDesc.cull_mode_t = D3D11_CULL_NONE;
 			rasterizerDesc.FrontCounterClockwise = true;
 			rasterizerDesc.DepthBias = 0;
 			rasterizerDesc.DepthBiasClamp = 0.0f;
@@ -159,29 +159,29 @@ namespace Maki
 			rasterizerDesc.ScissorEnable = false;
 			rasterizerDesc.MultisampleEnable = false;
 			rasterizerDesc.AntialiasedLineEnable = false;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerState))) {
-				Console::Error("Failed to create rasterizer state");
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_))) {
+				console_t::error("Failed to create rasterizer state");
 			}
-			rasterizerDesc.CullMode = D3D11_CULL_BACK;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullBack))) {
-				Console::Error("Failed to create rasterizer state (cull back)");
+			rasterizerDesc.cull_mode_t = D3D11_CULL_BACK;
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_cull_back_))) {
+				console_t::error("Failed to create rasterizer state (cull back)");
 			}
-			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateCullFront))) {
-				Console::Error("Failed to create rasterizer state (cull front)");
+			rasterizerDesc.cull_mode_t = D3D11_CULL_FRONT;
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_cull_front_))) {
+				console_t::error("Failed to create rasterizer state (cull front)");
 			}
 			rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-			rasterizerDesc.CullMode = D3D11_CULL_NONE;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrame))) {
-				Console::Error("Failed to create rasterizer state (wire frame)");
+			rasterizerDesc.cull_mode_t = D3D11_CULL_NONE;
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_wire_frame_))) {
+				console_t::error("Failed to create rasterizer state (wire frame)");
 			}
-			rasterizerDesc.CullMode = D3D11_CULL_BACK;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullBack))) {
-				Console::Error("Failed to create rasterizer state (wire frame, cull back)");
+			rasterizerDesc.cull_mode_t = D3D11_CULL_BACK;
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_wire_frame_cull_back_))) {
+				console_t::error("Failed to create rasterizer state (wire frame, cull back)");
 			}
-			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-			if(_Failed(device->CreateRasterizerState(&rasterizerDesc, &rasterizerStateWireFrameCullFront))) {
-				Console::Error("Failed to create rasterizer state (wire frame, cull front)");
+			rasterizerDesc.cull_mode_t = D3D11_CULL_FRONT;
+			if(__failed(device_->CreateRasterizerState(&rasterizerDesc, &rasterizer_state_wire_frame_cull_front_))) {
+				console_t::error("Failed to create rasterizer state (wire frame, cull front)");
 			}
 
 			// Set up depth stencil state
@@ -191,99 +191,99 @@ namespace Maki
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_NEVER;
 			depthDesc.StencilEnable = false;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthState))) {
-				Console::Error("Failed to create depth stencil state A");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_))) {
+				console_t::error("Failed to create depth stencil state A");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateWrite))) {
-				Console::Error("Failed to create depth stencil state B");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_write_))) {
+				console_t::error("Failed to create depth stencil state B");
 			}
 			depthDesc.DepthEnable = true;
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_LESS;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLess))) {
-				Console::Error("Failed to create depth stencil state C");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_less_))) {
+				console_t::error("Failed to create depth stencil state C");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessWrite))) {
-				Console::Error("Failed to create depth stencil state D");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_less_write_))) {
+				console_t::error("Failed to create depth stencil state D");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_EQUAL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateEqual))) {
-				Console::Error("Failed to create depth stencil state E");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_equal_))) {
+				console_t::error("Failed to create depth stencil state E");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateEqualWrite))) {
-				Console::Error("Failed to create depth stencil state F");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_equal_write_))) {
+				console_t::error("Failed to create depth stencil state F");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqual))) {
-				Console::Error("Failed to create depth stencil state G");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_less_equal_))) {
+				console_t::error("Failed to create depth stencil state G");
 			}
 			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			if(_Failed(device->CreateDepthStencilState(&depthDesc, &depthStateLessEqualWrite))) {
-				Console::Error("Failed to create depth stencil state H");
+			if(__failed(device_->CreateDepthStencilState(&depthDesc, &depth_state_less_equal_write_))) {
+				console_t::error("Failed to create depth stencil state H");
 			}
 
 
 			// Setup blend state
 			D3D11_BLEND_DESC blendDesc;
 			ZeroMemory(&blendDesc, sizeof(blendDesc));
-			blendDesc.RenderTarget[0].BlendEnable = true;
-			blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-			blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-			blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
-			if(_Failed(device->CreateBlendState(&blendDesc, &blendEnabled))) {
-				Console::Error("Failed to create blend state (enabled)");
+			blendDesc.render_target_t[0].BlendEnable = true;
+			blendDesc.render_target_t[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blendDesc.render_target_t[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			blendDesc.render_target_t[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blendDesc.render_target_t[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blendDesc.render_target_t[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blendDesc.render_target_t[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blendDesc.render_target_t[0].RenderTargetWriteMask = 0x0f;
+			if(__failed(device_->CreateBlendState(&blendDesc, &blend_enabled_))) {
+				console_t::error("Failed to create blend state (enabled)");
 			}
-			blendDesc.RenderTarget[0].BlendEnable = false;
-			if(_Failed(device->CreateBlendState(&blendDesc, &blendDisabled))) {
-				Console::Error("Failed to create blend state (disabled)");
+			blendDesc.render_target_t[0].BlendEnable = false;
+			if(__failed(device_->CreateBlendState(&blendDesc, &blend_disabled_))) {
+				console_t::error("Failed to create blend state (disabled)");
 			}
 		
 
 			// Set initial state:
-			context->RSSetState(rasterizerState);
-			context->OMSetBlendState(blendEnabled, nullptr, 0xffffffff);
-			context->OMSetDepthStencilState(depthStateLessWrite, 1);
+			context_->RSSetState(rasterizer_state_);
+			context_->OMSetBlendState(blend_enabled_, nullptr, 0xffffffff);
+			context_->OMSetDepthStencilState(depth_state_less_write_, 1);
 
-			windowWidth = 1;
-			windowHeight = 1;
-			Resized(windowWidth, windowHeight);
+			window_width = 1;
+			window_height = 1;
+			resized(window_width, window_height);
 
 			// Render a blank frame so we don't see a flash of white on startup
-			SetRenderTargetAndDepthStencil(RenderState::RenderTarget_Default, HANDLE_NONE, RenderState::DepthStencil_Null, HANDLE_NONE);
+			set_render_target_and_depth_stencil(render_state_t::render_target_default_, HANDLE_NONE, render_state_t::DepthStencil_Null, HANDLE_NONE);
 			float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-			context->ClearRenderTargetView(defaultRenderTargetView, color);
-			swapChain->Present(0, 0);
+			context_->ClearRenderTargetView(default_render_target_view_, color);
+			swap_chain_->present(0, 0);
 		}
 
-		void D3DRenderCore::Resized(uint32 width, uint32 height)
+		void d3d_render_core_t::resized(uint32 width, uint32 height)
 		{
-			context->OMSetRenderTargets(0, nullptr, nullptr);
-			SAFE_RELEASE(defaultRenderTargetView);
-			SAFE_RELEASE(defaultDepthStencilView);
+			context_->OMSetRenderTargets(0, nullptr, nullptr);
+			SAFE_RELEASE(default_render_target_view_);
+			SAFE_RELEASE(default_depth_stencil_view_);
 
 			// ResizeBuffers breaks the graphics diagnostics, so don't call it while using the graphics profiler
 	#if !MAKI_PROFILING
-			if(MAKI_D3D_FAILED(swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0))) {
-				Console::Error("Failed to resize swap chain buffers");
+			if(MAKI_D3D_FAILED(swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0))) {
+				console_t::error("Failed to resize swap chain buffers");
 			}
 	#endif
 		
 			// Setup render target
 			ID3D11Texture2D *renderBuffer = nullptr;
-			if(MAKI_D3D_FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderBuffer))) {
-				Console::Error("Failed to get buffer from swap chain for render target view");
+			if(MAKI_D3D_FAILED(swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderBuffer))) {
+				console_t::error("Failed to get buffer from swap chain for render target view");
 			}
-			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(renderBuffer, nullptr, &defaultRenderTargetView))) {
-				Console::Error("Failed to create render target view");
+			if(MAKI_D3D_FAILED(device_->CreateRenderTargetView(renderBuffer, nullptr, &default_render_target_view_))) {
+				console_t::error("Failed to create render target view");
 			}
 			SAFE_RELEASE(renderBuffer);
 		
@@ -310,47 +310,47 @@ namespace Maki
 			depthViewDesc.Texture2D.MipSlice = 0;
 
 			ID3D11Texture2D *depthBuffer = nullptr;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&depthDesc, nullptr, &depthBuffer))) {
-				Console::Error("Failed to create texture for depth buffer");
+			if(MAKI_D3D_FAILED(device_->CreateTexture2D(&depthDesc, nullptr, &depthBuffer))) {
+				console_t::error("Failed to create texture for depth buffer");
 			}
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(depthBuffer, &depthViewDesc, &defaultDepthStencilView))) {
-				Console::Error("Failed to create depth stencil view");
+			if(MAKI_D3D_FAILED(device_->CreateDepthStencilView(depthBuffer, &depthViewDesc, &default_depth_stencil_view_))) {
+				console_t::error("Failed to create depth stencil view");
 			}
 			SAFE_RELEASE(depthBuffer);
 		}
 
-		void D3DRenderCore::Present()
+		void d3d_render_core_t::present()
 		{
-			std::lock_guard<std::mutex> lock(mutex);
-			swapChain->Present(vsync ? 1 : 0, 0);
+			std::lock_guard<std::mutex_> lock(mutex_);
+			swap_chain_->present(vsync_ ? 1 : 0, 0);
 		}
 
 
 		// Resource creation, deletion, modification:
 
-		void *D3DRenderCore::UploadBuffer(void *buffer, VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged)
+		void *d3d_render_core_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count_, char *index_data, uint32 face_count_, uint8 indices_per_face_, uint8 bytes_per_index_, bool dynamic, bool length_changed)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			Buffer *b = (Buffer *)buffer;
+			buffer_t *b = (buffer_t *)buffer;
 			if(b != nullptr) {
-				SAFE_RELEASE(b->vbos[0]);
-				SAFE_RELEASE(b->vbos[1]);
+				SAFE_RELEASE(b->vbos_[0]);
+				SAFE_RELEASE(b->vbos_[1]);
 			} else {
-				b = new Buffer();
-				memset(b, 0, sizeof(Buffer));
+				b = new buffer_t();
+				memset(b, 0, sizeof(buffer_t));
 			}
 
-			b->vertexCount = vertexCount;
-			b->faceCount = faceCount;
-			b->indicesPerFace = indicesPerFace;
-			b->bytesPerIndex = bytesPerIndex;
+			b->vertex_count_ = vertex_count_;
+			b->face_count_ = face_count_;
+			b->indices_per_face_ = indices_per_face_;
+			b->bytes_per_index_ = bytes_per_index_;
 
-			assert(indicesPerFace > 0 && indicesPerFace <= 3);
-			b->geometryType = indicesPerFaceToGeometryType[indicesPerFace];
+			assert(indices_per_face_ > 0 && indices_per_face_ <= 3);
+			b->geometry_type_ = indices_per_face_to_geometry_type[indices_per_face_];
 		
-			assert(bytesPerIndex > 0 && bytesPerIndex <= 4 && bytesPerIndex != 3);
-			b->indexDataType = bytesPerIndexToFormat[bytesPerIndex];
+			assert(bytes_per_index_ > 0 && bytes_per_index_ <= 4 && bytes_per_index_ != 3);
+			b->index_data_type_ = bytes_per_index_to_format[bytes_per_index_];
 
 			// TODO:
 			// In the case where the buffer lengths have not changed, we should probably just map this instead of recreating the buffers
@@ -361,50 +361,50 @@ namespace Maki
 			ZeroMemory(&bd, sizeof(bd));
 			ZeroMemory(&srd, sizeof(srd));
 			bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-			bd.ByteWidth = vf->GetStride()*vertexCount;
+			bd.ByteWidth = vf->get_stride()*vertex_count_;
 			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			if(dynamic) {
 				bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			}
-			srd.pSysMem = vertexData;
-			if(MAKI_D3D_FAILED(device->CreateBuffer(&bd, &srd, &b->vbos[0]))) {
-				Console::Error("Failed to create d3d vertex buffer");
+			srd.pSysMem = vertex_data;
+			if(MAKI_D3D_FAILED(device_->CreateBuffer(&bd, &srd, &b->vbos_[0]))) {
+				console_t::error("Failed to create d3d vertex buffer");
 			}
 		
 			// Create index buffer
 			ZeroMemory(&bd, sizeof(bd));
 			ZeroMemory(&srd, sizeof(srd));
 			bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-			bd.ByteWidth = bytesPerIndex*indicesPerFace*faceCount;
+			bd.ByteWidth = bytes_per_index_*indices_per_face_*face_count_;
 			bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 			if(dynamic) {
 				bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			}
-			srd.pSysMem = indexData;
-			if(MAKI_D3D_FAILED(device->CreateBuffer(&bd, &srd, &b->vbos[1]))) {
-				Console::Error("Failed to create d3d index buffer");
+			srd.pSysMem = index_data;
+			if(MAKI_D3D_FAILED(device_->CreateBuffer(&bd, &srd, &b->vbos_[1]))) {
+				console_t::error("Failed to create d3d index buffer");
 			}
 
 			return (void *)b;
 		}
 
-		void D3DRenderCore::FreeBuffer(void *buffer)
+		void d3d_render_core_t::free_buffer(void *buffer)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
 			if(buffer != nullptr) {
-				Buffer *b = (Buffer *)buffer;
-				SAFE_RELEASE(b->vbos[0]);
-				SAFE_RELEASE(b->vbos[1]);
+				buffer_t *b = (buffer_t *)buffer;
+				SAFE_RELEASE(b->vbos_[0]);
+				SAFE_RELEASE(b->vbos_[1]);
 				delete b;
 			}
 		}
 
-		bool D3DRenderCore::CreatePixelShader(Shader *ps)
+		bool d3d_render_core_t::create_pixel_shader(shader_t *ps)
 		{
-			GPUPixelShader *gps = new GPUPixelShader();
+			gpu_pixel_shader_t *gps = new gpu_pixel_shader_t();
 
-			if(MAKI_D3D_FAILED(device->CreatePixelShader(ps->programData, ps->programDataBytes, nullptr, &gps->ps))) {
+			if(MAKI_D3D_FAILED(device_->create_pixel_shader(ps->programData, ps->programDataBytes, nullptr, &gps->ps_))) {
 				goto failed;
 			}
 
@@ -418,27 +418,27 @@ namespace Maki
 			bufferDesc.StructureByteStride = 0;
 
 #define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
-			if(ps->frameUniformBufferLocation != -1) {
+			if(ps->frame_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->engineFrameUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->perFrameConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gps->per_frame_constants_))) {
 					goto failed;
 				}
 			}
-			if(ps->objectUniformBufferLocation != -1) {
+			if(ps->object_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->engineObjectUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->perObjectConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gps->per_object_constants_))) {
 					goto failed;
 				}
 			}
-			if(ps->materialUniformBufferLocation != -1) {
+			if(ps->material_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(ps->materialUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gps->materialConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gps->material_constants_))) {
 					goto failed;
 				}
 			}
 #undef ROUND_SIXTEEN
 
-			ps->handle = (intptr_t)gps;
+			ps->handle_ = (intptr_t)gps;
 			return true;
 
 failed:
@@ -446,17 +446,17 @@ failed:
 			return false;
 		}
 
-		bool D3DRenderCore::CreateVertexShader(Shader *vs)
+		bool d3d_render_core_t::create_vertex_shader(shader_t *vs)
 		{
-			GPUVertexShader *gvs = new GPUVertexShader(maxVertexFormatsPerVertexShader);
+			gpu_vertex_shader_t *gvs = new gpu_vertex_shader_t(max_vertex_formats_per_vertex_shader_);
 
 			// Since vertex shader keeps a pointer to this data, we will not delete the buffer as we exit the function
-			char *blob = (char *)Allocator::Malloc(vs->programDataBytes);
-			memcpy(blob, vs->programData, vs->programDataBytes);
-			gvs->blob = blob;
-			gvs->blobSize = vs->programDataBytes;
+			char *blob_ = (char *)Allocator::Malloc(vs->programDataBytes);
+			memcpy(blob_, vs->programData, vs->programDataBytes);
+			gvs->blob_ = blob_;
+			gvs->blob_size_ = vs->programDataBytes;
 		
-			if(MAKI_D3D_FAILED(device->CreateVertexShader(gvs->blob, gvs->blobSize, nullptr, &gvs->vs))) {
+			if(MAKI_D3D_FAILED(device_->create_vertex_shader(gvs->blob_, gvs->blob_size_, nullptr, &gvs->vs_))) {
 				goto failed;
 			}
 
@@ -470,27 +470,27 @@ failed:
 			bufferDesc.StructureByteStride = 0;
 
 #define ROUND_SIXTEEN(x) ((x) & 0x7) != 0 ? ((x) & ~0x7)+0x10 : (x)
-			if(vs->frameUniformBufferLocation != -1) {
+			if(vs->frame_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->engineFrameUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->perFrameConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gvs->per_frame_constants_))) {
 					goto failed;
 				}
 			}
-			if(vs->objectUniformBufferLocation != -1) {
+			if(vs->object_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->engineObjectUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->perObjectConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gvs->per_object_constants_))) {
 					goto failed;
 				}
 			}
-			if(vs->materialUniformBufferLocation != -1) {
+			if(vs->material_uniform_buffer_location_ != -1) {
 				bufferDesc.ByteWidth = ROUND_SIXTEEN(vs->materialUniformBytes);
-				if(MAKI_D3D_FAILED(device->CreateBuffer(&bufferDesc, nullptr, &gvs->materialConstants))) {
+				if(MAKI_D3D_FAILED(device_->CreateBuffer(&bufferDesc, nullptr, &gvs->material_constants_))) {
 					goto failed;
 				}
 			}
 #undef ROUND_SIXTEEN
 
-			vs->handle = (intptr_t)gvs;
+			vs->handle_ = (intptr_t)gvs;
 			return true;
 
 failed:
@@ -498,15 +498,15 @@ failed:
 			return false;
 		}
 
-		bool D3DRenderCore::CreateShaderProgram(ShaderProgram *s)
+		bool d3d_render_core_t::create_shader_program(shader_program_t *s)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			if(!CreateVertexShader(&s->vertexShader)) {
+			if(!create_vertex_shader(&s->vertex_shader_)) {
 				return false;
 			}
 
-			if(!CreatePixelShader(&s->pixelShader)) {
+			if(!create_pixel_shader(&s->pixel_shader_)) {
 				return false;
 			}
 
@@ -515,16 +515,16 @@ failed:
 
 	
 
-		bool D3DRenderCore::CreateEmptyTexture(Texture *t, uint8 channels)
+		bool d3d_render_core_t::create_empty_texture(texture_t *t, uint8 channels)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
 			ID3D11Texture2D *tex = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
-			ID3D11SamplerState *samplerState = nullptr;
+			ID3D11ShaderResourceView *shader_resource_view_ = nullptr;
+			ID3D11SamplerState *sampler_state_ = nullptr;
 
 			if(channels == 0 || channels > 4 || channels == 3) {
-				Console::Error("Unsupported number of channels in image: %d", channels);
+				console_t::error("Unsupported number of channels in image: %d", channels);
 				goto failed;
 			}
 
@@ -537,8 +537,8 @@ failed:
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
+			if(MAKI_D3D_FAILED(device_->CreateSamplerState(&samplerDesc, &sampler_state_))) {
+				console_t::error("CreateSamplerState failed");
 				goto failed;
 			}
 
@@ -546,7 +546,7 @@ failed:
 			ZeroMemory(&textureDesc, sizeof(textureDesc));
 			textureDesc.Width = t->width;
 			textureDesc.Height = t->height;
-			textureDesc.Format = channelsToFormat[channels];
+			textureDesc.Format = channels_to_format[channels];
 			textureDesc.MipLevels = 1;
 			textureDesc.ArraySize = 1;
 			textureDesc.SampleDesc.Count = 1;
@@ -555,8 +555,8 @@ failed:
 			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			textureDesc.CPUAccessFlags = 0;
 			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
+			if(MAKI_D3D_FAILED(device_->CreateTexture2D(&textureDesc, nullptr, &tex))) {
+				console_t::error("CreateTexture2D failed");
 				goto failed;
 			}
 
@@ -565,36 +565,36 @@ failed:
 			shaderResViewDesc.Format = textureDesc.Format;
 			shaderResViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 			shaderResViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
+			if(MAKI_D3D_FAILED(device_->CreateShaderResourceView(tex, &shaderResViewDesc, &shader_resource_view_))) {
+				console_t::error("CreateShaderResourceView failed");
 				goto failed;
 			}
 		
 		
 
-			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			t->handle = (intptr_t)gtex;
+			gpu_texture_t *gtex = new gpu_texture_t();
+			gtex->shader_resource_view_ = shader_resource_view_;
+			gtex->sampler_state_ = sampler_state_;
+			t->handle_ = (intptr_t)gtex;
 
 			SAFE_RELEASE(tex);
 			return true;
 
 failed:		
 			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
+			SAFE_RELEASE(shader_resource_view_);
+			SAFE_RELEASE(sampler_state_);
 			return false;
 		}
 
-		bool D3DRenderCore::CreateRenderTarget(Texture *t)
+		bool d3d_render_core_t::create_render_target(texture_t *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			ID3D11SamplerState *samplerState = nullptr;
+			ID3D11SamplerState *sampler_state_ = nullptr;
 			ID3D11Texture2D *tex = nullptr;
-			ID3D11RenderTargetView *renderTargetView = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
+			ID3D11RenderTargetView *render_target_view_ = nullptr;
+			ID3D11ShaderResourceView *shader_resource_view_ = nullptr;
 
 
 			D3D11_SAMPLER_DESC samplerDesc;
@@ -609,8 +609,8 @@ failed:
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
+			if(MAKI_D3D_FAILED(device_->CreateSamplerState(&samplerDesc, &sampler_state_))) {
+				console_t::error("CreateSamplerState failed");
 				goto failed;
 			}
 
@@ -627,8 +627,8 @@ failed:
 			textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
 			textureDesc.CPUAccessFlags = 0;
 			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
+			if(MAKI_D3D_FAILED(device_->CreateTexture2D(&textureDesc, nullptr, &tex))) {
+				console_t::error("CreateTexture2D failed");
 				goto failed;
 			}
 
@@ -636,8 +636,8 @@ failed:
 			ZeroMemory(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
 			renderTargetViewDesc.Format = textureDesc.Format;
 			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			if(MAKI_D3D_FAILED(device->CreateRenderTargetView(tex, &renderTargetViewDesc, &renderTargetView))) {
-				Console::Error("CreateRenderTargetView failed");
+			if(MAKI_D3D_FAILED(device_->CreateRenderTargetView(tex, &renderTargetViewDesc, &render_target_view_))) {
+				console_t::error("CreateRenderTargetView failed");
 				goto failed;
 			}
 
@@ -646,36 +646,36 @@ failed:
 			shaderResourceViewDesc.Format = textureDesc.Format;
 			shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 			shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
+			if(MAKI_D3D_FAILED(device_->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shader_resource_view_))) {
+				console_t::error("CreateShaderResourceView failed");
 				goto failed;
 			}
 		
-			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			gtex->renderTargetView = renderTargetView;
-			t->handle = (intptr_t)gtex;
+			gpu_texture_t *gtex = new gpu_texture_t();
+			gtex->shader_resource_view_ = shader_resource_view_;
+			gtex->sampler_state_ = sampler_state_;
+			gtex->render_target_view_ = render_target_view_;
+			t->handle_ = (intptr_t)gtex;
 
 			SAFE_RELEASE(tex);
 			return true;
 
 failed:		
 			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
-			SAFE_RELEASE(renderTargetView);
+			SAFE_RELEASE(shader_resource_view_);
+			SAFE_RELEASE(sampler_state_);
+			SAFE_RELEASE(render_target_view_);
 			return false;
 		}
 
-		bool D3DRenderCore::CreateDepthTexture(Texture *t)
+		bool d3d_render_core_t::create_depth_texture(texture_t *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			ID3D11SamplerState *samplerState = nullptr;
+			ID3D11SamplerState *sampler_state_ = nullptr;
 			ID3D11Texture2D *tex = nullptr;
-			ID3D11DepthStencilView *depthStencilView = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
+			ID3D11DepthStencilView *depth_stencil_view_ = nullptr;
+			ID3D11ShaderResourceView *shader_resource_view_ = nullptr;
 
 
 			D3D11_SAMPLER_DESC samplerDesc;
@@ -690,8 +690,8 @@ failed:
 			samplerDesc.BorderColor[2] = 1.0f;
 			samplerDesc.BorderColor[3] = 1.0f;
 
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
+			if(MAKI_D3D_FAILED(device_->CreateSamplerState(&samplerDesc, &sampler_state_))) {
+				console_t::error("CreateSamplerState failed");
 				goto failed;
 			}
 
@@ -708,8 +708,8 @@ failed:
 			textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE;
 			textureDesc.CPUAccessFlags = 0;
 			textureDesc.MiscFlags = 0;
-			if(MAKI_D3D_FAILED(device->CreateTexture2D(&textureDesc, nullptr, &tex))) {
-				Console::Error("CreateTexture2D failed");
+			if(MAKI_D3D_FAILED(device_->CreateTexture2D(&textureDesc, nullptr, &tex))) {
+				console_t::error("CreateTexture2D failed");
 				goto failed;
 			}
 
@@ -717,8 +717,8 @@ failed:
 			ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-			if(MAKI_D3D_FAILED(device->CreateDepthStencilView(tex, &depthStencilViewDesc, &depthStencilView))) {
-				Console::Error("CreateDepthStencilView failed");
+			if(MAKI_D3D_FAILED(device_->CreateDepthStencilView(tex, &depthStencilViewDesc, &depth_stencil_view_))) {
+				console_t::error("CreateDepthStencilView failed");
 				goto failed;
 			}
 
@@ -727,38 +727,38 @@ failed:
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 			shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 			shaderResourceViewDesc.Texture2D.MipLevels = 1;
-			if(MAKI_D3D_FAILED(device->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shaderResourceView))) {
-				Console::Error("CreateShaderResourceView failed");
+			if(MAKI_D3D_FAILED(device_->CreateShaderResourceView(tex, &shaderResourceViewDesc, &shader_resource_view_))) {
+				console_t::error("CreateShaderResourceView failed");
 				goto failed;
 			}
 		
-			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			gtex->depthStencilView = depthStencilView;
-			t->handle = (intptr_t)gtex;
+			gpu_texture_t *gtex = new gpu_texture_t();
+			gtex->shader_resource_view_ = shader_resource_view_;
+			gtex->sampler_state_ = sampler_state_;
+			gtex->depth_stencil_view_ = depth_stencil_view_;
+			t->handle_ = (intptr_t)gtex;
 
 			SAFE_RELEASE(tex);
 			return true;
 
 failed:		
 			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
-			SAFE_RELEASE(depthStencilView);
+			SAFE_RELEASE(shader_resource_view_);
+			SAFE_RELEASE(sampler_state_);
+			SAFE_RELEASE(depth_stencil_view_);
 			return false;
 		}
 
-		bool D3DRenderCore::CreateTexture(Texture *t, char *data, uint32 dataLength)
+		bool d3d_render_core_t::create_texture(texture_t *t, char *data, uint32 data_length)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
 			ID3D11Texture2D *tex = nullptr;
-			ID3D11ShaderResourceView *shaderResourceView = nullptr;
-			ID3D11SamplerState *samplerState = nullptr;
+			ID3D11ShaderResourceView *shader_resource_view_ = nullptr;
+			ID3D11SamplerState *sampler_state_ = nullptr;
 		
-			if(MAKI_D3D_FAILED(DirectX::CreateDDSTextureFromMemory(device, (uint8 *)data, dataLength, (ID3D11Resource **)&tex, &shaderResourceView))) {
-				Console::Error("Failed to create texture from memory");
+			if(MAKI_D3D_FAILED(DirectX::CreateDDSTextureFromMemory(device_, (uint8 *)data, data_length, (ID3D11Resource **)&tex, &shader_resource_view_))) {
+				console_t::error("Failed to create texture from memory");
 				goto failed;
 			}
 
@@ -777,68 +777,68 @@ failed:
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			if(MAKI_D3D_FAILED(device->CreateSamplerState(&samplerDesc, &samplerState))) {
-				Console::Error("CreateSamplerState failed");
+			if(MAKI_D3D_FAILED(device_->CreateSamplerState(&samplerDesc, &sampler_state_))) {
+				console_t::error("CreateSamplerState failed");
 				goto failed;
 			}
 		
-			GPUTexture *gtex = new GPUTexture();
-			gtex->shaderResourceView = shaderResourceView;
-			gtex->samplerState = samplerState;
-			t->handle = (intptr_t)gtex;
+			gpu_texture_t *gtex = new gpu_texture_t();
+			gtex->shader_resource_view_ = shader_resource_view_;
+			gtex->sampler_state_ = sampler_state_;
+			t->handle_ = (intptr_t)gtex;
 
 			SAFE_RELEASE(tex);
 			return true;
 
 failed:		
 			SAFE_RELEASE(tex);
-			SAFE_RELEASE(shaderResourceView);
-			SAFE_RELEASE(samplerState);
+			SAFE_RELEASE(shader_resource_view_);
+			SAFE_RELEASE(sampler_state_);
 			return false;
 		}
 
-		void D3DRenderCore::WriteToTexture(Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData)
+		void d3d_render_core_t::write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 		
-			GPUTexture *tex = (GPUTexture *)t->handle;
+			gpu_texture_t *tex = (gpu_texture_t *)t->handle_;
 
 			D3D11_BOX box;
-			box.left = dstX;
-			box.right = dstX+srcWidth;
-			box.top = dstY;
-			box.bottom = dstY+srcHeight;
+			box.left_ = dst_x;
+			box.right = dst_x+src_width;
+			box.top_ = dst_y;
+			box.bottom = dst_y+src_height;
 			box.front = 0;
 			box.back = 1;
 
-			char *p = srcData + (srcY*srcPitch) + (srcX*channels);
+			char *p = src_data + (src_y*src_pitch) + (src_x*channels);
 
 			ID3D11Resource *res = nullptr;
-			tex->shaderResourceView->GetResource(&res);
-			context->UpdateSubresource(res, 0, &box, p, srcPitch, srcPitch);
+			tex->shader_resource_view_->GetResource(&res);
+			context_->UpdateSubresource(res, 0, &box, p, src_pitch, src_pitch);
 			SAFE_RELEASE(res);
 		}
 
-		void D3DRenderCore::DeleteShaderProgram(ShaderProgram *s)
+		void d3d_render_core_t::delete_shader_program(shader_program_t *s)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			GPUVertexShader *gvs = (GPUVertexShader *)s->vertexShader.handle;
+			gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)s->vertex_shader_.handle_;
 			SAFE_DELETE(gvs);
-			s->vertexShader.handle = (intptr_t)nullptr;
+			s->vertex_shader_.handle_ = (intptr_t)nullptr;
 
-			GPUPixelShader *gps = (GPUPixelShader *)s->pixelShader.handle;
+			gpu_pixel_shader_t *gps = (gpu_pixel_shader_t *)s->pixel_shader_.handle_;
 			SAFE_DELETE(gps);
-			s->pixelShader.handle = (intptr_t)nullptr;
+			s->pixel_shader_.handle_ = (intptr_t)nullptr;
 		}
 
-		void D3DRenderCore::DeleteTexture(Texture *t)
+		void d3d_render_core_t::delete_texture(texture_t *t)
 		{
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::mutex_> lock(mutex_);
 
-			GPUTexture *gtex = (GPUTexture *)t->handle;
+			gpu_texture_t *gtex = (gpu_texture_t *)t->handle_;
 			SAFE_DELETE(gtex);
-			t->handle = (intptr_t)nullptr;
+			t->handle_ = (intptr_t)nullptr;
 		}
 
 
@@ -848,7 +848,7 @@ failed:
 
 
 
-		bool D3DRenderCore::IsModeSupported(uint32 windowWidth, uint32 windowHeight, uint32 *refreshNumerOut, uint32 *refreshDenomOut)
+		bool d3d_render_core_t::is_mode_supported(uint32 window_width, uint32 window_height, uint32 *refresh_numer_out, uint32 *refresh_denom_out)
 		{
 			bool found = false;
 
@@ -861,32 +861,32 @@ failed:
 			DXGI_ADAPTER_DESC adapterDesc;
 
 			if(MAKI_D3D_FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory))) {
-				Console::Error("Failed to create dxgi factory");
+				console_t::error("Failed to create dxgi factory");
 				goto done;
 			}
 			if(MAKI_D3D_FAILED(factory->EnumAdapters(0, &adapter))) {
-				Console::Error("Failed to enum adapters");
+				console_t::error("Failed to enum adapters");
 				goto done;
 			}
 			if(MAKI_D3D_FAILED(adapter->EnumOutputs(0, &adapterOutput))) {
-				Console::Error("Failed to enum outputs");
+				console_t::error("Failed to enum outputs");
 				goto done;
 			}
 			if(MAKI_D3D_FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &modeCount, nullptr))) {
-				Console::Error("Failed to get display mode list size");
+				console_t::error("Failed to get display mode list size");
 				goto done;
 			}
 			modeList = new DXGI_MODE_DESC[modeCount];
 			if(MAKI_D3D_FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &modeCount, modeList))) {
-				Console::Error("Failed to get display mode list");
+				console_t::error("Failed to get display mode list");
 				goto done;
 			}
 				
 			
 			for(uint32 i = 0; i < modeCount; i++) {
-				bool resMatch = modeList[i].Width == windowWidth && modeList[i].Height == windowHeight;
+				bool resMatch = modeList[i].Width == window_width && modeList[i].Height == window_height;
 
-				Console::Info("Supported mode: %dx%d @ %f Hz %s",
+				console_t::Info("Supported mode: %dx%d @ %f Hz %s",
 					modeList[i].Width,
 					modeList[i].Height,
 					modeList[i].RefreshRate.Denominator != 0 ? modeList[i].RefreshRate.Numerator / (float)modeList[i].RefreshRate.Denominator : 0.0f,
@@ -894,35 +894,35 @@ failed:
 				
 				if(resMatch)
 				{
-					if(refreshNumerOut != nullptr) {
-						*refreshNumerOut = modeList[i].RefreshRate.Numerator;
+					if(refresh_numer_out != nullptr) {
+						*refresh_numer_out = modeList[i].RefreshRate.Numerator;
 					}
-					if(refreshDenomOut != nullptr) {
-						*refreshDenomOut = modeList[i].RefreshRate.Denominator;
+					if(refresh_denom_out != nullptr) {
+						*refresh_denom_out = modeList[i].RefreshRate.Denominator;
 					}
 					found = true;
 				}
 			}
 			if(!found) {
-				Console::Warning("Could not find desired resolution in display mode list");
+				console_t::Warning("Could not find desired resolution in display mode list");
 			}
 
 			if(MAKI_D3D_FAILED(adapter->GetDesc(&adapterDesc))) {
-				Console::Error("Failed to get adapter descriptor");
+				console_t::error("Failed to get adapter descriptor");
 				goto done;
 			}
 
-			Console::Info("VRAM: %dmb", adapterDesc.DedicatedVideoMemory / 1024 / 1024);
+			console_t::Info("VRAM: %dmb", adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 		
 			// Convert the name of the video card to a character array and store it.
 			size_t cardDescriptionLength;
 			char cardDescription[128];
 			if(wcstombs_s(&cardDescriptionLength, cardDescription, 128, adapterDesc.Description, 128) != 0) {
-				Console::Info("Could not convert adapter description to multibyte string");
+				console_t::Info("Could not convert adapter description to multibyte string");
 				goto done;
 			}
 
-			Console::Info("Adapter: %s", cardDescription);
+			console_t::Info("Adapter: %s", cardDescription);
 			return found;
 
 		done:
@@ -934,6 +934,6 @@ failed:
 		}
 
 
-	} // namespace D3D
+	} // namespace d3d
 	
-} // namespace Maki
+} // namespace maki

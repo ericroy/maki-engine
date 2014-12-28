@@ -1,40 +1,40 @@
 #include "d3d/d3d_stdafx.h"
 #include "d3d/MakiD3DCommon.h"
 
-using namespace Maki::Core;
+using namespace maki::core;
 
-namespace Maki
+namespace maki
 {
-	namespace D3D
+	namespace d3d
 	{
 
-		bool _Failed(HRESULT hr) {
+		bool __failed(HRESULT hr) {
 			if(FAILED(hr)) {
-				LPCSTR errorText = nullptr;
+				LPCSTR error_text = nullptr;
 				FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_IGNORE_INSERTS,
-					nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&errorText, 0, nullptr);
-				if(errorText != nullptr) {
-					Console::Error("D3D: %s", errorText);
-					LocalFree((HLOCAL)errorText);
-					errorText = nullptr;
+					nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&error_text, 0, nullptr);
+				if(error_text != nullptr) {
+					console_t::error("D3D: %s", error_text);
+					LocalFree((HLOCAL)error_text);
+					error_text = nullptr;
 				} else {
-					Console::Error("FormatMessageA failed: %d", GetLastError());
+					console_t::error("FormatMessageA failed: %d", GetLastError());
 				}
 				return true;
 			}
 			return false;
 		}
 
-		const char *attrToSemanticString[VertexFormat::AttributeCount] = {
+		const char *attr_to_semantic_string[vertex_format_t::attribute_count_] = {
 			"POSITION", "NORMAL", "TANGENT", "COLOR", "COLOR", "TEXCOORD", "TEXCOORD"
 		};
 
-		uint32 attrToSemanticIndex[VertexFormat::AttributeCount] = { 0, 0, 0, 0, 1, 0, 1 };
+		uint32 attr_to_semantic_index[vertex_format_t::attribute_count_] = { 0, 0, 0, 0, 1, 0, 1 };
 
-		uint8 normalizeAttribute[Core::VertexFormat::AttributeCount] = { 0, 0, 0, 1, 1, 0, 0 };
+		uint8 normalize_attribute[core::vertex_format_t::attribute_count_] = { 0, 0, 0, 1, 1, 0, 0 };
 
 		// First index is type, second index is component count
-		const DXGI_FORMAT typeAndCountAndNormToFormat[VertexFormat::DataTypeCount][5][2] = {
+		const DXGI_FORMAT type_and_count_and_norm_to_format[vertex_format_t::data_type_count_][5][2] = {
 			// Float
 			{
 				{DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN},
@@ -72,14 +72,14 @@ namespace Maki
 			},							
 		};
 
-		const D3D11_PRIMITIVE_TOPOLOGY indicesPerFaceToGeometryType[4] = {
+		const D3D11_PRIMITIVE_TOPOLOGY indices_per_face_to_geometry_type[4] = {
 			D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED,
 			D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 			D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
 			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
 		};
 	
-		const DXGI_FORMAT bytesPerIndexToFormat[5] = {
+		const DXGI_FORMAT bytes_per_index_to_format[5] = {
 			DXGI_FORMAT_UNKNOWN,
 			DXGI_FORMAT_UNKNOWN,
 			DXGI_FORMAT_R16_UINT,
@@ -87,7 +87,7 @@ namespace Maki
 			DXGI_FORMAT_R32_UINT,
 		};
 
-		const DXGI_FORMAT channelsToFormat[5] = {
+		const DXGI_FORMAT channels_to_format[5] = {
 			DXGI_FORMAT_UNKNOWN,
 			DXGI_FORMAT_A8_UNORM,
 			DXGI_FORMAT_R8G8_UNORM,
@@ -95,6 +95,6 @@ namespace Maki
 			DXGI_FORMAT_R8G8B8A8_UNORM
 		};
 
-	} // namespace D3D
+	} // namespace d3d
 
-} // namespace Maki
+} // namespace maki

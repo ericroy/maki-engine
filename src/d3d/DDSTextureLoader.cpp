@@ -180,7 +180,7 @@ static HRESULT LoadTextureDataFromFile( _In_z_ const wchar_t* fileName,
         return HRESULT_FROM_WIN32( GetLastError() );
     }
 
-    // Get the file size
+    // get the file size
     LARGE_INTEGER FileSize = { 0 };
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
@@ -406,7 +406,7 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
 
 
 //--------------------------------------------------------------------------------------
-// Get surface information for a particular format
+// get surface information for a particular format
 //--------------------------------------------------------------------------------------
 static void GetSurfaceInfo( _In_ size_t width,
                             _In_ size_t height,
