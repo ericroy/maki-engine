@@ -6,8 +6,10 @@ import traceback
 from optparse import OptionParser
 from toolchain import option_parser, CONFIG, util, manifest, archive, watch, compilers, exporters, install_scripts
 
+
 def _watch(*args):
     watch.watch_forever()
+
 
 def _build(src_file, arc_name=None):
     src = util.clean_path(src_file)
@@ -28,10 +30,11 @@ def _build(src_file, arc_name=None):
         os.makedirs(dest_dir)
     compiler(arc_name, src, dst)
 
+
 def _build_all():
     for arc_name, conf in CONFIG['assets'].items():
         if os.path.exists(conf['dst']):
-            for f in glob.glob(conf['dst']+'/*'):
+            for f in glob.glob(conf['dst'] + '/*'):
                 if os.path.isdir(f):
                     try:
                         shutil.rmtree(f)
@@ -47,6 +50,7 @@ def _build_all():
         _manifest(arc_name)
         print()
 
+
 def _archive(arc_name):
     conf = CONFIG['assets'][arc_name]
     if conf['archive']:
@@ -58,35 +62,43 @@ def _archive(arc_name):
             shutil.rmtree(dst)
         shutil.copytree(conf['src'], dst)
 
+
 def _archive_all():
     for arc_name in CONFIG['assets'].keys():
         _archive(arc_name)
         print()
+
 
 def _manifest(arc_name):
     conf = CONFIG['assets'][arc_name]
     print('Generating manifest for "%s" from directory: %s' % (arc_name, conf['src']))
     manifest.manifest(arc_name)
 
+
 def _manifest_all():
     for arc_name in CONFIG['assets'].keys():
         _manifest(arc_name)
         print()
 
+
 def _export_scene(*args):
     assert len(args) >= 2, 'export_scene command expects src and dst files'
     exporters.export_scene(args[0], args[1], *args[2:])
+
 
 def _export_animation(*args):
     assert len(args) >= 2, 'export_animation command expects src and dst files'
     exporters.export_animation(args[0], args[1], *args[2:])
 
+
 def _export_skeleton(*args):
     assert len(args) >= 2, 'export_skeleton command expects src and dst files'
     exporters.export_skeleton(args[0], args[1], *args[2:])
 
+
 def _install_scripts(*args):
     install_scripts.install_scripts()
+
 
 COMMANDS = {
     'watch': _watch,
@@ -102,6 +114,7 @@ COMMANDS = {
     'install_scripts': _install_scripts,
 }
 
+
 def main(command, *args, **kwargs):
     os.chdir(CONFIG['project_root'])
     try:
@@ -112,13 +125,13 @@ def main(command, *args, **kwargs):
     try:
         func(*args)
     except Exception:
-        print(traceback.format_exc()+'\n')
+        print(traceback.format_exc() + '\n')
         ret = 1
     return ret
+
 
 if __name__ == '__main__':
     options, args = option_parser.parse_args()
     assert len(args) >= 1, 'Must provide a command'
     ret = main(*args, **vars(options))
     exit(ret)
-
