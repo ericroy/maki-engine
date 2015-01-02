@@ -14,7 +14,7 @@ namespace maki
 
 			// Ticks per microsecond
 			frequency_ = ticks_per_second / 1e6;
-			console_t::info("Clock frequency_ is %f ticks per microsecond", frequency_);
+			console_t::info("Clock frequency is %f ticks per microsecond", frequency_);
 			assert(frequency_ != 0 && "Platform clock doesn't give microsecond resolution");
 
 			start_ = SDL_GetPerformanceCounter();
