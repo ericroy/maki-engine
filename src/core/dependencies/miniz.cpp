@@ -174,17 +174,17 @@
 #endif
 
 #if (__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__) || MINIZ_X86_OR_X64_CPU
-// Set MINIZ_LITTLE_ENDIAN to 1 if the processor is little endian.
+// set MINIZ_LITTLE_ENDIAN to 1 if the processor is little endian.
 #define MINIZ_LITTLE_ENDIAN 1
 #endif
 
 #if MINIZ_X86_OR_X64_CPU
-// Set MINIZ_USE_UNALIGNED_LOADS_AND_STORES to 1 on CPU's that permit efficient integer loads and stores from unaligned addresses.
+// set MINIZ_USE_UNALIGNED_LOADS_AND_STORES to 1 on CPU's that permit efficient integer loads and stores from unaligned addresses.
 #define MINIZ_USE_UNALIGNED_LOADS_AND_STORES 1
 #endif
 
 #if defined(_M_X64) || defined(_WIN64) || defined(__MINGW64__) || defined(_LP64) || defined(__LP64__) || defined(__ia64__) || defined(__x86_64__)
-// Set MINIZ_HAS_64BIT_REGISTERS to 1 if operations on 64-bit integers are reasonably fast (and don't involve compiler generated calls to helper functions).
+// set MINIZ_HAS_64BIT_REGISTERS to 1 if operations on 64-bit integers are reasonably fast (and don't involve compiler generated calls to helper functions).
 #define MINIZ_HAS_64BIT_REGISTERS 1
 #endif
 
@@ -742,7 +742,7 @@ struct tinfl_decompressor_tag
 
 // ------------------- Low-level Compression API Definitions
 
-// Set TDEFL_LESS_MEMORY to 1 to use less memory (compression will be slightly slower, and raw/dynamic blocks will be output more frequently).
+// set TDEFL_LESS_MEMORY to 1 to use less memory (compression will be slightly slower, and raw/dynamic blocks will be output more frequently).
 #define TDEFL_LESS_MEMORY 0
 
 // tdefl_init() compression flags logically OR'd together (low 12 bits contain the max. number of probes per dictionary search):
@@ -754,7 +754,7 @@ enum
 
 // TDEFL_WRITE_ZLIB_HEADER: If set, the compressor outputs a zlib header before the deflate data, and the Adler-32 of the source data at the end. Otherwise, you'll get raw deflate data.
 // TDEFL_COMPUTE_ADLER32: Always compute the adler-32 of the input data (even when not writing zlib headers).
-// TDEFL_GREEDY_PARSING_FLAG: Set to use faster greedy parsing, instead of more efficient lazy parsing.
+// TDEFL_GREEDY_PARSING_FLAG: set to use faster greedy parsing, instead of more efficient lazy parsing.
 // TDEFL_NONDETERMINISTIC_PARSING_FLAG: Enable to decrease the compressor's initialization time to the minimum, but the output may vary from run to run given the same input (depending on the contents of memory).
 // TDEFL_RLE_MATCHES: Only look for RLE matches (matches with a distance of 1)
 // TDEFL_FILTER_MATCHES: Discards matches <= 5 chars if enabled.
@@ -2467,7 +2467,7 @@ static mz_bool tdefl_compress_normal(tdefl_compressor *d)
   while ((src_buf_left) || ((flush) && (d->m_lookahead_size)))
   {
     mz_uint len_to_move, cur_match_dist, cur_match_len, cur_pos;
-    // Update dictionary and hash chains. Keeps the lookahead size equal to TDEFL_MAX_MATCH_LEN.
+    // update dictionary and hash chains. Keeps the lookahead size equal to TDEFL_MAX_MATCH_LEN.
     if ((d->m_lookahead_size + d->m_dict_size) >= (TDEFL_MIN_MATCH_LEN - 1))
     {
       mz_uint dst_pos = (d->m_lookahead_pos + d->m_lookahead_size) & TDEFL_LZ_DICT_SIZE_MASK, ins_pos = d->m_lookahead_pos + d->m_lookahead_size - 2;
@@ -4227,7 +4227,7 @@ mz_bool mz_zip_writer_add_mem_ex(mz_zip_archive *pZip, const char *pArchive_name
 
   if ((archive_name_size) && (pArchive_name[archive_name_size - 1] == '/'))
   {
-    // Set DOS Subdirectory attribute bit.
+    // set DOS Subdirectory attribute bit.
     ext_attributes |= 0x10;
     // Subdirectories cannot contain data.
     if ((buf_size) || (uncomp_size))

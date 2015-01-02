@@ -333,11 +333,11 @@ namespace maki
 			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
 			for(uint8 i = 0; i < render_state_t::max_shadow_lights_; i++) {
-				int32 sampIndex = shadow_map_slot_index_start+i;
-				int32 location = gvs->texture_sampler_locations_[sampIndex];
+				int32 sampler_idex = shadow_map_slot_index_start+i;
+				int32 location = gvs->texture_sampler_locations_[sampler_idex];
 				if(location >= 0) {
-					glActiveTexture(GL_TEXTURE0+sampIndex);
-					glUniform1i(gvs->texture_sampler_locations_[sampIndex], sampIndex);
+					glActiveTexture(GL_TEXTURE0+sampler_idex);
+					glUniform1i(gvs->texture_sampler_locations_[sampler_idex], sampler_idex);
 					if(state.shadow_maps_[i] != HANDLE_NONE) {
 						gpu_texture_t *gtex = (gpu_texture_t *)texture_manager_t::get(state.shadow_maps_[i])->handle_;
 						glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex_);

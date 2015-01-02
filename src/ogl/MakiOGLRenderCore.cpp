@@ -151,7 +151,7 @@ namespace maki
 #endif
 
 			
-			// Set initial state:
+			// set initial state:
 			window_width_ = 1;
 			window_height_ = 1;
 			glViewport(0, 0, window_width_, window_height_);

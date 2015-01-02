@@ -43,12 +43,12 @@ namespace maki
 			vsync_ = config->get_bool("engine.vsync", false);
 			max_vertex_formats_per_vertex_shader_ = config->get_uint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
-			// Check supported resolutions
+			// Check support_ed resolutions
 			uint32 refresh_numer = 0;
 			uint32 refresh_denom = 0;
 			if(!is_mode_supported(window->width_, window->height_, &refresh_numer, &refresh_denom))
 			{
-				console_t::warning("Mode not supported: %dx%d", window->width_, window->height_);
+				console_t::warning("Mode not support_ed: %dx%d", window->width_, window->height_);
 			}
 
 			// get hwnd from SDL window
@@ -74,8 +74,8 @@ namespace maki
 
 			UINT flags = 0;
 			
-			if(config->get_bool("d3d.debug_context", false)) {
-				console_t::info("Requesting Direct3D debug context");
+			if(config->get_bool("d3d.debug_context_t", false)) {
+				console_t::info("Requesting Direct3D debug context_t");
 				flags |= D3D11_CREATE_DEVICE_DEBUG;
 			}
 
@@ -97,10 +97,10 @@ namespace maki
 				featureLevel = D3D_FEATURE_LEVEL_11_1;
 				break;
 			default:
-				console_t::error("Unsupported Direct3D major/minor version, using defaults instead");
+				console_t::error("Unsupport_ed Direct3D major/minor version, using defaults instead");
 			}
 
-			console_t::info("Creating Direct3D %d.%d context", major, minor);
+			console_t::info("Creating Direct3D %d.%d context_t", major, minor);
 
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1,
 				D3D11_SDK_VERSION, &scd, &swap_chain_, &device_, nullptr, &context_);
@@ -184,7 +184,7 @@ namespace maki
 				console_t::error("Failed to create rasterizer state (wire frame, cull front)");
 			}
 
-			// Set up depth stencil state
+			// set up depth stencil state
 			D3D11_DEPTH_STENCIL_DESC depthDesc;
 			ZeroMemory(&depthDesc, sizeof(depthDesc));
 			depthDesc.DepthEnable = false;
@@ -248,7 +248,7 @@ namespace maki
 			}
 		
 
-			// Set initial state:
+			// set initial state:
 			context_->RSSetState(rasterizer_state_);
 			context_->OMSetBlendState(blend_enabled_, nullptr, 0xffffffff);
 			context_->OMSetDepthStencilState(depth_state_less_write_, 1);
@@ -524,7 +524,7 @@ failed:
 			ID3D11SamplerState *sampler_state_ = nullptr;
 
 			if(channels == 0 || channels > 4 || channels == 3) {
-				console_t::error("Unsupported number of channels in image: %d", channels);
+				console_t::error("Unsupport_ed number of channels in image: %d", channels);
 				goto failed;
 			}
 
@@ -886,7 +886,7 @@ failed:
 			for(uint32 i = 0; i < mode_count; i++) {
 				bool resMatch = mode_list[i].Width == window_width && mode_list[i].Height == window_height;
 
-				console_t::info("Supported mode: %dx%d @ %f Hz %s",
+				console_t::info("Support_ed mode: %dx%d @ %f Hz %s",
 					mode_list[i].Width,
 					mode_list[i].Height,
 					mode_list[i].RefreshRate.Denominator != 0 ? mode_list[i].RefreshRate.Numerator / (float)mode_list[i].RefreshRate.Denominator : 0.0f,

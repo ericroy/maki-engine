@@ -2,12 +2,10 @@ import sys
 import os
 import tempfile
 import subprocess
-import struct
 import re
 import io
 from ctypes import *
 from base64 import b64encode
-
 from .. import doc
 from .. import CONFIG
 from .gl_constants import *
@@ -38,7 +36,6 @@ SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
 SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG = 2
 SDL_GL_CONTEXT_PROFILE_CORE = 1
 
-
 SDL_WINDOW_OPENGL = 0x00000002
 SDL_WINDOW_SHOWN = 0x00000004
 SDL_WINDOW_HIDDEN = 0x00000008
@@ -59,17 +56,29 @@ else:
     GLU = windll.LoadLibrary('GLU')
     _gl_func_type = CFUNCTYPE
 
-
 SDL = cdll.LoadLibrary(os.path.expandvars('$MAKI_DIR/tools/SDL2.dll'))
+
+BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
+D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
+D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
+D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
+OGL_PROFILE = '330'
+OGL_INCLUDE = re.compile(r'^#pragma include "([^"]+)"\s*$')
+
+_ogl_initialized = False
+
+
 def _check_sdl_error():
     msg = c_char_p(SDL.SDL_GetError())
     if len(msg.value) > 0:
         raise RuntimeError('SDL error: %s' % msg.value)
 
+
 def _check_gl_error():
     err = GL.glGetError()
     if err != 0:
         raise RuntimeError('GL error: %s' % c_char_p(GLU.gluErrorString(err)).value.decode('utf-8'))
+
 
 def _glGetProcAddress(name, *args):
     proc_name = create_string_buffer(name.encode('utf-8'))
@@ -77,7 +86,7 @@ def _glGetProcAddress(name, *args):
     assert addr != 0, 'Could not get proc address for: %s' % name
     return _gl_func_type(*args)(addr)
 
-_ogl_initialized = False
+
 def _init_ogl():
     global _ogl_initialized
     if _ogl_initialized:
@@ -86,7 +95,7 @@ def _init_ogl():
     SDL.SDL_Init(SDL_INIT_VIDEO)
     _check_sdl_error()
 
-    window = SDL.SDL_CreateWindow('', 0, 0, 50, 50, SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN)
+    window = SDL.SDL_CreateWindow('', 0, 0, 50, 50, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN)
     _check_sdl_error()
     assert window != 0
 
@@ -123,25 +132,11 @@ def _init_ogl():
     _ogl_initialized = True
 
 
-
-
-
-
-
-
-
-BUFFERS = ('enginePerObject', 'enginePerFrame', 'material')
-D3D_COMPILER = os.path.expandvars('$MAKI_DIR/tools/fxc.exe')
-D3D_BUFFER_MEMBER = re.compile(r'//\s*\S+\s+([A-Za-z0-9_]+)(?:\[\d+\])?;\s*//\s*Offset:\s*(\d+)\s+Size:\s*(\d+)\s*')
-D3D_PROFILE = {'vs': 'vs_4_0', 'ps': 'ps_4_0'}
-OGL_PROFILE = '330'
-OGL_INCLUDE = re.compile(r'^#pragma include "([^"]+)"\s*$')
-
-
 def _data(node_name, compiled):
     n = doc.Node(node_name)
     n.add_child(b64encode(compiled).decode('utf-8'))
     return n
+
 
 def _meta(node_name, buffer_slots, buffer_contents):
     n = doc.Node(node_name)
@@ -154,16 +149,14 @@ def _meta(node_name, buffer_slots, buffer_contents):
     return n
 
 
-
-
 def _d3d_listing_and_bytecode(source_file, profile_string, entry_point, defines):
     listing_file = tempfile.NamedTemporaryFile(delete=False)
     listing_file.close()
     out_file = tempfile.NamedTemporaryFile(delete=False)
     out_file.close()
     try:
-        cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:'+profile_string, '/E:'+entry_point, '/Fc:'+os.path.normpath(listing_file.name),
-            '/Fo:'+os.path.normpath(out_file.name), os.path.normpath(source_file)]
+        cmd = [D3D_COMPILER, '/Zi', '/nologo', '/T:' + profile_string, '/E:' + entry_point, '/Fc:' + os.path.normpath(listing_file.name),
+            '/Fo:' + os.path.normpath(out_file.name), os.path.normpath(source_file)]
         cmd += ['/D%s=%s' % (var, val) for var, val in defines]
         #print(cmd)
         subprocess.check_call(cmd)
@@ -173,6 +166,7 @@ def _d3d_listing_and_bytecode(source_file, profile_string, entry_point, defines)
     finally:
         os.remove(out_file.name)
         os.remove(listing_file.name)
+
 
 def _d3d_create_meta_node(node_name, listing, compiled, input_attrs=None):
     buffer_slots = {}
@@ -215,27 +209,27 @@ def _d3d_create_meta_node(node_name, listing, compiled, input_attrs=None):
         pass
     return _meta(node_name, buffer_slots, buffer_contents)
 
+
 def _d3d(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines):
     input_attr_count = 0
     vs_programs = {}
     ps_programs = {}
     for variant, variant_defs in variants.items():
-        meta_node_name = (variant+'_meta').strip('_')
-        data_node_name = (variant+'_data').strip('_')
-        
+        meta_node_name = (variant + '_meta').strip('_')
+        data_node_name = (variant + '_data').strip('_')
+
         input_attrs = []
         listing, compiled = _d3d_listing_and_bytecode(vs_path, D3D_PROFILE['vs'], vs_entry_point, vs_defines + variant_defs)
         vs_programs[variant] = [_d3d_create_meta_node(meta_node_name, listing, compiled, input_attrs), _data(data_node_name, compiled)]
         input_attr_count = len(input_attrs)
-        
+
         listing, compiled = _d3d_listing_and_bytecode(ps_path, D3D_PROFILE['ps'], ps_entry_point, ps_defines + variant_defs)
         ps_programs[variant] = [_d3d_create_meta_node(meta_node_name, listing, compiled), _data(data_node_name, compiled)]
 
     return input_attr_count, vs_programs, ps_programs
 
 
-
-def _ogl_process_includes(file_path, source, recursion_depth = 0):
+def _ogl_process_includes(file_path, source, recursion_depth=0):
     base_path = os.path.split(file_path)[0]
     stream = io.StringIO(source)
     modified_source = ['#line 1 %s\n' % recursion_depth]
@@ -245,12 +239,13 @@ def _ogl_process_includes(file_path, source, recursion_depth = 0):
             included_path = os.path.join(base_path, m.group(1))
             with open(included_path) as file:
                 included_source = file.read()
-            included_source = _ogl_process_includes(included_path, included_source, recursion_depth+1)
+            included_source = _ogl_process_includes(included_path, included_source, recursion_depth + 1)
             modified_source += [included_source, '\n']
-            modified_source.append('#line %s %s\n' % (line_no+2, recursion_depth))
+            modified_source.append('#line %s %s\n' % (line_no + 2, recursion_depth))
         else:
             modified_source.append(line)
     return ''.join(modified_source)
+
 
 def _ogl_compile_glsl(file_name, source, shader_type):
     sh = glCreateShader(GL_VERTEX_SHADER if shader_type == 'vs' else GL_FRAGMENT_SHADER)
@@ -276,16 +271,17 @@ def _ogl_compile_glsl(file_name, source, shader_type):
         raise RuntimeError('GL shader compilation failed (%s):\n%s\n\nData:\n%s' % (file_name, log.value.decode('utf-8'), source.decode('utf-8')))
     return sh
 
+
 def _ogl_link(vs, ps):
     prog = glCreateProgram()
     _check_gl_error()
-    
+
     glAttachShader(prog, vs)
     _check_gl_error()
-    
+
     glAttachShader(prog, ps)
     _check_gl_error()
-    
+
     glLinkProgram(prog)
     _check_gl_error()
 
@@ -300,11 +296,13 @@ def _ogl_link(vs, ps):
         raise RuntimeError('GL shader program link failed:\n%s' % log.value.decode('utf-8'))
     return prog
 
+
 def _ogl_defines_prefix(defines):
     source = []
     for var, value in defines:
         source.append('#define %s %s\n' % (var, value))
     return ''.join(source)
+
 
 def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point, ps_path, ps_defines):
     input_attr_count = c_int(0)
@@ -320,8 +318,8 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
     ps_source = _ogl_process_includes(ps_path, ps_source)
 
     for variant, variant_defs in variants.items():
-        meta_node_name = (variant+'_meta').strip('_')
-        data_node_name = (variant+'_data').strip('_')
+        meta_node_name = (variant + '_meta').strip('_')
+        data_node_name = (variant + '_data').strip('_')
 
         vs_final_source = (('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(vs_defines + variant_defs) + vs_source).encode('utf-8')
         ps_final_source = (('#version %s\n' % OGL_PROFILE) + _ogl_defines_prefix(ps_defines + variant_defs) + ps_source).encode('utf-8')
@@ -338,9 +336,6 @@ def _ogl(arc_name, variants, vs_entry_point, vs_path, vs_defines, ps_entry_point
         ps_programs[variant] = [_meta(meta_node_name, {}, {}), _data(data_node_name, ps_final_source)]
 
     return input_attr_count.value, vs_programs, ps_programs
-
-
-
 
 
 def compile(arc_name, src, dst):
@@ -370,7 +365,7 @@ def compile(arc_name, src, dst):
     else:
         for define in defines_node.children():
             ps_defines.append((define.value, define[0].value))
-    
+
     vs_entry_point = root.resolve('vertex_shader.entry_point.#0').value
     ps_entry_point = root.resolve('pixel_shader.entry_point.#0').value
     vs_path = os.path.join(CONFIG['assets'][arc_name]['src'], root.resolve('vertex_shader.file_name.#0').value)
