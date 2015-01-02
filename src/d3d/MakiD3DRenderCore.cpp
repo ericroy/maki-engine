@@ -40,7 +40,7 @@ namespace maki
 		{
 			memset(null_array_, 0, sizeof(null_array_));
 
-			vsync_ = config->get_bool("engine.vsync_", false);
+			vsync_ = config->get_bool("engine.vsync", false);
 			max_vertex_formats_per_vertex_shader_ = config->get_uint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
 			// Check supported resolutions

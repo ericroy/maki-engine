@@ -3,7 +3,7 @@
 ## Dependencies
 
 ### Core
- * SDL 2.0.0
+ * SDL 2.0.3
 
 ### Framework
  * bullet-2.81-rev2613

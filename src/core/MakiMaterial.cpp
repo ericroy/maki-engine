@@ -142,7 +142,7 @@ namespace maki
 			shader = shader_program_manager_t::get(shader_program_);
 
 		
-			n = doc.root_->resolve("texture_set_");
+			n = doc.root_->resolve("texture_set");
 			if(n != nullptr) {
 				rid_t texture_set_rids[texture_set_t::max_textures_per_set_];
 				uint32 texture_set_size = n->count_;

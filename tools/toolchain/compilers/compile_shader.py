@@ -273,7 +273,7 @@ def _ogl_compile_glsl(file_name, source, shader_type):
         log = create_string_buffer(max_log_length.value)
         log_length = c_size_t()
         glGetShaderInfoLog(sh, max_log_length, byref(log_length), log)
-        raise RuntimeError('GL shader compilation failed (%s):\n%s' % (file_name, log.value.decode('utf-8')))
+        raise RuntimeError('GL shader compilation failed (%s):\n%s\n\nData:\n%s' % (file_name, log.value.decode('utf-8'), source.decode('utf-8')))
     return sh
 
 def _ogl_link(vs, ps):

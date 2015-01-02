@@ -63,7 +63,7 @@ namespace maki
 				data_ = (T*)allocator_t::malloc(sizeof(T) * capacity_, std::alignment_of<T>::value);
 				reference_counts_ = new uint16[capacity_];
 		
-				// Allocate one extra node as the "end_" element
+				// Allocate one extra node as the "end" element
 				nodes_ = new node_t[capacity_+1];
 
 				// Link up the nodes_

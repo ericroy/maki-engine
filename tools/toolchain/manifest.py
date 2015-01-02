@@ -37,7 +37,7 @@ maki::rid_t %(class_name)s::rids_[%(class_name)s::asset_count_] = {%(rid_list)s}
 
 %(public_var_defs)s
 
-const char *%(class_name)s::asset_paths_[asset_count_] = {
+const char *%(class_name)s::asset_paths_[%(class_name)s::asset_count_] = {
 %(paths)s
 };
 '''
