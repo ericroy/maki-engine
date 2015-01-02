@@ -100,7 +100,7 @@ def _init_ogl():
     assert window != 0
 
     SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
-    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3)
+    SDL.SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
     SDL.SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
     SDL.SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8)
     SDL.SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
