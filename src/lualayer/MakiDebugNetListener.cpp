@@ -14,7 +14,8 @@ namespace maki
 	namespace lualayer
 	{
 
-		struct debug_net_listener_t::context_t {
+		struct debug_net_listener_t::context_t
+		{
 #if _DEBUG
 			WSADATA wsa_data_;
 			SOCKET recv_socket_;
@@ -24,7 +25,8 @@ namespace maki
 		};
 	
 		debug_net_listener_t::debug_net_listener_t()
-		:	context_(nullptr) {
+			: context_(nullptr)
+		{
 
 #if _DEBUG
 			context_ = new context_t();
@@ -63,7 +65,8 @@ namespace maki
 #endif
 		}
 	
-		debug_net_listener_t::~debug_net_listener_t() {
+		debug_net_listener_t::~debug_net_listener_t()
+		{
 #if _DEBUG
 			int ret = closesocket(context_->recv_socket_);
 			if(ret == SOCKET_ERROR) {
@@ -74,7 +77,8 @@ namespace maki
 #endif
 		}
 
-		void debug_net_listener_t::fire_notification(rid_t rid) {
+		void debug_net_listener_t::fire_notification(rid_t rid)
+		{
 			if(generic_listener_ != nullptr) {
 				generic_listener_(rid);
 			}
@@ -85,7 +89,8 @@ namespace maki
 			}
 		}
 
-		void debug_net_listener_t::tick() {
+		void debug_net_listener_t::tick()
+		{
 #if _DEBUG
 			int32 sender_addr_size = sizeof(context_->sender_addr_);
 			int bytes = recvfrom(context_->recv_socket_, recv_buffer_, max_buffer_length_, 0, (SOCKADDR *)&context_->sender_addr_, &sender_addr_size);

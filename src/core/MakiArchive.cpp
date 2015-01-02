@@ -74,6 +74,13 @@ namespace maki
 			return true;
 		}
 
+		const char *archive_t::get_path(rid_t rid) const
+		{
+			assert(fp_ != nullptr);
+			uint32 i = (uint32)rid - rid_start_;
+			return entries[i].file_name_.c_str();
+		}
+
 		char *archive_t::alloc_read(const char *path, uint32 *bytes_read) const
 		{
 			assert(fp_ != nullptr);

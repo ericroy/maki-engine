@@ -26,6 +26,7 @@ namespace maki
 			bool mount(asset_manifest_t *manifest, const char *archive_path = nullptr);
 			rid_t path_to_rid(const char *path) const;
 			rid_t full_path_to_rid(const char *path) const;
+			const char *get_path(rid_t rid) const;
 			char *alloc_read(rid_t rid, uint32 *bytes_read = nullptr) const;
 
 		public:

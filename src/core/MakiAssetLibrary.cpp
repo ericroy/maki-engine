@@ -71,6 +71,25 @@ namespace maki
 			return RID_NONE;
 		}
 
+		const char *asset_library_t::get_path(rid_t rid) const
+		{
+			if(rid == RID_NONE) {
+				return nullptr;
+			}
+
+			const uint32 count = groups_.size();
+			for(uint32 i = 0; i < count; i++) {
+				const group_t &group = groups_[i];
+				if(group.manifest_->contains(rid)) {
+					if(group.archive_ != nullptr) {
+						return group.archive_->get_path(rid);
+					}
+					return group.manifest_->get_path(rid);
+				}
+			}
+			return nullptr;
+		}
+
 		rid_t asset_library_t::full_path_to_rid(const char *path) const
 		{
 			const uint32 count = groups_.size();

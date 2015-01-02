@@ -13,11 +13,15 @@
   <ItemGroup>
     <ClCompile Include="src\lualayer\lualayer_stdafx.cpp" />
     <ClCompile Include="src\lualayer\MakiDebugNetListener.cpp" />
+    <ClCompile Include="src\lualayer\MakiLuaContext.cpp" />
+    <ClCompile Include="src\lualayer\modules\MakiModMaki.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lualayer\lualayer_stdafx.h" />
     <ClInclude Include="src\lualayer\MakiDebugNetListener.h" />
+    <ClInclude Include="src\lualayer\MakiLuaContext.h" />
     <ClInclude Include="src\lualayer\MakiTween.h" />
+    <ClInclude Include="src\lualayer\modules\MakiModMaki.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E2E92464-DAA8-471E-A548-2BDE0A311789}</ProjectGuid>
@@ -71,10 +75,11 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS=1;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>lualayer/lualayer_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.3/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,9 +101,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS=1;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>lualayer/lualayer_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.3/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

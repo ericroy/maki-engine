@@ -36,6 +36,7 @@ namespace maki
 			inline void set_rid_start(uint32 rid_start) { rid_start_ = rid_start; }
 			inline bool contains(rid_t rid) const { return (uint32)rid >= rid_start_ && (uint32)rid < rid_start_ + entries.count_; }
 			bool load(const char *archive_path, uint32 rid_start = 0);
+			const char *get_path(rid_t rid) const;
 			char *alloc_read(const char *path, uint32 *bytes_read = nullptr) const;
 			char *alloc_read(rid_t rid, uint32 *bytes_read = nullptr) const;
 

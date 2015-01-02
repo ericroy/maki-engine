@@ -48,7 +48,7 @@ namespace maki
 			uint32 refresh_denom = 0;
 			if(!is_mode_supported(window->width_, window->height_, &refresh_numer, &refresh_denom))
 			{
-				console_t::warning("Mode not support_ed: %dx%d", window->width_, window->height_);
+				console_t::warning("Mode not supported: %dx%d", window->width_, window->height_);
 			}
 
 			// get hwnd from SDL window
@@ -74,8 +74,8 @@ namespace maki
 
 			UINT flags = 0;
 			
-			if(config->get_bool("d3d.debug_context_t", false)) {
-				console_t::info("Requesting Direct3D debug context_t");
+			if(config->get_bool("d3d.debug_context", false)) {
+				console_t::info("Requesting Direct3D debug context");
 				flags |= D3D11_CREATE_DEVICE_DEBUG;
 			}
 
@@ -100,7 +100,7 @@ namespace maki
 				console_t::error("Unsupport_ed Direct3D major/minor version, using defaults instead");
 			}
 
-			console_t::info("Creating Direct3D %d.%d context_t", major, minor);
+			console_t::info("Creating Direct3D %d.%d context", major, minor);
 
 			HRESULT ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags|D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1,
 				D3D11_SDK_VERSION, &scd, &swap_chain_, &device_, nullptr, &context_);
