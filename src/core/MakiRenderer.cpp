@@ -22,7 +22,7 @@ namespace maki
 				command_lists_.push_back(new draw_command_list_t(max_draw_commands));
 			}
 
-			current_.window_height_ = window_->width_;
+			current_.window_width_ = window_->width_;
 			current_.window_height_ = window_->height_;
 			prepare_next_render_state();
 
@@ -62,7 +62,7 @@ namespace maki
 		{
 			if(core_ != nullptr) {
 				sync_with_core();
-				current_.window_height_ = window_->width_;
+				current_.window_width_ = window_->width_;
 				current_.window_height_ = window_->height_;
 				current_.clear_render_target_ = false;
 				current_.clear_depth_stencil_ = false;

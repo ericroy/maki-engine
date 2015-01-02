@@ -73,7 +73,7 @@ namespace maki
 
 			// Resize screen buffers if necessary
 			if(window_width_ != state.window_width_ || window_height_ != state.window_height_) {
-				console_t::info("renderer_t resizing to %dx%d", state.window_width_, state.window_height_);
+				console_t::info("Renderer resizing to %dx%d", state.window_width_, state.window_height_);
 				derived->set_render_target_and_depth_stencil(render_state_t::render_target_null_, HANDLE_NONE, render_state_t::depth_stencil_null_, HANDLE_NONE);
 				derived->resized(state.window_width_, state.window_height_);
 				window_width_ = state.window_width_;

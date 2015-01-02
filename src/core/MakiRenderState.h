@@ -14,7 +14,7 @@ namespace maki
 		public:
 			static const int32 max_lights_ = 8;
 			static const int32 max_shadow_lights_ = 2;
-			static const int32 MAX_SPLIT_SHADOW_LIGHTS = 2;
+			static const int32 max_split_shadow_lights_ = 2;
 			static const int32 max_cascades_ = 5;
 
 			enum render_target_t
@@ -156,7 +156,7 @@ namespace maki
 			uint32 shadow_light_count_;
 			uint32 cascaded_shadow_light_count_;
 			light_properties_t light_properties_[max_lights_];
-			light_split_region_t light_split_regions_[MAX_SPLIT_SHADOW_LIGHTS][max_cascades_];
+			light_split_region_t light_split_regions_[max_split_shadow_lights_][max_cascades_];
 			shadow_map_properties_t shadow_map_properties_[max_shadow_lights_];
 			handle_t shadow_maps_[max_shadow_lights_];
 			matrix44_t light_world_[max_lights_];

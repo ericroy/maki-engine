@@ -234,14 +234,19 @@ namespace maki
 
 			// load up any additional controller mappings that are specified in the config
 			std::stringstream mappings;
-			char controller_mapping_key[64];
+			uint32 mapping_count = 0;
 			for(uint32 i = 0; ; i++) {
+				char controller_mapping_key[64];
 				sprintf(controller_mapping_key, "engine.controller_support_%d", i);
 				const char *value = config->get_string(controller_mapping_key, nullptr);
 				if(value == nullptr) {
 					break;
 				}
-				mappings << value << std::endl;
+				if(mapping_count > 0) {
+					mappings << std::endl;
+				}
+				mapping_count++;
+				mappings << value;
 			}
 			SDL_SetHint(SDL_HINT_GAMECONTROLLERCONFIG, mappings.str().c_str());
 
@@ -268,7 +273,7 @@ namespace maki
 			window_ = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,  height_, flags);
 			const char *err = SDL_GetError();
 			if(window_ == nullptr || strlen(err) != 0) {
-				console_t::error("Failed to create SDL window_: %s", SDL_GetError());
+				console_t::error("Failed to create SDL window: %s", SDL_GetError());
 				SDL_ClearError();
 			}
 

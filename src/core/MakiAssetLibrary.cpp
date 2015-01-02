@@ -40,10 +40,10 @@ namespace maki
 				group.archive_ = new archive_t();
 				if(!group.archive_->load(archive_path, total_asset_count_)) {
 					delete group.archive_;
-					console_t::error("Failed to mount archive_: %s", archive_path);
+					console_t::error("Failed to mount archive: %s", archive_path);
 					return false;
 				}
-				console_t::info("Mounted archive_: %s", archive_path);
+				console_t::info("Mounted archive: %s", archive_path);
 			}
 			
 			total_asset_count_ += group.manifest_->get_count();
@@ -51,9 +51,9 @@ namespace maki
 
 			if(archive_path == nullptr) {
 #if _DEBUG
-				console_t::info("Mounted loose archive_ rooted at: %s", (debug_mode_path_adjustment_ + manifest->common_path_prefix_).c_str());
+				console_t::info("Mounted loose archive rooted at: %s", (debug_mode_path_adjustment_ + manifest->common_path_prefix_).c_str());
 #else
-				console_t::info("Mounted loose archive_ rooted at: %s", manifest->common_path_prefix_.c_str());
+				console_t::info("Mounted loose archive rooted at: %s", manifest->common_path_prefix_.c_str());
 #endif
 			}
 			return true;
