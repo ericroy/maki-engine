@@ -81,7 +81,7 @@ namespace maki
 			inline const matrix44_t &get_camera_matrix() const;
 
 			// GPU resource creation, updates, destruction
-			// These actions are applied synchonously on the core, so they involve acquiring a mutex
+			// These actions are applied synchonously on the core, so they involve acquiring a mutex_
 			inline void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed);
 			inline void free_buffer(void *buffer);
 			inline bool create_shader_program(shader_program_t *s);
@@ -100,9 +100,9 @@ namespace maki
 		protected:
 			window_t *window_;
 			render_state_t current_;
-			uint32 light_dirty_flags;
-			render_state_t *state;
-			draw_command_list_t *commands;
+			uint32 light_dirty_flags_;
+			render_state_t *state_;
+			draw_command_list_t *commands_;
 			std::vector<render_state_t *> render_states_;
 			std::vector<draw_command_list_t *> command_lists_;
 			render_core_t *core_;
@@ -119,7 +119,7 @@ namespace maki
 
 		inline void renderer_t::draw(const draw_command_t &draw_command, const matrix44_t &m)
 		{
-			commands->add(draw_command, m);
+			commands_->add(draw_command, m);
 		}
 		
 		inline void renderer_t::clear_depth(float value)

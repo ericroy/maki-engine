@@ -885,12 +885,12 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                 desc.CPUAccessFlags = cpuAccessFlags;
                 desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-                ID3D11Texture1D* tex = nullptr;
+                ID3D11Texture1D* tex_ = nullptr;
                 hr = d3dDevice->CreateTexture1D( &desc,
                                                  initData,
-                                                 &tex
+                                                 &tex_
                                                );
-                if (SUCCEEDED( hr ) && tex != 0)
+                if (SUCCEEDED( hr ) && tex_ != 0)
                 {
                     if (textureView != 0)
                     {
@@ -910,25 +910,25 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                             SRVDesc.Texture1D.MipLevels = desc.MipLevels;
                         }
 
-                        hr = d3dDevice->CreateShaderResourceView( tex,
+                        hr = d3dDevice->CreateShaderResourceView( tex_,
                                                                   &SRVDesc,
                                                                   textureView
                                                                 );
                         if ( FAILED(hr) )
                         {
-                            tex->Release();
+                            tex_->Release();
                             return hr;
                         }
                     }
 
                     if (texture != 0)
                     {
-                        *texture = tex;
+                        *texture = tex_;
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
-                        tex->Release();
+                        SetDebugObjectName(tex_, "DDSTextureLoader");
+                        tex_->Release();
                     }
                 }
             }
@@ -952,12 +952,12 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                 else
                     desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-                ID3D11Texture2D* tex = nullptr;
+                ID3D11Texture2D* tex_ = nullptr;
                 hr = d3dDevice->CreateTexture2D( &desc,
                                                  initData,
-                                                 &tex
+                                                 &tex_
                                                );
-                if (SUCCEEDED( hr ) && tex != 0)
+                if (SUCCEEDED( hr ) && tex_ != 0)
                 {
                     if (textureView != 0)
                     {
@@ -993,25 +993,25 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                             SRVDesc.Texture2D.MipLevels = desc.MipLevels;
                         }
 
-                        hr = d3dDevice->CreateShaderResourceView( tex,
+                        hr = d3dDevice->CreateShaderResourceView( tex_,
                                                                   &SRVDesc,
                                                                   textureView
                                                                 );
                         if ( FAILED(hr) )
                         {
-                            tex->Release();
+                            tex_->Release();
                             return hr;
                         }
                     }
 
                     if (texture != 0)
                     {
-                        *texture = tex;
+                        *texture = tex_;
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
-                        tex->Release();
+                        SetDebugObjectName(tex_, "DDSTextureLoader");
+                        tex_->Release();
                     }
                 }
             }
@@ -1030,12 +1030,12 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                 desc.CPUAccessFlags = cpuAccessFlags;
                 desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-                ID3D11Texture3D* tex = nullptr;
+                ID3D11Texture3D* tex_ = nullptr;
                 hr = d3dDevice->CreateTexture3D( &desc,
                                                  initData,
-                                                 &tex
+                                                 &tex_
                                                );
-                if (SUCCEEDED( hr ) && tex != 0)
+                if (SUCCEEDED( hr ) && tex_ != 0)
                 {
                     if (textureView != 0)
                     {
@@ -1046,25 +1046,25 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                         SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
                         SRVDesc.Texture3D.MipLevels = desc.MipLevels;
 
-                        hr = d3dDevice->CreateShaderResourceView( tex,
+                        hr = d3dDevice->CreateShaderResourceView( tex_,
                                                                   &SRVDesc,
                                                                   textureView
                                                                 );
                         if ( FAILED(hr) )
                         {
-                            tex->Release();
+                            tex_->Release();
                             return hr;
                         }
                     }
 
                     if (texture != 0)
                     {
-                        *texture = tex;
+                        *texture = tex_;
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
-                        tex->Release();
+                        SetDebugObjectName(tex_, "DDSTextureLoader");
+                        tex_->Release();
                     }
                 }
             }
@@ -1127,7 +1127,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
         switch ( d3d10ext->resourceDimension )
         {
         case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
-            // D3DX writes 1D textures with a fixed Height of 1
+            // D3DX writes 1D textures_ with a fixed Height of 1
             if ((header->flags & DDS_HEIGHT) && height != 1)
             {
                 return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );

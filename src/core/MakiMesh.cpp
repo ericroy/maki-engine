@@ -58,7 +58,7 @@ namespace maki
 			old_index_data_size_(-1)
 		{
 			switch(type) {
-			case Object_Rect:
+			case object_rect_:
 				make_rect((const rect_args_t &)args);
 				break;
 			default:

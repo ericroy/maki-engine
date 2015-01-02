@@ -48,9 +48,9 @@ namespace maki
 
 			this->rid_ = rid;
 
-			inverse_bind_pose.free();
-			inverse_bind_pose.set_size(joints.count_);
-			calculate_inverse_bind_pose(joints.data_, inverse_bind_pose.data_);
+			inverse_bind_pose_.free();
+			inverse_bind_pose_.set_size(joints.count_);
+			calculate_inverse_bind_pose(joints.data_, inverse_bind_pose_.data_);
 
 			return true;
 		}

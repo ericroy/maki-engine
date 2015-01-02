@@ -19,19 +19,19 @@ namespace maki
 	
 		handle_t mesh_manager_t::load(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<mesh_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE) {
-				return handle;
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<mesh_t>(rid)) | manager_id_;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc() | manager_id_;
-			mesh_t *mesh = res_pool_->get(handle & handle_value_mask_);
+			handle_ = res_pool_->alloc() | manager_id_;
+			mesh_t *mesh = res_pool_->get(handle_ & handle_value_mask_);
 			new(mesh) mesh_t();
 			if(!mesh->load(rid)) {
-				res_pool_->free(handle & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
-			return handle;
+			return handle_;
 		}
 
 		void mesh_manager_t::reload_assets()
@@ -50,12 +50,12 @@ namespace maki
 
 		bool mesh_manager_t::reload_asset(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<mesh_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE) {
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<mesh_t>(rid)) | manager_id_;
+			if(handle_ == HANDLE_NONE) {
 				return false;
 			}
-			mesh_t *mesh = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
+			mesh_t *mesh = res_pool_->get(handle_ & handle_value_mask_);
+			res_pool_->free(handle_ & handle_value_mask_);
 
 			if(rid != RID_NONE) {
 				mesh->~mesh_t();

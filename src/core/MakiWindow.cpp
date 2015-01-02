@@ -32,30 +32,30 @@ namespace maki
 		}
 
 		input_state_t::button_t sdl_button_to_maki_button_[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
-			input_state_t::button_a, // SDL_CONTROLLER_BUTTON_A,
-			input_state_t::button_b, // SDL_CONTROLLER_BUTTON_B,
-			input_state_t::button_x, // SDL_CONTROLLER_BUTTON_X,
-			input_state_t::button_y, // SDL_CONTROLLER_BUTTON_Y,
-			input_state_t::button_back, // SDL_CONTROLLER_BUTTON_BACK,
-			input_state_t::button_invalid, // SDL_CONTROLLER_BUTTON_GUIDE,
-			input_state_t::button_start, // SDL_CONTROLLER_BUTTON_START,
-			input_state_t::button_left_thumb, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
-			input_state_t::button_right_thumb, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-			input_state_t::button_left_shoulder, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-			input_state_t::button_right_shoulder, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-			input_state_t::button_dpad_up, // SDL_CONTROLLER_BUTTON_DPAD_UP,
-			input_state_t::button_dpad_down, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-			input_state_t::button_dpad_left, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-			input_state_t::button_dpad_right, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+			input_state_t::button_a_, // SDL_CONTROLLER_BUTTON_A,
+			input_state_t::button_b_, // SDL_CONTROLLER_BUTTON_B,
+			input_state_t::button_x_, // SDL_CONTROLLER_BUTTON_X,
+			input_state_t::button_y_, // SDL_CONTROLLER_BUTTON_Y,
+			input_state_t::button_back_, // SDL_CONTROLLER_BUTTON_BACK,
+			input_state_t::button_invalid_, // SDL_CONTROLLER_BUTTON_GUIDE,
+			input_state_t::button_start_, // SDL_CONTROLLER_BUTTON_START,
+			input_state_t::button_left_thumb_, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
+			input_state_t::button_right_thumb_, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+			input_state_t::button_left_shoulder_, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+			input_state_t::button_right_shoulder_, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+			input_state_t::button_dpad_up_, // SDL_CONTROLLER_BUTTON_DPAD_UP,
+			input_state_t::button_dpad_down_, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+			input_state_t::button_dpad_left_, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+			input_state_t::button_dpad_right_, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 		};
 
 		input_state_t::button_t sdl_axis_to_maki_button_[6] = {
-			input_state_t::button_left_thumb_x,
-			input_state_t::button_left_thumb_y,
-			input_state_t::button_right_thumb_x,
-			input_state_t::button_right_thumb_y,
-			input_state_t::button_left_trigger,
-			input_state_t::button_right_trigger,
+			input_state_t::button_left_thumb_x_,
+			input_state_t::button_left_thumb_y_,
+			input_state_t::button_right_thumb_x_,
+			input_state_t::button_right_thumb_y_,
+			input_state_t::button_left_trigger_,
+			input_state_t::button_right_trigger_,
 		};
 
 		static const uint16 gamepad_left_thumb_deadzone_ = 7849;
@@ -256,16 +256,16 @@ namespace maki
 				flags |= SDL_WINDOW_OPENGL;
 			}
 
-			fullscreen = config->get_bool("engine.full_screen", false);
-			if(fullscreen) {
+			fullscreen_ = config->get_bool("engine.full_screen", false);
+			if(fullscreen_) {
 				flags |= SDL_WINDOW_FULLSCREEN;
 			}
 
-			width = config->get_int("engine.width_", 800);
-			height = config->get_int("engine.height_", 600);
+			width_ = config->get_int("engine.width", 800);
+			height_ = config->get_int("engine.height", 600);
 			std::string title = config->get_string("engine.title", "");
 
-			window_ = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width,  height, flags);
+			window_ = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,  height_, flags);
 			const char *err = SDL_GetError();
 			if(window_ == nullptr || strlen(err) != 0) {
 				console_t::error("Failed to create SDL window_: %s", SDL_GetError());
@@ -333,7 +333,7 @@ namespace maki
 			SDL_Event e;
 			while(true) {
 				while(SDL_PollEvent(&e) != 0) {
-					switch(e.type_) {
+					switch(e.type) {
 					case SDL_CONTROLLERAXISMOTION:
 						{
 							int32 i = get_controller_index(e.caxis.which);
@@ -382,9 +382,9 @@ namespace maki
 						break;
 					
 					case SDL_WINDOWEVENT:
-						if(e.window_.event == SDL_WINDOWEVENT_RESIZED) {
-							width_ = e.window_.data1;
-							height_ = e.window_.data2;
+						if(e.window.event == SDL_WINDOWEVENT_RESIZED) {
+							width_ = e.window.data1;
+							height_ = e.window.data2;
 							if(width_ <= 0 || height_ <= 0) {
 								width_ = 1;
 								height_ = 1;

@@ -29,7 +29,7 @@ namespace maki
 		class d3d_render_core_t : public core::render_core_t
 		{
 		private:
-			static const int32 shadow_map_slot_index_start_ = 8;
+			static const int32 shadow_map_slot_index_start = 8;
 
 		public:
 			d3d_render_core_t(core::window_t *window, const core::config_t *config);
@@ -111,7 +111,7 @@ namespace maki
 
 			bool vsync_;
 			uint32 max_vertex_formats_per_vertex_shader_;
-			void *null_array_[shadow_map_slot_index_start_+core::render_state_t::max_lights_];
+			void *null_array_[shadow_map_slot_index_start+core::render_state_t::max_lights_];
 			std::mutex mutex_;
 		};
 
@@ -226,7 +226,7 @@ namespace maki
 
 		inline void d3d_render_core_t::unbind_all_textures()
 		{
-			context_->PSSetShaderResources(0, shadow_map_slot_index_start_+core::render_state_t::max_shadow_lights_, (ID3D11ShaderResourceView **)null_array_);
+			context_->PSSetShaderResources(0, shadow_map_slot_index_start+core::render_state_t::max_shadow_lights_, (ID3D11ShaderResourceView **)null_array_);
 		}
 
 		inline void d3d_render_core_t::bind_shaders(const core::shader_program_t *shader)
@@ -276,8 +276,8 @@ namespace maki
 					shadow_samplers[i] = nullptr;
 				}
 			}
-			context_->PSSetShaderResources(shadow_map_slot_index_start_, render_state_t::max_shadow_lights_, shadow_views);
-			context_->PSSetSamplers(shadow_map_slot_index_start_, render_state_t::max_shadow_lights_, shadow_samplers);
+			context_->PSSetShaderResources(shadow_map_slot_index_start, render_state_t::max_shadow_lights_, shadow_views);
+			context_->PSSetSamplers(shadow_map_slot_index_start, render_state_t::max_shadow_lights_, shadow_samplers);
 		}
 
 		inline void d3d_render_core_t::set_input_layout(const core::shader_program_t *shader, const core::vertex_format_t *vf)
@@ -314,9 +314,9 @@ namespace maki
 			ID3D11SamplerState *samplers[texture_set_t::max_textures_per_set_];
 
 			for(uint8 i = 0; i < ts->texture_count_; i++) {
-				const gpu_texture_t *tex = (gpu_texture_t *)texture_manager_t::get(ts->textures_[i])->handle_;
-				views[i] = tex->shader_resource_view_;
-				samplers[i] = tex->sampler_state_;
+				const gpu_texture_t *tex_ = (gpu_texture_t *)texture_manager_t::get(ts->textures_[i])->handle_;
+				views[i] = tex_->shader_resource_view_;
+				samplers[i] = tex_->sampler_state_;
 			}
 
 			context_->PSSetShaderResources(0, ts->texture_count_, views);

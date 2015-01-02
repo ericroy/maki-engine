@@ -1,65 +1,65 @@
 #pragma once
 #include "ogl/MakiOGLCommon.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
-		class VertexFormat;
+		class vertex_format_t;
 
-	} // namespace Core
+	} // namespace core
 
-	namespace OGL
+	namespace ogl
 	{
 
-		struct Buffer
+		struct buffer_t
 		{
-			GLuint vbos[2];
-			uint32 vertexCount;
-			uint32 faceCount;
-			uint32 indicesPerFace;
-			uint32 bytesPerIndex;
-			GLenum indexDataType;
-			GLenum geometryType;
+			GLuint vbos_[2];
+			uint32 vertex_count_;
+			uint32 face_count_;
+			uint32 indices_per_face_;
+			uint32 bytes_per_index_;
+			GLenum index_data_type_;
+			GLenum geometry_type_;
 
-			void DeleteBuffers();
+			void delete_buffers();
 		};
 
-		struct GPUShader
+		struct gpu_shader_t
 		{
-			GPUShader();
-			virtual ~GPUShader();
+			gpu_shader_t();
+			virtual ~gpu_shader_t();
 
-			GLuint sh;
+			GLuint sh_;
 		};
 
-		struct GPUVertexShader : public GPUShader
+		struct gpu_vertex_shader_t : public gpu_shader_t
 		{
 		public:
-			GPUVertexShader();
-			virtual ~GPUVertexShader();
+			gpu_vertex_shader_t();
+			virtual ~gpu_vertex_shader_t();
 
-			GLuint uboPerFrame;
-			GLuint uboPerObject;
-			GLuint uboMaterial;
-			char *scratchBuffer;
-			GLint textureSamplerLocations[SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS];
+			GLuint ubo_per_frame_;
+			GLuint ubo_per_object_;
+			GLuint ubo_material_;
+			char *scratch_buffer_;
+			GLint texture_sampler_locations_[shadow_map_slot_index_start+core::render_state_t::max_lights_];
 		};
 
-		struct GPUPixelShader : public GPUShader
+		struct gpu_pixel_shader_t : public gpu_shader_t
 		{
-			GPUPixelShader() : GPUShader() {}
-			virtual ~GPUPixelShader() {}
+			gpu_pixel_shader_t() : gpu_shader_t() {}
+			virtual ~gpu_pixel_shader_t() {}
 		};
 
-		struct GPUTexture
+		struct gpu_texture_t
 		{
-			GPUTexture();
-			~GPUTexture();
+			gpu_texture_t();
+			~gpu_texture_t();
 
-			GLuint tex;
+			GLuint tex_;
 		};
 
-	} // namespace OGL
+	} // namespace ogl
 
-} // namespace Maki
+} // namespace maki

@@ -19,20 +19,20 @@ namespace maki
 	
 		handle_t skeleton_animation_manager_t::load(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE) {
-				return handle;
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc() | manager_id_;
-			skeleton_animation_t *skel_anim = res_pool_->get(handle & handle_value_mask_);
+			handle_ = res_pool_->alloc() | manager_id_;
+			skeleton_animation_t *skel_anim = res_pool_->get(handle_ & handle_value_mask_);
 			new(skel_anim) skeleton_animation_t();
 		
 			if(!skel_anim->load(rid)) {
-				res_pool_->free(handle & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
-			return handle;
+			return handle_;
 		}
 
 		void skeleton_animation_manager_t::reload_assets()
@@ -53,12 +53,12 @@ namespace maki
 		
 		bool skeleton_animation_manager_t::reload_asset(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE) {
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
+			if(handle_ == HANDLE_NONE) {
 				return false;
 			}
-			skeleton_animation_t *skel_anim = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
+			skeleton_animation_t *skel_anim = res_pool_->get(handle_ & handle_value_mask_);
+			res_pool_->free(handle_ & handle_value_mask_);
 
 			if(rid != RID_NONE) {
 				skel_anim->~skeleton_animation_t();

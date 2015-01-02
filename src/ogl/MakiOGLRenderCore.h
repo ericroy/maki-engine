@@ -12,113 +12,113 @@
 
 #define MAKI_USE_OGL_MUTEX 0
 
-namespace Maki
+namespace maki
 {
-	namespace Core
+	namespace core
 	{
 		
-		class Window;
-		class InputLayoutCache;
-		class VertexFormat;
-		class ShaderProgram;
-		class TextureSet;
-		class TextureManager;
-		class Material;
-		class Texture;
-		class Config;
+		class window_t;
+		class input_layout_cache_t;
+		class vertex_format_t;
+		class shader_program_t;
+		class texture_set_t;
+		class texture_manager_t;
+		class material_t;
+		class texture_t;
+		class config_t;
 
-	} // namespace Core
+	} // namespace core
 
-	namespace OGL
+	namespace ogl
 	{
 
 
-		class OGLRenderCore : public Core::RenderCore
+		class ogl_render_core_t : public core::render_core_t
 		{
 		private:
-			enum UniformBuffer
+			enum uniform_buffer_t
 			{
-				UniformBuffer_Frame = 0,
-				UniformBuffer_Object,
-				UniformBuffer_Material
+				uniform_buffer_frame_ = 0,
+				uniform_buffer_object_,
+				uniform_buffer_material_
 			};
 
 		public:
-			OGLRenderCore(Core::Window *window, const Core::Config *config);
-			virtual ~OGLRenderCore();
-			void Init();
-			inline void Draw(const Core::RenderState &state, const Core::DrawCommandList &commands) { GenericDraw<OGLRenderCore>(state, commands); }
-			void Present();
-			void Resized(uint32 width, uint32 height);
+			ogl_render_core_t(core::window_t *window, const core::config_t *config);
+			virtual ~ogl_render_core_t();
+			void init();
+			inline void draw(const core::render_state_t &state, const core::draw_command_list_t &commands) { generic_draw<ogl_render_core_t>(state, commands); }
+			void present();
+			void resized(uint32 width, uint32 height);
 
 			// GPU resource creation / destruction
-			void *UploadBuffer(void *buffer, Core::VertexFormat *vf, char *vertexData, uint32 vertexCount, char *indexData, uint32 faceCount, uint8 indicesPerFace, uint8 bytesPerIndex, bool dynamic, bool lengthChanged);
-			void FreeBuffer(void *buffer);
-			bool CreateShaderProgram(Core::ShaderProgram *s);
-			void DeleteShaderProgram(Core::ShaderProgram *s);
-			bool CreateTexture(Core::Texture *t, char *data, uint32 dataLength);
-			bool CreateEmptyTexture(Core::Texture *t, uint8 channels);
-			bool CreateRenderTarget(Core::Texture *t);
-			bool CreateDepthTexture(Core::Texture *t);
-			void WriteToTexture(Core::Texture *t, int32 dstX, int32 dstY, int32 srcX, int32 srcY, uint32 srcWidth, uint32 srcHeight, uint32 srcPitch, uint8 channels, char *srcData);
-			void DeleteTexture(Core::Texture *t);
+			void *upload_buffer(void *buffer, core::vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed);
+			void free_buffer(void *buffer);
+			bool create_shader_program(core::shader_program_t *s);
+			void delete_shader_program(core::shader_program_t *s);
+			bool create_texture(core::texture_t *t, char *data, uint32 dataLength);
+			bool create_empty_texture(core::texture_t *t, uint8 channels);
+			bool create_render_target(core::texture_t *t);
+			bool create_depth_texture(core::texture_t *t);
+			void write_to_texture(core::texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data);
+			void delete_texture(core::texture_t *t);
 
 			// Non-virtual interface
-			inline void AcquireContext();
-			inline void ReleaseContext();
-			inline void SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil);
-			inline void SetViewport(const Core::Rect &viewPortRect);
-			inline void Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil,	float clearDepthValue);
-			inline void SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite);
-			inline void SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame);
-			inline void SetBlendState(bool enabled);
-			inline void UnbindAllTextures();
-			inline void BindShaders(const Core::ShaderProgram *shader);
-			inline void SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
-			inline void SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader);
-			inline void BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state);
-			inline void SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf);
-			inline void SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
-			inline void SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat);
-			inline void BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts);
-			inline void SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
-			inline void SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp);
-			inline void BindBuffer(void *buffer, const Core::VertexFormat *vf);
-			inline void DrawBuffer(void *buffer);
+			inline void acquire_context();
+			inline void release_context();
+			inline void set_render_target_and_depth_stencil(core::render_state_t::render_target_t renderTargetType, handle_t renderTarget, core::render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
+			inline void set_viewport(const core::Rect &viewPortRect);
+			inline void clear(bool clear_render_target, const float clear_color_values[4], bool clear_depth_stencil, float clear_depth_value);
+			inline void set_depth_state(core::render_state_t::depth_test_t depth_test, bool depth_write);
+			inline void set_rasterizer_state(core::render_state_t::cull_mode_t cull_mode, bool wire_frame);
+			inline void set_blend_state(bool enabled);
+			inline void unbind_all_textures();
+			inline void bind_shaders(const core::shader_program_t *shader);
+			inline void set_per_frame_vertex_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader);
+			inline void set_per_frame_pixel_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader);
+			inline void bind_shadow_maps(const core::shader_program_t *shader, const core::render_state_t &state);
+			inline void set_input_layout(const core::shader_program_t *shader, const core::vertex_format_t *vf);
+			inline void set_material_vertex_shader_constants(const core::shader_program_t *shader, const core::material_t *mat);
+			inline void set_material_pixel_shader_constants(const core::shader_program_t *shader, const core::material_t *mat);
+			inline void bind_textures(const core::shader_program_t *shader, const core::texture_set_t *ts);
+			inline void set_per_object_vertex_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader, const core::matrix44_t &matrix, const core::matrix44_t &mv, const core::matrix44_t &mvp);
+			inline void set_per_object_pixel_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader, const core::matrix44_t &matrix, const core::matrix44_t &mv, const core::matrix44_t &mvp);
+			inline void bind_buffer(void *buffer, const core::vertex_format_t *vf);
+			inline void draw_buffer(void *buffer);
 
 		private:
-			bool CreateShader(GLenum shaderType, Core::Shader *ps);
+			bool create_shader(GLenum shaderType, core::shader_t *ps);
 
 		private:
-			Core::Window *window;
-			SDL_GLContext renderThreadContext;
-			SDL_GLContext mainThreadContext;
+			core::window_t *window;
+			SDL_GLContext render_thread_context_;
+			SDL_GLContext main_thread_context_;
 
-			uint32 windowWidth;
-			uint32 windowHeight;
+			uint32 window_width_;
+			uint32 window_height_;
 
-			GLuint frameBuffer;
+			GLuint frame_buffer_;
 
-			GLuint defaultRenderTarget;
-			GLuint defaultDepthStencil;
+			GLuint default_render_target_;
+			GLuint default_depth_stencil_;
 
-			GLuint currentRenderTarget;
-			Core::RenderState::RenderTarget currentRenderTargetType;
+			GLuint current_render_target_;
+			core::render_state_t::render_target_t current_render_target_type_;
 
-			GLuint currentDepthStencil;
-			Core::RenderState::DepthStencil currentDepthStencilType;
+			GLuint current_depth_stencil_;
+			core::render_state_t::depth_stencil_t current_depth_stencil_type_;
 
-			bool depthWriteEnabled;
-			bool blendEnabled;
-			Core::RenderState::DepthTest currentDepthTest;
-			Core::RenderState::CullMode currentCullMode;
+			bool depth_write_enabled_;
+			bool blend_enabled_;
+			core::render_state_t::depth_test_t current_depth_test_;
+			core::render_state_t::cull_mode_t current_cull_mode_;
 			
-			bool vsync;
-			bool debugOutput;
-			std::mutex mutex;
+			bool vsync_;
+			bool debug_output_;
+			std::mutex mutex_;
 
 
-			GLuint vao;
+			GLuint vao_;
 		};
 
 
@@ -127,83 +127,83 @@ namespace Maki
 
 
 
-		inline void OGLRenderCore::AcquireContext()
+		inline void ogl_render_core_t::acquire_context()
 		{
 #if MAKI_USE_OGL_MUTEX
-			mutex.lock();
+			mutex_.lock();
 #endif
 		}
 
-		inline void OGLRenderCore::ReleaseContext()
+		inline void ogl_render_core_t::release_context()
 		{
 #if MAKI_USE_OGL_MUTEX
-			mutex.unlock();
+			mutex_.unlock();
 #endif
 		}
 
-		inline void OGLRenderCore::SetRenderTargetAndDepthStencil(Core::RenderState::RenderTarget renderTargetType, Handle renderTarget, Core::RenderState::DepthStencil depthStencilType, Handle depthStencil)
+		inline void ogl_render_core_t::set_render_target_and_depth_stencil(core::render_state_t::render_target_t renderTargetType, handle_t renderTarget, core::render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil)
 		{
-			using namespace Core;
+			using namespace core;
 
 			// Default framebuffer
 			GLuint fbo = 0;
 
-			currentRenderTarget = 0;
-			currentRenderTargetType = renderTargetType;
-			if(renderTargetType == RenderState::RenderTarget_Default) {
-				assert(depthStencilType == RenderState::DepthStencil_Default && "If one of render target or depth stencil is 'default', then the other must be too");
-				currentRenderTarget = defaultRenderTarget;
-			} else if(renderTargetType == RenderState::RenderTarget_Custom) {
-				fbo = frameBuffer;
-				currentRenderTarget = ((GPUTexture *)TextureManager::Get(renderTarget)->handle)->tex;
-				if(currentRenderTarget == 0) {
-					Console::Error("Tried to set render target to an invalid texture");
+			current_render_target_ = 0;
+			current_render_target_type_ = renderTargetType;
+			if(renderTargetType == render_state_t::render_target_default_) {
+				assert(depth_stencil_type == render_state_t::depth_stencil_default_ && "If one of render target or depth stencil is 'default', then the other must be too");
+				current_render_target_ = default_render_target_;
+			} else if(renderTargetType == render_state_t::render_target_custom_) {
+				fbo = frame_buffer_;
+				current_render_target_ = ((gpu_texture_t *)texture_manager_t::get(renderTarget)->handle_)->tex_;
+				if(current_render_target_ == 0) {
+					console_t::error("Tried to set render target to an invalid texture");
 				}
 			} else {
-				fbo = frameBuffer;
+				fbo = frame_buffer_;
 			}
 			
-			currentDepthStencil = 0;
-			currentDepthStencilType = depthStencilType;
-			if(depthStencilType == RenderState::DepthStencil_Default) {
-				assert(renderTargetType == RenderState::RenderTarget_Default && "If one of render target or depth stencil is 'default', then the other must be too");
-				currentDepthStencil = defaultDepthStencil;
-			} else if(depthStencilType == RenderState::DepthStencil_Custom) {
-				fbo = frameBuffer;
-				currentDepthStencil = ((GPUTexture *)TextureManager::Get(depthStencil)->handle)->tex;
-				if(currentDepthStencil == 0) {
-					Console::Error("Tried to set depth stencil to an invalid texture");
+			current_depth_stencil_ = 0;
+			current_depth_stencil_type_ = depth_stencil_type;
+			if(depth_stencil_type == render_state_t::depth_stencil_default_) {
+				assert(renderTargetType == render_state_t::render_target_default_ && "If one of render target or depth stencil is 'default', then the other must be too");
+				current_depth_stencil_ = default_depth_stencil_;
+			} else if(depth_stencil_type == render_state_t::depth_stencil_custom_) {
+				fbo = frame_buffer_;
+				current_depth_stencil_ = ((gpu_texture_t *)texture_manager_t::get(depth_stencil)->handle_)->tex_;
+				if(current_depth_stencil_ == 0) {
+					console_t::error("Tried to set depth stencil to an invalid texture");
 				}
 			} else {
-				fbo = frameBuffer;
+				fbo = frame_buffer_;
 			}			
 			
 			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 			if(fbo != 0) {
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentRenderTarget, 0);
-				glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, currentDepthStencil);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, current_render_target_, 0);
+				glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current_depth_stencil_);
 			}
 		}
 
-		inline void OGLRenderCore::SetViewport(const Core::Rect &viewPortRect)
+		inline void ogl_render_core_t::set_viewport(const core::Rect &viewPortRect)
 		{
-			glViewport(0, 0, (GLsizei)viewPortRect.GetWidth(), (GLsizei)viewPortRect.GetHeight());
+			glViewport(0, 0, (GLsizei)viewPortRect.get_width(), (GLsizei)viewPortRect.get_height());
 		}
 
-		inline void OGLRenderCore::Clear(bool clearRenderTarget, const float clearColorValues[4], bool clearDepthStencil, float clearDepthValue)
+		inline void ogl_render_core_t::clear(bool clear_render_target, const float clear_color_values[4], bool clear_depth_stencil, float clear_depth_value)
 		{
-			using namespace Core;
+			using namespace core;
 
 			bool tempEnableDepthWrite = false;
 
 			GLuint clearFlags = 0;
-			if(clearRenderTarget && currentRenderTargetType != RenderState::RenderTarget_Null) {
-				glClearColor(clearColorValues[0], clearColorValues[1], clearColorValues[2], clearColorValues[3]);
+			if(clear_render_target && current_render_target_type_ != render_state_t::render_target_null_) {
+				glClearColor(clear_color_values[0], clear_color_values[1], clear_color_values[2], clear_color_values[3]);
 				clearFlags |= GL_COLOR_BUFFER_BIT;
 			}
-			if(clearDepthStencil && currentDepthStencilType != RenderState::DepthStencil_Null) {
-				tempEnableDepthWrite = !depthWriteEnabled;
-				glClearDepth(clearDepthValue);
+			if(clear_depth_stencil && current_depth_stencil_type_ != render_state_t::depth_stencil_null_) {
+				tempEnableDepthWrite = !depth_write_enabled_;
+				glClearDepth(clear_depth_value);
 				clearFlags |= GL_DEPTH_BUFFER_BIT;
 			}
 			if(clearFlags != 0) {
@@ -217,69 +217,69 @@ namespace Maki
 			}
 		}
 
-		inline void OGLRenderCore::SetDepthState(Core::RenderState::DepthTest depthTest, bool depthWrite)
+		inline void ogl_render_core_t::set_depth_state(core::render_state_t::depth_test_t depth_test, bool depth_write)
 		{
-			using namespace Core;
+			using namespace core;
 
-			if(depthWriteEnabled != depthWrite) {
-				glDepthMask(depthWrite ? GL_TRUE : GL_FALSE);
-				depthWriteEnabled = depthWrite;
+			if(depth_write_enabled_ != depth_write) {
+				glDepthMask(depth_write ? GL_TRUE : GL_FALSE);
+				depth_write_enabled_ = depth_write;
 			}
 
-			if(currentDepthTest != depthTest) {
-				if(depthTest == RenderState::DepthTest_Disabled) {
+			if(current_depth_test_ != depth_test) {
+				if(depth_test == render_state_t::depth_test_disabled_) {
 					glDisable(GL_DEPTH_TEST);
-				} else if(currentDepthTest == RenderState::DepthTest_Disabled) {
+				} else if(current_depth_test_ == render_state_t::depth_test_disabled_) {
 					glEnable(GL_DEPTH_TEST);
 				}
 
-				switch(depthTest) {
-				case RenderState::DepthTest_Less:
+				switch(depth_test) {
+				case render_state_t::depth_test_less_:
 					glDepthFunc(GL_LESS);
 					break;
-				case RenderState::DepthTest_Equal:
+				case render_state_t::depth_test_equal_:
 					glDepthFunc(GL_EQUAL);
 					break;
-				case RenderState::DepthTest_LessEqual:
+				case render_state_t::depth_test_less_equal_:
 					glDepthFunc(GL_LEQUAL);
 					break;
 				default:
 					break;
 				}
 
-				currentDepthTest = depthTest;
+				current_depth_test_ = depth_test;
 			}
 		}
 
-		inline void OGLRenderCore::SetRasterizerState(Core::RenderState::CullMode cullMode, bool wireFrame)
+		inline void ogl_render_core_t::set_rasterizer_state(core::render_state_t::cull_mode_t cull_mode, bool wire_frame)
 		{
-			using namespace Core;
+			using namespace core;
 
-			if(currentCullMode != cullMode) {
-				if(cullMode == RenderState::CullMode_None) {
+			if(current_cull_mode_ != cull_mode) {
+				if(cull_mode == render_state_t::cull_mode_none_) {
 					glDisable(GL_CULL_FACE);
-				} else if(currentCullMode == RenderState::CullMode_None) {
+				} else if(current_cull_mode_ == render_state_t::cull_mode_none_) {
 					glEnable(GL_CULL_FACE);
 				}
 
-				switch(cullMode) {
-				case RenderState::CullMode_Front:
+				switch(cull_mode) {
+				case render_state_t::cull_mode_front_:
 					glCullFace(GL_FRONT);
 					break;
-				case RenderState::CullMode_Back:
+				case render_state_t::cull_mode_back_:
 					glCullFace(GL_BACK);
 					break;
 				default:
 					break;
 				}
 
-				currentCullMode = cullMode;
+				current_cull_mode_ = cull_mode;
 			}
 		}
 
-		inline void OGLRenderCore::SetBlendState(bool enabled)
+		inline void ogl_render_core_t::set_blend_state(bool enabled)
 		{
-			if(blendEnabled != enabled) {
+			if(blend_enabled_ != enabled) {
 				if(enabled) {
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -287,60 +287,60 @@ namespace Maki
 					glDisable(GL_BLEND);
 				}
 
-				blendEnabled = enabled;
+				blend_enabled_ = enabled;
 			}
 		}
 
-		inline void OGLRenderCore::UnbindAllTextures()
+		inline void ogl_render_core_t::unbind_all_textures()
 		{
-			for(uint32 i = 0; i < SHADOW_MAP_SLOT_INDEX_START+Core::RenderState::MAX_LIGHTS; i++) {
+			for(uint32 i = 0; i < shadow_map_slot_index_start+core::render_state_t::max_lights_; i++) {
 				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 		}
 
-		inline void OGLRenderCore::BindShaders(const Core::ShaderProgram *shader)
+		inline void ogl_render_core_t::bind_shaders(const core::shader_program_t *shader)
 		{
 			if(shader != nullptr) {
-				assert(glIsProgram((GLuint)shader->handle));
-				glUseProgram((GLuint)shader->handle);
+				assert(glIsProgram((GLuint)shader->handle_));
+				glUseProgram((GLuint)shader->handle_);
 			} else {
 				glUseProgram(0);
 			}
 		}
 
-		inline void OGLRenderCore::SetPerFrameVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
+		inline void ogl_render_core_t::set_per_frame_vertex_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
-			SetPerFrameConstants(state, &shader->vertexShader, gvs->scratchBuffer);
-			SetPerFrameConstants(state, &shader->pixelShader, gvs->scratchBuffer);
+			set_per_frame_constants(state, &shader->vertex_shader_, gvs->scratch_buffer_);
+			set_per_frame_constants(state, &shader->pixel_shader_, gvs->scratch_buffer_);
 			
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerFrame);
-			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Frame, gvs->uboPerFrame);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineFrameUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->ubo_per_frame_);
+			glBindBufferBase(GL_UNIFORM_BUFFER, uniform_buffer_frame_, gvs->ubo_per_frame_);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertex_shader_.engine_frame_uniform_bytes_, gvs->scratch_buffer_);
 		}
 
-		inline void OGLRenderCore::SetPerFramePixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader)
+		inline void ogl_render_core_t::set_per_frame_pixel_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader)
 		{
 		}
 
-		inline void OGLRenderCore::BindShadowMaps(const Core::ShaderProgram *shader, const Core::RenderState &state)
+		inline void ogl_render_core_t::bind_shadow_maps(const core::shader_program_t *shader, const core::render_state_t &state)
 		{
-			using namespace Core;
+			using namespace core;
 
 			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
-			for(uint8 i = 0; i < RenderState::MAX_SHADOW_LIGHTS; i++) {
-				int32 sampIndex = SHADOW_MAP_SLOT_INDEX_START+i;
-				int32 location = gvs->textureSamplerLocations[sampIndex];
+			for(uint8 i = 0; i < render_state_t::max_shadow_lights_; i++) {
+				int32 sampIndex = shadow_map_slot_index_start+i;
+				int32 location = gvs->texture_sampler_locations_[sampIndex];
 				if(location >= 0) {
 					glActiveTexture(GL_TEXTURE0+sampIndex);
-					glUniform1i(gvs->textureSamplerLocations[sampIndex], sampIndex);
-					if(state.shadowMaps[i] != HANDLE_NONE) {
-						GPUTexture *gtex = (GPUTexture *)TextureManager::Get(state.shadowMaps[i])->handle;
-						glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+					glUniform1i(gvs->texture_sampler_locations_[sampIndex], sampIndex);
+					if(state.shadow_maps_[i] != HANDLE_NONE) {
+						gpu_texture_t *gtex = (gpu_texture_t *)texture_manager_t::get(state.shadow_maps_[i])->handle_;
+						glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex_);
 					} else {
 						glBindTexture(GL_TEXTURE_2D, 0);
 					}
@@ -348,13 +348,13 @@ namespace Maki
 			}
 		}
 
-		inline void OGLRenderCore::SetInputLayout(const Core::ShaderProgram *shader, const Core::VertexFormat *vf)
+		inline void ogl_render_core_t::set_input_layout(const core::shader_program_t *shader, const core::vertex_format_t *vf)
 		{
-			using namespace Core;
+			using namespace core;
 
-			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
-				if(vf->HasAttribute(attr)) {
+			for(uint32 i = 0; i < vertex_format_t::attribute_count_; i++) {
+				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
+				if(vf->has_attribute(attr)) {
 					glEnableVertexAttribArray(attr);
 				} else {
 					glDisableVertexAttribArray(attr);
@@ -362,59 +362,59 @@ namespace Maki
 			}
 		}
 
-		inline void OGLRenderCore::SetMaterialVertexShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
+		inline void ogl_render_core_t::set_material_vertex_shader_constants(const core::shader_program_t *shader, const core::material_t *mat)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
-			BindMaterialConstants(&shader->vertexShader, false, gvs->scratchBuffer, mat);
-			BindMaterialConstants(&shader->pixelShader, false, gvs->scratchBuffer, mat);
+			bind_material_constants(&shader->vertex_shader_, false, gvs->scratch_buffer_, mat);
+			bind_material_constants(&shader->pixel_shader_, false, gvs->scratch_buffer_, mat);
 			
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboMaterial);
-			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Material, gvs->uboMaterial);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.materialUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->ubo_material_);
+			glBindBufferBase(GL_UNIFORM_BUFFER, uniform_buffer_material_, gvs->ubo_material_);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertex_shader_.material_uniform_bytes_, gvs->scratch_buffer_);
 		}
 
-		inline void OGLRenderCore::SetMaterialPixelShaderConstants(const Core::ShaderProgram *shader, const Core::Material *mat)
+		inline void ogl_render_core_t::set_material_pixel_shader_constants(const core::shader_program_t *shader, const core::material_t *mat)
 		{
 		}
 
-		inline void OGLRenderCore::BindTextures(const Core::ShaderProgram *shader, const Core::TextureSet *ts)
+		inline void ogl_render_core_t::bind_textures(const core::shader_program_t *shader, const core::texture_set_t *ts)
 		{
-			using namespace Core;
+			using namespace core;
 
 			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 			
-			for(uint32 i = 0; i < ts->textureCount; i++) {
-				int32 location = gvs->textureSamplerLocations[i];
+			for(uint32 i = 0; i < ts->texture_count_; i++) {
+				int32 location = gvs->texture_sampler_locations_[i];
 				if(location >= 0) {
-					const GPUTexture *gtex = (GPUTexture *)TextureManager::Get(ts->textures[i])->handle;
+					const gpu_texture_t *gtex = (gpu_texture_t *)texture_manager_t::get(ts->textures_[i])->handle_;
 					glActiveTexture(GL_TEXTURE0+i);
 					glUniform1i(location, i);
-					glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex);
+					glBindTexture(GL_TEXTURE_2D, (GLuint)gtex->tex_);
 				}
 			}
 		}
 
-		inline void OGLRenderCore::SetPerObjectVertexShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
+		inline void ogl_render_core_t::set_per_object_vertex_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader, const core::matrix44_t &matrix, const core::matrix44_t &mv, const core::matrix44_t &mvp)
 		{
-			const GPUVertexShader *gvs = (GPUVertexShader *)shader->vertexShader.handle;
+			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
-			SetPerObjectConstants(&shader->vertexShader, gvs->scratchBuffer, matrix, mv, mvp);
-			SetPerObjectConstants(&shader->pixelShader, gvs->scratchBuffer, matrix, mv, mvp);
+			set_per_object_constants(&shader->vertex_shader_, gvs->scratch_buffer_, matrix, mv, mvp);
+			set_per_object_constants(&shader->pixel_shader_, gvs->scratch_buffer_, matrix, mv, mvp);
 			
-			glBindBuffer(GL_UNIFORM_BUFFER, gvs->uboPerObject);
-			glBindBufferBase(GL_UNIFORM_BUFFER, UniformBuffer_Object, gvs->uboPerObject);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertexShader.engineObjectUniformBytes, gvs->scratchBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, gvs->ubo_per_object_);
+			glBindBufferBase(GL_UNIFORM_BUFFER, uniform_buffer_object_, gvs->ubo_per_object_);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, shader->vertex_shader_.engine_object_uniform_bytes_, gvs->scratch_buffer_);
 		}
 
-		inline void OGLRenderCore::SetPerObjectPixelShaderConstants(const Core::RenderState &state, const Core::ShaderProgram *shader, const Core::Matrix44 &matrix, const Core::Matrix44 &mv, const Core::Matrix44 &mvp)
+		inline void ogl_render_core_t::set_per_object_pixel_shader_constants(const core::render_state_t &state, const core::shader_program_t *shader, const core::matrix44_t &matrix, const core::matrix44_t &mv, const core::matrix44_t &mvp)
 		{
 		}
 
-		inline void OGLRenderCore::BindBuffer(void *buffer, const Core::VertexFormat *vf)
+		inline void ogl_render_core_t::bind_buffer(void *buffer, const core::vertex_format_t *vf)
 		{
-			using namespace Core;
+			using namespace core;
 
 			if(buffer == nullptr) {
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -422,32 +422,32 @@ namespace Maki
 				return;
 			}
 
-			const Buffer *b = (Buffer *)buffer;
-			glBindBuffer(GL_ARRAY_BUFFER, b->vbos[0]);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos[1]);
+			const buffer_t *b = (buffer_t *)buffer;
+			glBindBuffer(GL_ARRAY_BUFFER, b->vbos_[0]);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos_[1]);
 
-			const int32 stride = vf->GetStride();
+			const int32 stride = vf->get_stride();
 			uint32 offset = 0;
-			for(uint32 i = 0; i < VertexFormat::AttributeCount; i++) {
-				VertexFormat::Attribute attr = (VertexFormat::Attribute)i;
-				if(vf->HasAttribute(attr)) {
-					GLint count = vf->GetDataCount(attr);
-					VertexFormat::DataType type = vf->GetDataType(attr);
-					glVertexAttribPointer(attr, count, typeToGLType[type], normalizeAttribute[attr], stride, (GLvoid *)offset);
-					offset += count * VertexFormat::DataTypeSizes[type];
+			for(uint32 i = 0; i < vertex_format_t::attribute_count_; i++) {
+				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
+				if(vf->has_attribute(attr)) {
+					GLint count = vf->get_data_count(attr);
+					vertex_format_t::data_type_t type = vf->get_data_type(attr);
+					glVertexAttribPointer(attr, count, type_to_gl_type[type], normalize_attribute[attr], stride, (GLvoid *)offset);
+					offset += count * vertex_format_t::data_type_sizes_[type];
 				}
 			}
 		}
 
-		inline void OGLRenderCore::DrawBuffer(void *buffer)
+		inline void ogl_render_core_t::draw_buffer(void *buffer)
 		{
-			const Buffer *b = (Buffer *)buffer;
-			glDrawElements(b->geometryType, b->faceCount*b->indicesPerFace, b->indexDataType, nullptr);
+			const buffer_t *b = (buffer_t *)buffer;
+			glDrawElements(b->geometry_type_, b->face_count_*b->indices_per_face_, b->index_data_type_, nullptr);
 		}
 
 
 		// End of non-virtual interface
 
-	} // namespace OGL
+	} // namespace ogl
 
-} // namespace Maki
+} // namespace maki

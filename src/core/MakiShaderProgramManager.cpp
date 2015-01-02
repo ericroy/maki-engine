@@ -20,27 +20,27 @@ namespace maki
 
 		handle_t shader_program_manager_t::load(rid_t rid, shader_program_t::variant_t variant)
 		{
-			handle_t handle = res_pool_->match(find_predicate_t(rid, variant)) | manager_id_;
-			if(handle != HANDLE_NONE) {
-				return handle;
+			handle_t handle_ = res_pool_->match(find_predicate_t(rid, variant)) | manager_id_;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc() | manager_id_;
-			shader_program_t *shader = res_pool_->get(handle & handle_value_mask_);
+			handle_ = res_pool_->alloc() | manager_id_;
+			shader_program_t *shader = res_pool_->get(handle_ & handle_value_mask_);
 			new(shader) shader_program_t();
 		
 			if(!shader->load(rid, variant)) {
-				res_pool_->free(handle & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
 			engine_t *eng = engine_t::get();
 			if(!eng->renderer_->create_shader_program(shader)) {
-				res_pool_->free(handle & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
 
-			return handle;
+			return handle_;
 		}
 
 		void shader_program_manager_t::reload_assets()
@@ -66,14 +66,14 @@ namespace maki
 		{
 			bool found = false;
 			for(uint32 variant = shader_program_t::variant_normal_; variant < shader_program_t::variant_count_; variant++) {
-				handle_t handle = res_pool_->match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | manager_id_;
-				if(handle == HANDLE_NONE) {
+				handle_t handle_ = res_pool_->match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | manager_id_;
+				if(handle_ == HANDLE_NONE) {
 					continue;
 				}
 				found = true;
 
-				shader_program_t *shader = res_pool_->get(handle & handle_value_mask_);
-				res_pool_->free(handle & handle_value_mask_);
+				shader_program_t *shader = res_pool_->get(handle_ & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 
 				if(rid != RID_NONE) {
 					shader->~shader_program_t();

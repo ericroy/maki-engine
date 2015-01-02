@@ -22,27 +22,27 @@ namespace maki
 		{
 			engine_t *eng = engine_t::get();
 
-			handle_t handle = res_pool_->alloc() | manager_id_;
-			texture_t *tex = res_pool_->get(handle & handle_value_mask_);
-			new(tex) texture_t();
-			tex->type_ = type;
-			tex->width_ = width;
-			tex->height_ = height;
+			handle_t handle_ = res_pool_->alloc() | manager_id_;
+			texture_t *tex_ = res_pool_->get(handle_ & handle_value_mask_);
+			new(tex_) texture_t();
+			tex_->type_ = type;
+			tex_->width_ = width;
+			tex_->height_ = height;
 
-			switch(tex->type_) {
+			switch(tex_->type_) {
 			case texture_t::texture_type_regular_:
-				if(eng->renderer_->create_empty_texture(tex, channels)) {
-					return handle;
+				if(eng->renderer_->create_empty_texture(tex_, channels)) {
+					return handle_;
 				}
 				break;
 			case texture_t::texture_type_depth_stencil_:
-				if(eng->renderer_->create_depth_texture(tex)) {
-					return handle;
+				if(eng->renderer_->create_depth_texture(tex_)) {
+					return handle_;
 				}
 				break;
 			case texture_t::texture_type_render_target_:
-				if(eng->renderer_->create_render_target(tex)) {
-					return handle;
+				if(eng->renderer_->create_render_target(tex_)) {
+					return handle_;
 				}
 				break;
 			default:
@@ -51,43 +51,43 @@ namespace maki
 			}
 
 			console_t::error("Failed to alloc empty texture");
-			res_pool_->free(handle & handle_value_mask_);
+			res_pool_->free(handle_ & handle_value_mask_);
 			return HANDLE_NONE;
 		}
 
 		handle_t texture_manager_t::load(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<texture_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE) {
-				return handle;
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<texture_t>(rid)) | manager_id_;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc() | manager_id_;
-			texture_t *tex = res_pool_->get(handle & handle_value_mask_);
-			new(tex) texture_t();
+			handle_ = res_pool_->alloc() | manager_id_;
+			texture_t *tex_ = res_pool_->get(handle_ & handle_value_mask_);
+			new(tex_) texture_t();
 		
-			if(!load_data(tex, rid)) {
-				res_pool_->free(handle & handle_value_mask_);
+			if(!load_data(tex_, rid)) {
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
-			return handle;
+			return handle_;
 		}
 
-		bool texture_manager_t::load_data(texture_t *tex, rid_t rid)
+		bool texture_manager_t::load_data(texture_t *tex_, rid_t rid)
 		{
 			engine_t *eng = engine_t::get();
 
 			uint32 bytes_read;
 			char *data = eng->assets_->alloc_read(rid, &bytes_read);
 
-			if(!eng->renderer_->create_texture(tex, (char *)data, bytes_read)) {
+			if(!eng->renderer_->create_texture(tex_, (char *)data, bytes_read)) {
 				console_t::error("Failed to create texture <rid %d>", rid);
 				MAKI_SAFE_FREE(data);
 				return false;
 			}
 
 			MAKI_SAFE_FREE(data);
-			tex->rid_ = rid;
+			tex_->rid_ = rid;
 			return true;
 		}
 
@@ -95,29 +95,29 @@ namespace maki
 		{
 			const resource_pool_t<texture_t>::iterator_t end = res_pool_->end();
 			for(resource_pool_t<texture_t>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-				texture_t *tex = iter.ptr();
-				rid_t rid = tex->rid_;
+				texture_t *tex_ = iter.ptr();
+				rid_t rid = tex_->rid_;
 				if(rid != RID_NONE) {
-					tex->~texture_t();
-					new(tex) texture_t();
-					load_data(tex, rid);
+					tex_->~texture_t();
+					new(tex_) texture_t();
+					load_data(tex_, rid);
 				}
 			}
 		}
 
 		bool texture_manager_t::reload_asset(rid_t rid)
 		{
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<texture_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE) {
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<texture_t>(rid)) | manager_id_;
+			if(handle_ == HANDLE_NONE) {
 				return false;
 			}
-			texture_t *tex = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
+			texture_t *tex_ = res_pool_->get(handle_ & handle_value_mask_);
+			res_pool_->free(handle_ & handle_value_mask_);
 
 			if(rid != RID_NONE) {
-				tex->~texture_t();
-				new(tex) texture_t();
-				load_data(tex, rid);
+				tex_->~texture_t();
+				new(tex_) texture_t();
+				load_data(tex_, rid);
 			}
 			return true;
 		}

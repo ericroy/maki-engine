@@ -24,7 +24,7 @@ namespace maki
 			bool reload_asset(rid_t rid);
 
 		private:
-			bool load_data(texture_t *tex, rid_t rid);
+			bool load_data(texture_t *tex_, rid_t rid);
 		};
 
 	} // namespace core

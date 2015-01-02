@@ -11,29 +11,29 @@ namespace maki
 		class manager_t
 		{
 		public:
-			static inline SUBCLASS *get_owner(handle_t handle) { return managers_[(handle & manager_id_mask_) >> manager_id_shift_]; }
+			static inline SUBCLASS *get_owner(handle_t handle_) { return managers_[(handle_ & manager_id_mask_) >> manager_id_shift_]; }
 
-			static inline T *get(handle_t handle)
+			static inline T *get(handle_t handle_)
 			{
-				if(handle == HANDLE_NONE) {
+				if(handle_ == HANDLE_NONE) {
 					return nullptr;
 				}
-				return managers_[handle >> manager_id_shift_]->res_pool_->get(handle & handle_value_mask_);
+				return managers_[handle_ >> manager_id_shift_]->res_pool_->get(handle_ & handle_value_mask_);
 			}
 
-			static inline void add_ref(handle_t handle)
+			static inline void add_ref(handle_t handle_)
 			{
-				if(handle == HANDLE_NONE) {
+				if(handle_ == HANDLE_NONE) {
 					return;
 				}
-				managers_[handle >> manager_id_shift_]->res_pool_->add_ref(handle & handle_value_mask_);
+				managers_[handle_ >> manager_id_shift_]->res_pool_->add_ref(handle_ & handle_value_mask_);
 			}
 
-			static inline void free(handle_t &handle)
+			static inline void free(handle_t &handle_)
 			{
-				if(handle != HANDLE_NONE) {
-					managers_[handle >> manager_id_shift_]->res_pool_->free(handle & handle_value_mask_);
-					handle = HANDLE_NONE;
+				if(handle_ != HANDLE_NONE) {
+					managers_[handle_ >> manager_id_shift_]->res_pool_->free(handle_ & handle_value_mask_);
+					handle_ = HANDLE_NONE;
 				}
 			}
 
@@ -49,7 +49,7 @@ namespace maki
 		
 			// Must subtract one here, because we can't have a manager id that is all ones.
 			// If such a manager id was paired with a maximum resource index, then the
-			// resulting (valid) handle would be equal to HANDLE_NONE.  Can't have that.
+			// resulting (valid) handle_ would be equal to HANDLE_NONE.  Can't have that.
 			static const uint32 max_managers_per_resource_type_ = (1<<bits_per_manager_id_)-1;
 			static const uint32 manager_id_shift_ = 32-bits_per_manager_id_;
 			static const uint32 manager_id_mask_ = max_managers_per_resource_type_ << manager_id_shift_;
@@ -103,7 +103,7 @@ namespace maki
 			{
 				uint32 size = res_pool_->get_capacity();
 #if _DEBUG
-				std::string debug_name = res_pool_->debug_name;
+				std::string debug_name = res_pool_->debug_name_;
 				MAKI_SAFE_DELETE(res_pool_);
 				res_pool_ = new resource_pool_t<T>(size, debug_name.c_str());
 #else
@@ -124,13 +124,13 @@ namespace maki
 				console_t::info("manager_t items:");
 				const typename resource_pool_t<T>::iterator_t end = res_pool_->end();
 				for(typename resource_pool_t<T>::iterator_t iter = res_pool_->begin(); iter != end; ++iter) {
-					console_t::info("Item handle=%d refcount=%d", iter.index(), iter.ref_count());
+					console_t::info("Item handle_=%d refcount=%d", iter.index(), iter.ref_count());
 				}
 			}
 
 		protected:
 			// A number to differentiate managers_ which hold the same type of resources
-			// Each handle value has the manager id in the topmost 5 bits
+			// Each handle_ value has the manager id in the topmost 5 bits
 			uint32 manager_id_;
 
 			resource_pool_t<T> *res_pool_;

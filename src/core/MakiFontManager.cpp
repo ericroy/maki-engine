@@ -27,21 +27,21 @@ namespace maki
 			p.font_rid_ = font_rid;
 			p.shader_program_rid_ = shader_program_rid;
 			p.pixel_size_ = pixel_size;
-			handle_t handle = res_pool_->match(p);
+			handle_t handle_ = res_pool_->match(p);
 		
-			if(handle != HANDLE_NONE) {
-				return handle;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc();
-			assert(handle != HANDLE_NONE && "font_t pool depleted");
-			font_t *font = res_pool_->get(handle);
+			handle_ = res_pool_->alloc();
+			assert(handle_ != HANDLE_NONE && "font_t pool depleted");
+			font_t *font = res_pool_->get(handle_);
 			new(font) font_t();
 			if(!font->load(shader_program_rid, font_rid, pixel_size)) {
-				res_pool_->free(handle);
+				res_pool_->free(handle_);
 				return HANDLE_NONE;
 			}
-			return handle;
+			return handle_;
 		}
 
 	} // namespace core

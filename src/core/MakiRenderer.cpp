@@ -6,7 +6,7 @@
 
 namespace maki
 {
-	namespace core_
+	namespace core
 	{
 
 		renderer_t::renderer_t(window_t *window, render_core_t *core, const config_t *config)
@@ -31,7 +31,7 @@ namespace maki
 			render_payload_t payload(render_payload_t::command_init_);
 			core_->input.put(payload);
 			core_->output.get(payload);
-			assert(payload.cmd == render_payload_t::command_init_);
+			assert(payload.cmd_ == render_payload_t::command_init_);
 
 			if(config->get_bool("engine.wire_frame", false)) {
 				set_wire_frame_enabled(true);
@@ -140,37 +140,37 @@ namespace maki
 		{
 			light_dirty_flags_ |= (1<<light_index);
 
-			if(props == nullptr || (props->flags & render_state_t::light_flag_on_) == 0) {
-				current_.light_properties_[light_index].flags &= ~render_state_t::light_flag_on_;
+			if(props == nullptr || (props->flags_ & render_state_t::light_flag_on_) == 0) {
+				current_.light_properties_[light_index].flags_ &= ~render_state_t::light_flag_on_;
 				memset(&current_.light_properties_[light_index], 0, sizeof(render_state_t::light_properties_t));
-				texture_manager_t::free(current_.shadow_maps[light_index]);
+				texture_manager_t::free(current_.shadow_maps_[light_index]);
 				return;
 			}
 
 			memcpy(&current_.light_properties_[light_index], props, sizeof(render_state_t::light_properties_t));
 		
 			assert(matrix != nullptr);
-			current_.light_world[light_index] = *matrix;
-			matrix44_t::affine_inverse(*matrix, current_.light_view[light_index]);
+			current_.light_world_[light_index] = *matrix;
+			matrix44_t::affine_inverse(*matrix, current_.light_view_[light_index]);
 
 			if(fov == 0.0f) {
-				float wo2 = props->width_height_near_far.x_ / 2.0f;
-				float ho2 = props->width_height_near_far.y_ / 2.0f;
-				matrix44_t::ortho(-wo2, wo2, -ho2, ho2, props->width_height_near_far.z_, props->width_height_near_far.w_, current_.light_proj[light_index]);
+				float wo2 = props->width_height_near_far_.x_ / 2.0f;
+				float ho2 = props->width_height_near_far_.y_ / 2.0f;
+				matrix44_t::ortho(-wo2, wo2, -ho2, ho2, props->width_height_near_far_.z_, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
 			} else {
-				matrix44_t::perspective(fov, props->width_height_near_far.x_ / props->width_height_near_far.y_, props->width_height_near_far.z_, props->width_height_near_far.w_, current_.light_proj[light_index]);
+				matrix44_t::perspective(fov, props->width_height_near_far_.x_ / props->width_height_near_far_.y_, props->width_height_near_far_.z_, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
 			}
 		
-			if((props->flags & render_state_t::light_flag_shadow_) != 0 && depth_buffer != HANDLE_NONE) {
+			if((props->flags_ & render_state_t::light_flag_shadow_) != 0 && depth_buffer != HANDLE_NONE) {
 				assert(light_index < render_state_t::max_shadow_lights_);
 				texture_manager_t::add_ref(depth_buffer);
-				texture_manager_t::free(current_.shadow_maps[light_index]);
-				current_.shadow_maps[light_index] = depth_buffer;
+				texture_manager_t::free(current_.shadow_maps_[light_index]);
+				current_.shadow_maps_[light_index] = depth_buffer;
 				current_.shadow_map_properties_[light_index] = *shad_props;
 			} else {
 				if(light_index < render_state_t::max_shadow_lights_) {
-					current_.shadow_map_properties_[light_index].size = vector2_t(0.0f);
-					texture_manager_t::free(current_.shadow_maps[light_index]);
+					current_.shadow_map_properties_[light_index].size_ = vector2_t(0.0f);
+					texture_manager_t::free(current_.shadow_maps_[light_index]);
 				}
 			}
 		}
@@ -185,7 +185,7 @@ namespace maki
 			matrix44_t::ortho(frustum, region.view_proj_);
 
 			// light_t must have been set already!!!!!!
-			region.view_proj_ = region.view_proj_ * current_.light_view[light_index];
+			region.view_proj_ = region.view_proj_ * current_.light_view_[light_index];
 		
 			region.width_height_near_far_ = vector4_t(frustum.get_width(), frustum.get_height(), frustum.near_plane_, frustum.far_plane_);
 		}
@@ -198,11 +198,11 @@ namespace maki
 				const vector4_t pos(0.0f);
 				const vector4_t dir(0.0f, 0.0f, -1.0f, 0.0f);
 				for(uint32 i = 0; i < current_.light_count_; i++) {
-					//if((light_dirty_flags_ & (1<<i)) != 0 && (current_.light_properties_[i].flags & render_state_t::light_flag_on_) != 0) {
-						matrix44_t to_view_space = current_.view_ * current_.light_world[i];
-						current_.light_positions[i] = to_view_space * pos;
+					//if((light_dirty_flags_ & (1<<i)) != 0 && (current_.light_properties_[i].flags_ & render_state_t::light_flag_on_) != 0) {
+						matrix44_t to_view_space = current_.view_ * current_.light_world_[i];
+						current_.light_positions_[i] = to_view_space * pos;
 						current_.light_directions_[i] = to_view_space * dir;
-						current_.light_view_proj[i] = current_.light_proj[i] * current_.light_view[i];
+						current_.light_view_proj_[i] = current_.light_proj_[i] * current_.light_view_[i];
 					//}
 				}
 				light_dirty_flags_ = 0;

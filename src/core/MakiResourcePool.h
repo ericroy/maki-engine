@@ -14,8 +14,8 @@ namespace maki
 		are preallocated but constructors are called as they are requested,
 		and destructors are called as they are freed. All the managed objects
 		are reference counted, so they will only be destroyed if their reference
-		count falls to zero.  References are increased whenever a handle is given
-		out, and decreased whenever a handle is freed.
+		count falls to zero.  References are increased whenever a handle_ is given
+		out, and decreased whenever a handle_ is freed.
 		*/
 		template<class T>
 		class resource_pool_t
@@ -60,7 +60,7 @@ namespace maki
 
 				capacity_ = max_size;
 
-				data_ = (T*)allocator_t::malloc(sizeof(T) * capacity_, std::alignment_of<T>::value_);
+				data_ = (T*)allocator_t::malloc(sizeof(T) * capacity_, std::alignment_of<T>::value);
 				reference_counts_ = new uint16[capacity_];
 		
 				// Allocate one extra node as the "end_" element
@@ -112,38 +112,38 @@ namespace maki
 
 			inline handle_t alloc(const move_token_t<T> &value)
 			{
-				handle_t handle = alloc();
-				assert(handle != HANDLE_NONE);
-				T *mem = get(handle);
+				handle_t handle_ = alloc();
+				assert(handle_ != HANDLE_NONE);
+				T *mem = get(handle_);
 				assert(mem);
 				// Use placement new to call move constructor
 				new(mem) T(value);
-				return handle;
+				return handle_;
 			}
 
 			inline handle_t alloc(const T &value)
 			{
-				handle_t handle = alloc();
-				assert(handle != HANDLE_NONE);
-				T *mem = get(handle);
+				handle_t handle_ = alloc();
+				assert(handle_ != HANDLE_NONE);
+				T *mem = get(handle_);
 				assert(mem);
 				// Use placement new to call copy constructor
 				new(mem) T(value);
-				return handle;
+				return handle_;
 			}
 
 			handle_t alloc()
 			{
-				handle_t handle = HANDLE_NONE;
+				handle_t handle_ = HANDLE_NONE;
 				if(free_head_ != end_) {
-					handle = free_head_;
+					handle_ = free_head_;
 
 					// maki_move the free head_ to the next free element
 					free_head_ = nodes_[free_head_].next_;
 
 					// insert the new element at the head_
 					uint32 old_head = head_;
-					head_ = handle;
+					head_ = handle_;
 					if(old_head != end_) {
 						nodes_[old_head].prev_ = head_;
 					}
@@ -151,72 +151,72 @@ namespace maki
 					nodes_[head_].prev_ = end_;
 
 					// Adjust ref counts
-					assert(reference_counts_[handle] == 0);
-					reference_counts_[handle]++;
+					assert(reference_counts_[handle_] == 0);
+					reference_counts_[handle_]++;
 
 					count_++;
 				} else {
 					assert(false && "resource_t pool depleted");
 				}
-				return handle;
+				return handle_;
 			}
 
-			void free(handle_t handle)
+			void free(handle_t handle_)
 			{
-				assert(handle < capacity_);
-				assert(reference_counts_[handle] > 0);
+				assert(handle_ < capacity_);
+				assert(reference_counts_[handle_] > 0);
 		
 				// Remove a reference from this item
-				reference_counts_[handle]--;
+				reference_counts_[handle_]--;
 
 				// Actually mark this object as deallocated if nobody else has a ref to it
-				if(reference_counts_[handle] == 0) {
+				if(reference_counts_[handle_] == 0) {
 					count_--;
 			
 					// Remove this element from allocated list
-					if(handle == head_) {
-						head_ = nodes_[handle].next_;
+					if(handle_ == head_) {
+						head_ = nodes_[handle_].next_;
 					}
-					if(nodes_[handle].next_ != end_) {
-						nodes_[nodes_[handle].next_].prev_ = nodes_[handle].prev_;
+					if(nodes_[handle_].next_ != end_) {
+						nodes_[nodes_[handle_].next_].prev_ = nodes_[handle_].prev_;
 					}
-					if(nodes_[handle].prev_ != end_) {
-						nodes_[nodes_[handle].prev_].next_ = nodes_[handle].next_;
+					if(nodes_[handle_].prev_ != end_) {
+						nodes_[nodes_[handle_].prev_].next_ = nodes_[handle_].next_;
 					}
 
 
 					// Insert this element at the free head_
 					if(free_head_ != end_) {
-						nodes_[free_head_].prev_ = handle;
+						nodes_[free_head_].prev_ = handle_;
 					}
-					nodes_[handle].next_ = free_head_;
-					nodes_[handle].prev_ = end_;
-					free_head_ = handle;
+					nodes_[handle_].next_ = free_head_;
+					nodes_[handle_].prev_ = end_;
+					free_head_ = handle_;
 			
 
 					// Deconstruct the object
-					data_[handle].~T();
+					data_[handle_].~T();
 				}
 			}
 	
-			inline T *get(handle_t handle) const
+			inline T *get(handle_t handle_) const
 			{
 	#if _DEBUG
-				if(handle < capacity_) {
-					assert(reference_counts_[handle] > 0);
-					return &data_[handle];
+				if(handle_ < capacity_) {
+					assert(reference_counts_[handle_] > 0);
+					return &data_[handle_];
 				} else {
 					return nullptr;
 				}
 	#endif
-				return &data_[handle];			
+				return &data_[handle_];			
 			}
 
 			// Fnds out if item is n this list, and returns its index (or -1 if not found).
 			// Note: this method adds a reference to the item if it is found.
 			handle_t find(const T &item)
 			{
-				const iterator_t iter_end = end_();
+				const iterator_t iter_end = end();
 				for(iterator_t iter = begin(); iter != iter_end; ++iter) {
 					if(item == *iter) {
 						assert(reference_counts_[iter.current_] > 0);
@@ -228,11 +228,11 @@ namespace maki
 				return HANDLE_NONE;
 			}
 
-			// Returns a handle to the first item for which predicate is true.
+			// Returns a handle_ to the first item for which predicate is true.
 			// Note: this method adds a reference to the item if it is found.
 			handle_t match(std::function<bool(const T *)> predicate)
 			{
-				const iterator_t iter_end = end_();
+				const iterator_t iter_end = end();
 				for(iterator_t iter = begin(); iter != iter_end; ++iter) {
 					if(predicate(iter.ptr())) {
 						assert(reference_counts_[iter.current_] > 0);
@@ -244,19 +244,19 @@ namespace maki
 				return HANDLE_NONE;
 			}
 
-			inline void add_ref(handle_t handle)
+			inline void add_ref(handle_t handle_)
 			{
-				if(handle < capacity_) {
-					assert(reference_counts_[handle] > 0);
-					reference_counts_[handle]++;
+				if(handle_ < capacity_) {
+					assert(reference_counts_[handle_] > 0);
+					reference_counts_[handle_]++;
 				}
 			}
 
-			inline uint16 get_ref_count(handle_t handle)
+			inline uint16 get_ref_count(handle_t handle_)
 			{
-				if(handle < capacity_) {
-					assert(reference_counts_[handle] > 0);
-					return reference_counts_[handle];
+				if(handle_ < capacity_) {
+					assert(reference_counts_[handle_] > 0);
+					return reference_counts_[handle_];
 				}
 				return 0;
 			}

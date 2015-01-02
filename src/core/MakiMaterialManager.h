@@ -13,7 +13,7 @@ namespace maki
 		class material_manager_t : public manager_t<material_t, material_manager_t>
 		{
 		public:
-			static handle_t duplicate_if_shared(handle_t handle);
+			static handle_t duplicate_if_shared(handle_t handle_);
 
 		public:
 			static const int32 default_size_ = 64;

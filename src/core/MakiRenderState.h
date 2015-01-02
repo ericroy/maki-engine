@@ -88,7 +88,7 @@ namespace maki
 			struct __declspec(align(MAKI_SIMD_ALIGN)) light_split_region_t : public aligned_t<MAKI_SIMD_ALIGN>
 			{
 				matrix44_t view_proj_;
-				vector4_t width_height_near_far;
+				vector4_t width_height_near_far_;
 			};
 
 		public:

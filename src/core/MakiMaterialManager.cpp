@@ -26,28 +26,28 @@ namespace maki
 				return HANDLE_NONE;
 			}
 
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE) {
-				return handle;
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
+			if(handle_ != HANDLE_NONE) {
+				return handle_;
 			}
 
-			handle = res_pool_->alloc() | manager_id_;
-			material_t *mat = res_pool_->get(handle & handle_value_mask_);
+			handle_ = res_pool_->alloc() | manager_id_;
+			material_t *mat = res_pool_->get(handle_ & handle_value_mask_);
 			new(mat) material_t();
 			if(!mat->load(rid)) {
-				res_pool_->free(handle & handle_value_mask_);
+				res_pool_->free(handle_ & handle_value_mask_);
 				return HANDLE_NONE;
 			}
-			return handle;
+			return handle_;
 		}
 
-		handle_t material_manager_t::duplicate_if_shared(handle_t handle)
+		handle_t material_manager_t::duplicate_if_shared(handle_t handle_)
 		{
-			material_manager_t *owner = get_owner(handle);
-			if(handle != HANDLE_NONE && owner->res_pool_->get_ref_count(handle & handle_value_mask_) > 1) {
+			material_manager_t *owner = get_owner(handle_);
+			if(handle_ != HANDLE_NONE && owner->res_pool_->get_ref_count(handle_ & handle_value_mask_) > 1) {
 				// Allocate a new item, relying on the item's copy constructor to duplicate it
-				handle_t new_handle = owner->res_pool_->alloc(*owner->res_pool_->get(handle)) | owner->manager_id_;
-				owner->res_pool_->free(handle & handle_value_mask_);
+				handle_t new_handle = owner->res_pool_->alloc(*owner->res_pool_->get(handle_)) | owner->manager_id_;
+				owner->res_pool_->free(handle_ & handle_value_mask_);
 
 				// Must clear the rid_t on cloned resources, since they are no longer hot-swappable.
 				// Duplicating usually implies an intent to modify the resource, and if you hot-swapped
@@ -57,7 +57,7 @@ namespace maki
 
 				return new_handle;
 			}
-			return handle;
+			return handle_;
 		}
 
 		void material_manager_t::reload_assets()
@@ -77,12 +77,12 @@ namespace maki
 			if(rid == RID_NONE) {
 				return false;
 			}
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE) {
+			handle_t handle_ = res_pool_->match(resource_t::find_predicate_t<material_t>(rid)) | manager_id_;
+			if(handle_ == HANDLE_NONE) {
 				return false;
 			}
-			material_t *mat = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
+			material_t *mat = res_pool_->get(handle_ & handle_value_mask_);
+			res_pool_->free(handle_ & handle_value_mask_);
 			reload(mat);
 			return true;
 		}

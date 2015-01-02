@@ -1,49 +1,49 @@
 #include "ogl/ogl_stdafx.h"
 #include "ogl/MakiOGLGPUTypes.h"
 
-namespace Maki
+namespace maki
 {
-	namespace OGL
+	namespace ogl
 	{
 
-		void Buffer::DeleteBuffers()
+		void buffer_t::delete_buffers()
 		{
-			glDeleteBuffers(2, vbos);
-			vbos[0] = 0;
-			vbos[1] = 0;
+			glDeleteBuffers(2, vbos_);
+			vbos_[0] = 0;
+			vbos_[1] = 0;
 		}
 
 
-		GPUShader::GPUShader() : sh(0) {}
-		GPUShader::~GPUShader() { glDeleteShader(sh); }
+		gpu_shader_t::gpu_shader_t() : sh_(0) {}
+		gpu_shader_t::~gpu_shader_t() { glDeleteShader(sh_); }
 
 
-		GPUVertexShader::GPUVertexShader()
-			: GPUShader(), uboPerFrame(0), uboPerObject(0), uboMaterial(0), scratchBuffer(nullptr)
+		gpu_vertex_shader_t::gpu_vertex_shader_t()
+			: gpu_shader_t(), ubo_per_frame_(0), ubo_per_object_(0), ubo_material_(0), scratch_buffer_(nullptr)
 		{
-			memset(textureSamplerLocations, 0xff, sizeof(textureSamplerLocations));
+			memset(texture_sampler_locations_, 0xff, sizeof(texture_sampler_locations_));
 		}
 
-		GPUVertexShader::~GPUVertexShader()
+		gpu_vertex_shader_t::~gpu_vertex_shader_t()
 		{
-			glDeleteBuffers(1, &uboPerFrame);
-			glDeleteBuffers(1, &uboPerObject);
-			glDeleteBuffers(1, &uboMaterial);
-			glDeleteShader(sh);
-			SAFE_FREE(scratchBuffer);
+			glDeleteBuffers(1, &ubo_per_frame_);
+			glDeleteBuffers(1, &ubo_per_object_);
+			glDeleteBuffers(1, &ubo_material_);
+			glDeleteShader(sh_);
+			MAKI_SAFE_FREE(scratch_buffer_);
 		}
 
 
-		GPUTexture::GPUTexture()
-			: tex(0)
+		gpu_texture_t::gpu_texture_t()
+			: tex_(0)
 		{
 		}
 
-		GPUTexture::~GPUTexture()
+		gpu_texture_t::~gpu_texture_t()
 		{
-			glDeleteTextures(1, &tex);
+			glDeleteTextures(1, &tex_);
 		}
 
-	} // namespace OGL
+	} // namespace ogl
 
-} // namespace Maki
+} // namespace maki

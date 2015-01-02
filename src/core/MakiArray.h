@@ -41,7 +41,7 @@ namespace maki
 					return;
 				}
 				MAKI_SAFE_FREE(data_);
-				data_ = (T *)allocator_t::malloc(sizeof(T)*size, std::alignment_of<T>::value_);
+				data_ = (T *)allocator_t::malloc(sizeof(T)*size, std::alignment_of<T>::value);
 				count_ = size;
 			}
 

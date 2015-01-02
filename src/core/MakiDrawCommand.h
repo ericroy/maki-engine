@@ -48,8 +48,8 @@ namespace maki
 			// Listed from low to high bits (low to high sorting priority)
 			struct key_fields_t
 			{
-				// These fields contain the actual handle value to a resource.
-				// Make sure there are enough bits to represent every handle up to the maximum size of the manager's pool.
+				// These fields contain the actual handle_ value to a resource.
+				// Make sure there are enough bits to represent every handle_ up to the maximum size of the manager's pool.
 				uint64 mesh_ : bits_per_mesh_;
 				uint64 mesh_manager_id_ : mesh_manager_t::bits_per_manager_id_;
 

@@ -78,29 +78,29 @@ extern PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;
 */
 
 
-namespace Maki
+namespace maki
 {
-	namespace OGL
+	namespace ogl
 	{
 		
-		bool _Failed();
+		bool __failed();
 
 #if _DEBUG
-#		define MAKI_OGL_FAILED() _Failed()
+#		define MAKI_OGL_FAILED() __failed()
 #else
 #		define MAKI_OGL_FAILED() false
 #endif
-		const int32 SHADOW_MAP_SLOT_INDEX_START = 8;
+		const int32 shadow_map_slot_index_start = 8;
 		
-		extern const GLenum indicesPerFaceToGeometryType[4];
-		extern const GLenum bytesPerIndexToFormat[5];
-		extern const GLenum channelsToFormat[5];
-		extern const GLenum typeToGLType[Core::VertexFormat::DataTypeCount];
-		extern const char *attributeName[Core::VertexFormat::AttributeCount];
-		extern GLboolean normalizeAttribute[Core::VertexFormat::AttributeCount];
+		extern const GLenum indices_per_face_to_geometry_type[4];
+		extern const GLenum bytes_per_index_to_format[5];
+		extern const GLenum channels_to_format[5];
+		extern const GLenum type_to_gl_type[core::vertex_format_t::data_type_count_];
+		extern const char *attribute_name[core::vertex_format_t::attribute_count_];
+		extern GLboolean normalize_attribute[core::vertex_format_t::attribute_count_];
 
-		void DefineGLFunctions();
+		void define_gl_functions();
 		
 	} // namespace D3D
 
-} // namespace Maki
+} // namespace maki

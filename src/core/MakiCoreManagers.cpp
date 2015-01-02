@@ -56,7 +56,7 @@ namespace maki
 			skeleton_animation_manager_ = new skeleton_animation_manager_t(config->get_uint("engine.max_skeleton_animations", skeleton_animation_manager_t::default_size_));
 
 			// Check that the draw command bitfield (which is used for sorting draw commands) has enough bits allocated to each type
-			// so that it can represent every possible handle value for that type.
+			// so that it can represent every possible handle_ value for that type.
 			assert(mesh_manager_->get_capacity() <= (1<<draw_command_t::bits_per_mesh_) && "assign more bits to mesh in draw command bitfield");
 			assert(material_manager_->get_capacity() <= (1<<draw_command_t::bits_per_material_) && "assign more bits to material in draw command bitfield");
 			assert(texture_set_manager_->get_capacity() <= (1<<draw_command_t::bits_per_texture_set_) && "assign more bits to texture set in draw command bitfield");
@@ -80,8 +80,8 @@ namespace maki
 		void core_managers_t::dump_manager_stats()
 		{
 			vertex_format_manager_->dump_stats		("Vertex formats  ");
-			shader_program_manager_->dump_stats		("Shader programs ");
-			texture_set_manager_->dump_stats		("Texture sets    ");
+			shader_program_manager_->dump_stats		("shader_t programs ");
+			texture_set_manager_->dump_stats		("texture_t sets    ");
 			texture_manager_->dump_stats			("Textures        ");
 			material_manager_->dump_stats			("Materials       ");
 			mesh_manager_->dump_stats				("Meshes          ");

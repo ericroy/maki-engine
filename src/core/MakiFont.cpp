@@ -57,14 +57,14 @@ namespace maki
 			uint8 *pixels = (uint8 *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
 
 			int ret;
-			while((ret = stbtt_BakeFontBitmap((const uint8 *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars)) <= 0) {
+			while((ret = stbtt_BakeFontBitmap((const uint8 *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
 				texture_height_ *= 2;
 				pixels = (uint8 *)allocator_t::realloc(pixels, texture_width_ * texture_height_);
 			}
 
 			handle_t glyph_atlas = res->texture_manager_->alloc_texture(texture_t::texture_type_regular_, texture_width_, texture_height_, 1);
-			texture_t *tex = texture_manager_t::get(glyph_atlas);
-			eng->renderer_->write_to_texture(tex, 0, 0, 0, 0, texture_width_, texture_height_, texture_width_, 1, (char *)pixels);
+			texture_t *tex_ = texture_manager_t::get(glyph_atlas);
+			eng->renderer_->write_to_texture(tex_, 0, 0, 0, 0, texture_width_, texture_height_, texture_width_, 1, (char *)pixels);
 		
 			allocator_t::free(pixels);
 			MAKI_SAFE_FREE(font_data);
@@ -73,13 +73,13 @@ namespace maki
 			mat.set_shader_program(shader_program_rid);
 
 			texture_set_t ts;
-			// The texture set will take ownership of the glyph_atlas handle
+			// The texture set will take ownership of the glyph_atlas handle_
 			ts.textures_[ts.texture_count_++] = glyph_atlas;
 
-			// The material will take ownership of the new texture set handle
+			// The material will take ownership of the new texture set handle_
 			mat.texture_set_ = res->texture_set_manager_->add(maki_move(ts));
 
-			// And finally, we will accept ownerhip of the material handle
+			// And finally, we will accept ownerhip of the material handle_
 			material_ = res->material_manager_->add(maki_move(mat));
 
 

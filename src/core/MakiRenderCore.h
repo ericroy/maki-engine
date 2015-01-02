@@ -31,7 +31,7 @@ namespace maki
 			void run();
 
 			// GPU resource creation, updates, destruction
-			// These all acquire the execution mutex for the render core
+			// These all acquire the execution mutex_ for the render core
 			virtual void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed) = 0;
 			virtual void free_buffer(void *buffer) = 0;
 			virtual bool create_shader_program(shader_program_t *s) = 0;
@@ -75,9 +75,9 @@ namespace maki
 			if(window_width_ != state.window_width_ || window_height_ != state.window_height_) {
 				console_t::info("renderer_t resizing to %dx%d", state.window_width_, state.window_height_);
 				derived->set_render_target_and_depth_stencil(render_state_t::render_target_null_, HANDLE_NONE, render_state_t::depth_stencil_null_, HANDLE_NONE);
-				derived->Resized(state.window_width_, state.window_height_);
-				window_width = state.window_width_;
-				window_height = state.window_height_;
+				derived->resized(state.window_width_, state.window_height_);
+				window_width_ = state.window_width_;
+				window_height_ = state.window_height_;
 			}
 
 			derived->set_render_target_and_depth_stencil(state.render_target_type_, state.render_target_, state.depth_stencil_type_, state.depth_stencil_);
@@ -103,8 +103,8 @@ namespace maki
 
 			for(uint32 i = 0; i < commands.count_; ++i) {
 				const draw_command_list_t::value_entry_t &ve = commands.values_[commands.keys_[i].index_];
-				const draw_command_t *dc = &ve.draw_command;
-				const matrix44_t &matrix = ve.m;
+				const draw_command_t *dc = &ve.draw_command_;
+				const matrix44_t &matrix = ve.m_;
 
 				const vertex_format_t *vf = vertex_format_manager_t::get(dc->vertex_format_);
 				const shader_program_t *base_shader = shader_program_manager_t::get(dc->shader_program_);
@@ -140,7 +140,7 @@ namespace maki
 
 				if(current_shader_program != dc->shader_program_) {
 				
-					// Unbind all textures from current shader
+					// Unbind all textures_ from current shader
 					if(current_shader_program != HANDLE_NONE) {
 						derived->unbind_all_textures();
 					}

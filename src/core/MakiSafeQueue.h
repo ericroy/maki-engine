@@ -32,7 +32,7 @@ namespace maki
 
 			inline void put(const T &val)
 			{
-				std::unique_lock<std::mutex_> lock(mutex_);
+				std::unique_lock<std::mutex> lock(mutex_);
 				while(available_ == items_.count_) {
 					cond_space_available_.wait(lock);
 				}
@@ -47,7 +47,7 @@ namespace maki
 
 			inline bool try_put(const T &val)
 			{
-				std::lock_guard<std::mutex_> lock(mutex_);
+				std::lock_guard<std::mutex> lock(mutex_);
 				if(available_ < items_.count_) {
 					items_[write_cursor_++] = val;
 					available_++;
@@ -62,7 +62,7 @@ namespace maki
 
 			inline void get(T &out)
 			{
-				std::unique_lock<std::mutex_> lock(mutex_);
+				std::unique_lock<std::mutex> lock(mutex_);
 				while(available_ == 0) {
 					cond_data_available_.wait(lock);
 				}
@@ -77,7 +77,7 @@ namespace maki
 
 			inline bool try_get(T &out)
 			{
-				std::lock_guard<std::mutex_> lock(mutex_);
+				std::lock_guard<std::mutex> lock(mutex_);
 				if(available_ > 0) {
 					out = items_[read_cursor_++];
 					available_--;
