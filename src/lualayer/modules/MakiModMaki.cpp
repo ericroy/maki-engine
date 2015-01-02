@@ -1,5 +1,5 @@
 #include "lualayer/lualayer_stdafx.h"
-#include "lualayer/MakiLuaContext.h"
+#include <lua.hpp>
 #include "core/MakiConsole.h"
 #include "core/MakiEngine.h"
 

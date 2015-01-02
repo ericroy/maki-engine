@@ -16,6 +16,24 @@ namespace maki
 			{ nullptr, nullptr }
 		};
 
+		static int32 traceback(lua_State *L)
+		{
+			lua_getglobal(L, "debug");
+			lua_getfield(L, -1, "traceback");
+
+			// pass error message
+			lua_pushvalue(L, 1);
+
+			// Skip this function and traceback
+			lua_pushinteger(L, 2);
+
+			// call debug.traceback
+			lua_call(L, 2, 1);
+			
+			return 1;
+		}
+
+
 		lua_context_t::lua_context_t()
 			: L_(nullptr),
 			update_function_ref_(LUA_REFNIL),
@@ -79,11 +97,9 @@ namespace maki
 			}
 
 			// Now that the main script is evaluated, it should have attached 'draw' and 'update'
-			// functions to the maki module
+			// functions to the maki module			
 			lua_getglobal(L_, "package");
-			assert(lua_istable(L_, -1) && "Couldn't find package global");
-			lua_getfield(L_, -1, "preload");
-			assert(lua_istable(L_, -1) && "Couldn't find preload table");
+			lua_getfield(L_, -1, "loaded");
 			lua_getfield(L_, -1, "maki");
 			if(lua_istable(L_, -1)) {
 				lua_getfield(L_, -1, "update");
@@ -122,10 +138,17 @@ namespace maki
 				return;
 			}
 
+#if _DEBUG
+			lua_pushcfunction(L_, traceback);
+#endif
 			lua_getref(L_, update_function_ref_);
 			if(lua_isfunction(L_, -1)) {
 				lua_pushnumber(L_, dt);
+#if _DEBUG
+				int32 ret = lua_pcall(L_, 1, 0, -3);
+#else
 				int32 ret = lua_pcall(L_, 1, 0, 0);
+#endif
 				if(ret != 0) {
 					console_t::lua_error(luaL_checklstring(L_, -1, nullptr));
 					lua_pop(L_, 1);
@@ -133,6 +156,7 @@ namespace maki
 			} else {
 				lua_pop(L_, 1);
 			}
+			lua_pop(L_, 1);
 		}
 
 		void lua_context_t::draw()
@@ -145,9 +169,16 @@ namespace maki
 				return;
 			}
 
+#if _DEBUG
+			lua_pushcfunction(L_, traceback);
+#endif
 			lua_getref(L_, draw_function_ref_);
 			if(lua_isfunction(L_, -1)) {
+#if _DEBUG
+				int32 ret = lua_pcall(L_, 0, 0, -2);
+#else
 				int32 ret = lua_pcall(L_, 0, 0, 0);
+#endif
 				if(ret != 0) {
 					console_t::lua_error(luaL_checklstring(L_, -1, nullptr));
 					lua_pop(L_, 1);
@@ -155,6 +186,7 @@ namespace maki
 			} else {
 				lua_pop(L_, 1);
 			}
+			lua_pop(L_, 1);
 		}
 
 	} // namespace lualayer

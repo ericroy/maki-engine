@@ -7,6 +7,9 @@
     <ClCompile Include="src\lualayer\modules\MakiModMaki.cpp">
       <Filter>modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\lualayer\modules\MakiModMakiRenderer.cpp">
+      <Filter>modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lualayer\lualayer_stdafx.h" />
@@ -14,6 +17,9 @@
     <ClInclude Include="src\lualayer\MakiTween.h" />
     <ClInclude Include="src\lualayer\MakiLuaContext.h" />
     <ClInclude Include="src\lualayer\modules\MakiModMaki.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lualayer\modules\MakiModMakiRenderer.h">
       <Filter>modules</Filter>
     </ClInclude>
   </ItemGroup>
