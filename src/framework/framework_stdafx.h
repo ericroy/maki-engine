@@ -1,7 +1,4 @@
 #pragma once
-
-#define _CRT_SECURE_NO_WARNINGS 1
-
 #include <cstdio>
 #include <new>
 #include <string>
@@ -16,11 +13,5 @@
 #if defined(_WIN32) || defined(_WIN64)
 #	define _WINSOCKAPI_
 #endif
+
 #include "Maki.h"
-
-//#include "btBulletCollisionCommon.h"
-//#include "btBulletDynamicsCommon.h"
-
-#include "framework/MakiMacros.h"
-#include "framework/MakiTween.h"
-#include "framework/MakiEntity.h"

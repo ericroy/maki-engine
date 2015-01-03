@@ -51,7 +51,9 @@ namespace maki
 			inline void clear_color(const vector4_t &rgba);
 
 			// state_t setters
-			void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
+			//void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
+			void set_render_target(render_state_t::render_target_t render_target_type, handle_t render_target = HANDLE_NONE);
+			void set_depth_stencil(render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil = HANDLE_NONE);
 			inline void set_viewport(const rect_t &rect);
 			inline void set_view(const matrix44_t &view);
 			inline void set_camera_matrix(const matrix44_t &camera_matrix);

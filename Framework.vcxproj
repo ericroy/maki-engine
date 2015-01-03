@@ -11,189 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\framework\components\MakiCameraComponent.h" />
-    <ClInclude Include="src\framework\components\MakiFlashComponent.h" />
-    <ClInclude Include="src\framework\components\MakiLightComponent.h" />
-    <ClInclude Include="src\framework\components\MakiMeshComponent.h" />
-    <ClInclude Include="src\framework\components\MakiMetaComponent.h" />
-    <ClInclude Include="src\framework\components\MakiNameComponent.h" />
-    <ClInclude Include="src\framework\components\MakiNavMeshComponent.h" />
-    <ClInclude Include="src\framework\components\MakiPhysicsComponent.h" />
-    <ClInclude Include="src\framework\components\MakiSceneNodeComponent.h" />
-    <ClInclude Include="src\framework\components\MakiScriptComponent.h" />
-    <ClInclude Include="src\framework\components\MakiSkeletonComponent.h" />
-    <ClInclude Include="src\framework\components\MakiTransformComponent.h" />
-    <ClInclude Include="src\framework\hash\hash.h" />
-    <ClInclude Include="src\framework\MakiAnimationBlender.h" />
-    <ClInclude Include="src\framework\MakiCascadeHelper.h" />
-    <ClInclude Include="src\framework\MakiComponent.h" />
-    <ClInclude Include="src\framework\MakiComponentPool.h" />
-    <ClInclude Include="src\framework\MakiComponentPoolBase.h" />
-    <ClInclude Include="src\framework\MakiDebugPhysicsRenderer.h" />
-    <ClInclude Include="src\framework\MakiEntityPool.h" />
-    <ClInclude Include="src\framework\MakiFlashMovie.h" />
-    <ClInclude Include="src\framework\MakiFlashMovieManager.h" />
-    <ClInclude Include="src\framework\MakiFlashMovieState.h" />
-    <ClInclude Include="src\framework\MakiFrameworkManagers.h" />
-    <ClInclude Include="src\framework\MakiDebugNetListener.h" />
-    <ClInclude Include="src\framework\MakiEntity.h" />
-    <ClInclude Include="src\framework\MakiMessage.h" />
-    <ClInclude Include="src\framework\MakiMessageHub.h" />
-    <ClInclude Include="src\framework\MakiRenderableComponent.h" />
-    <ClInclude Include="src\framework\MakiScene.h" />
-    <ClInclude Include="src\framework\MakiSceneLoader.h" />
-    <ClInclude Include="src\framework\framework_stdafx.h" />
-    <ClInclude Include="src\framework\MakiScript.h" />
-    <ClInclude Include="src\framework\MakiScriptingApi.h" />
-    <ClInclude Include="src\framework\MakiScriptManager.h" />
-    <ClInclude Include="src\framework\MakiScriptUtils.h" />
-    <ClInclude Include="src\framework\MakiSystem.h" />
-    <ClInclude Include="src\framework\MakiTween.h" />
-    <ClInclude Include="src\framework\systems\MakiFlashSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiFlyCamSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiCameraSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiLightingSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiNameSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiPhysicsSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiRenderSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiSceneGraphSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiScriptingSystem.h" />
-    <ClInclude Include="src\framework\systems\MakiSkeletonSystem.h" />
+    <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\MakiDebugNetListener.cpp" />
+    <ClCompile Include="src\framework\MakiLuaContext.cpp" />
+    <ClCompile Include="src\framework\MakiLuaModules.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\framework\components\MakiCameraComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiFlashComponent.cpp" />
-    <ClCompile Include="src\framework\components\MakiLightComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiMeshComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiMetaComponent.cpp" />
-    <ClCompile Include="src\framework\components\MakiNameComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiNavMeshComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiPhysicsComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiSceneNodeComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiScriptComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiSkeletonComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\components\MakiTransformComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiAnimationBlender.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiComponentPoolBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiDebugPhysicsRenderer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiFlashMovie.cpp" />
-    <ClCompile Include="src\framework\MakiFlashMovieManager.cpp" />
-    <ClCompile Include="src\framework\MakiFlashMovieState.cpp" />
-    <ClCompile Include="src\framework\MakiFrameworkManagers.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiDebugNetListener.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiEntity.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiMessage.cpp" />
-    <ClCompile Include="src\framework\MakiMessageHub.cpp" />
-    <ClCompile Include="src\framework\MakiScene.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiSceneLoader.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\framework_stdafx.cpp" />
-    <ClCompile Include="src\framework\MakiScript.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiScriptingApi.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiScriptManager.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiScriptUtils.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\MakiSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiFlashSystem.cpp" />
-    <ClCompile Include="src\framework\systems\MakiFlyCamSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiCameraSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiLightingSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiPhysicsSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiRenderSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiSceneGraphSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiScriptingSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\framework\systems\MakiSkeletonSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
+    <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\MakiDebugNetListener.h" />
+    <ClInclude Include="src\framework\MakiLuaContext.h" />
+    <ClInclude Include="src\framework\MakiLuaModules.h" />
+    <ClInclude Include="src\framework\MakiTween.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E2E92464-DAA8-471E-A548-2BDE0A311789}</ProjectGuid>
@@ -245,12 +73,13 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS=1;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>framework/framework_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.3/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -270,11 +99,12 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS=1;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>framework/framework_stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.2/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;deps/bullet-2.81-rev2613/src;deps/LuaJIT-2.0.3/src;deps/SDL2-2.0.3/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

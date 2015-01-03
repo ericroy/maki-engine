@@ -103,7 +103,7 @@ namespace maki
 			command_lists_.pop_back();
 		}
 
-		void renderer_t::set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil)
+		void renderer_t::set_render_target(render_state_t::render_target_t render_target_type, handle_t render_target)
 		{
 			current_.render_target_type_ = render_target_type;
 			if(render_target_type == render_state_t::render_target_custom_) {
@@ -113,7 +113,10 @@ namespace maki
 			} else {
 				texture_manager_t::free(current_.render_target_);
 			}
+		}
 
+		void renderer_t::set_depth_stencil(render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil)
+		{
 			current_.depth_stencil_type_ = depth_stencil_type;
 			if(depth_stencil_type == render_state_t::depth_stencil_custom_) {
 				texture_manager_t::add_ref(depth_stencil);

@@ -1,10 +1,10 @@
 #pragma once
-#include "lualayer/lualayer_stdafx.h"
+#include "framework/framework_stdafx.h"
 #include <lua.hpp>
 
 namespace maki
 {
-	namespace lualayer
+	namespace framework
 	{
 
 		class lua_context_t
@@ -22,6 +22,6 @@ namespace maki
 			int32 draw_function_ref_;
 		};
 
-	} // namespace lualayer
+	} // namespace framework
 
 } // namespace maki

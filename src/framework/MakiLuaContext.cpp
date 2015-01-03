@@ -1,26 +1,17 @@
-#include "lualayer/lualayer_stdafx.h"
-#include "lualayer/MakiLuaContext.h"
+#include "framework/framework_stdafx.h"
+#include "framework/MakiLuaContext.h"
 #include "core/MakiConsole.h"
 #include "core/MakiEngine.h"
-#include "lualayer/modules/MakiModMaki.h"
-#include "lualayer/modules/MakiModMakiRenderer.h"
-#include "lualayer/modules/MakiModMakiWindow.h"
+#include "framework/MakiLuaModules.h"
 
 using namespace maki::core;
 
 namespace maki
 {
-	namespace lualayer
+	namespace framework
 	{
 
-		static const luaL_Reg builtins[] = {
-			{ "maki", modules::luaopen_maki },
-			{ "maki.window", modules::luaopen_maki_window },
-			{ "maki.renderer", modules::luaopen_maki_renderer },
-			{ nullptr, nullptr }
-		};
-
-		static int32 traceback(lua_State *L)
+		int32 traceback(lua_State *L)
 		{
 			lua_getglobal(L, "debug");
 			lua_getfield(L, -1, "traceback");
@@ -56,11 +47,11 @@ namespace maki
 			lua_getglobal(L_, "package");
 			lua_getfield(L_, -1, "preload");
 			int32 index = 0;
-			const luaL_Reg *reg = &builtins[index];
+			const luaL_Reg *reg = &lua::modules[index];
 			while(reg->name != nullptr) {
 				lua_pushcfunction(L_, reg->func);
 				lua_setfield(L_, -2, reg->name);
-				reg = &builtins[++index];
+				reg = &lua::modules[++index];
 			}
 			lua_pop(L_, 2);
 		}
@@ -193,6 +184,6 @@ namespace maki
 			lua_pop(L_, 1);
 		}
 
-	} // namespace lualayer
+	} // namespace framework
 
 } // namespace maki

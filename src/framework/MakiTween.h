@@ -1,89 +1,89 @@
 #pragma once
 #include "framework/framework_stdafx.h"
 
-namespace Maki
+namespace maki
 {
-	namespace Framework
+	namespace framework
 	{
 
 		template<class T>
-		class Tween
+		class tween_t
 		{
 		public:
-			Tween(T value = 0, float duration = 1.0f)
-				: start(value), end(value), current(value), elapsed(duration), duration(duration), done(true)
+			tween_t(T value = 0, float duration = 1.0f)
+				: start_(value), end_(value), current_(value), elapsed_(duration), duration_(duration), done_(true)
 			{
 			}
 
-			virtual ~Tween()
+			virtual ~tween_t()
 			{
 			}
 
-			inline void Update(float dt)
+			inline void update(float dt)
 			{
-				if(!done) {
-					elapsed += dt;
-					if(elapsed >= duration) {
-						elapsed = duration;
-						current = end;
-						done = true;
-						if(onComplete != nullptr) {
-							onComplete(current);
+				if(!done_) {
+					elapsed_ += dt;
+					if(elapsed_ >= duration_) {
+						elapsed_ = duration_;
+						current_ = end_;
+						done_ = true;
+						if(on_complete_ != nullptr) {
+							on_complete_(current_);
 						}
 					} else {
-						float t = elapsed / duration;
-						current = (1.0f-t) * start + t * end;
+						float t = elapsed_ / duration_;
+						current_ = (1.0f-t) * start_ + t * end_;
 					}
 				}
 			}
 
-			inline T Get() const
+			inline T get() const
 			{
-				return current;
+				return current_;
 			}
 
-			inline void Set(T value)
+			inline void set(T value)
 			{
-				done = false;
-				elapsed = 0.0f;
-				start = current;
-				end = value;
+				done_ = false;
+				elapsed_ = 0.0f;
+				start_ = current_;
+				end_ = value;
 			}
 
-			inline void Set(T value, float duration)
+			inline void set(T value, float duration)
 			{
-				this->duration = duration;
-				Set(value);
+				duration_ = duration;
+				set(value);
 			}
 
-			inline void Set(T value, float duration, std::function<void(T)> onComplete)
+			inline void set(T value, float duration, std::function<void(T)> on_complete)
 			{
-				this->onComplete = onComplete;
-				Set(value, duration);
+				on_complete_ = on_complete;
+				set(value, duration);
 			}
 
-			inline void SetDuration(float duration)
+			inline void set_duration(float duration)
 			{
-				this->duration = duration;
+				duration_ = duration;
 			}
 
-			inline bool IsComplete() const
+			inline bool is_complete() const
 			{
-				return done;
+				return done_;
 			}
 
 		public:
-			std::function<void(T)> onComplete;
+			std::function<void(T)> on_complete_;
 
 		private:
-			T start;
-			T end;
-			T current;
-			float elapsed;
-			float duration;
-			bool done;
+			T start_;
+			T end_;
+			T current_;
+			float elapsed_;
+			float duration_;
+			bool done_;
 		};
 
-	} // namespace Framework
+	} // namespace framework
 
-} // namespace Maki
+} // namespace maki
