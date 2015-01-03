@@ -3,6 +3,8 @@
 #include "core/MakiConsole.h"
 #include "core/MakiEngine.h"
 #include "lualayer/modules/MakiModMaki.h"
+#include "lualayer/modules/MakiModMakiRenderer.h"
+#include "lualayer/modules/MakiModMakiWindow.h"
 
 using namespace maki::core;
 
@@ -13,6 +15,8 @@ namespace maki
 
 		static const luaL_Reg builtins[] = {
 			{ "maki", modules::luaopen_maki },
+			{ "maki.window", modules::luaopen_maki_window },
+			{ "maki.renderer", modules::luaopen_maki_renderer },
 			{ nullptr, nullptr }
 		};
 

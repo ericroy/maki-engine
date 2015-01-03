@@ -52,7 +52,7 @@ namespace maki
 
 			// state_t setters
 			void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
-			inline void set_viewport(const Rect &rect);
+			inline void set_viewport(const rect_t &rect);
 			inline void set_view(const matrix44_t &view);
 			inline void set_camera_matrix(const matrix44_t &camera_matrix);
 			void set_perspective_projection(const frustum_t &frustum);
@@ -133,7 +133,7 @@ namespace maki
 			current_.render_target_clear_value_ = rgba;
 		}
 
-		inline void renderer_t::set_viewport(const Rect &rect)
+		inline void renderer_t::set_viewport(const rect_t &rect)
 		{
 			current_.view_port_rect_ = rect;
 		}

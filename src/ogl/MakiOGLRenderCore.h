@@ -67,7 +67,7 @@ namespace maki
 			inline void acquire_context();
 			inline void release_context();
 			inline void set_render_target_and_depth_stencil(core::render_state_t::render_target_t renderTargetType, handle_t renderTarget, core::render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
-			inline void set_viewport(const core::Rect &viewPortRect);
+			inline void set_viewport(const core::rect_t &viewPortRect);
 			inline void clear(bool clear_render_target, const float clear_color_values[4], bool clear_depth_stencil, float clear_depth_value);
 			inline void set_depth_state(core::render_state_t::depth_test_t depth_test, bool depth_write);
 			inline void set_rasterizer_state(core::render_state_t::cull_mode_t cull_mode, bool wire_frame);
@@ -185,7 +185,7 @@ namespace maki
 			}
 		}
 
-		inline void ogl_render_core_t::set_viewport(const core::Rect &viewPortRect)
+		inline void ogl_render_core_t::set_viewport(const core::rect_t &viewPortRect)
 		{
 			glViewport(0, 0, (GLsizei)viewPortRect.get_width(), (GLsizei)viewPortRect.get_height());
 		}

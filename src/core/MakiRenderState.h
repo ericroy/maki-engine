@@ -169,7 +169,7 @@ namespace maki
 			// Basic render state
 			uint32 window_width_;
 			uint32 window_height_;
-			Rect view_port_rect_;
+			rect_t view_port_rect_;
 			render_state_t::render_target_t render_target_type_;
 			handle_t render_target_;
 			render_state_t::depth_stencil_t depth_stencil_type_;

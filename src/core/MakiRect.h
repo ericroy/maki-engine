@@ -5,22 +5,22 @@ namespace maki
 {
 	namespace core
 	{
-		class Rect
+		class rect_t
 		{
 		public:
-			Rect() {}
+			rect_t() {}
 		
-			Rect(float left, float right, float top, float bottom)
+			rect_t(float left, float right, float top, float bottom)
 				: left_(left), right_(right), top_(top), bottom_(bottom)
 			{
 			}
 
-			Rect(float width, float height, bool centered = false)
+			rect_t(float width, float height, bool centered = false)
 			{
 				set(width, height, centered);
 			}
 
-			Rect(const vector2_t &width_height, bool centered = false)
+			rect_t(const vector2_t &width_height, bool centered = false)
 			{
 				set(width_height, centered);
 			}

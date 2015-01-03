@@ -10,6 +10,9 @@
     <ClCompile Include="src\lualayer\modules\MakiModMakiRenderer.cpp">
       <Filter>modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\lualayer\modules\MakiModMakiWindow.cpp">
+      <Filter>modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lualayer\lualayer_stdafx.h" />
@@ -20,6 +23,9 @@
       <Filter>modules</Filter>
     </ClInclude>
     <ClInclude Include="src\lualayer\modules\MakiModMakiRenderer.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lualayer\modules\MakiModMakiWindow.h">
       <Filter>modules</Filter>
     </ClInclude>
   </ItemGroup>

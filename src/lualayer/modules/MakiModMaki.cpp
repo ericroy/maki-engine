@@ -9,7 +9,6 @@ namespace maki
 {
 	namespace lualayer
 	{
-
 		namespace modules
 		{
 

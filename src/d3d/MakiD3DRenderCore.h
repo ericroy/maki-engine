@@ -56,7 +56,7 @@ namespace maki
 			inline void acquire_context();
 			inline void release_context();
 			inline void set_render_target_and_depth_stencil(core::render_state_t::render_target_t render_target_type, handle_t render_target, core::render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
-			inline void set_viewport(const core::Rect &view_port_rect);
+			inline void set_viewport(const core::rect_t &view_port_rect);
 			inline void clear(bool clear_render_target, const float clear_color_values[4], bool clear_depth_stencil, float clear_depth_value);
 			inline void set_depth_state(core::render_state_t::depth_test_t depth_test, bool depth_write);
 			inline void set_rasterizer_state(core::render_state_t::cull_mode_t cull_mode, bool wire_frame);
@@ -157,7 +157,7 @@ namespace maki
 			context_->OMSetRenderTargets(1, &current_render_target_view_, current_depth_stencil_view_);
 		}
 
-		inline void d3d_render_core_t::set_viewport(const core::Rect &view_port_rect)
+		inline void d3d_render_core_t::set_viewport(const core::rect_t &view_port_rect)
 		{
 			D3D11_VIEWPORT viewport;
 			memset(&viewport, 0, sizeof(D3D11_VIEWPORT));

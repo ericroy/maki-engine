@@ -16,6 +16,7 @@
     <ClCompile Include="src\lualayer\MakiLuaContext.cpp" />
     <ClCompile Include="src\lualayer\modules\MakiModMaki.cpp" />
     <ClCompile Include="src\lualayer\modules\MakiModMakiRenderer.cpp" />
+    <ClCompile Include="src\lualayer\modules\MakiModMakiWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lualayer\lualayer_stdafx.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="src\lualayer\MakiTween.h" />
     <ClInclude Include="src\lualayer\modules\MakiModMaki.h" />
     <ClInclude Include="src\lualayer\modules\MakiModMakiRenderer.h" />
+    <ClInclude Include="src\lualayer\modules\MakiModMakiWindow.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E2E92464-DAA8-471E-A548-2BDE0A311789}</ProjectGuid>
