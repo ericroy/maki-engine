@@ -7,8 +7,6 @@ namespace maki
 {
 	namespace core
 	{
-		class texture_set_manager_t;
-		
 
 		class texture_set_manager_t : public manager_t<texture_set_t, texture_set_manager_t>
 		{

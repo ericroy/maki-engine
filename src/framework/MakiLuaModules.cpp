@@ -3,6 +3,7 @@
 #include <lua.hpp>
 #include "core/MakiConsole.h"
 #include "core/MakiEngine.h"
+#include "core/MakiManager.h"
 
 using namespace maki::core;
 
@@ -13,14 +14,118 @@ namespace maki
 		namespace lua
 		{
 
+			typedef void(*handle_free_proc_t)(handle_t &);
+
+			static void free_texture_handle(handle_t &h) { manager_t<mesh_t, mesh_manager_t>::free(h); }
+			static void free_texture_set_handle(handle_t &h) { manager_t<texture_set_t, texture_set_manager_t>::free(h); }
+			static void free_material_handle(handle_t &h) { manager_t<material_t, material_manager_t>::free(h); }
+			static void free_mesh_handle(handle_t &h) { manager_t<mesh_t, mesh_manager_t>::free(h); }
+			static void free_vertex_format_handle(handle_t &h) { manager_t<vertex_format_t, vertex_format_manager_t>::free(h); }
+			static void free_shader_program_handle(handle_t &h) { manager_t<shader_program_t, shader_program_manager_t>::free(h); }
+			static void free_font_handle(handle_t &h) { manager_t<font_t, font_manager_t>::free(h); }
+			static void free_skeleton_handle(handle_t &h) { manager_t<skeleton_t, skeleton_manager_t>::free(h); }
+			static void free_skeleton_animation_handle(handle_t &h) { manager_t<skeleton_animation_t, skeleton_animation_manager_t>::free(h); }
+			
+
 			void luaL_checkmatrix(lua_State *L, int32 index, matrix44_t *out)
 			{
+#if _DEBUG
 				luaL_checktype(L, index, LUA_TTABLE);
+#endif
 				for(int32 i = 0; i < 16; i++) {
-					lua_rawgeti(L, index, i+1);
+					lua_rawgeti(L, index, i + 1);
 					out->vals_[i] = (float)lua_tonumber(L, -1);
 				}
 				lua_pop(L, 16);
+			}
+
+			struct udata_handle_t
+			{
+				static const char *type_name_;
+				handle_t handle_;
+				handle_free_proc_t free_proc_;
+			};
+
+			const char *udata_handle_t::type_name_ = "maki.Handle";
+
+			udata_handle_t *luaL_pushhandle(lua_State *L)
+			{
+				udata_handle_t *data = static_cast<udata_handle_t *>(lua_newuserdata(L, sizeof(udata_handle_t)));
+				luaL_getmetatable(L, udata_handle_t::type_name_);
+				lua_setmetatable(L, -2);
+				return data;
+			}
+
+			udata_handle_t *luaL_tohandle(lua_State *L, int index)
+			{
+#if _DEBUG
+				udata_handle_t *data = static_cast<udata_handle_t *>(luaL_checkudata(L, index, udata_handle_t::type_name_));
+#else
+				udata_handle_t *data = static_cast<udata_handle_t *>(lua_touserdata(L, index));
+				if(data == nullptr) {
+					luaL_typerror(L, index, udata_handle_t::type_name_);
+				}
+#endif
+				return data;
+			}
+
+
+
+			namespace maki
+			{
+				int32 l_handle_gc(lua_State *L)
+				{
+					udata_handle_t *data = luaL_tohandle(L, 1);
+					data->free_proc_(data->handle_);
+					return 0;
+				}
+
+				int32 l_handle_tostring(lua_State *L)
+				{
+					lua_pushfstring(L, "Handle: %p", lua_touserdata(L, 1));
+					return 0;
+				}
+
+				static const luaL_Reg handle_methods[] = {
+						{ "free", l_handle_gc },
+						{ nullptr, nullptr }
+				};
+
+				static const luaL_reg handle_metamethods[] = {
+						{ "__gc", l_handle_gc },
+						{ "__tostring", l_handle_tostring },
+						{ nullptr, nullptr }
+				};
+
+				int32 register_handle(lua_State *L)
+				{
+					luaL_openlib(L, udata_handle_t::type_name_, handle_methods, 0);
+					luaL_newmetatable(L, udata_handle_t::type_name_);
+					luaL_openlib(L, 0, handle_metamethods, 0);
+					lua_pushliteral(L, "__index");
+					lua_pushvalue(L, -3);  // dup methods table
+					lua_rawset(L, -3);  // metatable.__index = methods
+					lua_pushliteral(L, "__metatable");
+					lua_pushvalue(L, -3);  // dup methods table
+					lua_rawset(L, -3);  // hide metatable: metatable.__metatable = methods
+					lua_pop(L, 1);  // drop metatable
+					return 1;  // return methods on the stack
+				}
+
+				static const luaL_Reg module[] = {
+						{ nullptr, nullptr }
+				};
+
+				LUALIB_API int32 luaopen_maki(lua_State *L)
+				{
+					luaL_register(L, "maki", module);
+
+					// Register maki.Handle
+					lua_pushliteral(L, "Handle");
+					register_handle(L);
+					lua_rawset(L, -3);
+					return 0;
+				}
 			}
 
 
@@ -124,7 +229,10 @@ namespace maki
 
 					handle_t render_target = HANDLE_NONE;
 					if(lua_islightuserdata(L, 2)) {
-						render_target = reinterpret_cast<handle_t>(lua_touserdata(L, 2));
+						udata_handle_t *data = static_cast<udata_handle_t *>(lua_touserdata(L, 2));
+						if(data != nullptr) {
+							render_target = data->handle_;
+						}
 					}
 
 					render_state_t::render_target_t rt = render_state_t::render_target_null_;
@@ -148,7 +256,10 @@ namespace maki
 
 					handle_t depth_stencil = HANDLE_NONE;
 					if(lua_islightuserdata(L, 2)) {
-						depth_stencil = reinterpret_cast<handle_t>(lua_touserdata(L, 2));
+						udata_handle_t *data = static_cast<udata_handle_t *>(lua_touserdata(L, 2));
+						if(data != nullptr) {
+							depth_stencil = data->handle_;
+						}
 					}
 
 					render_state_t::depth_stencil_t ds = render_state_t::depth_stencil_null_;
@@ -189,13 +300,13 @@ namespace maki
 					render_state_t::cull_mode_t cm = engine_t::get()->renderer_->get_cull_mode();
 					switch(cm) {
 					case render_state_t::cull_mode_front_:
-						lua_pushstring(L, "front");
+						lua_pushliteral(L, "front");
 						break;
 					case render_state_t::cull_mode_back_:
-						lua_pushstring(L, "back");
+						lua_pushliteral(L, "back");
 						break;
 					case render_state_t::cull_mode_none_:
-						lua_pushstring(L, "none");
+						lua_pushliteral(L, "none");
 						break;
 					default:
 						assert(false);
@@ -256,16 +367,16 @@ namespace maki
 					render_state_t::depth_test_t dt = engine_t::get()->renderer_->get_depth_test();
 					switch(dt) {
 					case render_state_t::depth_test_less_:
-						lua_pushstring(L, "less");
+						lua_pushliteral(L, "less");
 						break;
 					case render_state_t::depth_test_equal_:
-						lua_pushstring(L, "equal");
+						lua_pushliteral(L, "equal");
 						break;
 					case render_state_t::depth_test_less_equal_:
-						lua_pushstring(L, "less_equal");
+						lua_pushliteral(L, "less_equal");
 						break;
 					case render_state_t::depth_test_disabled_:
-						lua_pushstring(L, "disabled");
+						lua_pushliteral(L, "disabled");
 						break;
 					default:
 						assert(false);
@@ -315,13 +426,13 @@ namespace maki
 					shader_program_t::variant_t v = engine_t::get()->renderer_->get_shader_variant();
 					switch(v) {
 					case shader_program_t::variant_normal_:
-						lua_pushstring(L, "normal");
+						lua_pushliteral(L, "normal");
 						break;
 					case shader_program_t::variant_depth_:
-						lua_pushstring(L, "depth");
+						lua_pushliteral(L, "depth");
 						break;
 					case shader_program_t::variant_shadow_:
-						lua_pushstring(L, "shadow");
+						lua_pushliteral(L, "shadow");
 						break;
 					default:
 						assert(false);
@@ -400,16 +511,162 @@ namespace maki
 				}
 			}
 
-
-			namespace maki
+			namespace assets
 			{
+				int32 l_load_texture(lua_State *L)
+				{
+					const char *path = luaL_checkstring(L, 1);
+					rid_t rid = engine_t::get()->assets_->path_to_rid(path);
+					if(rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find texture for path: %s", path);
+						return 2;
+					}
+					handle_t h = core_managers_t::get()->texture_manager_->load(rid);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_texture_handle;
+					return 1;
+				}
+
+				int32 l_load_texture_set(lua_State *L)
+				{
+					rid_t rids[texture_set_t::max_textures_per_set_];
+					int32 count = lua_gettop(L);
+					if(lua_type(L, 1) == LUA_TSTRING) {
+						for(int32 i = 0; i < count; i++) {
+							const char *path = luaL_checkstring(L, i + 1);
+							rid_t rid = engine_t::get()->assets_->path_to_rid(path);
+							if(rid == RID_NONE) {
+								lua_pushnil(L);
+								lua_pushfstring(L, "Could not find texture for path: %s", path);
+								return 2;
+							}
+							rids[i] = rid;
+						}
+					} else {
+						for(int32 i = 0; i < count; i++) {
+							const char *path = luaL_checkstring(L, i + 1);
+							rids[i] = luaL_checkinteger(L, i + 1);
+						}
+					}
+
+					handle_t h = core_managers_t::get()->texture_set_manager_->load(count, rids);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_texture_set_handle;
+					return 1;
+				}
+
+				int32 l_load_material(lua_State *L)
+				{
+					const char *path = luaL_checkstring(L, 1);
+					rid_t rid = engine_t::get()->assets_->path_to_rid(path);
+					if(rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find material for path: %s", path);
+						return 2;
+					}
+					handle_t h = core_managers_t::get()->material_manager_->load(rid);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_material_handle;
+					return 1;
+				}
+
+				int32 l_load_mesh(lua_State *L)
+				{
+					const char *path = luaL_checkstring(L, 1);
+					rid_t rid = engine_t::get()->assets_->path_to_rid(path);
+					if(rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find mesh for path: %s", path);
+						return 2;
+					}
+					handle_t h = core_managers_t::get()->mesh_manager_->load(rid);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_mesh_handle;
+					return 1;
+				}
+
+				int32 l_load_vertex_format(lua_State *L)
+				{
+					luaL_error(L, "Not implemented");
+					return 0;
+				}
+
+				int32 l_load_shader_program(lua_State *L)
+				{
+					const char *path = luaL_checkstring(L, 1);
+					rid_t rid = engine_t::get()->assets_->path_to_rid(path);
+					if(rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find shader program for path: %s", path);
+						return 2;
+					}
+					handle_t h = core_managers_t::get()->shader_program_manager_->load(rid);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_shader_program_handle;
+					return 1;
+				}
+
+				int32 l_load_font(lua_State *L)
+				{
+					const char *shader_program_path = luaL_checkstring(L, 1);
+					const char *font_path = luaL_checkstring(L, 2);
+					uint32 font_size = (uint32)luaL_optinteger(L, 3, 12);
+
+					rid_t shader_program_rid = engine_t::get()->assets_->path_to_rid(shader_program_path);
+					if(shader_program_rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find shader program for path: %s", shader_program_path);
+						return 2;
+					}
+
+					rid_t font_rid = engine_t::get()->assets_->path_to_rid(font_path);
+					if(font_rid == RID_NONE) {
+						lua_pushnil(L);
+						lua_pushfstring(L, "Could not find font for path: %s", font_path);
+						return 2;
+					}
+
+					handle_t h = core_managers_t::get()->font_manager_->load(shader_program_rid, font_rid, font_size);
+					udata_handle_t *data = luaL_pushhandle(L);
+					data->handle_ = h;
+					data->free_proc_ = &free_font_handle;
+					return 1;
+				}
+
+				int32 l_load_skeleton(lua_State *L)
+				{
+					luaL_error(L, "Not implemented");
+					return 0;
+				}
+
+				int32 l_load_skeleton_animation(lua_State *L)
+				{
+					luaL_error(L, "Not implemented");
+					return 0;
+				}
+
 				static const luaL_Reg module[] = {
-						{ nullptr, nullptr }
+					{ "load_texture", l_load_texture },
+					{ "load_texture_set", l_load_texture_set },
+					{ "load_material", l_load_material },
+					{ "load_mesh", l_load_mesh },
+					{ "load_vertex_format", l_load_vertex_format },
+					{ "load_shader_program", l_load_shader_program },
+					{ "load_font", l_load_font },
+					{ "load_skeleton", l_load_skeleton },
+					{ "load_skeleton_animation", l_load_skeleton_animation },
+					{ nullptr, nullptr }
 				};
 
-				LUALIB_API int32 luaopen_maki(lua_State *L)
+				LUALIB_API int32 luaopen_maki_assets(lua_State *L)
 				{
-					luaL_register(L, "maki", module);
+					luaL_register(L, "maki.assets", module);
 					return 0;
 				}
 			}
@@ -417,6 +674,7 @@ namespace maki
 
 			const luaL_Reg modules[] = {
 				{ "maki", maki::luaopen_maki },
+				{ "maki.assets", assets::luaopen_maki_assets },
 				{ "maki.window", window::luaopen_maki_window },
 				{ "maki.renderer", renderer::luaopen_maki_renderer },
 				{ nullptr, nullptr }

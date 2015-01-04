@@ -72,7 +72,7 @@ namespace maki
 						break;
 					}
 				}
-				assert(manager_id_ != (uint32)-1 && "Too many managers_ for this resource type");
+				assert(manager_id_ != (uint32)-1 && "Too many managers for this resource type");
 
 				res_pool_ = new resource_pool_t<T>(size, debug_name);
 			}

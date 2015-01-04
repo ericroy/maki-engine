@@ -44,16 +44,16 @@ namespace maki
 				return false;
 			}
 
-			document_t::node_t *input_attribute_count_node = doc.root_->resolve("input_attribute_count_.#0");
+			document_t::node_t *input_attribute_count_node = doc.root_->resolve("input_attribute_count.#0");
 			if(input_attribute_count_node == nullptr) {
-				console_t::error("Failed to parse shader. shader_t doc requires an input_attribute_count_ node.  <rid %d>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires an input_attribute_count node.  <rid %d>", rid);
 				return false;
 			}
 			input_attribute_count_ = input_attribute_count_node->value_as_uint(0U);
 		
 			document_t::node_t *vertex_shader_node = doc.root_->resolve("vertex_shader");
 			if(vertex_shader_node == nullptr) {
-				console_t::error("Failed to parse shader. shader_t doc requires a vertex_shader node.  <rid %d>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires a vertex_shader node.  <rid %d>", rid);
 				return false;
 			}
 			if(!vertex_shader_.init(vertex_shader_node, variant_data_key_[variant], variant_meta_key_[variant])) {
@@ -65,7 +65,7 @@ namespace maki
 
 			document_t::node_t *pixel_shader_node = doc.root_->resolve("pixel_shader");
 			if(pixel_shader_node == nullptr) {
-				console_t::error("Failed to parse shader. shader_t doc requires a pixel_shader node.  <rid %d>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires a pixel_shader node.  <rid %d>", rid);
 				return false;
 			}
 			if(!pixel_shader_.init(pixel_shader_node, variant_data_key_[variant], variant_meta_key_[variant])) {

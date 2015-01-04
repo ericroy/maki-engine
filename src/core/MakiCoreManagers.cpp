@@ -80,8 +80,8 @@ namespace maki
 		void core_managers_t::dump_manager_stats()
 		{
 			vertex_format_manager_->dump_stats		("Vertex formats  ");
-			shader_program_manager_->dump_stats		("shader_t programs ");
-			texture_set_manager_->dump_stats		("texture_t sets    ");
+			shader_program_manager_->dump_stats		("Shader programs ");
+			texture_set_manager_->dump_stats		("Texture sets    ");
 			texture_manager_->dump_stats			("Textures        ");
 			material_manager_->dump_stats			("Materials       ");
 			mesh_manager_->dump_stats				("Meshes          ");
