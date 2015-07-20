@@ -12,15 +12,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki_assets.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki_math.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki_renderer.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki_window.cpp" />
     <ClCompile Include="src\framework\MakiDebugNetListener.cpp" />
     <ClCompile Include="src\framework\MakiLuaContext.cpp" />
-    <ClCompile Include="src\framework\MakiLuaModules.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki_assets.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki_math.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki_renderer.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki_window.h" />
     <ClInclude Include="src\framework\MakiDebugNetListener.h" />
     <ClInclude Include="src\framework\MakiLuaContext.h" />
-    <ClInclude Include="src\framework\MakiLuaModules.h" />
     <ClInclude Include="src\framework\MakiTween.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

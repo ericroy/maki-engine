@@ -886,7 +886,7 @@ failed:
 			for(uint32 i = 0; i < mode_count; i++) {
 				bool res_match = mode_list[i].Width == window_width && mode_list[i].Height == window_height;
 
-				console_t::info("Support_ed mode: %dx%d @ %f Hz %s",
+				console_t::info("Supported mode: %dx%d @ %f Hz %s",
 					mode_list[i].Width,
 					mode_list[i].Height,
 					mode_list[i].RefreshRate.Denominator != 0 ? mode_list[i].RefreshRate.Numerator / (float)mode_list[i].RefreshRate.Denominator : 0.0f,

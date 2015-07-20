@@ -1,16 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\lualayer\MakiDebugNetListener.cpp" />
-    <ClCompile Include="src\lualayer\MakiLuaContext.cpp" />
-    <ClCompile Include="src\lualayer\MakiLuaModules.cpp" />
     <ClCompile Include="src\framework\framework_stdafx.cpp" />
+    <ClCompile Include="src\framework\MakiDebugNetListener.cpp" />
+    <ClCompile Include="src\framework\MakiLuaContext.cpp" />
+    <ClCompile Include="src\framework\lua\MakiLua_maki.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\lua\MakiLua_maki_assets.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\lua\MakiLua_maki_math.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\lua\MakiLua_maki_renderer.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\lua\MakiLua_maki_window.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\lualayer\MakiDebugNetListener.h" />
-    <ClInclude Include="src\lualayer\MakiTween.h" />
-    <ClInclude Include="src\lualayer\MakiLuaContext.h" />
-    <ClInclude Include="src\lualayer\MakiLuaModules.h" />
     <ClInclude Include="src\framework\framework_stdafx.h" />
+    <ClInclude Include="src\framework\MakiDebugNetListener.h" />
+    <ClInclude Include="src\framework\MakiLuaContext.h" />
+    <ClInclude Include="src\framework\MakiTween.h" />
+    <ClInclude Include="src\framework\lua\MakiLua_maki.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\lua\MakiLua_maki_assets.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\lua\MakiLua_maki_math.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\lua\MakiLua_maki_renderer.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framework\lua\MakiLua_maki_window.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="lua">
+      <UniqueIdentifier>{c3701b34-f0e1-42dc-a0f5-959801474325}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

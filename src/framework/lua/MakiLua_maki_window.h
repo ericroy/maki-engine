@@ -8,9 +8,10 @@ namespace maki
 	{
 		namespace lua
 		{
-			extern const luaL_Reg modules[];
+			
+			LUALIB_API int32 luaopen_maki_window(lua_State *L);
 
-		} // namespace modules
+		} // namespace lua
 
 	} // namespace framework
 

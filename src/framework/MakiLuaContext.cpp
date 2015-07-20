@@ -2,7 +2,11 @@
 #include "framework/MakiLuaContext.h"
 #include "core/MakiConsole.h"
 #include "core/MakiEngine.h"
-#include "framework/MakiLuaModules.h"
+#include "framework/lua/MakiLua_maki.h"
+#include "framework/lua/MakiLua_maki_assets.h"
+#include "framework/lua/MakiLua_maki_math.h"
+#include "framework/lua/MakiLua_maki_renderer.h"
+#include "framework/lua/MakiLua_maki_window.h"
 
 using namespace maki::core;
 
@@ -10,6 +14,18 @@ namespace maki
 {
 	namespace framework
 	{
+
+		namespace lua
+		{
+			const luaL_Reg modules[] = {
+				{ "maki", lua::luaopen_maki },
+				{ "maki.assets", lua::luaopen_maki_assets },
+				{ "maki.math", lua::luaopen_maki_math },
+				{ "maki.renderer", lua::luaopen_maki_renderer },
+				{ "maki.window", lua::luaopen_maki_window },
+				{ nullptr, nullptr }
+			};
+		}
 
 		int32 traceback(lua_State *L)
 		{

@@ -1,5 +1,4 @@
 #pragma once
-#include "framework/framework_stdafx.h"
 #include <lua.hpp>
 
 namespace maki
