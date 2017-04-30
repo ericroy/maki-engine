@@ -37,42 +37,42 @@ namespace maki
 				}
 			}
 
-			static inline void free(uint32_t count, handle_t *handles)
+			static inline void free(uint64_t count, handle_t *handles)
 			{
-				for(uint32_t i = 0; i < count; i++) {
+				for(uint64_t i = 0; i < count; i++) {
 					free(handles[i]);
 				}
 			}
 
 		public:
-			static const uint32_t bits_per_manager_id_ = 3;
+			static const uint64_t bits_per_manager_id_ = 3;
 		
 			// Must subtract one here, because we can't have a manager id that is all ones.
 			// If such a manager id was paired with a maximum resource index, then the
 			// resulting (valid) handle_ would be equal to HANDLE_NONE.  Can't have that.
-			static const uint32_t max_managers_per_resource_type_ = (1<<bits_per_manager_id_)-1;
-			static const uint32_t manager_id_shift_ = 32-bits_per_manager_id_;
-			static const uint32_t manager_id_mask_ = max_managers_per_resource_type_ << manager_id_shift_;
-			static const uint32_t handle_value_mask_ = ~manager_id_mask_;
+			static const uint64_t max_managers_per_resource_type_ = (1<<bits_per_manager_id_) - 1;
+			static const uint64_t manager_id_shift_ = (sizeof(handle_t) * 8) - bits_per_manager_id_;
+			static const uint64_t manager_id_mask_ = max_managers_per_resource_type_ << manager_id_shift_;
+			static const uint64_t handle_value_mask_ = ~manager_id_mask_;
 		
 		private:
 			static SUBCLASS *managers_[max_managers_per_resource_type_];
 		
 		public:
-			manager_t(uint32_t size, const char *debug_name)
+			manager_t(uint64_t size, const char *debug_name)
 			{
 				assert(size <= (1 << manager_id_shift_) - 1 && "Cannot create a manager this large");
 
 				// find the first unused manager id and mark it as used
-				manager_id_ = (uint32_t)-1;
-				for(uint32_t i = 0; i < max_managers_per_resource_type_; i++) {
+				manager_id_ = (uint64_t)-1;
+				for(uint64_t i = 0; i < max_managers_per_resource_type_; i++) {
 					if(managers_[i] == nullptr) {
 						managers_[i] = static_cast<SUBCLASS *>(this);
 						manager_id_ = i << manager_id_shift_;
 						break;
 					}
 				}
-				assert(manager_id_ != (uint32_t)-1 && "Too many managers for this resource type");
+				assert(manager_id_ != (uint64_t)-1 && "Too many managers for this resource type");
 
 				res_pool_ = new resource_pool_t<T>(size, debug_name);
 			}
@@ -84,8 +84,8 @@ namespace maki
 				MAKI_SAFE_DELETE(res_pool_);
 			}
 
-			inline uint32_t get_size() { return res_pool_->get_size(); }
-			inline uint32_t get_capacity() { return res_pool_->get_capacity(); }
+			inline uint64_t get_size() { return res_pool_->get_size(); }
+			inline uint64_t get_capacity() { return res_pool_->get_capacity(); }
 
 			// Finds an item using resource's equality operator
 			// Adds a reference
@@ -101,7 +101,7 @@ namespace maki
 
 			virtual void reset()
 			{
-				uint32_t size = res_pool_->get_capacity();
+				uint64_t size = res_pool_->get_capacity();
 #if _DEBUG
 				std::string debug_name = res_pool_->debug_name_;
 				MAKI_SAFE_DELETE(res_pool_);
@@ -114,8 +114,8 @@ namespace maki
 
 			void dump_stats(const char *label)
 			{
-				uint32_t size = res_pool_->get_size();
-				uint32_t cap = res_pool_->get_capacity();
+				uint64_t size = res_pool_->get_size();
+				uint64_t cap = res_pool_->get_capacity();
 				console_t::info("%s: %d/%d (%d b / %d b)", label, size, cap, sizeof(T)*size, sizeof(T)*cap);
 			}
 
@@ -131,7 +131,7 @@ namespace maki
 		protected:
 			// A number to differentiate managers_ which hold the same type of resources
 			// Each handle_ value has the manager id in the topmost 5 bits
-			uint32_t manager_id_;
+			uint64_t manager_id_;
 
 			resource_pool_t<T> *res_pool_;
 		};

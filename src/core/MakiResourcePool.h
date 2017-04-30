@@ -23,7 +23,7 @@ namespace maki
 		private:
 			struct node_t
 			{
-				uint32_t next_, prev_;
+				uint64_t next_, prev_;
 			};
 
 		public:
@@ -36,25 +36,25 @@ namespace maki
 				inline bool operator!=(const iterator_t &iter) const { return iter.current_ != current_; }
 				inline const T &operator*() const { return data_[current_]; }
 				inline T *ptr() const { return &data_[current_]; }
-				inline uint32_t index() const { return current_; }
+				inline uint64_t index() const { return current_; }
 				inline uint16_t ref_count() const { return ref_counts_[current_]; }
 		
 			private:
-				iterator_t(node_t *nodes, T *data, uint16_t *ref_counts, uint32_t current)
+				iterator_t(node_t *nodes, T *data, uint16_t *ref_counts, uint64_t current)
 				:	nodes_(nodes), data_(data), ref_counts_(ref_counts), current_(current) {}
 
 			private:
 				node_t *nodes_;
 				T *data_;
 				uint16_t *ref_counts_;
-				uint32_t current_;
+				uint64_t current_;
 			};
 
 			inline iterator_t begin() const { return iterator_t(nodes_, data_, reference_counts_, head_); }
 			inline const iterator_t end() const { return iterator_t(nodes_, data_, reference_counts_, end_); }
 
 		public:
-			resource_pool_t(uint32_t max_size, const char *debug_name)
+			resource_pool_t(uint64_t max_size, const char *debug_name)
 				: data_(0), count_(0)
 			{
 
@@ -67,7 +67,7 @@ namespace maki
 				nodes_ = new node_t[capacity_+1];
 
 				// Link up the nodes_
-				for(uint32_t i = 0; i < capacity_; i++)
+				for(uint64_t i = 0; i < capacity_; i++)
 				{
 					nodes_[i].next_ = i+1;
 					nodes_[i].prev_ = i-1;
@@ -96,9 +96,9 @@ namespace maki
 			~resource_pool_t()
 			{
 	#ifdef _DEBUG
-				for(uint32_t i = 0; i < count_; i++) {
+				for(uint64_t i = 0; i < count_; i++) {
 					if(reference_counts_[i] > 0) {
-						console_t::warning("~resource_pool_t() \"%s\": warning, item at index=%u still allocated. (refcount=%d)", debug_name_.c_str(), i, reference_counts_[i]);
+						console_t::warning("~resource_pool_t() \"%s\": warning, item at index=%llu still allocated. (refcount=%u)", debug_name_.c_str(), i, reference_counts_[i]);
 					}
 				}
 	#endif
@@ -142,7 +142,7 @@ namespace maki
 					free_head_ = nodes_[free_head_].next_;
 
 					// insert the new element at the head_
-					uint32_t old_head = head_;
+					uint64_t old_head = head_;
 					head_ = handle_;
 					if(old_head != end_) {
 						nodes_[old_head].prev_ = head_;
@@ -261,8 +261,8 @@ namespace maki
 				return 0;
 			}
 
-			inline uint32_t get_capacity() const { return capacity_; }
-			inline uint32_t get_size() const { return count_; }
+			inline uint64_t get_capacity() const { return capacity_; }
+			inline uint64_t get_size() const { return count_; }
 			inline const T *get_base_addr() const { return data_; }
 
 		private:
@@ -271,15 +271,15 @@ namespace maki
 
 			// array_t of lnked nodes_
 			node_t *nodes_;
-			uint32_t head_;
-			uint32_t free_head_;
-			uint32_t end_;
+			uint64_t head_;
+			uint64_t free_head_;
+			uint64_t end_;
 
 			// The reference count for each object
 			uint16_t *reference_counts_;
 
-			uint32_t count_;
-			uint32_t capacity_;
+			uint64_t count_;
+			uint64_t capacity_;
 
 #if _DEBUG
 		public:
