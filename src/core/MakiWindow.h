@@ -27,18 +27,18 @@ namespace maki
 			inline float get_aspect() { return height_ == 0 ? (float)width_ : width_ / (float)height_; };
 
 		private:
-			void connect_game_controller(int32 i); 
-			inline int32 get_controller_index(int32 instance_id)
+			void connect_game_controller(int32_t i); 
+			inline int32_t get_controller_index(int32_t instance_id)
 			{
-				for(int32 i = 0; i < input_state_t::max_players_; i++) {
+				for(int32_t i = 0; i < input_state_t::max_players_; i++) {
 					if(controller_instance_ids_[i] == instance_id) { return i; }
 				}
 				return -1;
 			}
 
 		public:
-			int32 width_;
-			int32 height_;
+			int32_t width_;
+			int32_t height_;
 			bool fullscreen_;
 			SDL_Window *window_;
 
@@ -46,7 +46,7 @@ namespace maki
 			input_state_t::key_state_report_t key_states_[256];
 			SDL_GameController *controller_handles_[input_state_t::max_players_];
 			input_state_t::controller_t controllers_[input_state_t::max_players_];
-			int32 controller_instance_ids_[input_state_t::max_players_];
+			int32_t controller_instance_ids_[input_state_t::max_players_];
 		};
 
 	} // namespace core

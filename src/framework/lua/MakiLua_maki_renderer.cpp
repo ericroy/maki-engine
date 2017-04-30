@@ -13,13 +13,13 @@ namespace maki
 		namespace lua
 		{
 			
-			int32 l_submit(lua_State *L)
+			int32_t l_submit(lua_State *L)
 			{
 				engine_t::get()->renderer_->submit();
 				return 0;
 			}
 
-			int32 l_set_viewport(lua_State *L)
+			int32_t l_set_viewport(lua_State *L)
 			{
 				float x = (float)luaL_optnumber(L, 1, 0.0f);
 				float y = (float)luaL_optnumber(L, 2, 0.0f);
@@ -29,7 +29,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_clear_color(lua_State *L)
+			int32_t l_clear_color(lua_State *L)
 			{
 				vector4_t color((float)luaL_optnumber(L, 1, 0.0f),
 					(float)luaL_optnumber(L, 2, 0.0f),
@@ -39,50 +39,50 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_clear_depth(lua_State *L)
+			int32_t l_clear_depth(lua_State *L)
 			{
 				float depth = (float)luaL_optnumber(L, 1, 1.0f);
 				engine_t::get()->renderer_->clear_depth(depth);
 				return 0;
 			}
 
-			int32 l_set_camera_matrix(lua_State *L)
+			int32_t l_set_camera_matrix(lua_State *L)
 			{
 				udata_matrix44_t *m = luaL_checkudata<udata_matrix44_t>(L, 1);
 				engine_t::get()->renderer_->set_camera_matrix(m->matrix_);
 				return 0;
 			}
 
-			int32 l_get_camera_matrix(lua_State *L)
+			int32_t l_get_camera_matrix(lua_State *L)
 			{
 				const matrix44_t &m = engine_t::get()->renderer_->get_camera_matrix();
 				lua_newtable(L);
-				for(int32 i = 0; i < 16; i++) {
+				for(int32_t i = 0; i < 16; i++) {
 					lua_pushnumber(L, m.vals_[i]);
 					lua_rawseti(L, -2, i + 1);
 				}
 				return 1;
 			}
 
-			int32 l_set_view(lua_State *L)
+			int32_t l_set_view(lua_State *L)
 			{
 				udata_matrix44_t *m = luaL_checkudata<udata_matrix44_t>(L, 1);
 				engine_t::get()->renderer_->set_view(m->matrix_);
 				return 0;
 			}
 
-			int32 l_get_view(lua_State *L)
+			int32_t l_get_view(lua_State *L)
 			{
 				const matrix44_t &m = engine_t::get()->renderer_->get_view();
 				lua_newtable(L);
-				for(int32 i = 0; i < 16; i++) {
+				for(int32_t i = 0; i < 16; i++) {
 					lua_pushnumber(L, m.vals_[i]);
 					lua_rawseti(L, -2, i + 1);
 				}
 				return 1;
 			}
 
-			int32 l_set_ortho_projection(lua_State *L)
+			int32_t l_set_ortho_projection(lua_State *L)
 			{
 				float w = (float)luaL_checknumber(L, 1);
 				float h = (float)luaL_checknumber(L, 2);
@@ -92,7 +92,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_set_perspective_projection(lua_State *L)
+			int32_t l_set_perspective_projection(lua_State *L)
 			{
 				float w = (float)luaL_checknumber(L, 1);
 				float h = (float)luaL_checknumber(L, 2);
@@ -103,7 +103,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_set_render_target(lua_State *L)
+			int32_t l_set_render_target(lua_State *L)
 			{
 				const char *render_target_type = luaL_checkstring(L, 1);
 
@@ -130,7 +130,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_set_depth_stencil(lua_State *L)
+			int32_t l_set_depth_stencil(lua_State *L)
 			{
 				const char *depth_stencil_type = luaL_checkstring(L, 1);
 
@@ -157,7 +157,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_set_cull_mode(lua_State *L)
+			int32_t l_set_cull_mode(lua_State *L)
 			{
 				const char *cull_mode = luaL_checkstring(L, 1);
 				render_state_t::cull_mode_t cm = render_state_t::cull_mode_none_;
@@ -175,7 +175,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_get_cull_mode(lua_State *L)
+			int32_t l_get_cull_mode(lua_State *L)
 			{
 				render_state_t::cull_mode_t cm = engine_t::get()->renderer_->get_cull_mode();
 				switch(cm) {
@@ -194,35 +194,35 @@ namespace maki
 				return 1;
 			}
 
-			int32 l_set_wire_frame_enabled(lua_State *L)
+			int32_t l_set_wire_frame_enabled(lua_State *L)
 			{
 				bool on = lua_toboolean(L, 1) != 0 ? true : false;
 				engine_t::get()->renderer_->set_wire_frame_enabled(on);
 				return 0;
 			}
 
-			int32 l_get_wire_frame_enabled(lua_State *L)
+			int32_t l_get_wire_frame_enabled(lua_State *L)
 			{
 				bool on = engine_t::get()->renderer_->get_wire_frame_enabled();
 				lua_pushboolean(L, on ? 1 : 0);
 				return 1;
 			}
 
-			int32 l_set_depth_write_enabled(lua_State *L)
+			int32_t l_set_depth_write_enabled(lua_State *L)
 			{
 				bool on = lua_toboolean(L, 1) != 0 ? true : false;
 				engine_t::get()->renderer_->set_depth_write_enabled(on);
 				return 0;
 			}
 
-			int32 l_get_depth_write_enabled(lua_State *L)
+			int32_t l_get_depth_write_enabled(lua_State *L)
 			{
 				bool on = engine_t::get()->renderer_->get_depth_write_enabled();
 				lua_pushboolean(L, on ? 1 : 0);
 				return 1;
 			}
 
-			int32 l_set_depth_test(lua_State *L)
+			int32_t l_set_depth_test(lua_State *L)
 			{
 				const char *depth_test = luaL_checkstring(L, 1);
 				render_state_t::depth_test_t dt = render_state_t::depth_test_disabled_;
@@ -242,7 +242,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_get_depth_test(lua_State *L)
+			int32_t l_get_depth_test(lua_State *L)
 			{
 				render_state_t::depth_test_t dt = engine_t::get()->renderer_->get_depth_test();
 				switch(dt) {
@@ -264,7 +264,7 @@ namespace maki
 				return 1;
 			}
 
-			int32 l_set_global_ambient_color(lua_State *L)
+			int32_t l_set_global_ambient_color(lua_State *L)
 			{
 				vector4_t color((float)luaL_optnumber(L, 1, 0.0f),
 					(float)luaL_optnumber(L, 2, 0.0f),
@@ -274,7 +274,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_get_global_ambient_color(lua_State *L)
+			int32_t l_get_global_ambient_color(lua_State *L)
 			{
 				const vector4_t &c = engine_t::get()->renderer_->get_global_ambient_color();
 				lua_pushnumber(L, c.x_);
@@ -284,7 +284,7 @@ namespace maki
 				return 4;
 			}
 
-			int32 l_set_shader_variant(lua_State *L)
+			int32_t l_set_shader_variant(lua_State *L)
 			{
 				const char *variant = luaL_checkstring(L, 1);
 				shader_program_t::variant_t v = shader_program_t::variant_normal_;
@@ -301,7 +301,7 @@ namespace maki
 				return 0;
 			}
 
-			int32 l_get_shader_variant(lua_State *L)
+			int32_t l_get_shader_variant(lua_State *L)
 			{
 				shader_program_t::variant_t v = engine_t::get()->renderer_->get_shader_variant();
 				switch(v) {
@@ -348,7 +348,7 @@ namespace maki
 				{ nullptr, nullptr }
 			};
 
-			LUALIB_API int32 luaopen_maki_renderer(lua_State *L)
+			LUALIB_API int32_t luaopen_maki_renderer(lua_State *L)
 			{
 				luaL_register(L, "maki.renderer", module);
 				return 0;

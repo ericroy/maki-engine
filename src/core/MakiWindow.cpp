@@ -11,7 +11,7 @@ namespace maki
 	namespace core
 	{
 
-		inline float signed_analog_input_to_float(int16 v, int16 dz) {
+		inline float signed_analog_input_to_float(int16_t v, int16_t dz) {
 			if(v > dz) {
 				float f = (v-dz) / (float)(32767-dz);
 				return f < -1.0f ? -1.0f : f;
@@ -23,7 +23,7 @@ namespace maki
 			}
 		}
 
-		inline float analog_input_to_float(uint8 v, uint8 dz) {
+		inline float analog_input_to_float(uint8_t v, uint8_t dz) {
 			if(v > dz) {
 				return (v-dz) / (float)(255-dz);
 			} else {
@@ -58,10 +58,10 @@ namespace maki
 			input_state_t::button_right_trigger_,
 		};
 
-		static const uint16 gamepad_left_thumb_deadzone_ = 7849;
-		static const uint16 gamepad_right_thumb_deadzone_ = 8689;
+		static const uint16_t gamepad_left_thumb_deadzone_ = 7849;
+		static const uint16_t gamepad_right_thumb_deadzone_ = 8689;
 
-		int16 maki_button_deadzones_[6] = {
+		int16_t maki_button_deadzones_[6] = {
 			gamepad_left_thumb_deadzone_,
 			gamepad_left_thumb_deadzone_,
 			gamepad_right_thumb_deadzone_,
@@ -234,8 +234,8 @@ namespace maki
 
 			// load up any additional controller mappings that are specified in the config
 			std::stringstream mappings;
-			uint32 mapping_count = 0;
-			for(uint32 i = 0; ; i++) {
+			uint32_t mapping_count = 0;
+			for(uint32_t i = 0; ; i++) {
 				char controller_mapping_key[64];
 				sprintf(controller_mapping_key, "engine.controller_support_%d", i);
 				const char *value = config->get_string(controller_mapping_key, nullptr);
@@ -255,7 +255,7 @@ namespace maki
 				SDL_ClearError();
 			}			
 			
-			uint32 flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_SHOWN;
+			uint32_t flags = SDL_WINDOW_INPUT_FOCUS|SDL_WINDOW_SHOWN;
 
 			if(render_core_type == render_core_t::type_ogl_) {
 				flags |= SDL_WINDOW_OPENGL;
@@ -278,8 +278,8 @@ namespace maki
 			}
 
 			// Discover already-connected game controllers_
-			int32 joystick_count = std::min(SDL_NumJoysticks(), input_state_t::max_players_);
-			for(int32 i = 0; i < joystick_count; i++) {
+			int32_t joystick_count = std::min(SDL_NumJoysticks(), input_state_t::max_players_);
+			for(int32_t i = 0; i < joystick_count; i++) {
 				if(SDL_IsGameController(i)) {
 					connect_game_controller(i);
 				} else {
@@ -305,7 +305,7 @@ namespace maki
 
 		void window_t::poll_input(input_state_t *state)
 		{
-			for(uint32 i = 0; i < input_state_t::max_players_; i++) {
+			for(uint32_t i = 0; i < input_state_t::max_players_; i++) {
 				state->get_player(i)->set_key_states(key_states_);
 
 				if(controller_handles_[i] != nullptr) {
@@ -321,7 +321,7 @@ namespace maki
 			}
 		}
 
-		void window_t::connect_game_controller(int32 i)
+		void window_t::connect_game_controller(int32_t i)
 		{
 			controller_handles_[i] = SDL_GameControllerOpen(i);
 			if(controller_handles_[i] == nullptr) {
@@ -341,7 +341,7 @@ namespace maki
 					switch(e.type) {
 					case SDL_CONTROLLERAXISMOTION:
 						{
-							int32 i = get_controller_index(e.caxis.which);
+							int32_t i = get_controller_index(e.caxis.which);
 							if(i >= 0 && e.caxis.axis < sizeof(sdl_axis_to_maki_button_)/sizeof(sdl_axis_to_maki_button_[0])) {
 								controllers_[i].values_[sdl_axis_to_maki_button_[e.caxis.axis]] = signed_analog_input_to_float(e.caxis.value, maki_button_deadzones_[e.caxis.axis]);
 							}
@@ -350,7 +350,7 @@ namespace maki
 					case SDL_CONTROLLERBUTTONDOWN:
 					case SDL_CONTROLLERBUTTONUP:
 						{
-							int32 i = get_controller_index(e.cbutton.which);
+							int32_t i = get_controller_index(e.cbutton.which);
 							if(i >= 0) {
 								input_state_t::button_t btn = sdl_button_to_maki_button_[e.cbutton.button];
 								if(btn != input_state_t::button_invalid_) {
@@ -364,7 +364,7 @@ namespace maki
 						break;
 					case SDL_CONTROLLERDEVICEREMOVED:
 						{
-							int32 i = get_controller_index(e.cdevice.which);
+							int32_t i = get_controller_index(e.cdevice.which);
 							if(i >= 0) {
 								SDL_GameControllerClose(controller_handles_[i]);
 								controller_handles_[i] = nullptr;

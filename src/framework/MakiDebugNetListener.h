@@ -14,8 +14,8 @@ namespace maki
 			struct context_t;
 
 		private:
-			static const int32 port_ = 11001;
-			static const int32 max_buffer_length_ = 4096;
+			static const int32_t port_ = 11001;
+			static const int32_t max_buffer_length_ = 4096;
 
 		public:
 			debug_net_listener_t();

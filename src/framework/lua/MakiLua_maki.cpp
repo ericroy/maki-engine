@@ -10,7 +10,7 @@ namespace maki
 		namespace lua
 		{
 
-			int32 l_log(lua_State *L)
+			int32_t l_log(lua_State *L)
 			{
 				console_t::lua(luaL_checkstring(L, -1));
 				return 0;
@@ -21,7 +21,7 @@ namespace maki
 				{ nullptr, nullptr }
 			};
 
-			LUALIB_API int32 luaopen_maki(lua_State *L)
+			LUALIB_API int32_t luaopen_maki(lua_State *L)
 			{
 				luaL_register(L, "maki", module);
 				return 0;

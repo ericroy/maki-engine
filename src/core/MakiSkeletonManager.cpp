@@ -8,7 +8,7 @@ namespace maki
 	namespace core
 	{
 
-		skeleton_manager_t::skeleton_manager_t(uint32 size)
+		skeleton_manager_t::skeleton_manager_t(uint32_t size)
 			: manager_t<skeleton_t, skeleton_manager_t>(size, "skeleton_manager_t")
 		{
 		}

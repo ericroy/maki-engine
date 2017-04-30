@@ -6,7 +6,7 @@ namespace maki
 	namespace core
 	{
 
-		texture_set_manager_t::texture_set_manager_t(uint32 size)
+		texture_set_manager_t::texture_set_manager_t(uint32_t size)
 			: manager_t<texture_set_t, texture_set_manager_t>(size, "texture_set_manager_t")
 		{
 		}
@@ -15,7 +15,7 @@ namespace maki
 		{
 		}
 	
-		handle_t texture_set_manager_t::load(uint8 count, rid_t *texture_rids)
+		handle_t texture_set_manager_t::load(uint8_t count, rid_t *texture_rids)
 		{
 			predicate_t p;
 			p.count_ = count;

@@ -12,7 +12,7 @@ namespace maki
 
 		texture_set_t::texture_set_t() : texture_count_(0)
 		{
-			for(uint8 i = 0; i < max_textures_per_set_; i++) {
+			for(uint8_t i = 0; i < max_textures_per_set_; i++) {
 				textures_[i] = HANDLE_NONE;
 				texture_rids_[i] = RID_NONE;
 			}
@@ -24,7 +24,7 @@ namespace maki
 			memcpy(textures_, other.obj_->textures_, sizeof(textures_));
 			memcpy(texture_rids_, other.obj_->texture_rids_, sizeof(texture_rids_));
 
-			for(uint8 i = 0; i < max_textures_per_set_; i++) {
+			for(uint8_t i = 0; i < max_textures_per_set_; i++) {
 				other.obj_->textures_[i] = HANDLE_NONE;
 				other.obj_->texture_rids_[i] = RID_NONE;
 			}
@@ -36,12 +36,12 @@ namespace maki
 			texture_manager_t::free(texture_count_, textures_);
 		}
 
-		bool texture_set_t::load(uint8 count, rid_t *texture_rids_)
+		bool texture_set_t::load(uint8_t count, rid_t *texture_rids_)
 		{
 			core_managers_t *res = core_managers_t::get();
 
 			texture_count_ = count;
-			for(uint8 i = 0; i < count; i++) {
+			for(uint8_t i = 0; i < count; i++) {
 				this->texture_rids_[i] = texture_rids_[i];
 				this->textures_[i] = res->texture_manager_->load(texture_rids_[i]);
 				if(this->textures_[i] == HANDLE_NONE) {

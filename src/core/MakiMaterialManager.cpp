@@ -10,7 +10,7 @@ namespace maki
 	namespace core
 	{
 
-		material_manager_t::material_manager_t(uint32 size)
+		material_manager_t::material_manager_t(uint32_t size)
 			: manager_t<material_t, material_manager_t>(size, "material_manager_t")
 		{
 			assert(size <= (1<<draw_command_t::bits_per_material_) && "material_manager_t too large, add more bits in draw_command_t");

@@ -29,9 +29,9 @@ namespace maki
 			"POSITION", "NORMAL", "TANGENT", "COLOR", "COLOR", "TEXCOORD", "TEXCOORD"
 		};
 
-		uint32 attr_to_semantic_index[vertex_format_t::attribute_count_] = { 0, 0, 0, 0, 1, 0, 1 };
+		uint32_t attr_to_semantic_index[vertex_format_t::attribute_count_] = { 0, 0, 0, 0, 1, 0, 1 };
 
-		uint8 normalize_attribute[core::vertex_format_t::attribute_count_] = { 0, 0, 0, 1, 1, 0, 0 };
+		uint8_t normalize_attribute[core::vertex_format_t::attribute_count_] = { 0, 0, 0, 1, 1, 0, 0 };
 
 		// First index is type, second index is component count
 		const DXGI_FORMAT type_and_count_and_norm_to_format[vertex_format_t::data_type_count_][5][2] = {

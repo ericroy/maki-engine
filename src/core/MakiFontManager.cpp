@@ -11,7 +11,7 @@ namespace maki
 			return font->rid_ == font_rid_ && font->pixel_size_ == pixel_size_ && font->shader_program_rid_ == shader_program_rid_;
 		}
 
-		font_manager_t::font_manager_t(uint32 size)
+		font_manager_t::font_manager_t(uint32_t size)
 			: manager_t<font_t, font_manager_t>(size, "font_manager_t")
 		{
 		}
@@ -20,7 +20,7 @@ namespace maki
 		{
 		}
 
-		handle_t font_manager_t::load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size)
+		handle_t font_manager_t::load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size)
 		{
 		
 			predicate_t p;

@@ -11,8 +11,8 @@ namespace maki
 	
 			struct udata_matrix44_t
 			{
-				static int32 create(lua_State *L);
-				static int32 tostring(lua_State *L);
+				static int32_t create(lua_State *L);
+				static int32_t tostring(lua_State *L);
 
 				static const luaL_reg methods_[];
 				static const luaL_reg metamethods_[];
@@ -23,8 +23,8 @@ namespace maki
 
 			struct udata_vector4_t
 			{
-				static int32 create(lua_State *L);
-				static int32 tostring(lua_State *L);
+				static int32_t create(lua_State *L);
+				static int32_t tostring(lua_State *L);
 
 				static const luaL_reg methods_[];
 				static const luaL_reg metamethods_[];
@@ -34,7 +34,7 @@ namespace maki
 			};
 
 
-			LUALIB_API int32 luaopen_maki_math(lua_State *L);
+			LUALIB_API int32_t luaopen_maki_math(lua_State *L);
 
 		} // namespace lua
 

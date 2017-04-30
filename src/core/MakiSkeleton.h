@@ -13,8 +13,8 @@ namespace maki
 		class skeleton_t : public resource_t
 		{
 		public:
-			static const int32 MAX_BONES = 128;
-			static const int32 MAX_CHILDREN_PER_BONE = 7;
+			static const int32_t MAX_BONES = 128;
+			static const int32_t MAX_CHILDREN_PER_BONE = 7;
 
 			struct __declspec(align(MAKI_SIMD_ALIGN)) joint_t : public aligned_t<MAKI_SIMD_ALIGN>
 			{
@@ -25,7 +25,7 @@ namespace maki
 			struct __declspec(align(MAKI_SIMD_ALIGN)) Bone : public aligned_t<MAKI_SIMD_ALIGN>
 			{
 				Bone *children_[MAX_CHILDREN_PER_BONE];
-				uint32 child_count_;
+				uint32_t child_count_;
 			};
 	
 		public:
@@ -38,7 +38,7 @@ namespace maki
 	
 		private:
 			void calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out);
-			void calculate_pos_recursive(uint32 &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out);
+			void calculate_pos_recursive(uint32_t &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out);
 
 		public:
 			array_t<matrix44_t> inverse_bind_pose_;

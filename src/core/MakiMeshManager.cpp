@@ -7,7 +7,7 @@ namespace maki
 	namespace core
 	{
 
-		mesh_manager_t::mesh_manager_t(uint32 size)
+		mesh_manager_t::mesh_manager_t(uint32_t size)
 			: manager_t<mesh_t, mesh_manager_t>(size, "mesh_manager_t")
 		{
 			assert(size <= (1<<draw_command_t::bits_per_mesh_) && "mesh_manager_t too large, add more bits in draw_command_t");

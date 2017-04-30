@@ -13,7 +13,7 @@ namespace maki
 	namespace core
 	{
 
-		inline uint32 next_power_of_two(uint32 v)
+		inline uint32_t next_power_of_two(uint32_t v)
 		{
 			v--;
 			v |= v >> 1;
@@ -41,7 +41,7 @@ namespace maki
 			return rid_ == other.rid_ && pixel_size_ == other.pixel_size_;
 		}
 
-		bool font_t::load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size)
+		bool font_t::load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size)
 		{
 			core_managers_t *res = core_managers_t::get();
 			engine_t *eng = engine_t::get();
@@ -54,12 +54,12 @@ namespace maki
 
 			texture_width_ = 512;
 			texture_height_ = next_power_of_two(pixel_size);
-			uint8 *pixels = (uint8 *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
+			uint8_t *pixels = (uint8_t *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
 
 			int ret;
-			while((ret = stbtt_BakeFontBitmap((const uint8 *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
+			while((ret = stbtt_BakeFontBitmap((const uint8_t *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
 				texture_height_ *= 2;
-				pixels = (uint8 *)allocator_t::realloc(pixels, texture_width_ * texture_height_);
+				pixels = (uint8_t *)allocator_t::realloc(pixels, texture_width_ * texture_height_);
 			}
 
 			handle_t glyph_atlas = res->texture_manager_->alloc_texture(texture_t::texture_type_regular_, texture_width_, texture_height_, 1);
@@ -104,8 +104,8 @@ namespace maki
 
 			stbtt_aligned_quad q;
 
-			const uint32 len = strlen(s);
-			for(uint32 i = 0; i < len; i++) {
+			const uint32_t len = strlen(s);
+			for(uint32_t i = 0; i < len; i++) {
 				if(s[i] < min_char_code_ || s[i] > max_char_code_) {
 					continue;
 				}
@@ -120,8 +120,8 @@ namespace maki
 				};
 				m->push_vertex_data(sizeof(v), (char *)v);
 
-				uint16 base = i*4;
-				uint16 f[6] = {base, (uint16)(base+1), (uint16)(base+2), base, (uint16)(base+2), (uint16)(base+3)};
+				uint16_t base = i*4;
+				uint16_t f[6] = {base, (uint16_t)(base+1), (uint16_t)(base+2), base, (uint16_t)(base+2), (uint16_t)(base+3)};
 				m->push_index_data(sizeof(f), (char *)f);
 			}
 

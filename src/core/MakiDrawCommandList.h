@@ -13,8 +13,8 @@ namespace maki
 		public:
 			struct __declspec(align(16)) key_entry_t : public aligned_t<16>
 			{
-				uint64 key_;
-				uint32 index_;
+				uint64_t key_;
+				uint32_t index_;
 			};
 
 			struct value_entry_t
@@ -26,7 +26,7 @@ namespace maki
 			static inline bool draw_command_sort_comparator_t(const key_entry_t &a, const key_entry_t &b) { return a.key_ < b.key_; }
 
 		public:
-			draw_command_list_t(uint32 size)
+			draw_command_list_t(uint32_t size)
 				: count_(0)
 			{
 				keys_.set_size(size);
@@ -54,7 +54,7 @@ namespace maki
 
 			inline void clear()
 			{
-				for(uint32 i = 0; i < count_; i++) {
+				for(uint32_t i = 0; i < count_; i++) {
 					values_[i].draw_command_.clear();
 				}
 				count_ = 0;
@@ -65,7 +65,7 @@ namespace maki
 			array_t<key_entry_t> keys_;
 			array_t<value_entry_t> values_;
 
-			uint32 count_;
+			uint32_t count_;
 		};
 
 		

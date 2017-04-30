@@ -16,8 +16,8 @@ namespace maki
 			state_(nullptr),
 			commands_(nullptr)
 		{
-			uint32 max_draw_commands = config->get_uint("engine.max_draw_commands_per_pass", default_max_draw_commands_per_pass_);
-			for(uint32 i = 0; i < max_render_payloads_; i++) {
+			uint32_t max_draw_commands = config->get_uint("engine.max_draw_commands_per_pass", default_max_draw_commands_per_pass_);
+			for(uint32_t i = 0; i < max_render_payloads_; i++) {
 				render_states_.push_back(new render_state_t());
 				command_lists_.push_back(new draw_command_list_t(max_draw_commands));
 			}
@@ -46,7 +46,7 @@ namespace maki
 				sync_with_core();
 			}
 
-			for(uint32 i = 0; i < render_states_.size(); i++) {
+			for(uint32_t i = 0; i < render_states_.size(); i++) {
 				MAKI_SAFE_DELETE(render_states_[i]);
 				MAKI_SAFE_DELETE(command_lists_[i]);
 			}
@@ -79,7 +79,7 @@ namespace maki
 
 		void renderer_t::sync_with_core()
 		{
-			uint32 outstanding = max_render_payloads_ - render_states_.size() - 1;
+			uint32_t outstanding = max_render_payloads_ - render_states_.size() - 1;
 			while(outstanding != 0) {
 				render_payload_t temp;
 				core_->output.get(temp);
@@ -139,7 +139,7 @@ namespace maki
 			matrix44_t::perspective(frustum, current_.projection_);
 		}
 
-		void renderer_t::set_light(uint32 light_index, const render_state_t::light_properties_t *props, const render_state_t::shadow_map_properties_t *shad_props, const matrix44_t *matrix, float fov, handle_t depth_buffer)
+		void renderer_t::set_light(uint32_t light_index, const render_state_t::light_properties_t *props, const render_state_t::shadow_map_properties_t *shad_props, const matrix44_t *matrix, float fov, handle_t depth_buffer)
 		{
 			light_dirty_flags_ |= (1<<light_index);
 
@@ -178,7 +178,7 @@ namespace maki
 			}
 		}
 
-		void renderer_t::set_light_cascade(uint32 light_index, uint32 cascade_index, const frustum_t &frustum)
+		void renderer_t::set_light_cascade(uint32_t light_index, uint32_t cascade_index, const frustum_t &frustum)
 		{
 			assert(light_index < current_.cascaded_shadow_light_count_);
 			assert(cascade_index < render_state_t::max_cascades_);
@@ -200,7 +200,7 @@ namespace maki
 			//if(light_dirty_flags_ != 0) {
 				const vector4_t pos(0.0f);
 				const vector4_t dir(0.0f, 0.0f, -1.0f, 0.0f);
-				for(uint32 i = 0; i < current_.light_count_; i++) {
+				for(uint32_t i = 0; i < current_.light_count_; i++) {
 					//if((light_dirty_flags_ & (1<<i)) != 0 && (current_.light_properties_[i].flags_ & render_state_t::light_flag_on_) != 0) {
 						matrix44_t to_view_space = current_.view_ * current_.light_world_[i];
 						current_.light_positions_[i] = to_view_space * pos;

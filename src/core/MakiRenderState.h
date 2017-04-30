@@ -12,10 +12,10 @@ namespace maki
 		class __declspec(align(MAKI_SIMD_ALIGN)) render_state_t : public aligned_t<MAKI_SIMD_ALIGN>
 		{
 		public:
-			static const int32 max_lights_ = 8;
-			static const int32 max_shadow_lights_ = 2;
-			static const int32 max_split_shadow_lights_ = 2;
-			static const int32 max_cascades_ = 5;
+			static const int32_t max_lights_ = 8;
+			static const int32_t max_shadow_lights_ = 2;
+			static const int32_t max_split_shadow_lights_ = 2;
+			static const int32_t max_cascades_ = 5;
 
 			enum render_target_t
 			{
@@ -71,7 +71,7 @@ namespace maki
 				float attenuation_;
 				float spot_factor_;
 				float fov_;
-				uint32 flags_;
+				uint32_t flags_;
 			};
 
 			struct shadow_map_properties_t
@@ -112,7 +112,7 @@ namespace maki
 
 				render_target_ = HANDLE_NONE;
 				depth_stencil_ = HANDLE_NONE;
-				for(uint32 i = 0; i < max_shadow_lights_; i++) {
+				for(uint32_t i = 0; i < max_shadow_lights_; i++) {
 					shadow_maps_[i] = HANDLE_NONE;
 				}
 			}
@@ -125,7 +125,7 @@ namespace maki
 			void copy(const render_state_t &s)
 			{
 				*this = s;
-				for(uint32 i = 0; i < max_shadow_lights_; i++) {
+				for(uint32_t i = 0; i < max_shadow_lights_; i++) {
 					texture_manager_t::add_ref(shadow_maps_[i]);
 				}
 				texture_manager_t::add_ref(render_target_);
@@ -134,7 +134,7 @@ namespace maki
 
 			void clear()
 			{
-				for(uint32 i = 0; i < max_shadow_lights_; i++) {
+				for(uint32_t i = 0; i < max_shadow_lights_; i++) {
 					texture_manager_t::free(shadow_maps_[i]);
 				}
 				texture_manager_t::free(render_target_);
@@ -152,9 +152,9 @@ namespace maki
 			vector4_t camera_width_height_near_far_;
 
 			// light_t and shadow data
-			uint32 light_count_;
-			uint32 shadow_light_count_;
-			uint32 cascaded_shadow_light_count_;
+			uint32_t light_count_;
+			uint32_t shadow_light_count_;
+			uint32_t cascaded_shadow_light_count_;
 			light_properties_t light_properties_[max_lights_];
 			light_split_region_t light_split_regions_[max_split_shadow_lights_][max_cascades_];
 			shadow_map_properties_t shadow_map_properties_[max_shadow_lights_];
@@ -167,8 +167,8 @@ namespace maki
 			vector4_t light_directions_[max_lights_];
 
 			// Basic render state
-			uint32 window_width_;
-			uint32 window_height_;
+			uint32_t window_width_;
+			uint32_t window_height_;
 			rect_t view_port_rect_;
 			render_state_t::render_target_t render_target_type_;
 			handle_t render_target_;

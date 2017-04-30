@@ -15,10 +15,10 @@ namespace maki
 		struct buffer_t
 		{
 			GLuint vbos_[2];
-			uint32 vertex_count_;
-			uint32 face_count_;
-			uint32 indices_per_face_;
-			uint32 bytes_per_index_;
+			uint32_t vertex_count_;
+			uint32_t face_count_;
+			uint32_t indices_per_face_;
+			uint32_t bytes_per_index_;
 			GLenum index_data_type_;
 			GLenum geometry_type_;
 

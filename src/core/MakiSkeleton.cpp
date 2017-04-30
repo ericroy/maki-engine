@@ -25,12 +25,12 @@ namespace maki
 
 			array_t<joint_t> joints(doc.root_->count_);
 
-			for(uint32 i = 0; i < bones_.count_; i++) {
+			for(uint32_t i = 0; i < bones_.count_; i++) {
 				document_t::node_t *n = doc.root_->children_[i];
 				Bone *b = &bones_[i];
 				joint_t *j = &joints[i];
 			
-				int32 parent_index = n->resolve_as_int("#0");
+				int32_t parent_index = n->resolve_as_int("#0");
 				if(parent_index >= 0) {
 					assert(bones_[parent_index].child_count_ < MAX_CHILDREN_PER_BONE);
 					bones_[parent_index].children_[bones_[parent_index].child_count_++] = b;
@@ -56,19 +56,19 @@ namespace maki
 		}
 
 		void skeleton_t::calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out) {
-			uint32 index = 0;
+			uint32_t index = 0;
 			calculate_pos_recursive(index, matrix44_t::identity_, joint_states, out);
-			for(uint32 i = 0; i < bones_.count_; i++) {
+			for(uint32_t i = 0; i < bones_.count_; i++) {
 				matrix44_t::affine_inverse(out[i], out[i]);
 			}
 		}
 
 		void skeleton_t::calculate_world_pose(joint_t *joint_states, matrix44_t *out) {
-			uint32 index = 0;
+			uint32_t index = 0;
 			calculate_pos_recursive(index, matrix44_t::identity_, joint_states, out);
 		}
 
-		void skeleton_t::calculate_pos_recursive(uint32 &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out) {
+		void skeleton_t::calculate_pos_recursive(uint32_t &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out) {
 			matrix44_t rot;
 			joint_states[index].rot_.to_matrix(rot);
 			matrix44_t::translation(joint_states[index].offset_, rot);
@@ -78,7 +78,7 @@ namespace maki
 
 			const Bone *b = &bones_[index];
 			index++;
-			for(uint32 i = 0; i < b->child_count_; i++) {
+			for(uint32_t i = 0; i < b->child_count_; i++) {
 				calculate_pos_recursive(index, new_current, joint_states, out);
 			}
 		}

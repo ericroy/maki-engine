@@ -92,7 +92,7 @@ namespace maki
 		void debug_net_listener_t::tick()
 		{
 #if _DEBUG
-			int32 sender_addr_size = sizeof(context_->sender_addr_);
+			int32_t sender_addr_size = sizeof(context_->sender_addr_);
 			int bytes = recvfrom(context_->recv_socket_, recv_buffer_, max_buffer_length_, 0, (SOCKADDR *)&context_->sender_addr_, &sender_addr_size);
 			if(bytes == SOCKET_ERROR) {
 				int err = WSAGetLastError();
@@ -104,7 +104,7 @@ namespace maki
 			
 				recv_buffer_[bytes] = 0;
 				char *p = recv_buffer_;
-				uint32 packet_type = *(uint32 *)p;
+				uint32_t packet_type = *(uint32_t *)p;
 				p += 4;
 				bytes -= 4;
 

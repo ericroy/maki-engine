@@ -13,10 +13,10 @@ namespace maki
 		class mesh_manager_t : public manager_t<mesh_t, mesh_manager_t>
 		{
 		public:
-			static const int32 default_size_ = 64;
+			static const int32_t default_size_ = 64;
 
 		public:
-			mesh_manager_t(uint32 size = default_size_);	
+			mesh_manager_t(uint32_t size = default_size_);	
 			virtual ~mesh_manager_t();	
 			handle_t load(rid_t rid);
 			void reload_assets();

@@ -9,7 +9,7 @@ namespace maki
 		namespace lua
 		{
 			
-			LUALIB_API int32 luaopen_maki_renderer(lua_State *L);
+			LUALIB_API int32_t luaopen_maki_renderer(lua_State *L);
 
 		} // namespace modules
 

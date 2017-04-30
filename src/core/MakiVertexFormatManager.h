@@ -13,7 +13,7 @@ namespace maki
 		class vertex_format_manager_t : public manager_t<vertex_format_t, vertex_format_manager_t>
 		{
 		public:
-			static const int32 default_size_ = 8;
+			static const int32_t default_size_ = 8;
 
 		public:
 			inline handle_t find_or_add(const vertex_format_t &vf)
@@ -26,7 +26,7 @@ namespace maki
 			}
 
 		public:
-			vertex_format_manager_t(uint32 size = default_size_);	
+			vertex_format_manager_t(uint32_t size = default_size_);	
 			virtual ~vertex_format_manager_t();
 		};
 

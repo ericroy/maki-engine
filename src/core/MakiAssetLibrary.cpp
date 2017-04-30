@@ -15,8 +15,8 @@ namespace maki
 		
 		asset_library_t::~asset_library_t()
 		{
-			const uint32 count = groups_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = groups_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				MAKI_SAFE_DELETE(groups_[i].archive_);
 				// DON'T delete manifest, we do not own it
 			}
@@ -61,8 +61,8 @@ namespace maki
 
 		rid_t asset_library_t::path_to_rid(const char *path) const
 		{
-			const uint32 count = groups_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = groups_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				rid_t rid = groups_[i].manifest_->path_to_rid(path);
 				if(rid != RID_NONE) {
 					return rid;
@@ -77,8 +77,8 @@ namespace maki
 				return nullptr;
 			}
 
-			const uint32 count = groups_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = groups_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				const group_t &group = groups_[i];
 				if(group.manifest_->contains(rid)) {
 					if(group.archive_ != nullptr) {
@@ -92,8 +92,8 @@ namespace maki
 
 		rid_t asset_library_t::full_path_to_rid(const char *path) const
 		{
-			const uint32 count = groups_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = groups_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				const std::string &prefix = groups_[i].manifest_->common_path_prefix_;
 				if(strstr(path, prefix.c_str()) == path) {
 					rid_t rid = groups_[i].manifest_->path_to_rid(path + prefix.length());
@@ -105,14 +105,14 @@ namespace maki
 			return RID_NONE;
 		}
 
-		char *asset_library_t::alloc_read(rid_t rid, uint32 *bytes_read) const
+		char *asset_library_t::alloc_read(rid_t rid, uint32_t *bytes_read) const
 		{
 			if(rid == RID_NONE) {
 				return nullptr;
 			}
 
-			const uint32 count = groups_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = groups_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				const group_t &group = groups_[i];
 				if(group.manifest_->contains(rid)) {
 					if(group.archive_ != nullptr) {

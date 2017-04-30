@@ -27,7 +27,7 @@ namespace maki
 			};
 		}
 
-		int32 traceback(lua_State *L)
+		int32_t traceback(lua_State *L)
 		{
 			lua_getglobal(L, "debug");
 			lua_getfield(L, -1, "traceback");
@@ -62,7 +62,7 @@ namespace maki
 			// Preload builtin modules
 			lua_getglobal(L_, "package");
 			lua_getfield(L_, -1, "preload");
-			int32 index = 0;
+			int32_t index = 0;
 			const luaL_Reg *reg = &lua::modules[index];
 			while(reg->name != nullptr) {
 				lua_pushcfunction(L_, reg->func);
@@ -87,7 +87,7 @@ namespace maki
 				return ok;
 			}
 
-			uint32 bytes_read;
+			uint32_t bytes_read;
 			auto eng = engine_t::get();
 			char *data = eng->assets_->alloc_read(main_script, &bytes_read);
 			if(data == nullptr) {
@@ -95,7 +95,7 @@ namespace maki
 				goto cleanup;
 			}
 
-			int32 ret = luaL_loadbuffer(L_, data, bytes_read, eng->assets_->get_path(main_script));
+			int32_t ret = luaL_loadbuffer(L_, data, bytes_read, eng->assets_->get_path(main_script));
 			if(ret != 0) {
 				console_t::lua_error(luaL_checklstring(L_, -1, nullptr));
 				goto cleanup;
@@ -156,9 +156,9 @@ namespace maki
 			if(lua_isfunction(L_, -1)) {
 				lua_pushnumber(L_, dt);
 #if _DEBUG
-				int32 ret = lua_pcall(L_, 1, 0, -3);
+				int32_t ret = lua_pcall(L_, 1, 0, -3);
 #else
-				int32 ret = lua_pcall(L_, 1, 0, 0);
+				int32_t ret = lua_pcall(L_, 1, 0, 0);
 #endif
 				if(ret != 0) {
 					console_t::lua_error(luaL_checklstring(L_, -1, nullptr));
@@ -186,9 +186,9 @@ namespace maki
 			lua_getref(L_, draw_function_ref_);
 			if(lua_isfunction(L_, -1)) {
 #if _DEBUG
-				int32 ret = lua_pcall(L_, 0, 0, -2);
+				int32_t ret = lua_pcall(L_, 0, 0, -2);
 #else
-				int32 ret = lua_pcall(L_, 0, 0, 0);
+				int32_t ret = lua_pcall(L_, 0, 0, 0);
 #endif
 				if(ret != 0) {
 					console_t::lua_error(luaL_checklstring(L_, -1, nullptr));

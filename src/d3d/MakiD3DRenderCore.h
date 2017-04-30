@@ -29,7 +29,7 @@ namespace maki
 		class d3d_render_core_t : public core::render_core_t
 		{
 		private:
-			static const int32 shadow_map_slot_index_start = 8;
+			static const int32_t shadow_map_slot_index_start = 8;
 
 		public:
 			d3d_render_core_t(core::window_t *window, const core::config_t *config);
@@ -37,19 +37,19 @@ namespace maki
 			void init();
 			inline void draw(const core::render_state_t &state, const core::draw_command_list_t &commands) { generic_draw<d3d_render_core_t>(state, commands); }
 			void present();
-			void resized(uint32 width, uint32 height);
-			bool is_mode_supported(uint32 window_width, uint32 window_height, uint32 *refresh_numer_out, uint32 *refresh_denom_out);
+			void resized(uint32_t width, uint32_t height);
+			bool is_mode_supported(uint32_t window_width, uint32_t window_height, uint32_t *refresh_numer_out, uint32_t *refresh_denom_out);
 
 			// GPU resource creation / destruction
-			void *upload_buffer(void *buffer, core::vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed);
+			void *upload_buffer(void *buffer, core::vertex_format_t *vf, char *vertex_data, uint32_t vertex_count, char *index_data, uint32_t face_count, uint8_t indices_per_face, uint8_t bytes_per_index, bool dynamic, bool length_changed);
 			void free_buffer(void *buffer);
 			bool create_shader_program(core::shader_program_t *s);
 			void delete_shader_program(core::shader_program_t *s);
-			bool create_texture(core::texture_t *t, char *data, uint32 data_length);
-			bool create_empty_texture(core::texture_t *t, uint8 channels);
+			bool create_texture(core::texture_t *t, char *data, uint32_t data_length);
+			bool create_empty_texture(core::texture_t *t, uint8_t channels);
 			bool create_render_target(core::texture_t *t);
 			bool create_depth_texture(core::texture_t *t);
-			void write_to_texture(core::texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data);
+			void write_to_texture(core::texture_t *t, int32_t dst_x, int32_t dst_y, int32_t src_x, int32_t src_y, uint32_t src_width, uint32_t src_height, uint32_t src_pitch, uint8_t channels, char *src_data);
 			void delete_texture(core::texture_t *t);
 
 			// Non-virtual interface
@@ -110,7 +110,7 @@ namespace maki
 			ID3D11BlendState *blend_disabled_;
 
 			bool vsync_;
-			uint32 max_vertex_formats_per_vertex_shader_;
+			uint32_t max_vertex_formats_per_vertex_shader_;
 			void *null_array_[shadow_map_slot_index_start+core::render_state_t::max_lights_];
 			std::mutex mutex_;
 		};
@@ -266,7 +266,7 @@ namespace maki
 
 			ID3D11ShaderResourceView *shadow_views[render_state_t::max_shadow_lights_];
 			ID3D11SamplerState *shadow_samplers[render_state_t::max_shadow_lights_];
-			for(uint8 i = 0; i < render_state_t::max_shadow_lights_; i++) {
+			for(uint8_t i = 0; i < render_state_t::max_shadow_lights_; i++) {
 				if(state.shadow_maps_[i] != HANDLE_NONE) {
 					gpu_texture_t *gtex = (gpu_texture_t *)texture_manager_t::get(state.shadow_maps_[i])->handle_;
 					shadow_views[i] = gtex->shader_resource_view_;
@@ -313,7 +313,7 @@ namespace maki
 			ID3D11ShaderResourceView *views[texture_set_t::max_textures_per_set_];
 			ID3D11SamplerState *samplers[texture_set_t::max_textures_per_set_];
 
-			for(uint8 i = 0; i < ts->texture_count_; i++) {
+			for(uint8_t i = 0; i < ts->texture_count_; i++) {
 				const gpu_texture_t *tex_ = (gpu_texture_t *)texture_manager_t::get(ts->textures_[i])->handle_;
 				views[i] = tex_->shader_resource_view_;
 				samplers[i] = tex_->sampler_state_;
@@ -350,8 +350,8 @@ namespace maki
 			}
 
 			const buffer_t *b = (buffer_t *)buffer;
-			uint32 stride = vf->get_stride();
-			uint32 offset = 0;
+			uint32_t stride = vf->get_stride();
+			uint32_t offset = 0;
 			context_->IASetVertexBuffers(0, 1, &b->vbos_[0], &stride, &offset);
 			context_->IASetIndexBuffer(b->vbos_[1], (DXGI_FORMAT)b->index_data_type_, 0);
 		}

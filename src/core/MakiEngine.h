@@ -23,8 +23,8 @@ namespace maki
 		class engine_t : public pseudo_singleton_t<engine_t>
 		{
 		public:
-			static const uint32 default_updates_per_second_ = 60;
-			static const uint32 default_max_skipped_frames_ = 6;
+			static const uint32_t default_updates_per_second_ = 60;
+			static const uint32_t default_max_skipped_frames_ = 6;
 
 		public:
 			engine_t(window_t *window, time_source_t *time_source, render_core_t *core, const asset_library_t *assets, const config_t *config);
@@ -46,9 +46,9 @@ namespace maki
 
 		private:
 			time_source_t *time_source_;
-			int64 next_update_;
-			uint32 micros_per_update_;
-			uint32 max_skipped_frames_;
+			int64_t next_update_;
+			uint32_t micros_per_update_;
+			uint32_t max_skipped_frames_;
 		};
 
 	} // namespace core

@@ -11,16 +11,16 @@ namespace maki
 		class shader_t
 		{
 		public:
-			static const uint32 uniform_name_max_length_ = 32;
+			static const uint32_t uniform_name_max_length_ = 32;
 
 			struct material_uniform_location_t
 			{
 			public:
 				material_uniform_location_t();
-				material_uniform_location_t(int32 location, char *name);
+				material_uniform_location_t(int32_t location, char *name);
 
 			public:
-				int32 location_;
+				int32_t location_;
 				char name_[uniform_name_max_length_];
 			};
 					
@@ -62,28 +62,28 @@ namespace maki
 			~shader_t();
 
 			bool init(document_t::node_t *shader_node, const char *data_key, const char *meta_key);
-			int32 find_material_constant_location(const char *name);
+			int32_t find_material_constant_location(const char *name);
 
 		private:
 			shader_t(const shader_t &other) {}
 
 		public:
-			int32 frame_uniform_buffer_location_;
-			uint32 engine_frame_uniform_bytes_;
-			int32 engine_frame_uniform_locations_[frame_uniform_count_];
+			int32_t frame_uniform_buffer_location_;
+			uint32_t engine_frame_uniform_bytes_;
+			int32_t engine_frame_uniform_locations_[frame_uniform_count_];
 
-			int32 object_uniform_buffer_location_;
-			uint32 engine_object_uniform_bytes_;
-			int32 engine_object_uniform_locations_[object_uniform_count_];
+			int32_t object_uniform_buffer_location_;
+			uint32_t engine_object_uniform_bytes_;
+			int32_t engine_object_uniform_locations_[object_uniform_count_];
 
-			int32 material_uniform_buffer_location_;
-			uint32 material_uniform_bytes_;
+			int32_t material_uniform_buffer_location_;
+			uint32_t material_uniform_bytes_;
 
 			std::vector<material_uniform_location_t> material_uniform_locations_;
 
 			
 			char *program_data_;
-			uint32 program_data_bytes_;
+			uint32_t program_data_bytes_;
 
 			intptr_t handle_;
 		};

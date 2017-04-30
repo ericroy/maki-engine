@@ -14,10 +14,10 @@ namespace maki
 		class safe_queue_t
 		{
 		public:
-			static const int32 default_size_ = 64;
+			static const int32_t default_size_ = 64;
 
 		public:
-			safe_queue_t(int32 size = default_size_)
+			safe_queue_t(int32_t size = default_size_)
 				: available_(0),
 				read_cursor_(0),
 				write_cursor_(0)
@@ -91,14 +91,14 @@ namespace maki
 			}
 
 		private:
-			uint32 available_;
+			uint32_t available_;
 		
 			std::mutex mutex_;
 			std::condition_variable cond_data_available_;
 			std::condition_variable cond_space_available_;
 
-			uint32 read_cursor_;
-			uint32 write_cursor_;
+			uint32_t read_cursor_;
+			uint32_t write_cursor_;
 			array_t<T> items_;
 		};
 

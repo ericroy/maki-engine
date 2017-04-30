@@ -32,15 +32,15 @@ namespace maki
 
 			// GPU resource creation, updates, destruction
 			// These all acquire the execution mutex_ for the render core
-			virtual void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed) = 0;
+			virtual void *upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32_t vertex_count, char *index_data, uint32_t face_count, uint8_t indices_per_face, uint8_t bytes_per_index, bool dynamic, bool length_changed) = 0;
 			virtual void free_buffer(void *buffer) = 0;
 			virtual bool create_shader_program(shader_program_t *s) = 0;
 			virtual void delete_shader_program(shader_program_t *s) = 0;
-			virtual bool create_texture(texture_t *t, char *data, uint32 data_length) = 0;
-			virtual bool create_empty_texture(texture_t *t, uint8 channels) = 0;
+			virtual bool create_texture(texture_t *t, char *data, uint32_t data_length) = 0;
+			virtual bool create_empty_texture(texture_t *t, uint8_t channels) = 0;
 			virtual bool create_render_target(texture_t *t) = 0;
 			virtual bool create_depth_texture(texture_t *t) = 0;
-			virtual void write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data) = 0;
+			virtual void write_to_texture(texture_t *t, int32_t dst_x, int32_t dst_y, int32_t src_x, int32_t src_y, uint32_t src_width, uint32_t src_height, uint32_t src_pitch, uint8_t channels, char *src_data) = 0;
 			virtual void delete_texture(texture_t *t) = 0;
 
 		protected:
@@ -60,8 +60,8 @@ namespace maki
 			safe_queue_t<render_payload_t> output;
 
 		protected:
-			uint32 window_width_;
-			uint32 window_height_;
+			uint32_t window_width_;
+			uint32_t window_height_;
 		};
 
 
@@ -87,11 +87,11 @@ namespace maki
 
 			derived->clear(state.clear_render_target_, state.render_target_clear_value_.vals_, state.clear_depth_stencil_, state.depth_clear_value_);
 						
-			uint32 current_translucency_type = draw_command_t::translucency_type_opaque_;
+			uint32_t current_translucency_type = draw_command_t::translucency_type_opaque_;
 			derived->set_blend_state(false);
 
 			void *current_buffer = nullptr;
-			uint32 current_layer = 0;
+			uint32_t current_layer = 0;
 			
 			handle_t current_vertex_format = HANDLE_NONE;
 			handle_t current_shader_program = HANDLE_NONE;		
@@ -101,7 +101,7 @@ namespace maki
 
 			bool set_layout = false;
 
-			for(uint32 i = 0; i < commands.count_; ++i) {
+			for(uint32_t i = 0; i < commands.count_; ++i) {
 				const draw_command_list_t::value_entry_t &ve = commands.values_[commands.keys_[i].index_];
 				const draw_command_t *dc = &ve.draw_command_;
 				const matrix44_t &matrix = ve.m_;

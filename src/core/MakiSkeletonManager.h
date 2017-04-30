@@ -14,10 +14,10 @@ namespace maki
 		class skeleton_manager_t : public manager_t<skeleton_t, skeleton_manager_t>
 		{
 		public:
-			static const int32 default_size_ = 8;
+			static const int32_t default_size_ = 8;
 
 		public:
-			skeleton_manager_t(uint32 size = default_size_);	
+			skeleton_manager_t(uint32_t size = default_size_);	
 			virtual ~skeleton_manager_t();
 			handle_t load(rid_t rid);
 			void reload_assets();

@@ -90,7 +90,7 @@ namespace maki
 #else
 #		define MAKI_OGL_FAILED() false
 #endif
-		const int32 shadow_map_slot_index_start = 8;
+		const int32_t shadow_map_slot_index_start = 8;
 		
 		extern const GLenum indices_per_face_to_geometry_type[4];
 		extern const GLenum bytes_per_index_to_format[5];

@@ -16,9 +16,9 @@ namespace maki
 			friend class font_manager_t;
 	
 		private:
-			static const int32 min_char_code_ = 32;
-			static const int32 max_char_code_ = 126;
-			static const int32 char_code_count_ = max_char_code_ - min_char_code_ + 1;
+			static const int32_t min_char_code_ = 32;
+			static const int32_t max_char_code_ = 126;
+			static const int32_t char_code_count_ = max_char_code_ - min_char_code_ + 1;
 
 		public:
 			font_t();
@@ -26,17 +26,17 @@ namespace maki
 			font_t(const font_t &) { assert(false && "font_t copy construction not allowed"); }
 			virtual ~font_t();
 			bool operator==(const font_t &other) const;
-			bool load(rid_t shader_program_rid, rid_t font_rid, uint32 pixel_size);
+			bool load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size);
 			void render_as_mesh(const char *s, mesh_t *m);
 
 		public:
 			handle_t material_;
 			rid_t shader_program_rid_;
-			uint32 pixel_size_;
+			uint32_t pixel_size_;
 	
 		private:
-			uint32 texture_width_;
-			uint32 texture_height_;
+			uint32_t texture_width_;
+			uint32_t texture_height_;
 			stbtt_bakedchar baked_chars_[char_code_count_];
 		};
 

@@ -44,8 +44,8 @@ namespace maki
 			max_vertex_formats_per_vertex_shader_ = config->get_uint("d3d.max_vertex_formats_per_vertex_shader", 6);
 			
 			// Check support_ed resolutions
-			uint32 refresh_numer = 0;
-			uint32 refresh_denom = 0;
+			uint32_t refresh_numer = 0;
+			uint32_t refresh_denom = 0;
 			if(!is_mode_supported(window->width_, window->height_, &refresh_numer, &refresh_denom))
 			{
 				console_t::warning("Mode not supported: %dx%d", window->width_, window->height_);
@@ -79,9 +79,9 @@ namespace maki
 				flags |= D3D11_CREATE_DEVICE_DEBUG;
 			}
 
-			uint16 major = (uint16)config->get_uint("d3d.major_version", 10);
-			uint16 minor = (uint16)config->get_uint("d3d.minor_version", 0);
-			int64 version = (major << 16) | minor;
+			uint16_t major = (uint16_t)config->get_uint("d3d.major_version", 10);
+			uint16_t minor = (uint16_t)config->get_uint("d3d.minor_version", 0);
+			int64_t version = (major << 16) | minor;
 			D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_10_0;
 			switch(version) {
 			case (10<<16)|0:
@@ -264,7 +264,7 @@ namespace maki
 			swap_chain_->Present(0, 0);
 		}
 
-		void d3d_render_core_t::resized(uint32 width, uint32 height)
+		void d3d_render_core_t::resized(uint32_t width, uint32_t height)
 		{
 			context_->OMSetRenderTargets(0, nullptr, nullptr);
 			MAKI_SAFE_RELEASE(default_render_target_view_);
@@ -328,7 +328,7 @@ namespace maki
 
 		// Resource creation, deletion, modification:
 
-		void *d3d_render_core_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count_, char *index_data, uint32 face_count_, uint8 indices_per_face_, uint8 bytes_per_index_, bool dynamic, bool length_changed)
+		void *d3d_render_core_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32_t vertex_count_, char *index_data, uint32_t face_count_, uint8_t indices_per_face_, uint8_t bytes_per_index_, bool dynamic, bool length_changed)
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
 
@@ -515,7 +515,7 @@ failed:
 
 	
 
-		bool d3d_render_core_t::create_empty_texture(texture_t *t, uint8 channels)
+		bool d3d_render_core_t::create_empty_texture(texture_t *t, uint8_t channels)
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
 
@@ -749,7 +749,7 @@ failed:
 			return false;
 		}
 
-		bool d3d_render_core_t::create_texture(texture_t *t, char *data, uint32 data_length)
+		bool d3d_render_core_t::create_texture(texture_t *t, char *data, uint32_t data_length)
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
 
@@ -757,7 +757,7 @@ failed:
 			ID3D11ShaderResourceView *shader_resource_view_ = nullptr;
 			ID3D11SamplerState *sampler_state_ = nullptr;
 		
-			if(MAKI_D3D_FAILED(DirectX::CreateDDSTextureFromMemory(device_, (uint8 *)data, data_length, (ID3D11Resource **)&tex_, &shader_resource_view_))) {
+			if(MAKI_D3D_FAILED(DirectX::CreateDDSTextureFromMemory(device_, (uint8_t *)data, data_length, (ID3D11Resource **)&tex_, &shader_resource_view_))) {
 				console_t::error("Failed to create texture from memory");
 				goto failed;
 			}
@@ -797,7 +797,7 @@ failed:
 			return false;
 		}
 
-		void d3d_render_core_t::write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data)
+		void d3d_render_core_t::write_to_texture(texture_t *t, int32_t dst_x, int32_t dst_y, int32_t src_x, int32_t src_y, uint32_t src_width, uint32_t src_height, uint32_t src_pitch, uint8_t channels, char *src_data)
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
 		
@@ -848,16 +848,16 @@ failed:
 
 
 
-		bool d3d_render_core_t::is_mode_supported(uint32 window_width, uint32 window_height, uint32 *refresh_numer_out, uint32 *refresh_denom_out)
+		bool d3d_render_core_t::is_mode_supported(uint32_t window_width, uint32_t window_height, uint32_t *refresh_numer_out, uint32_t *refresh_denom_out)
 		{
 			bool found = false;
 
 			IDXGIFactory *factory = nullptr;
 			IDXGIAdapter *adapter = nullptr;
 			IDXGIOutput *adapter_output = nullptr;
-			uint32 mode_count;
+			uint32_t mode_count;
 			DXGI_MODE_DESC *mode_list = nullptr;
-			uint32 refresh_numer = 0, refresh_denom = 0;
+			uint32_t refresh_numer = 0, refresh_denom = 0;
 			DXGI_ADAPTER_DESC adapter_desc;
 
 			if(MAKI_D3D_FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory))) {
@@ -883,7 +883,7 @@ failed:
 			}
 				
 			
-			for(uint32 i = 0; i < mode_count; i++) {
+			for(uint32_t i = 0; i < mode_count; i++) {
 				bool res_match = mode_list[i].Width == window_width && mode_list[i].Height == window_height;
 
 				console_t::info("Supported mode: %dx%d @ %f Hz %s",

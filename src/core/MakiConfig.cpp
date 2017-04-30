@@ -12,7 +12,7 @@ namespace maki
 		{
 			doc_ = new document_t();
 
-			uint32 bytes;
+			uint32_t bytes;
 			char *data = lib->alloc_read(rid, &bytes);
 			if(data == nullptr) {
 				console_t::error("Failed to open config file");
@@ -42,11 +42,11 @@ namespace maki
 			return n->children_[0]->value_;
 		}
 
-		int32 config_t::get_int(const char *key_path, int32 default_value) const
+		int32_t config_t::get_int(const char *key_path, int32_t default_value) const
 		{
 			document_t::node_t *n = doc_->root_->resolve(key_path);
 			if(n == nullptr || n->count_ == 0) { return default_value; }
-			int32 out;
+			int32_t out;
 			if(!n->children_[0]->value_as_int(&out)) {
 				console_t::warning("config_t value '%s' was not an int", key_path);
 				return default_value;
@@ -54,11 +54,11 @@ namespace maki
 			return out;
 		}
 
-		uint32 config_t::get_uint(const char *key_path, uint32 default_value) const
+		uint32_t config_t::get_uint(const char *key_path, uint32_t default_value) const
 		{
 			document_t::node_t *n = doc_->root_->resolve(key_path);
 			if(n == nullptr || n->count_ == 0) { return default_value; }
-			uint32 out;
+			uint32_t out;
 			if(!n->children_[0]->value_as_uint(&out)) {
 				console_t::warning("config_t value '%s' was not a uint", key_path);
 				return default_value;

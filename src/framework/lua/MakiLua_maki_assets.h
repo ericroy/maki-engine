@@ -13,8 +13,8 @@ namespace maki
 			{
 				typedef void(*handle_free_proc_t)(handle_t &);
 
-				static int32 tostring(lua_State *L);
-				static int32 gc(lua_State *L);
+				static int32_t tostring(lua_State *L);
+				static int32_t gc(lua_State *L);
 
 				static const luaL_reg methods_[];
 				static const luaL_reg metamethods_[];
@@ -24,7 +24,7 @@ namespace maki
 				handle_free_proc_t free_proc_;
 			};
 
-			LUALIB_API int32 luaopen_maki_assets(lua_State *L);
+			LUALIB_API int32_t luaopen_maki_assets(lua_State *L);
 
 		} // namespace lua
 

@@ -24,12 +24,12 @@ namespace maki
 
 		void timer_t::update_history()
 		{
-			uint32 index = update_count_ % n_frame_average_;
+			uint32_t index = update_count_ % n_frame_average_;
 
 			// If N frames have gone by, calculate new average values
 			if(update_count_ > n_frame_average_ && index == 0) {
 				float average_delta = 0;
-				for(uint32 i = 0; i < n_frame_average_; i++ ) {
+				for(uint32_t i = 0; i < n_frame_average_; i++ ) {
 					average_delta += delta_history_[i];
 				}
 				average_delta /= n_frame_average_;
@@ -43,7 +43,7 @@ namespace maki
 		void timer_t::tick() {
 			update_count_++;
 
-			uint64 now = source_->get_time_micro();
+			uint64_t now = source_->get_time_micro();
 			if(now < last_time_) {
 				now = last_time_;
 			}

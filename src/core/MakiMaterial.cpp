@@ -44,7 +44,7 @@ namespace maki
 			shader_program_manager_t::add_ref(shader_program_);
 		
 			memcpy(uniform_values_, other.uniform_values_, sizeof(uniform_value_t)*uniform_count_);
-			for(uint32 i = 0; i < uniform_count_; i++) {
+			for(uint32_t i = 0; i < uniform_count_; i++) {
 				uniform_value_t &val = uniform_values_[i];
 				char *old_data = val.data_;
 				val.data_ = (char *)allocator_t::malloc(val.bytes_);
@@ -65,14 +65,14 @@ namespace maki
 			shader_program_ = new_shader_program;
 		}
 	
-		void material_t::set_textures(uint8 count, rid_t *texture_rids)
+		void material_t::set_textures(uint8_t count, rid_t *texture_rids)
 		{
 			handle_t new_texture_set = core_managers_t::get()->texture_set_manager_->load(count, texture_rids);
 			texture_set_manager_t::free(texture_set_);
 			texture_set_ = new_texture_set;
 		}
 
-		int32 material_t::push_constant(const char *key, uint32 bytes, char *data)
+		int32_t material_t::push_constant(const char *key, uint32_t bytes, char *data)
 		{
 			if(shader_program_ == HANDLE_NONE) {
 				console_t::warning("Cannot push constant, must set shader program first");
@@ -86,15 +86,15 @@ namespace maki
 			shader_program_t *shader = shader_program_manager_t::get(shader_program_);
 
 			// find constant in vertex shader
-			int32 vs_location = shader->vertex_shader_.find_material_constant_location(key);
-			int32 ps_location = shader->pixel_shader_.find_material_constant_location(key);
+			int32_t vs_location = shader->vertex_shader_.find_material_constant_location(key);
+			int32_t ps_location = shader->pixel_shader_.find_material_constant_location(key);
 
 			if(vs_location == -1 && ps_location == -1) {
 				console_t::error("Constant not found in vertex or pixel shader: %s", key);
 				return -1;
 			}
 
-			int32 index = uniform_count_++;
+			int32_t index = uniform_count_++;
 			uniform_value_t &value = uniform_values_[index];
 			value.ps_location_ = ps_location;
 			value.vs_location_ = vs_location;
@@ -145,9 +145,9 @@ namespace maki
 			n = doc.root_->resolve("texture_set");
 			if(n != nullptr) {
 				rid_t texture_set_rids[texture_set_t::max_textures_per_set_];
-				uint32 texture_set_size = n->count_;
+				uint32_t texture_set_size = n->count_;
 				assert(texture_set_size < texture_set_t::max_textures_per_set_);
-				for(uint32 i = 0; i < n->count_; i++) {
+				for(uint32_t i = 0; i < n->count_; i++) {
 					rid_t tex_rid = eng->assets_->path_to_rid(n->children_[i]->value_);
 					if(tex_rid == RID_NONE) {
 						console_t::error("Could not resolve rid from texture path: %s", n->children_[i]->value_);
@@ -165,7 +165,7 @@ namespace maki
 
 			n = doc.root_->resolve("uniforms");
 			if(n != nullptr) {
-				for(uint32 i = 0; i < n->count_; i++) {
+				for(uint32_t i = 0; i < n->count_; i++) {
 					document_t::node_t *uniform = n->children_[i];
 					if(uniform->count_ != 1) {
 						console_t::error("Uniform node must have a single child specifying data type");
@@ -177,15 +177,15 @@ namespace maki
 						goto failed;
 					}
 
-					uint32 value_count = data_type->count_;
+					uint32_t value_count = data_type->count_;
 					char *buffer = (char *)allocator_t::malloc(value_count*4);
-					for(uint32 i = 0; i < value_count; i++) {
+					for(uint32_t i = 0; i < value_count; i++) {
 						if(data_type->value_[0] == 'f') {
 							((float *)buffer)[i] = data_type->children_[i]->value_as_float();
 						} else if(data_type->value_[0] == 'u') {
-							((uint32 *)buffer)[i] = (uint32)data_type->children_[i]->value_as_int();
+							((uint32_t *)buffer)[i] = (uint32_t)data_type->children_[i]->value_as_int();
 						} else if(data_type->value_[0] == 'i') {
-							((int32 *)buffer)[i] = (int32)data_type->children_[i]->value_as_int();
+							((int32_t *)buffer)[i] = (int32_t)data_type->children_[i]->value_as_int();
 						} else {
 							MAKI_SAFE_DELETE_ARRAY(buffer);
 							console_t::error("Unrecognized uniform data type: %s", data_type->value_);

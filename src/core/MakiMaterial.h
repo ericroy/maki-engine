@@ -11,7 +11,7 @@ namespace maki
 		class material_t : public resource_t
 		{
 		public:
-			static const int32 max_uniforms_ = 16;
+			static const int32_t max_uniforms_ = 16;
 
 			struct uniform_value_t
 			{
@@ -25,11 +25,11 @@ namespace maki
 				}
 
 				// Offset within the shader
-				int32 vs_location_;
-				int32 ps_location_;
+				int32_t vs_location_;
+				int32_t ps_location_;
 			
 				// Actual data for this constant
-				uint32 bytes_;
+				uint32_t bytes_;
 				char *data_;
 			};
 
@@ -40,18 +40,18 @@ namespace maki
 			virtual ~material_t();
 			bool load(rid_t rid);
 			void set_shader_program(rid_t shader_rid);
-			void set_textures(uint8 count, rid_t *texture_rids);
+			void set_textures(uint8_t count, rid_t *texture_rids);
 
 			// Push a constant buffer and give ownership of the pointer to this object.
 			// Pointer must be allocated with Maki::allocator_t.
 			// Returns the index of the constant value in this material.
 			// Returns -1 on failure (provided pointer will be freed in this case).
-			int32 push_constant(const char *key, uint32 bytes, char *data);
+			int32_t push_constant(const char *key, uint32_t bytes, char *data);
 		
 		public:
 			handle_t texture_set_;
 			handle_t shader_program_;
-			uint8 uniform_count_;
+			uint8_t uniform_count_;
 			uniform_value_t uniform_values_[max_uniforms_];
 		};
 

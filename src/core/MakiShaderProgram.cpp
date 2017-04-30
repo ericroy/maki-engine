@@ -26,7 +26,7 @@ namespace maki
 		shader_program_t::shader_program_t()
 			: vertex_shader_(), pixel_shader_(), variant_(variant_normal_), handle_(0)
 		{
-			for(uint32 i = 0; i < variant_count_-1; i++) {
+			for(uint32_t i = 0; i < variant_count_-1; i++) {
 				variants_[i] = HANDLE_NONE;
 			}
 		}
@@ -80,7 +80,7 @@ namespace maki
 			this->rid_ = rid;
 			if(variant == variant_normal_) {
 				core_managers_t *res = core_managers_t::get();
-				for(uint32 i = 0; i < variant_count_-1; i++) {
+				for(uint32_t i = 0; i < variant_count_-1; i++) {
 					variants_[i] = res->shader_program_manager_->load(rid, (variant_t)(i+1));
 				}
 			}

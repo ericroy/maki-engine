@@ -49,18 +49,18 @@ namespace maki
 			void init();
 			inline void draw(const core::render_state_t &state, const core::draw_command_list_t &commands) { generic_draw<ogl_render_core_t>(state, commands); }
 			void present();
-			void resized(uint32 width, uint32 height);
+			void resized(uint32_t width, uint32_t height);
 
 			// GPU resource creation / destruction
-			void *upload_buffer(void *buffer, core::vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed);
+			void *upload_buffer(void *buffer, core::vertex_format_t *vf, char *vertex_data, uint32_t vertex_count, char *index_data, uint32_t face_count, uint8_t indices_per_face, uint8_t bytes_per_index, bool dynamic, bool length_changed);
 			void free_buffer(void *buffer);
 			bool create_shader_program(core::shader_program_t *s);
 			void delete_shader_program(core::shader_program_t *s);
-			bool create_texture(core::texture_t *t, char *data, uint32 dataLength);
-			bool create_empty_texture(core::texture_t *t, uint8 channels);
+			bool create_texture(core::texture_t *t, char *data, uint32_t dataLength);
+			bool create_empty_texture(core::texture_t *t, uint8_t channels);
 			bool create_render_target(core::texture_t *t);
 			bool create_depth_texture(core::texture_t *t);
-			void write_to_texture(core::texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data);
+			void write_to_texture(core::texture_t *t, int32_t dst_x, int32_t dst_y, int32_t src_x, int32_t src_y, uint32_t src_width, uint32_t src_height, uint32_t src_pitch, uint8_t channels, char *src_data);
 			void delete_texture(core::texture_t *t);
 
 			// Non-virtual interface
@@ -94,8 +94,8 @@ namespace maki
 			SDL_GLContext render_thread_context_;
 			SDL_GLContext main_thread_context_;
 
-			uint32 window_width_;
-			uint32 window_height_;
+			uint32_t window_width_;
+			uint32_t window_height_;
 
 			GLuint frame_buffer_;
 
@@ -293,7 +293,7 @@ namespace maki
 
 		inline void ogl_render_core_t::unbind_all_textures()
 		{
-			for(uint32 i = 0; i < shadow_map_slot_index_start+core::render_state_t::max_lights_; i++) {
+			for(uint32_t i = 0; i < shadow_map_slot_index_start+core::render_state_t::max_lights_; i++) {
 				glActiveTexture(GL_TEXTURE0+i);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
@@ -332,9 +332,9 @@ namespace maki
 			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
 			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 
-			for(uint8 i = 0; i < render_state_t::max_shadow_lights_; i++) {
-				int32 sampler_idex = shadow_map_slot_index_start+i;
-				int32 location = gvs->texture_sampler_locations_[sampler_idex];
+			for(uint8_t i = 0; i < render_state_t::max_shadow_lights_; i++) {
+				int32_t sampler_idex = shadow_map_slot_index_start+i;
+				int32_t location = gvs->texture_sampler_locations_[sampler_idex];
 				if(location >= 0) {
 					glActiveTexture(GL_TEXTURE0+sampler_idex);
 					glUniform1i(gvs->texture_sampler_locations_[sampler_idex], sampler_idex);
@@ -352,7 +352,7 @@ namespace maki
 		{
 			using namespace core;
 
-			for(uint32 i = 0; i < vertex_format_t::attribute_count_; i++) {
+			for(uint32_t i = 0; i < vertex_format_t::attribute_count_; i++) {
 				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
 				if(vf->has_attribute(attr)) {
 					glEnableVertexAttribArray(attr);
@@ -385,8 +385,8 @@ namespace maki
 			// Recall that we arbitrarily decided to store texture sampler locations in the vertex shader (rather than pixel shader)
 			const gpu_vertex_shader_t *gvs = (gpu_vertex_shader_t *)shader->vertex_shader_.handle_;
 			
-			for(uint32 i = 0; i < ts->texture_count_; i++) {
-				int32 location = gvs->texture_sampler_locations_[i];
+			for(uint32_t i = 0; i < ts->texture_count_; i++) {
+				int32_t location = gvs->texture_sampler_locations_[i];
 				if(location >= 0) {
 					const gpu_texture_t *gtex = (gpu_texture_t *)texture_manager_t::get(ts->textures_[i])->handle_;
 					glActiveTexture(GL_TEXTURE0+i);
@@ -426,9 +426,9 @@ namespace maki
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos_[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos_[1]);
 
-			const int32 stride = vf->get_stride();
-			uint32 offset = 0;
-			for(uint32 i = 0; i < vertex_format_t::attribute_count_; i++) {
+			const int32_t stride = vf->get_stride();
+			uint32_t offset = 0;
+			for(uint32_t i = 0; i < vertex_format_t::attribute_count_; i++) {
 				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
 				if(vf->has_attribute(attr)) {
 					GLint count = vf->get_data_count(attr);

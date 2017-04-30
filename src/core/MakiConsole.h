@@ -33,7 +33,7 @@ namespace maki
 			};
 		
 		public:
-			static const int32 max_buffer_size_ = 8192;
+			static const int32_t max_buffer_size_ = 8192;
 		
 		public:
 			MAKI_DEFINE_CONSOLE_METHOD(info, level_info_,       "INFO  : ", true)

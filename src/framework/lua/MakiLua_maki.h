@@ -45,7 +45,7 @@ namespace maki
 
 
 			template<class T>
-			int32 register_type(lua_State *L)
+			int32_t register_type(lua_State *L)
 			{
 				luaL_openlib(L, T::type_name_, T::methods_, 0); // [methods]
 
@@ -76,7 +76,7 @@ namespace maki
 				return 1;  // return methods on the stack
 			}
 			
-			LUALIB_API int32 luaopen_maki(lua_State *L);
+			LUALIB_API int32_t luaopen_maki(lua_State *L);
 
 		} // namespace lua
 

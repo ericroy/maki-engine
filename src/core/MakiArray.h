@@ -16,7 +16,7 @@ namespace maki
 			{
 			}
 		
-			array_t(uint32 size)
+			array_t(uint32_t size)
 				: data_(nullptr),
 				count_(0)
 			{
@@ -35,7 +35,7 @@ namespace maki
 				MAKI_SAFE_FREE(data_);
 			}
 
-			inline void set_size(uint32 size)
+			inline void set_size(uint32_t size)
 			{
 				if(size == count_) {
 					return;
@@ -56,19 +56,19 @@ namespace maki
 				count_ = 0;
 			}
 
-			inline T &operator[](uint32 index)
+			inline T &operator[](uint32_t index)
 			{
 				return data_[index];
 			}
 
-			inline const T &operator[](uint32 index) const
+			inline const T &operator[](uint32_t index) const
 			{
 				return data_[index];
 			}
 
 		public:
 			T *data_;
-			uint32 count_;
+			uint32_t count_;
 		};
 
 

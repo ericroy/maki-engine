@@ -53,7 +53,7 @@ namespace maki
 		{
 			using namespace core;
 
-			int32 location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_view_];
+			int32_t location = s->engine_frame_uniform_locations_[shader_t::frame_uniform_view_];
 			if(location != -1) {
 				memcpy(buffer + location, state.view_.vals_, 16*sizeof(float));
 			}
@@ -109,7 +109,7 @@ namespace maki
 		{
 			using namespace core;
 
-			int32 location = s->engine_object_uniform_locations_[shader_t::object_uniform_model_];
+			int32_t location = s->engine_object_uniform_locations_[shader_t::object_uniform_model_];
 			if(location != -1) {
 				memcpy(buffer + location, model.vals_, sizeof(model));
 			}
@@ -130,14 +130,14 @@ namespace maki
 			using namespace core;
 
 			if(is_vertex_shader) {
-				for(uint8 i = 0; i < mat->uniform_count_; i++) {
+				for(uint8_t i = 0; i < mat->uniform_count_; i++) {
 					const material_t::uniform_value_t &val = mat->uniform_values_[i];
 					if(val.vs_location_ != -1) {
 						memcpy(buffer + val.vs_location_, val.data_, val.bytes_);
 					}
 				}
 			} else {
-				for(uint8 i = 0; i < mat->uniform_count_; i++) {
+				for(uint8_t i = 0; i < mat->uniform_count_; i++) {
 					const material_t::uniform_value_t &val = mat->uniform_values_[i];
 					if(val.ps_location_ != -1) {
 						memcpy(buffer + val.ps_location_, val.data_, val.bytes_);

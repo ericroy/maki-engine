@@ -36,7 +36,7 @@ namespace maki
 			name_[0] = 0;
 		}
 
-		shader_t::material_uniform_location_t::material_uniform_location_t(int32 location, char *name)
+		shader_t::material_uniform_location_t::material_uniform_location_t(int32_t location, char *name)
 			: location_(location)
 		{
 			strcpy(name_, name);
@@ -44,7 +44,7 @@ namespace maki
 
 		shader_t::frame_uniform_t shader_t::get_frame_uniform_by_name(const char *name)
 		{
-			for(int32 i = 0; i < frame_uniform_count_; i++) {
+			for(int32_t i = 0; i < frame_uniform_count_; i++) {
 				if(strcmp(frame_uniform_names_[i], name) == 0) {
 					return (frame_uniform_t)i;
 				}
@@ -54,7 +54,7 @@ namespace maki
 
 		shader_t::object_uniform_t shader_t::get_object_uniform_by_name(const char *name)
 		{
-			for(int32 i = 0; i < object_uniform_count_; i++) {
+			for(int32_t i = 0; i < object_uniform_count_; i++) {
 				if(strcmp(object_uniform_names_[i], name) == 0) {
 					return (object_uniform_t)i;
 				}
@@ -127,7 +127,7 @@ namespace maki
 					return false;
 				}
 
-				for(uint32 i = 0; i < uniforms->count_; i++) {
+				for(uint32_t i = 0; i < uniforms->count_; i++) {
 					document_t::node_t *uni = uniforms->children_[i];
 					assert(uni->count_ == 2 && "uniform must have offset and size");
 
@@ -135,9 +135,9 @@ namespace maki
 					if(c == frame_uniform_none_) {
 						return false;
 					}
-					uint32 offset = uni->children_[0]->value_as_uint();
-					uint32 size = uni->children_[1]->value_as_uint();
-					engine_frame_uniform_locations_[c] = (int32)offset;				
+					uint32_t offset = uni->children_[0]->value_as_uint();
+					uint32_t size = uni->children_[1]->value_as_uint();
+					engine_frame_uniform_locations_[c] = (int32_t)offset;				
 					engine_frame_uniform_bytes_ = std::max(offset+size, engine_frame_uniform_bytes_);
 				}		
 			}
@@ -153,7 +153,7 @@ namespace maki
 					return false;
 				}
 
-				for(uint32 i = 0; i < uniforms->count_; i++) {
+				for(uint32_t i = 0; i < uniforms->count_; i++) {
 					document_t::node_t *uni = uniforms->children_[i];
 					assert(uni->count_ == 2 && "uniform must have offset and size");
 
@@ -161,9 +161,9 @@ namespace maki
 					if(c == object_uniform_none_) {
 						return false;
 					}
-					uint32 offset = uni->children_[0]->value_as_uint();
-					uint32 size = uni->children_[1]->value_as_uint();
-					engine_object_uniform_locations_[c] = (int32)offset;				
+					uint32_t offset = uni->children_[0]->value_as_uint();
+					uint32_t size = uni->children_[1]->value_as_uint();
+					engine_object_uniform_locations_[c] = (int32_t)offset;				
 					engine_object_uniform_bytes_ = std::max(offset+size, engine_object_uniform_bytes_);
 				}		
 			}
@@ -179,14 +179,14 @@ namespace maki
 					return false;
 				}
 
-				for(uint32 i = 0; i < uniforms->count_; i++) {
+				for(uint32_t i = 0; i < uniforms->count_; i++) {
 					document_t::node_t *uni = uniforms->children_[i];
 					assert(uni->count_ == 2 && "uniform must have offset and size");
 
-					uint32 offset = uni->children_[0]->value_as_uint();
-					uint32 size = uni->children_[1]->value_as_uint();
+					uint32_t offset = uni->children_[0]->value_as_uint();
+					uint32_t size = uni->children_[1]->value_as_uint();
 				
-					material_uniform_locations_.push_back(material_uniform_location_t((int32)offset, uni->value_));
+					material_uniform_locations_.push_back(material_uniform_location_t((int32_t)offset, uni->value_));
 					material_uniform_bytes_ = std::max(offset+size, material_uniform_bytes_);
 				}		
 			}
@@ -194,10 +194,10 @@ namespace maki
 			return true;
 		}
 
-		int32 shader_t::find_material_constant_location(const char *name)
+		int32_t shader_t::find_material_constant_location(const char *name)
 		{
-			const uint32 count = material_uniform_locations_.size();
-			for(uint32 i = 0; i < count; i++) {
+			const uint32_t count = material_uniform_locations_.size();
+			for(uint32_t i = 0; i < count; i++) {
 				if(strcmp(name, material_uniform_locations_[i].name_) == 0) {
 					return material_uniform_locations_[i].location_;
 				}

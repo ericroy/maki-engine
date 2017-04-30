@@ -10,7 +10,7 @@ namespace maki
 
 		time_source_t::time_source_t()
 		{
-			uint64 ticks_per_second = SDL_GetPerformanceFrequency();
+			uint64_t ticks_per_second = SDL_GetPerformanceFrequency();
 
 			// Ticks per microsecond
 			frequency_ = ticks_per_second / 1e6;
@@ -24,13 +24,13 @@ namespace maki
 		{
 		}
 
-		uint64 time_source_t::get_time_micro()
+		uint64_t time_source_t::get_time_micro()
 		{
-			uint64 now = SDL_GetPerformanceCounter();
+			uint64_t now = SDL_GetPerformanceCounter();
 			if(now < start_) {
 				now = start_;
 			}
-			return (uint64)((now - start_) / frequency_);
+			return (uint64_t)((now - start_) / frequency_);
 		}
 
 

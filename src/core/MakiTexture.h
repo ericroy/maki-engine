@@ -25,9 +25,9 @@ namespace maki
 
 		public:
 			texture_type_t type_;
-			uint32 width_;
-			uint32 height_;
-			uint32 handle_;
+			uint32_t width_;
+			uint32_t height_;
+			uint32_t handle_;
 		};
 
 	} // namespace core

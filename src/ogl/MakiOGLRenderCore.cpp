@@ -45,11 +45,11 @@ namespace maki
 			current_cull_mode_(render_state_t::cull_mode_back_),
 			debug_output_(false)
 		{
-			int32 displayIndex = SDL_GetWindowDisplayIndex(window->window_);
-			int32 modeCount = SDL_GetNumDisplayModes(displayIndex);
+			int32_t displayIndex = SDL_GetWindowDisplayIndex(window->window_);
+			int32_t modeCount = SDL_GetNumDisplayModes(displayIndex);
 			SDL_DisplayMode mode;
 			bool found = false;
-			for(int32 i = 0; i < modeCount; i++) {
+			for(int32_t i = 0; i < modeCount; i++) {
 				SDL_GetDisplayMode(displayIndex, i, &mode);
 				bool resMatch = mode.w == window->width_ && mode.h == window->height_;
 				console_t::info("Supported mode: %dx%d @ %d Hz %s", mode.w, mode.h, mode.refresh_rate, resMatch ? "<<< Found!" : "");
@@ -64,8 +64,8 @@ namespace maki
 			
 			vsync_ = config->get_bool("engine.vsync", false);
 
-			int32 major = config->get_int("ogl.major_version", 3);
-			int32 minor = config->get_int("ogl.minor_version", 1);
+			int32_t major = config->get_int("ogl.major_version", 3);
+			int32_t minor = config->get_int("ogl.minor_version", 1);
 
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
@@ -179,7 +179,7 @@ namespace maki
 			glBindVertexArray(vao_);
 		}
 
-		void ogl_render_core_t::resized(uint32 newWidth, uint32 newHeight)
+		void ogl_render_core_t::resized(uint32_t newWidth, uint32_t newHeight)
 		{
 		}
 
@@ -193,7 +193,7 @@ namespace maki
 
 		// Resource creation, deletion, modification:
 
-		void *ogl_render_core_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32 vertex_count, char *index_data, uint32 face_count, uint8 indices_per_face, uint8 bytes_per_index, bool dynamic, bool length_changed)
+		void *ogl_render_core_t::upload_buffer(void *buffer, vertex_format_t *vf, char *vertex_data, uint32_t vertex_count, char *index_data, uint32_t face_count, uint8_t indices_per_face, uint8_t bytes_per_index, bool dynamic, bool length_changed)
 		{
 			MAKI_ACQUIRE_OGL_MUTEX
 
@@ -225,7 +225,7 @@ namespace maki
 			glBindBuffer(GL_ARRAY_BUFFER, b->vbos_[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, b->vbos_[1]);
 
-			int32 stride = vf->get_stride();
+			int32_t stride = vf->get_stride();
 			if(reuse && !length_changed) {
 				glBufferSubData(GL_ARRAY_BUFFER, 0, stride*vertex_count, vertex_data);
 				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bytes_per_index*indices_per_face*face_count, index_data);
@@ -264,7 +264,7 @@ namespace maki
 			gs->sh_ = glCreateShader(shaderType);
 			if(MAKI_OGL_FAILED()) { MAKI_SAFE_DELETE(gs); return false; }
 
-			int32 length = (int32)s->program_data_bytes_;
+			int32_t length = (int32_t)s->program_data_bytes_;
 			glShaderSource(gs->sh_, 1, (const GLchar **)&s->program_data_, &length);
 			if(MAKI_OGL_FAILED()) { MAKI_SAFE_DELETE(gs); return false; }
 			
@@ -310,7 +310,7 @@ namespace maki
 			GLuint program = glCreateProgram();
 			glAttachShader(program, (GLuint)((gpu_shader_t *)s->pixel_shader_.handle_)->sh_);
 			glAttachShader(program, (GLuint)((gpu_shader_t *)s->vertex_shader_.handle_)->sh_);
-			for(uint32 i = 0; i < vertex_format_t::attribute_count_; i++) {
+			for(uint32_t i = 0; i < vertex_format_t::attribute_count_; i++) {
 				glBindAttribLocation(program, i, attribute_name[i]);
 			}
 			glLinkProgram(program);
@@ -373,7 +373,7 @@ namespace maki
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
 				char *nameBuffer = new char[maxNameLength+1];
 
-				for(int32 i = 0; i < activeUniformCount; i++) {
+				for(int32_t i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
 					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
@@ -420,7 +420,7 @@ namespace maki
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
 				char *nameBuffer = new char[maxNameLength+1];
 
-				for(int32 i = 0; i < activeUniformCount; i++) {
+				for(int32_t i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
 					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
@@ -467,7 +467,7 @@ namespace maki
 				GLint maxNameLength = *std::max_element(nameLengths.begin(), nameLengths.end());
 				char *nameBuffer = new char[maxNameLength+1];
 
-				for(int32 i = 0; i < activeUniformCount; i++) {
+				for(int32_t i = 0; i < activeUniformCount; i++) {
 					GLint size = 0;
 					GLenum type = 0;
 					glGetActiveUniform(program, indices[i], maxNameLength+1, nullptr, &size, &type, nameBuffer);
@@ -477,7 +477,7 @@ namespace maki
 						*bracket = 0;
 					}
 
-					int32 index = s->vertex_shader_.find_material_constant_location(nameBuffer);
+					int32_t index = s->vertex_shader_.find_material_constant_location(nameBuffer);
 					if(index == -1) {
 						shader_t::material_uniform_location_t uni(offsets[i], nameBuffer);
 						s->vertex_shader_.material_uniform_locations_.push_back(uni);
@@ -489,18 +489,18 @@ namespace maki
 
 			if(MAKI_OGL_FAILED()) { glDeleteProgram(program); return false; }
 
-			int32 largestBuffer = std::max(std::max(s->vertex_shader_.material_uniform_bytes_, s->vertex_shader_.engine_object_uniform_bytes_), s->vertex_shader_.engine_frame_uniform_bytes_);
+			int32_t largestBuffer = std::max(std::max(s->vertex_shader_.material_uniform_bytes_, s->vertex_shader_.engine_object_uniform_bytes_), s->vertex_shader_.engine_frame_uniform_bytes_);
 			gvs->scratch_buffer_ = (char *)allocator_t::malloc(largestBuffer, 16);
 
 			// Lookup texture sampler locations
 			// Arbitrarily, we'll decide to store the sampler locations in the vertex shader's array
 			char buffer[32];
-			for(uint32 i = 0; i < shadow_map_slot_index_start; i++) {
+			for(uint32_t i = 0; i < shadow_map_slot_index_start; i++) {
 				sprintf(buffer, "uSampler%d", i);
 				GLint location = glGetUniformLocation(program, buffer);
 				gvs->texture_sampler_locations_[i] = location;
 			}
-			for(uint32 i = 0; i < core::render_state_t::max_lights_; i++) {
+			for(uint32_t i = 0; i < core::render_state_t::max_lights_; i++) {
 				sprintf(buffer, "uShadowSampler[%d]", i);
 				GLint location = glGetUniformLocation(program, buffer);
 				gvs->texture_sampler_locations_[shadow_map_slot_index_start+i] = location;
@@ -512,7 +512,7 @@ namespace maki
 
 	
 
-		bool ogl_render_core_t::create_empty_texture(texture_t *t, uint8 channels)
+		bool ogl_render_core_t::create_empty_texture(texture_t *t, uint8_t channels)
 		{
 			MAKI_ACQUIRE_OGL_MUTEX
 
@@ -578,15 +578,15 @@ namespace maki
 			return true;
 		}
 
-		bool ogl_render_core_t::create_texture(texture_t *t, char *data, uint32 dataLength)
+		bool ogl_render_core_t::create_texture(texture_t *t, char *data, uint32_t dataLength)
 		{
 			MAKI_ACQUIRE_OGL_MUTEX
 
 			const void *dataOut = nullptr;
 			unsigned long dataLengthOut = 0;
-            uint32 format = 0;
-			uint32 mipLevels = 0;
-			int32 ret = MOJODDS_getTexture(data, dataLength, &dataOut, &dataLengthOut, &format, &t->width_, &t->height_, &mipLevels);
+            uint32_t format = 0;
+			uint32_t mipLevels = 0;
+			int32_t ret = MOJODDS_getTexture(data, dataLength, &dataOut, &dataLengthOut, &format, &t->width_, &t->height_, &mipLevels);
 			if(ret == 0) {
 				console_t::error("Failed to mojo-load dds file");
 				return false;
@@ -634,7 +634,7 @@ namespace maki
 			return true;
 		}
 
-		void ogl_render_core_t::write_to_texture(texture_t *t, int32 dst_x, int32 dst_y, int32 src_x, int32 src_y, uint32 src_width, uint32 src_height, uint32 src_pitch, uint8 channels, char *src_data)
+		void ogl_render_core_t::write_to_texture(texture_t *t, int32_t dst_x, int32_t dst_y, int32_t src_x, int32_t src_y, uint32_t src_width, uint32_t src_height, uint32_t src_pitch, uint8_t channels, char *src_data)
 		{
 			MAKI_ACQUIRE_OGL_MUTEX
 

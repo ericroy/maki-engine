@@ -13,7 +13,7 @@ namespace maki
 	namespace core
 	{
 
-		document_t::node_t::node_t(const char *data, uint32 length)
+		document_t::node_t::node_t(const char *data, uint32_t length)
 			: parent_(nullptr), value_(nullptr), count_(0), capacity_(0), children_(nullptr)
 		{
 			value_ = new char[length+1];
@@ -21,7 +21,7 @@ namespace maki
 			value_[length] = 0;
 		}
 
-		document_t::node_t::node_t(char *data, uint32 length, bool should_clone_data)
+		document_t::node_t::node_t(char *data, uint32_t length, bool should_clone_data)
 			: parent_(nullptr), value_(nullptr), count_(0), capacity_(0), children_(nullptr)
 		{
 			if(should_clone_data) {
@@ -36,7 +36,7 @@ namespace maki
 		document_t::node_t::~node_t()
 		{
 			MAKI_SAFE_DELETE_ARRAY(value_);
-			for(uint32 i = 0; i < count_; i++) {
+			for(uint32_t i = 0; i < count_; i++) {
 				MAKI_SAFE_DELETE(children_[i]);
 			}
 			MAKI_SAFE_FREE(children_);
@@ -46,14 +46,14 @@ namespace maki
 		{
 			n->parent_ = this;
 			if(count_ == capacity_) {
-				capacity_ = std::max<uint32>(8, capacity_*2);
+				capacity_ = std::max<uint32_t>(8, capacity_*2);
 				children_ = (node_t **)allocator_t::realloc(children_, capacity_ * sizeof(node_t *), std::alignment_of<node_t *>::value);
 				assert(children_ != nullptr);
 			}
 			children_[count_++] = n;
 		}
 
-		document_t::node_t *document_t::node_t::remove_child(uint32 index)
+		document_t::node_t *document_t::node_t::remove_child(uint32_t index)
 		{
 			document_t::node_t *ret = children_[index];
 			memmove(&children_[index], &children_[index+1], (count_-index-1)*sizeof(node_t *));
@@ -62,7 +62,7 @@ namespace maki
 
 		bool document_t::node_t::remove_child(document_t::node_t *n)
 		{
-			for(uint32 i = 0; i < count_; i++) {
+			for(uint32_t i = 0; i < count_; i++) {
 				if(children_[i] == n) {
 					remove_child(i);
 					return true;
@@ -78,18 +78,18 @@ namespace maki
 			}
 		}
 	
-		int32 document_t::node_t::value_as_int(int32 default_value) const
+		int32_t document_t::node_t::value_as_int(int32_t default_value) const
 		{
-			int32 v;
+			int32_t v;
 			if(value_as_int(&v)) {
 				return v;
 			}
 			return default_value;
 		}
-		bool document_t::node_t::value_as_int(int32 *out) const
+		bool document_t::node_t::value_as_int(int32_t *out) const
 		{
 			char *end;
-			int32 v = strtol(value_, &end, 10);
+			int32_t v = strtol(value_, &end, 10);
 			if(end == value_) {
 				return false;
 			}
@@ -99,18 +99,18 @@ namespace maki
 			return true;
 		}
 
-		uint32 document_t::node_t::value_as_uint(uint32 default_value) const
+		uint32_t document_t::node_t::value_as_uint(uint32_t default_value) const
 		{
-			uint32 v;
+			uint32_t v;
 			if(value_as_uint(&v)) {
 				return v;
 			}
 			return default_value;
 		}
-		bool document_t::node_t::value_as_uint(uint32 *out) const
+		bool document_t::node_t::value_as_uint(uint32_t *out) const
 		{
 			char *end;
-			uint32 v = strtoul(value_, &end, 10);
+			uint32_t v = strtoul(value_, &end, 10);
 			if(end == value_) {
 				return false;
 			}
@@ -169,7 +169,7 @@ namespace maki
 			if(*p == '#') {
 				p++;
 				char *end = nullptr;
-				uint32 i = strtoul(p, &end, 10);
+				uint32_t i = strtoul(p, &end, 10);
 				p = end;
 				if(i >= count_) {
 					return nullptr;
@@ -181,7 +181,7 @@ namespace maki
 			while(*p != 0 && *p != '.') {
 				p++;
 			}
-			for(uint32 i = 0; i < count_; i++) {
+			for(uint32_t i = 0; i < count_; i++) {
 				if(strncmp(children_[i]->value_, node_path, p-node_path) == 0) {
 					if(*p == '.') {
 						p++;
@@ -214,7 +214,7 @@ namespace maki
 	#ifndef MAKI_TOOLS
 		bool document_t::load(rid_t rid)
 		{
-			uint32 bytes;
+			uint32_t bytes;
 			char *data = engine_t::get()->assets_->alloc_read(rid, &bytes);
 			if(data == nullptr) {
 				console_t::error("Failed to alloc_read document bytes");
@@ -226,7 +226,7 @@ namespace maki
 		}
 	#endif
 
-		bool document_t::load(char *data, uint32 length)
+		bool document_t::load(char *data, uint32_t length)
 		{
 			if(document_binary_serializer_t::is_binary_document(data, length)) {
 				document_binary_serializer_t serial(*this);
@@ -276,7 +276,7 @@ namespace maki
 				return false;
 			}
 
-			for(uint32 i = 0; i < doc_.root_->count_; i++) {
+			for(uint32_t i = 0; i < doc_.root_->count_; i++) {
 				serialize_node(doc_.root_->children_[i], 0, file, false, false, false, indent_token);
 			}
 
@@ -291,18 +291,18 @@ namespace maki
 				return false;
 			}
 
-			for(uint32 i = 0; i < doc_.root_->count_; i++) {
+			for(uint32_t i = 0; i < doc_.root_->count_; i++) {
 				serialize_node(doc_.root_->children_[i], 0, out, false, false, false, indent_token);
 			}
 			return true;
 		}
 
-		void document_text_serializer_t::serialize_node(document_t::node_t *n, uint32 depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token)
+		void document_text_serializer_t::serialize_node(document_t::node_t *n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token)
 		{
 			if(stacking) {
 				out << " ";
 			} else {
-				for(uint32 i = 0; i < depth; i++) {
+				for(uint32_t i = 0; i < depth; i++) {
 					out << indent_token;
 				}
 			}
@@ -331,7 +331,7 @@ namespace maki
 			bool stack_children = false;
 			if(n->count_ > 0 && n->count_ <= stack_children_count_threshold_) {
 				stack_children = true;
-				for(uint32 i = 0; i < n->count_; i++) {
+				for(uint32_t i = 0; i < n->count_; i++) {
 					if(n->children_[i]->count_ != 0) {
 						stack_children = false;
 						break;
@@ -347,24 +347,24 @@ namespace maki
 				}
 			}
 
-			for(uint32 i = 0; i < n->count_; i++) {
+			for(uint32_t i = 0; i < n->count_; i++) {
 				serialize_node(n->children_[i], depth+1, out, stack_children, i == 0, i == n->count_-1, indent_token);
 			}
 		}
 
-		bool document_text_serializer_t::deserialize(char *data, uint32 length)
+		bool document_text_serializer_t::deserialize(char *data, uint32_t length)
 		{
 			MAKI_SAFE_DELETE(doc_.root_);
 			doc_.root_ = new document_t::node_t("<root_>", 6);
 		
-			uint32 character = 0;
-			uint32 line = 0;
-			uint32 indent_width = 0;
+			uint32_t character = 0;
+			uint32_t line = 0;
+			uint32_t indent_width = 0;
 
 			bool clean_line = true;
 			bool append_sibling = false;
-			int32 indent_level = 0;
-			int32 previous_indent_level = -1;
+			int32_t indent_level = 0;
+			int32_t previous_indent_level = -1;
 			document_t::node_t *previous = doc_.root_;
 		
 			char *p = data;
@@ -379,7 +379,7 @@ namespace maki
 					clean_line = true;
 					do { p++; line++; character = 0; indent_level = 0; } while(*p == '\n' || *p == '\r');
 					if(*p == ' ' || *p == '\t') {
-						uint32 count_ = 0;
+						uint32_t count_ = 0;
 						do { p++; character++; count_++; } while(*p == ' ' || *p == '\t');
 
 						indent_level += indent_width != 0 ? count_/indent_width : count_;
@@ -400,7 +400,7 @@ namespace maki
 					p++; character++;
 					char prior = *p;
 					char *start = p;
-					uint32 length = 0;
+					uint32_t length = 0;
 
 					while(*p != 0 && !(*p == '"' && prior != '\\')) {
 						prior = *p; p++; character++; length++;
@@ -414,8 +414,8 @@ namespace maki
 					// Unescape quotes in string
 					char *buffer = new char[length+1];
 					char *q = start;
-					uint32 new_length = 0;
-					for(uint32 i = 0; i < length; i++) {
+					uint32_t new_length = 0;
+					for(uint32_t i = 0; i < length; i++) {
 						if(i > 0 && *q == '"' && *(q-1) == '\\') {
 							// Back-stomp on the escape character
 							new_length--;
@@ -431,7 +431,7 @@ namespace maki
 					}
 				} else {
 					char *start = p;
-					uint32 length = 0;
+					uint32_t length = 0;
 					while(*p != 0 && *p != ' ' && *p != '\t' && *p != '\r' && *p != ',') {
 						p++; character++; length++;
 					}
@@ -444,7 +444,7 @@ namespace maki
 			return true;
 		}
 
-		bool document_text_serializer_t::add_node(document_t::node_t *n, int32 indent_level, document_t::node_t **previous, int32 &previous_indent_level, bool &clean_line, bool &append_sibling)
+		bool document_text_serializer_t::add_node(document_t::node_t *n, int32_t indent_level, document_t::node_t **previous, int32_t &previous_indent_level, bool &clean_line, bool &append_sibling)
 		{
 			if(!clean_line || indent_level > previous_indent_level) {
 				if(append_sibling) {
@@ -456,7 +456,7 @@ namespace maki
 				}
 			} else {
 				document_t::node_t *parent_ = *previous;
-				for(int32 i = indent_level; i <= previous_indent_level; i++) {
+				for(int32_t i = indent_level; i <= previous_indent_level; i++) {
 					parent_ = parent_->parent_;
 					if(parent_ == nullptr) {
 						console_t::error("Parsing document failed, suspect indentation");
@@ -482,9 +482,9 @@ namespace maki
 
 
 
-		const uint8 document_binary_serializer_t::BINARY_HEADER[4] = {'\0', 'H', 'D', '\0'};
+		const uint8_t document_binary_serializer_t::BINARY_HEADER[4] = {'\0', 'H', 'D', '\0'};
 
-		bool document_binary_serializer_t::is_binary_document(char *data, uint32 length)
+		bool document_binary_serializer_t::is_binary_document(char *data, uint32_t length)
 		{
 			return data != nullptr && length >= sizeof(BINARY_HEADER) && memcmp(data, BINARY_HEADER, sizeof(BINARY_HEADER)) == 0;
 		}
@@ -528,33 +528,33 @@ namespace maki
 			std::ostringstream body;
 
 			// serialize our document to the stringstream, constructing a stringtable along the way
-			for(uint32 i = 0; i < doc_.root_->count_; i++) {
-				uint32 level = 0;
+			for(uint32_t i = 0; i < doc_.root_->count_; i++) {
+				uint32_t level = 0;
 				serialize_node(doc_.root_->children_[i], body, table, level);
 			}
 
 			// write header ident
-			uint32 offset = 0;
+			uint32_t offset = 0;
 			out.write((char *)BINARY_HEADER, sizeof(BINARY_HEADER));
 			offset += sizeof(BINARY_HEADER);
 
 			// write string table count_
-			uint32 string_count = table.size();
+			uint32_t string_count = table.size();
 			assert(string_count < 1<<16);
-			uint16 sc = string_count;
+			uint16_t sc = string_count;
 			out.write((char *)&sc, sizeof(sc));
 			offset += sizeof(sc);
 		
 			// write each string, null terminated
-			for(uint32 i = 0; i < string_count; i++) {
+			for(uint32_t i = 0; i < string_count; i++) {
 				const std::string &s = table[i];
-				uint32 bytes = s.size()+1;
+				uint32_t bytes = s.size()+1;
 				out.write(s.c_str(), bytes);
 				offset += bytes;
 			}
 
 			// Align
-			uint8 pad = 0xff;
+			uint8_t pad = 0xff;
 			while(offset % 2 != 0) {
 				out.write((char *)&pad, 1);
 				offset++;
@@ -567,37 +567,37 @@ namespace maki
 			return true;
 		}
 
-		uint16 document_binary_serializer_t::get_or_add(std::vector<std::string> &string_table, char *str)
+		uint16_t document_binary_serializer_t::get_or_add(std::vector<std::string> &string_table, char *str)
 		{
 			std::vector<std::string>::iterator iter = std::find(string_table.begin(), string_table.end(), str);
 			if(iter != string_table.end()) {
 				return iter - string_table.begin();
 			}
 			string_table.push_back(str);
-			uint32 index = string_table.size()-1;
+			uint32_t index = string_table.size()-1;
 			assert(index < 1<<16);
-			return (uint16)index;
+			return (uint16_t)index;
 		}
 
-		void document_binary_serializer_t::serialize_node(document_t::node_t *n, std::ostream &body, std::vector<std::string> &string_table, uint32 &level)
+		void document_binary_serializer_t::serialize_node(document_t::node_t *n, std::ostream &body, std::vector<std::string> &string_table, uint32_t &level)
 		{
 			// write indentation depth
 			assert(level < 1<<16);
-			uint16 l = level;
+			uint16_t l = level;
 			body.write((char *)&l, sizeof(l));
 		
 			// write node value_ (index into string table actually)
-			uint16 string_index = get_or_add(string_table, n->value_);
+			uint16_t string_index = get_or_add(string_table, n->value_);
 			body.write((char *)&string_index, sizeof(string_index));
 
 			level++;
-			for(uint32 i = 0; i < n->count_; i++) {
+			for(uint32_t i = 0; i < n->count_; i++) {
 				serialize_node(n->children_[i], body, string_table, level);
 			}
 			level--;
 		}
 
-		bool document_binary_serializer_t::deserialize(char *data, uint32 length)
+		bool document_binary_serializer_t::deserialize(char *data, uint32_t length)
 		{
 			if(!is_binary_document(data, length)) {
 				console_t::error("Data did not contain a binary document");
@@ -610,10 +610,10 @@ namespace maki
 			char *p = data; p += sizeof(BINARY_HEADER);
 
 			// Parse string table, finding the offsets to the start of each string
-			uint16 string_table_count = *(uint16 *)p; p += sizeof(uint16);
-			uint16 *string_table_offsets = new uint16[string_table_count+1];
+			uint16_t string_table_count = *(uint16_t *)p; p += sizeof(uint16_t);
+			uint16_t *string_table_offsets = new uint16_t[string_table_count+1];
 			char *string_table_start = p;
-			for(uint16 i = 0; i < string_table_count; i++) {
+			for(uint16_t i = 0; i < string_table_count; i++) {
 				string_table_offsets[i] = p - string_table_start;
 				while(*p != 0) {
 					p++;
@@ -627,15 +627,15 @@ namespace maki
 				p++;
 			}	
 
-			int32 previous_level = -1;
+			int32_t previous_level = -1;
 			document_t::node_t *previous = doc_.root_;
 
 			while(p < data+length) {
 				// Read indentation depth
-				uint16 level = *(uint16 *)p; p += sizeof(uint16);
+				uint16_t level = *(uint16_t *)p; p += sizeof(uint16_t);
 
 				// Read string table index which specifies the node value_
-				uint16 string_index = *(uint16 *)p; p += sizeof(uint16);
+				uint16_t string_index = *(uint16_t *)p; p += sizeof(uint16_t);
 
 				document_t::node_t *n = new document_t::node_t(string_table_start+string_table_offsets[string_index], string_table_offsets[string_index+1]-string_table_offsets[string_index], true);
 				if(level > previous_level) {

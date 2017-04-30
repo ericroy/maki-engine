@@ -9,7 +9,7 @@ namespace maki
 	namespace d3d
 	{
 
-		gpu_vertex_shader_t::gpu_vertex_shader_t(uint32 vertex_formats_per_vertex_shader)
+		gpu_vertex_shader_t::gpu_vertex_shader_t(uint32_t vertex_formats_per_vertex_shader)
 			: blob_(nullptr),
 			blob_size_(0),
 			vs_(nullptr),
@@ -26,7 +26,7 @@ namespace maki
 
 		gpu_vertex_shader_t::~gpu_vertex_shader_t()
 		{
-			for(uint32 i = 0; i < input_layout_count_; i++) {
+			for(uint32_t i = 0; i < input_layout_count_; i++) {
 				MAKI_SAFE_RELEASE(input_layouts_[i].input_layout_);
 			}
 			MAKI_SAFE_FREE(input_layouts_);
@@ -39,7 +39,7 @@ namespace maki
 		}
 
 		ID3D11InputLayout *gpu_vertex_shader_t::get_or_create_input_layout(ID3D11Device *device_, const vertex_format_t *vf) {
-			for(uint32 i = 0; i < input_layout_count_; i++) {
+			for(uint32_t i = 0; i < input_layout_count_; i++) {
 				if(input_layouts_[i].vertex_format_key_ == vf->equality_key_) {
 					return input_layouts_[i].input_layout_;
 				}
@@ -48,15 +48,15 @@ namespace maki
 			// Else create this layout and cache it
 			assert(input_layout_count_ < input_layout_capacity_ && "Too many vertex formats for this vertex shader");
 
-			uint32 offset = 0;
-			uint32 index = 0;
+			uint32_t offset = 0;
+			uint32_t index = 0;
 			D3D11_INPUT_ELEMENT_DESC layoutData[vertex_format_t::attribute_count_];
-			for(uint8 i = 0; i < vertex_format_t::attribute_count_; i++) {
+			for(uint8_t i = 0; i < vertex_format_t::attribute_count_; i++) {
 				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
 				if(vf->has_attribute(attr)) {
 
 					vertex_format_t::data_type_t data_type = vf->get_data_type(attr);
-					uint8 data_count = vf->get_data_count(attr);
+					uint8_t data_count = vf->get_data_count(attr);
 
 					layoutData[index].SemanticName = attr_to_semantic_string[attr];
 					layoutData[index].SemanticIndex = attr_to_semantic_index[attr];

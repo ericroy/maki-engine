@@ -37,7 +37,7 @@ namespace maki
 			}
 
 		public:
-			uint32 input_attribute_count_;
+			uint32_t input_attribute_count_;
 			shader_t vertex_shader_;
 			shader_t pixel_shader_;
 			variant_t variant_;

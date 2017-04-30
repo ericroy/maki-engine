@@ -41,8 +41,8 @@ namespace maki
 		void engine_t::tick()
 		{
 			// While we are overdue for the next update...
-			int64 now = 0;
-			uint32 skipped_frames = 0;
+			int64_t now = 0;
+			uint32_t skipped_frames = 0;
 			while((now = time_source_->get_time_micro()) > next_update_ && skipped_frames < max_skipped_frames_) {
 				update_timer_.tick();
 				

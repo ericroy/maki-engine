@@ -8,7 +8,7 @@ namespace maki
 	namespace core
 	{
 
-		shader_program_manager_t::shader_program_manager_t(uint32 size)
+		shader_program_manager_t::shader_program_manager_t(uint32_t size)
 			: manager_t<shader_program_t, shader_program_manager_t>(size, "shader_program_manager_t")
 		{
 			assert(size <= (1<<draw_command_t::bits_per_shader_program_) && "shader_program_manager_t too large, add more bits in draw_command_t");
@@ -65,7 +65,7 @@ namespace maki
 		bool shader_program_manager_t::reload_asset(rid_t rid)
 		{
 			bool found = false;
-			for(uint32 variant = shader_program_t::variant_normal_; variant < shader_program_t::variant_count_; variant++) {
+			for(uint32_t variant = shader_program_t::variant_normal_; variant < shader_program_t::variant_count_; variant++) {
 				handle_t handle_ = res_pool_->match(find_predicate_t(rid, (shader_program_t::variant_t)variant)) | manager_id_;
 				if(handle_ == HANDLE_NONE) {
 					continue;

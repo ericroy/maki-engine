@@ -16,10 +16,10 @@ namespace maki
 			static handle_t duplicate_if_shared(handle_t handle_);
 
 		public:
-			static const int32 default_size_ = 64;
+			static const int32_t default_size_ = 64;
 
 		public:
-			material_manager_t(uint32 size = default_size_);	
+			material_manager_t(uint32_t size = default_size_);	
 			virtual ~material_manager_t();	
 			handle_t load(rid_t rid);
 			void reload_assets();

@@ -8,7 +8,7 @@ namespace maki
 	namespace core
 	{
 
-		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32 size)
+		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32_t size)
 			: manager_t<skeleton_animation_t, skeleton_animation_manager_t>(size, "skeleton_animation_manager_t")
 		{
 		}

@@ -25,10 +25,10 @@ namespace maki
 				shader_program_t::variant_t variant_;
 			};
 
-			static const int32 default_size_ = 64;
+			static const int32_t default_size_ = 64;
 
 		public:
-			shader_program_manager_t(uint32 size = default_size_);	
+			shader_program_manager_t(uint32_t size = default_size_);	
 			virtual ~shader_program_manager_t();
 			handle_t load(rid_t rid, shader_program_t::variant_t variant = shader_program_t::variant_normal_);
 			void reload_assets();

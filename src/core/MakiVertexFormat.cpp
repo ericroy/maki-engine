@@ -7,7 +7,7 @@ namespace maki
 	namespace core
 	{
 
-		const uint8 vertex_format_t::data_type_sizes_[data_type_count_] = {4, 4, 2, 1};
+		const uint8_t vertex_format_t::data_type_sizes_[data_type_count_] = {4, 4, 2, 1};
 
 		vertex_format_t::vertex_format_t()
 			: stride_(0),
@@ -28,7 +28,7 @@ namespace maki
 		vertex_format_t::~vertex_format_t() {
 		}
 
-		void vertex_format_t::push_attribute(attribute_t attr, data_type_t type, uint8 count)
+		void vertex_format_t::push_attribute(attribute_t attr, data_type_t type, uint8_t count)
 		{
 			assert(count <= 64);
 			attr_flags_ |= 1<<attr;

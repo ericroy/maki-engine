@@ -17,19 +17,19 @@ namespace maki
 			struct state_t
 			{
 			public:
-				state_t(uint32 size);
+				state_t(uint32_t size);
 				state_t();
-				void set_size(uint32 size);
+				void set_size(uint32_t size);
 
 			public:
-				array_t<uint32> current_key_frames_;
+				array_t<uint32_t> current_key_frames_;
 				float current_frame_;
 			};
 
 		private:
 			struct key_frame_t : public skeleton_t::joint_t
 			{
-				uint32 frame_;
+				uint32_t frame_;
 			};
 
 		public:
@@ -42,11 +42,11 @@ namespace maki
 			~skeleton_animation_t();
 			bool load(rid_t rid);
 			void advance_state(float time_delta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rate_coeff);
-			inline uint32 get_bone_count() const;
+			inline uint32_t get_bone_count() const;
 
 		public:
 			float frame_rate_;
-			uint32 frame_count_;
+			uint32_t frame_count_;
 
 			// Indexed as data[bone_index][key_frame_index]
 
@@ -54,7 +54,7 @@ namespace maki
 
 		};
 
-		uint32 skeleton_animation_t::get_bone_count() const
+		uint32_t skeleton_animation_t::get_bone_count() const
 		{
 			return data_.count_;
 		}

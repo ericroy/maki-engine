@@ -42,18 +42,18 @@ namespace maki
 				data_type_count_
 			};
 
-			static const uint8 data_type_sizes_[data_type_count_];
+			static const uint8_t data_type_sizes_[data_type_count_];
 
 		private:
 			struct format_t
 			{
-				uint8 type_ : 2;			// Holds one of the four possible data types from above
-				uint8 count_ : 6;		// Up to 64
+				uint8_t type_ : 2;			// Holds one of the four possible data types from above
+				uint8_t count_ : 6;		// Up to 64
 			};
 
-			static const uint8 data_count_bit_shift_ = 3;
-			static const uint8 data_type_mask_ = (1<<data_count_bit_shift_) - 1;
-			static const uint8 data_count_mask_ = 0xff-data_type_mask_;
+			static const uint8_t data_count_bit_shift_ = 3;
+			static const uint8_t data_type_mask_ = (1<<data_count_bit_shift_) - 1;
+			static const uint8_t data_count_mask_ = 0xff-data_type_mask_;
 
 		public:
 			vertex_format_t();
@@ -63,22 +63,22 @@ namespace maki
 			inline bool operator==(const vertex_format_t &other) const;
 			inline bool has_attribute(attribute_t attr) const;
 			inline data_type_t get_data_type(attribute_t attr) const;
-			inline uint8 get_data_count(attribute_t attr) const;
-			inline int32 get_stride() const;
-			inline int32 get_attribute_count() const;
-			void push_attribute(attribute_t attr, data_type_t type, uint8 count);
+			inline uint8_t get_data_count(attribute_t attr) const;
+			inline int32_t get_stride() const;
+			inline int32_t get_attribute_count() const;
+			void push_attribute(attribute_t attr, data_type_t type, uint8_t count);
 			
 		public:
-			uint16 stride_;
-			uint8 attr_count_;
+			uint16_t stride_;
+			uint8_t attr_count_;
 			union
 			{
 				struct
 				{
-					uint8 attr_flags_;
+					uint8_t attr_flags_;
 					format_t formats_[attribute_count_];
 				};
-				uint64 equality_key_;
+				uint64_t equality_key_;
 			};
 		};
 
@@ -104,17 +104,17 @@ namespace maki
 			return (data_type_t)formats_[attr].type_;
 		}
 
-		uint8 vertex_format_t::get_data_count(attribute_t attr) const
+		uint8_t vertex_format_t::get_data_count(attribute_t attr) const
 		{
 			return formats_[attr].count_;
 		}
 
-		int32 vertex_format_t::get_stride() const
+		int32_t vertex_format_t::get_stride() const
 		{
 			return stride_;
 		}
 
-		int32 vertex_format_t::get_attribute_count() const
+		int32_t vertex_format_t::get_attribute_count() const
 		{
 			return attr_count_;
 		}

@@ -33,11 +33,11 @@ namespace maki
 		friend class draw_command_list_t;
 
 		public:
-			static const int32 bits_per_mesh_ = 12;
-			static const int32 bits_per_material_ = 8;
-			static const int32 bits_per_texture_set_ = 7;
-			static const int32 bits_per_shader_program_ = 6;
-			static const int32 bits_per_vertex_format_ = 4;
+			static const int32_t bits_per_mesh_ = 12;
+			static const int32_t bits_per_material_ = 8;
+			static const int32_t bits_per_texture_set_ = 7;
+			static const int32_t bits_per_shader_program_ = 6;
+			static const int32_t bits_per_vertex_format_ = 4;
 
 			enum translucency_type_t
 			{
@@ -50,25 +50,25 @@ namespace maki
 			{
 				// These fields contain the actual handle_ value to a resource.
 				// Make sure there are enough bits to represent every handle_ up to the maximum size of the manager's pool.
-				uint64 mesh_ : bits_per_mesh_;
-				uint64 mesh_manager_id_ : mesh_manager_t::bits_per_manager_id_;
+				uint64_t mesh_ : bits_per_mesh_;
+				uint64_t mesh_manager_id_ : mesh_manager_t::bits_per_manager_id_;
 
-				uint64 material_ : bits_per_material_;
-				uint64 material_manager_id_ : material_manager_t::bits_per_manager_id_;
+				uint64_t material_ : bits_per_material_;
+				uint64_t material_manager_id_ : material_manager_t::bits_per_manager_id_;
 
-				uint64 texture_set_ : bits_per_texture_set_;
-				uint64 texture_set_manager_id_ : texture_set_manager_t::bits_per_manager_id_;
+				uint64_t texture_set_ : bits_per_texture_set_;
+				uint64_t texture_set_manager_id_ : texture_set_manager_t::bits_per_manager_id_;
 
-				uint64 shader_program_ : bits_per_shader_program_;
-				uint64 shader_program_manager_id_ : shader_program_manager_t::bits_per_manager_id_;
+				uint64_t shader_program_ : bits_per_shader_program_;
+				uint64_t shader_program_manager_id_ : shader_program_manager_t::bits_per_manager_id_;
 
-				uint64 vertex_format_ : bits_per_vertex_format_;
-				uint64 vertex_format_manager_id_ : vertex_format_manager_t::bits_per_manager_id_;
+				uint64_t vertex_format_ : bits_per_vertex_format_;
+				uint64_t vertex_format_manager_id_ : vertex_format_manager_t::bits_per_manager_id_;
 
-				uint64 inverse_depth_ : 11;
+				uint64_t inverse_depth_ : 11;
 
 				// Other higher priority sorting properties
-				uint64 translucency_type_ : 1;
+				uint64_t translucency_type_ : 1;
 			};
 
 		public:
@@ -76,7 +76,7 @@ namespace maki
 			draw_command_t(const move_token_t<draw_command_t> &other);
 			~draw_command_t();
 
-			inline uint64 get_key() const { return key_; }
+			inline uint64_t get_key() const { return key_; }
 			void set_mesh(handle_t mesh);
 			void set_material(handle_t material);
 			inline void clear();
@@ -89,7 +89,7 @@ namespace maki
 			union
 			{
 				key_fields_t fields_;	
-				uint64 key_;
+				uint64_t key_;
 			};
 		
 			handle_t mesh_;

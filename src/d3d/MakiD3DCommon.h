@@ -15,9 +15,9 @@ namespace maki
 	#endif
 
 		extern const char *attr_to_semantic_string[core::vertex_format_t::attribute_count_];
-		extern uint32 attr_to_semantic_index[core::vertex_format_t::attribute_count_];
+		extern uint32_t attr_to_semantic_index[core::vertex_format_t::attribute_count_];
 
-		extern uint8 normalize_attribute[core::vertex_format_t::attribute_count_];
+		extern uint8_t normalize_attribute[core::vertex_format_t::attribute_count_];
 
 		// First index is type, second index is component count, third index is boolean 0 or 1 indicating if value should be normed
 		extern const DXGI_FORMAT type_and_count_and_norm_to_format[core::vertex_format_t::data_type_count_][5][2];

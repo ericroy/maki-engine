@@ -13,10 +13,10 @@ namespace maki
 		
 			const char *udata_matrix44_t::type_name_ = "maki.math.Matrix44";
 
-			int32 udata_matrix44_t::create(lua_State *L)
+			int32_t udata_matrix44_t::create(lua_State *L)
 			{
 				// First item on the stack is the self reference
-				int32 arg_count = lua_gettop(L) - 1;
+				int32_t arg_count = lua_gettop(L) - 1;
 
 				matrix44_t m;
 				switch(arg_count) {
@@ -121,7 +121,7 @@ namespace maki
 				return 1;
 			}
 
-			int32 udata_matrix44_t::tostring(lua_State *L)
+			int32_t udata_matrix44_t::tostring(lua_State *L)
 			{
 				udata_matrix44_t *udata = luaL_toudata<udata_matrix44_t>(L, 1);
 				lua_pushfstring(L, "<%s: [\n\t|%f, %f, %f, %f|\n\t|%f, %f, %f, %f|\n\t|%f, %f, %f, %f|\n\t|%f, %f, %f, %f|\n]>",
@@ -148,10 +148,10 @@ namespace maki
 
 			const char *udata_vector4_t::type_name_ = "maki.math.Vector4";
 
-			int32 udata_vector4_t::create(lua_State *L)
+			int32_t udata_vector4_t::create(lua_State *L)
 			{
 				// First item on the stack is the self reference
-				int32 arg_count = lua_gettop(L) - 1;
+				int32_t arg_count = lua_gettop(L) - 1;
 
 				vector4_t v;
 
@@ -217,7 +217,7 @@ namespace maki
 				return 1;
 			}
 
-			int32 udata_vector4_t::tostring(lua_State *L)
+			int32_t udata_vector4_t::tostring(lua_State *L)
 			{
 				udata_vector4_t *udata = luaL_toudata<udata_vector4_t>(L, 1);
 				lua_pushfstring(L, "<%s: [%f, %f, %f, %f]>", udata->type_name_, udata->vector_.x_, udata->vector_.y_, udata->vector_.z_, udata->vector_.w_);
@@ -239,7 +239,7 @@ namespace maki
 				{ nullptr, nullptr }
 			};
 
-			LUALIB_API int32 luaopen_maki_math(lua_State *L)
+			LUALIB_API int32_t luaopen_maki_math(lua_State *L)
 			{
 				luaL_register(L, "maki.math", module);
 

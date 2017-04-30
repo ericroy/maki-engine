@@ -9,7 +9,7 @@ namespace maki
 		class input_state_t
 		{
 		public:
-			static const int32 max_players_ = 4;
+			static const int32_t max_players_ = 4;
 
 			enum key_t
 			{
@@ -183,8 +183,8 @@ namespace maki
 					transition_count_++;
 				}
 
-				uint8 on_ : 1;
-				uint8 transition_count_ : 7;
+				uint8_t on_ : 1;
+				uint8_t transition_count_ : 7;
 			};
 
 
@@ -197,17 +197,17 @@ namespace maki
 
 				inline void set_identity_mapping()
 				{
-					for(uint8 i = 0; i < button_count_; i++) {
+					for(uint8_t i = 0; i < button_count_; i++) {
 						mapping_[i] = i;
 					}
 				}
 
 			public:
 				bool connected_;
-				uint8 player_index_;
+				uint8_t player_index_;
 
 				float values_[button_count_];
-				uint8 mapping_[button_count_];
+				uint8_t mapping_[button_count_];
 			};
 
 			struct player_t
@@ -216,13 +216,13 @@ namespace maki
 				struct key_state_t
 				{
 					// True if the key is currently depressed
-					uint8 on_ : 1;
+					uint8_t on_ : 1;
 
 					// True if the key went down in the last tick
-					uint8 pressed_ : 1;
+					uint8_t pressed_ : 1;
 			
 					// True if the key went up in the last tick
-					uint8 released_ : 1;
+					uint8_t released_ : 1;
 				};
 
 			public:
@@ -240,14 +240,14 @@ namespace maki
 
 				inline void set_identity_mapping()
 				{
-					for(uint32 i = 0; i < 256; i++) {
+					for(uint32_t i = 0; i < 256; i++) {
 						key_mapping_[i] = i;
 					}
 				}
 
 				void set_key_states(const key_state_report_t states[256])
 				{
-					for(uint32 i = 0; i < 256; i++) {
+					for(uint32_t i = 0; i < 256; i++) {
 						if(key_states_[i].on_ == states[i].on_ && states[i].transition_count_ == 0) {
 							// Nothing happened with this key
 							key_states_[i].pressed_ = 0;
@@ -283,7 +283,7 @@ namespace maki
 				controller_t *controller_;
 		
 			private:
-				uint8 key_mapping_[256];
+				uint8_t key_mapping_[256];
 				key_state_t key_states_[256];
 			};
 
@@ -292,17 +292,17 @@ namespace maki
 			virtual ~input_state_t();
 		
 			// Hold a reference to the player object
-			inline player_t *get_player(uint8 index) { assert(index < max_players_); return &players_[index]; }
+			inline player_t *get_player(uint8_t index) { assert(index < max_players_); return &players_[index]; }
 
 			// Don't hold a reference to the controller object - get it each time from the player
 			// in case the controller associated with the player changes
-			inline controller_t &get_controller(uint8 index) { assert(index < max_players_); return controllers_[index]; }
+			inline controller_t &get_controller(uint8_t index) { assert(index < max_players_); return controllers_[index]; }
 
-			void connect_controller(uint8 controller_index);
-			void disconnect_controller(uint8 controller_index);
+			void connect_controller(uint8_t controller_index);
+			void disconnect_controller(uint8_t controller_index);
 
 		private:
-			uint8 controller_count_;
+			uint8_t controller_count_;
 			controller_t controllers_[max_players_];
 			player_t players_[max_players_];
 		};

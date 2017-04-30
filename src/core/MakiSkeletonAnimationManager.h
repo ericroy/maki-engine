@@ -14,10 +14,10 @@ namespace maki
 		class skeleton_animation_manager_t : public manager_t<skeleton_animation_t, skeleton_animation_manager_t>
 		{
 		public:
-			static const int32 default_size_ = 32;
+			static const int32_t default_size_ = 32;
 
 		public:
-			skeleton_animation_manager_t(uint32 size = default_size_);	
+			skeleton_animation_manager_t(uint32_t size = default_size_);	
 			virtual ~skeleton_animation_manager_t();
 			handle_t load(rid_t rid);
 			void reload_assets();

@@ -9,7 +9,7 @@ namespace maki
 	namespace core
 	{
 
-		texture_manager_t::texture_manager_t(uint32 size)
+		texture_manager_t::texture_manager_t(uint32_t size)
 			: manager_t<texture_t, texture_manager_t>(size, "texture_manager_t")
 		{
 		}
@@ -18,7 +18,7 @@ namespace maki
 		{
 		}
 	
-		handle_t texture_manager_t::alloc_texture(texture_t::texture_type_t type, uint32 width, uint32 height, uint8 channels)
+		handle_t texture_manager_t::alloc_texture(texture_t::texture_type_t type, uint32_t width, uint32_t height, uint8_t channels)
 		{
 			engine_t *eng = engine_t::get();
 
@@ -77,7 +77,7 @@ namespace maki
 		{
 			engine_t *eng = engine_t::get();
 
-			uint32 bytes_read;
+			uint32_t bytes_read;
 			char *data = eng->assets_->alloc_read(rid, &bytes_read);
 
 			if(!eng->renderer_->create_texture(tex_, (char *)data, bytes_read)) {

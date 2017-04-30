@@ -87,7 +87,7 @@ namespace maki
 
 			inline vector4_t get_max_corner() const { return pos_ + radii_; }
 			inline vector4_t get_min_corner() const { return pos_ - radii_; }
-			inline vector4_t get_corner(uint32 i) const
+			inline vector4_t get_corner(uint32_t i) const
 			{
 				assert(i < 8);
 				return pos_ + corner_coeffs_[i] * radii_;

@@ -17,8 +17,8 @@ namespace maki
 
 		private:
 			lua_State *L_;
-			int32 update_function_ref_;
-			int32 draw_function_ref_;
+			int32_t update_function_ref_;
+			int32_t draw_function_ref_;
 		};
 
 	} // namespace framework

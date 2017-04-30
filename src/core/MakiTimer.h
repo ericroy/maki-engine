@@ -10,7 +10,7 @@ namespace maki
 		class timer_t
 		{
 		public:
-			static const int32 n_frame_average_ = 30;
+			static const int32_t n_frame_average_ = 30;
 
 		public:
 			timer_t(time_source_t *source);
@@ -20,17 +20,17 @@ namespace maki
 			void update_history();
 
 		public:
-			uint64 delta_micros_;
+			uint64_t delta_micros_;
 			float delta_seconds_;
 
 			double elapsed_seconds_;
-			uint64 elapsed_micros_;
+			uint64_t elapsed_micros_;
 
 			float average_fps_;
 
 		private:
-			uint64 last_time_;
-			uint64 update_count_;
+			uint64_t last_time_;
+			uint64_t update_count_;
 			float delta_history_[n_frame_average_];
 			time_source_t *source_;
 		};

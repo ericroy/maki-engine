@@ -93,12 +93,12 @@ namespace maki
 				cols_[3][3] = 1.0f;
 			}
 
-			inline vector4_t get_row(uint32 row) const
+			inline vector4_t get_row(uint32_t row) const
 			{
 				return vector4_t(cols_[0][row], cols_[1][row], cols_[2][row], cols_[3][row]);
 			}
 		
-			inline void set_row(uint32 row, const vector4_t &v)
+			inline void set_row(uint32_t row, const vector4_t &v)
 			{
 				cols_[0][row] = v.x_;
 				cols_[1][row] = v.y_;
@@ -121,7 +121,7 @@ namespace maki
 			inline matrix44_t operator*(float s) const
 			{
 				matrix44_t ret;
-				for(uint32 i = 0; i < 16; i++) {
+				for(uint32_t i = 0; i < 16; i++) {
 					ret.vals_[i] = vals_[i] * s;
 				}
 				return ret;
@@ -129,7 +129,7 @@ namespace maki
 
 			inline void operator*=(float s)
 			{
-				for(uint32 i = 0; i < 16; i++) {
+				for(uint32_t i = 0; i < 16; i++) {
 					vals_[i] *= s;
 				}
 			}
