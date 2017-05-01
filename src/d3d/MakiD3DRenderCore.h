@@ -7,10 +7,8 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 		class window_t;
 		class config_t;
 		class vertex_format_t;

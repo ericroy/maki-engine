@@ -158,17 +158,17 @@ namespace maki
 				switch(arg_count) {
 				case 4:
 					// Loose values
-					v.x_ = (float)luaL_checknumber(L, 2);
-					v.y_ = (float)luaL_checknumber(L, 3);
-					v.z_ = (float)luaL_checknumber(L, 4);
+					v.x = (float)luaL_checknumber(L, 2);
+					v.y = (float)luaL_checknumber(L, 3);
+					v.z = (float)luaL_checknumber(L, 4);
 					v.w_ = (float)luaL_checknumber(L, 5);
 					break;
 
 				case 3:
 					// Loose values
-					v.x_ = (float)luaL_checknumber(L, 2);
-					v.y_ = (float)luaL_checknumber(L, 3);
-					v.z_ = (float)luaL_checknumber(L, 4);
+					v.x = (float)luaL_checknumber(L, 2);
+					v.y = (float)luaL_checknumber(L, 3);
+					v.z = (float)luaL_checknumber(L, 4);
 					v.w_ = 1.0f;
 					break;
 
@@ -177,18 +177,18 @@ namespace maki
 					switch(lua_type(L, 2)) {
 					case LUA_TTABLE:
 						lua_rawgeti(L, 2, 1);
-						v.x_ = (float)luaL_checknumber(L, -1);
+						v.x = (float)luaL_checknumber(L, -1);
 						lua_rawgeti(L, 2, 2);
-						v.y_ = (float)luaL_checknumber(L, -1);
+						v.y = (float)luaL_checknumber(L, -1);
 						lua_rawgeti(L, 2, 3);
-						v.z_ = (float)luaL_checknumber(L, -1);
+						v.z = (float)luaL_checknumber(L, -1);
 						lua_rawgeti(L, 2, 4);
 						// W is optional
 						v.w_ = (float)luaL_optnumber(L, -1, 1.0f);
 						break;
 
 					case LUA_TNUMBER:
-						v.x_ = v.y_ = v.z_ = (float)lua_tonumber(L, 2);
+						v.x = v.y = v.z = (float)lua_tonumber(L, 2);
 						v.w_ = 1.0f;
 						break;
 
@@ -220,7 +220,7 @@ namespace maki
 			int32_t udata_vector4_t::tostring(lua_State *L)
 			{
 				udata_vector4_t *udata = luaL_toudata<udata_vector4_t>(L, 1);
-				lua_pushfstring(L, "<%s: [%f, %f, %f, %f]>", udata->type_name_, udata->vector_.x_, udata->vector_.y_, udata->vector_.z_, udata->vector_.w_);
+				lua_pushfstring(L, "<%s: [%f, %f, %f, %f]>", udata->type_name_, udata->vector_.x, udata->vector_.y, udata->vector_.z, udata->vector_.w_);
 				return 1;
 			}
 

@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiCoreManagers.h"
 #include "core/MakiEngine.h"
 #include "core/MakiRenderer.h"
@@ -14,58 +13,30 @@
 #include "core/MakiSkeletonManager.h"
 #include "core/MakiSkeletonAnimationManager.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
-		core_managers_t::core_managers_t()
-			: pseudo_singleton_t<core_managers_t>(),
-			texture_manager_(nullptr),
-			texture_set_manager_(nullptr),
-			material_manager_(nullptr),
-			mesh_manager_(nullptr),
-			vertex_format_manager_(nullptr),
-			shader_program_manager_(nullptr),
-			font_manager_(nullptr),
-			skeleton_manager_(nullptr),
-			skeleton_animation_manager_(nullptr)
-		{
-		}
-
-		core_managers_t::core_managers_t(const config_t *config)
-			: pseudo_singleton_t<core_managers_t>(),
-			texture_manager_(nullptr),
-			texture_set_manager_(nullptr),
-			material_manager_(nullptr),
-			mesh_manager_(nullptr),
-			vertex_format_manager_(nullptr),
-			shader_program_manager_(nullptr),
-			font_manager_(nullptr),
-			skeleton_manager_(nullptr),
-			skeleton_animation_manager_(nullptr)
-		{
-			texture_manager_ = new texture_manager_t(config->get_uint("engine.max_textures", texture_manager_t::default_size_));
-			texture_set_manager_ = new texture_set_manager_t(config->get_uint("engine.max_texture_sets", texture_manager_t::default_size_));
-			material_manager_ = new material_manager_t(config->get_uint("engine.max_materials", texture_manager_t::default_size_));
-			mesh_manager_ = new mesh_manager_t(config->get_uint("engine.max_meshes", texture_manager_t::default_size_));
-			vertex_format_manager_ = new vertex_format_manager_t(config->get_uint("engine.max_vertex_formats", vertex_format_manager_t::default_size_));
-			shader_program_manager_ = new shader_program_manager_t(config->get_uint("engine.max_shader_programs", shader_program_manager_t::default_size_));
-			font_manager_ = new font_manager_t(config->get_uint("engine.max_fonts", font_manager_t::default_size_));
-			skeleton_manager_ = new skeleton_manager_t(config->get_uint("engine.max_skeletons", skeleton_manager_t::default_size_));
-			skeleton_animation_manager_ = new skeleton_animation_manager_t(config->get_uint("engine.max_skeleton_animations", skeleton_animation_manager_t::default_size_));
+		core_managers_t::core_managers_t(const config_t *config) {
+			texture_manager_ = new texture_manager_t(config->get_uint("engine.max_textures", 64));
+			texture_set_manager_ = new texture_set_manager_t(config->get_uint("engine.max_texture_sets", 64));
+			material_manager_ = new material_manager_t(config->get_uint("engine.max_materials", 64));
+			mesh_manager_ = new mesh_manager_t(config->get_uint("engine.max_meshes", 64));
+			vertex_format_manager_ = new vertex_format_manager_t(config->get_uint("engine.max_vertex_formats", 64));
+			shader_program_manager_ = new shader_program_manager_t(config->get_uint("engine.max_shader_programs", 64));
+			font_manager_ = new font_manager_t(config->get_uint("engine.max_fonts", 64));
+			skeleton_manager_ = new skeleton_manager_t(config->get_uint("engine.max_skeletons", 64));
+			skeleton_animation_manager_ = new skeleton_animation_manager_t(config->get_uint("engine.max_skeleton_animations", 64));
 
 			// Check that the draw command bitfield (which is used for sorting draw commands) has enough bits allocated to each type
 			// so that it can represent every possible handle_ value for that type.
-			assert(mesh_manager_->get_capacity() <= (1<<draw_command_t::bits_per_mesh_) && "assign more bits to mesh in draw command bitfield");
-			assert(material_manager_->get_capacity() <= (1<<draw_command_t::bits_per_material_) && "assign more bits to material in draw command bitfield");
-			assert(texture_set_manager_->get_capacity() <= (1<<draw_command_t::bits_per_texture_set_) && "assign more bits to texture set in draw command bitfield");
-			assert(vertex_format_manager_->get_capacity() <= (1<<draw_command_t::bits_per_vertex_format_) && "assign more bits to vertex format in draw command bitfield");
-			assert(shader_program_manager_->get_capacity() <= (1<<draw_command_t::bits_per_shader_program_) && "assign more bits to shader program in draw command bitfield");
+			assert(mesh_manager_->get_capacity() <= (1 << draw_command_t::bits_per_mesh) && "assign more bits to mesh in draw command bitfield");
+			assert(material_manager_->get_capacity() <= (1 << draw_command_t::bits_per_material) && "assign more bits to material in draw command bitfield");
+			assert(texture_set_manager_->get_capacity() <= (1 << draw_command_t::bits_per_texture_set) && "assign more bits to texture set in draw command bitfield");
+			assert(vertex_format_manager_->get_capacity() <= (1 << draw_command_t::bits_per_vertex_format) && "assign more bits to vertex format in draw command bitfield");
+			assert(shader_program_manager_->get_capacity() <= (1 << draw_command_t::bits_per_shader_program) && "assign more bits to shader program in draw command bitfield");
 		}
 
-		core_managers_t::~core_managers_t()
-		{
+		core_managers_t::~core_managers_t() {
 			MAKI_SAFE_DELETE(skeleton_animation_manager_);
 			MAKI_SAFE_DELETE(skeleton_manager_);
 			MAKI_SAFE_DELETE(font_manager_);
@@ -77,8 +48,7 @@ namespace maki
 			MAKI_SAFE_DELETE(texture_manager_);
 		}
 
-		void core_managers_t::dump_manager_stats()
-		{
+		void core_managers_t::dump_manager_stats() {
 			vertex_format_manager_->dump_stats		("Vertex formats  ");
 			shader_program_manager_->dump_stats		("Shader programs ");
 			texture_set_manager_->dump_stats		("Texture sets    ");
@@ -90,12 +60,10 @@ namespace maki
 			skeleton_animation_manager_->dump_stats	("Skeleton anims  ");
 		}
 
-		void core_managers_t::reload_assets()
-		{
+		void core_managers_t::reload_assets() {
 			engine_t *eng = engine_t::get();
-			if(eng != nullptr) {
+			if(eng != nullptr)
 				eng->renderer_->sync_with_core();
-			}
 
 			console_t::info("Reloading all hot-swappable assets");
 			mesh_manager_->reload_assets();
@@ -108,12 +76,10 @@ namespace maki
 			dump_manager_stats();
 		}
 
-		bool core_managers_t::reload_asset(rid_t rid)
-		{
+		bool core_managers_t::reload_asset(rid_t rid) {
 			engine_t *eng = engine_t::get();
-			if(eng != nullptr) {
+			if(eng != nullptr)
 				eng->renderer_->sync_with_core();
-			}
 
 			// Caution, relies on short-circuit evaluation
 			if(	texture_manager_->reload_asset(rid) ||
@@ -129,5 +95,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

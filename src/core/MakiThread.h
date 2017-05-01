@@ -1,11 +1,8 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include <thread>
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class thread_t
 		{
@@ -22,7 +19,7 @@ namespace maki
 			inline void start()
 			{
 				if(!thread_.joinable()) {
-					thread_ = std::thread(run_dispatch, this);
+					thread_ = ::std::thread(run_dispatch, this);
 				}
 			}
 
@@ -36,9 +33,8 @@ namespace maki
 			virtual void run() = 0;
 
 		protected:
-			std::thread thread_;
+			::std::thread thread_;
 		};
 
 	} // namespace core
-
 } // namespace maki

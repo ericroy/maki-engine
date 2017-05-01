@@ -1,11 +1,8 @@
-#include "core/core_stdafx.h"
 #include "core/MakiTimer.h"
 #include "core/MakiTimeSource.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		timer_t::timer_t(time_source_t *source)
 			: source_(source)
@@ -59,5 +56,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

@@ -1,12 +1,9 @@
-#include "core/core_stdafx.h"
 #include "core/MakiTimeSource.h"
 
 #include "SDL.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		time_source_t::time_source_t()
 		{
@@ -35,5 +32,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

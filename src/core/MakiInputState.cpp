@@ -1,10 +1,7 @@
-#include "core/core_stdafx.h"
 #include "core/MakiInputState.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		input_state_t::input_state_t()
 			: controller_count_(0)
@@ -48,5 +45,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

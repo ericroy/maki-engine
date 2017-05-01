@@ -1,14 +1,11 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include <mutex>
 #include <condition_variable>
 #include <assert.h>
 #include "core/MakiArray.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		template<class T>
 		class safe_queue_t
@@ -103,5 +100,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

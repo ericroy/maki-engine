@@ -12,10 +12,8 @@
 
 #define MAKI_USE_OGL_MUTEX 0
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 		
 		class window_t;
 		class input_layout_cache_t;
@@ -29,8 +27,7 @@ namespace maki
 
 	} // namespace core
 
-	namespace ogl
-	{
+	namespace ogl {
 
 
 		class ogl_render_core_t : public core::render_core_t

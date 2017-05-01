@@ -1,10 +1,7 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class render_state_t;
 		class draw_command_list_t;
@@ -32,5 +29,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

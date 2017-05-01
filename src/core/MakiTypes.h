@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace maki
 {
@@ -13,7 +14,7 @@ namespace maki
 		uint64_t index_;
 		inline bool operator==(const _Rid &other) const { return index_ == other.index_; }
 		inline bool operator!=(const _Rid &other) const { return index_ != other.index_; }
-		inline _Rid &operator=(const uint32_t &u) { index_ = u; return *this; }
+		inline _Rid &operator=(const uint64_t &u) { index_ = u; return *this; }
 		inline operator uint64_t() const { return index_; }
 	} rid_t;
 	const rid_t RID_NONE = {(uint64_t)-1};

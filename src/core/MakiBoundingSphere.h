@@ -1,90 +1,71 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class bounding_sphere_t
 		{
 		public:
-			bounding_sphere_t()
-				: empty_(true), pos_(0.0f), radius_(0.0f)
-			{
-			}
-			bounding_sphere_t(const vector4_t &pos, float radius)
-				: empty_(false), pos_(pos), radius_(radius)
-			{
-			}
-			bounding_sphere_t(const vector3_t &pos, float radius)
-				: empty_(false), pos_(pos.x_, pos.y_, pos.z_, 1.0f), radius_(radius)
-			{
-			}
+			bounding_sphere_t() = default;
+			bounding_sphere_t(const vector4_t &pos, float radius) : empty(false), pos(pos), radius(radius) {}
+			bounding_sphere_t(const vector3_t &pos, float radius) : empty(false), pos(pos.x, pos.y, pos.z, 1.0f), radius(radius) {}
 
-			inline void merge(const bounding_sphere_t &other)
-			{
-				if(other.empty_) {
+			inline void merge(const bounding_sphere_t &other) {
+				if(other.empty)
 					return;
-				}
-				if(empty_) {
-					pos_ = other.pos_;
-					radius_ = other.radius_;
-					empty_ = false;
+				if(empty) {
+					pos = other.pos;
+					radius = other.radius;
+					empty = false;
 					return;
 				}
 
-				vector4_t dir = other.pos_ - pos_;
+				vector4_t dir = other.pos - pos;
 				float dist = dir.length();
 				if(dist < 0.000001f) {
-					if(other.radius_ > radius_) {
-						radius_ = other.radius_;
-					}
+					if(other.radius > radius)
+						radius = other.radius;
 				} else {
 					dir /= dist;
-					vector4_t min_point = dir * -radius_;
-					vector4_t max_point = dir * (dist + other.radius_);
-					pos_ = (min_point + max_point) / 2.0f;
-					radius_ = (radius_ + dist + other.radius_) / 2.0f;
+					vector4_t min_point = dir * -radius;
+					vector4_t max_point = dir * (dist + other.radius);
+					pos = (min_point + max_point) / 2.0f;
+					radius = (radius + dist + other.radius) / 2.0f;
 				}
 			}
 
-			inline void merge(const vector4_t &p)
-			{
-				if(empty_) {
-					pos_ = p;
-					empty_ = false;
+			inline void merge(const vector4_t &p) {
+				if(empty) {
+					pos = p;
+					empty = false;
 					return;
 				}
 			
-				vector4_t dir = p - pos_;
+				vector4_t dir = p - pos;
 				float dist = dir.length();
 				if(dist < 0.000001f) {
-					if(dist > radius_) {
-						radius_ = dist;
-					}
+					if(dist > radius)
+						radius = dist;
 				} else {
 					dir /= dist;
-					vector4_t min_point = dir * -radius_;
+					vector4_t min_point = dir * -radius;
 					vector4_t max_point = dir * dist;
-					pos_ = (min_point + max_point) / 2.0f;
-					radius_ = (radius_ + dist) / 2.0f;
+					pos = (min_point + max_point) / 2.0f;
+					radius = (radius + dist) / 2.0f;
 				}
 			}
 
-			inline void reset()
-			{
-				pos_ = vector4_t(0.0f);
-				radius_ = 0.0f;
-				empty_ = true;
+			inline void reset() {
+				pos = vector4_t(0.0f);
+				radius = 0.0f;
+				empty = true;
 			}
 
 		public:
-			vector4_t pos_;
-			float radius_;
-			bool empty_;
+			vector4_t pos;
+			float radius = 0.0;
+			bool empty = true;
 		};
 
 	} // namespace core
-
 } // namespace maki

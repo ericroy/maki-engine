@@ -1,13 +1,10 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include "core/MakiWindow.h"
 #include "core/MakiDrawCommandList.h"
 #include "core/MakiRenderCore.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class resource_library_t;
 		class config_t;
@@ -301,5 +298,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

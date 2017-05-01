@@ -1,13 +1,10 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include "dependencies/stb_truetype.h"
 #include "core/MakiResource.h"
 
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class mesh_t;
 
@@ -22,7 +19,7 @@ namespace maki
 
 		public:
 			font_t();
-			font_t(const move_token_t<font_t> &) { assert(false && "font_t move construction not allowed"); }
+			font_t(font_t &&) { assert(false && "font_t move construction not allowed"); }
 			font_t(const font_t &) { assert(false && "font_t copy construction not allowed"); }
 			virtual ~font_t();
 			bool operator==(const font_t &other) const;
@@ -41,5 +38,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

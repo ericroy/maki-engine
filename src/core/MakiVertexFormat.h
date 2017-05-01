@@ -1,11 +1,8 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class vertex_format_t
 		{
@@ -58,7 +55,7 @@ namespace maki
 		public:
 			vertex_format_t();
 			vertex_format_t(const vertex_format_t &other);
-			vertex_format_t(const move_token_t<vertex_format_t> &) { assert(false && "vertex_format_t move construction not allowed"); }
+			vertex_format_t(vertex_format_t &&) { assert(false && "vertex_format_t move construction not allowed"); }
 			~vertex_format_t();
 			inline bool operator==(const vertex_format_t &other) const;
 			inline bool has_attribute(attribute_t attr) const;
@@ -120,5 +117,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

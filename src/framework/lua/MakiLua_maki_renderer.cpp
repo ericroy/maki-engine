@@ -277,9 +277,9 @@ namespace maki
 			int32_t l_get_global_ambient_color(lua_State *L)
 			{
 				const vector4_t &c = engine_t::get()->renderer_->get_global_ambient_color();
-				lua_pushnumber(L, c.x_);
-				lua_pushnumber(L, c.y_);
-				lua_pushnumber(L, c.z_);
+				lua_pushnumber(L, c.x);
+				lua_pushnumber(L, c.y);
+				lua_pushnumber(L, c.z);
 				lua_pushnumber(L, c.w_);
 				return 4;
 			}

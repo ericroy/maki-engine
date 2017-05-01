@@ -1,10 +1,7 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class input_state_t
 		{
@@ -308,5 +305,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

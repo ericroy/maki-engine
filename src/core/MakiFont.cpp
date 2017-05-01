@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiFont.h"
 #include "core/MakiEngine.h"
 #include "core/MakiCoreManagers.h"
@@ -8,10 +7,8 @@
 #include "core/MakiTextureSet.h"
 #include "core/MakiTextureSetManager.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		inline uint32_t next_power_of_two(uint32_t v)
 		{
@@ -130,5 +127,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

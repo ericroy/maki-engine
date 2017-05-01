@@ -1,10 +1,7 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		template<class SUBCLASS>
 		class pseudo_singleton_t
@@ -41,5 +38,4 @@ namespace maki
 		SUBCLASS *pseudo_singleton_t<SUBCLASS>::current_ = nullptr;
 
 	} // namespace core
-
 } // namespace maki

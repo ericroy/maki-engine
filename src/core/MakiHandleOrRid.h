@@ -1,10 +1,7 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class handle_or_rid_t
 		{
@@ -23,5 +20,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

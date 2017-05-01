@@ -48,3 +48,7 @@ Release_framework/
 bullet-2*/
 LuaJIT-2*/
 SDL2-2*/
+
+
+build/
+vsbuild/

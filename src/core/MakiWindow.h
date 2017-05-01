@@ -1,5 +1,4 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include "core/MakiInputState.h"
 #include "core/MakiRenderCore.h"
 
@@ -10,10 +9,8 @@
 #include <Xinput.h>
 #endif
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 		class config_t;
 		class engine_t;
 
@@ -50,5 +47,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

@@ -1,12 +1,9 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include "core/MakiResource.h"
 #include "core/MakiShaderProgram.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class material_t : public resource_t
 		{
@@ -35,7 +32,7 @@ namespace maki
 
 		public:
 			material_t();
-			material_t(const move_token_t<material_t> &other);
+			material_t(material_t &&other);
 			explicit material_t(const material_t &other);
 			virtual ~material_t();
 			bool load(rid_t rid);
@@ -58,5 +55,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

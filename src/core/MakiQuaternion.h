@@ -39,12 +39,9 @@ THE SOFTWARE.
 // http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 
 
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		class quaternion_t
 		{
@@ -84,7 +81,7 @@ namespace maki
 			void from_matrix(const matrix44_t &m);
 
 			void from_euler_angles(float theta_x, float theta_y, float theta_z);
-			inline void from_euler_angles(const vector3_t &angles) { from_euler_angles(angles.x_, angles.y_, angles.z_); }
+			inline void from_euler_angles(const vector3_t &angles) { from_euler_angles(angles.x, angles.y, angles.z); }
 			void to_euler_angles(vector3_t &angles) const;
 
 			void from_angle_axis(float theta, const vector3_t &axis);
@@ -128,12 +125,12 @@ namespace maki
 
 		quaternion_t quaternion_t::operator+(const quaternion_t &q) const
 		{
-			return quaternion_t(w_+q.w_, x_+q.x_, y_+q.y_, z_+q.z_);
+			return quaternion_t(w_+q.w_, x_+q.x, y_+q.y, z_+q.z);
 		}
 
 		quaternion_t quaternion_t::operator-(const quaternion_t &q) const
 		{
-			return quaternion_t(w_-q.w_, x_-q.x_, y_-q.y_, z_-q.z_);
+			return quaternion_t(w_-q.w_, x_-q.x, y_-q.y, z_-q.z);
 		}
 
 		quaternion_t quaternion_t::operator*(float s) const
@@ -146,10 +143,10 @@ namespace maki
 			// NOTE:  Multiplication is not generally commutative, so in most
 			// cases p*q != q*p.
 			return quaternion_t(
-				w_ * q.w_ - x_ * q.x_ - y_ * q.y_ - z_ * q.z_,
-				w_ * q.x_ + x_ * q.w_ + y_ * q.z_ - z_ * q.y_,
-				w_ * q.y_ + y_ * q.w_ + z_ * q.x_ - x_ * q.z_,
-				w_ * q.z_ + z_ * q.w_ + x_ * q.y_ - y_ * q.x_
+				w_ * q.w_ - x_ * q.x - y_ * q.y - z_ * q.z,
+				w_ * q.x + x_ * q.w_ + y_ * q.z - z_ * q.y,
+				w_ * q.y + y_ * q.w_ + z_ * q.x - x_ * q.z,
+				w_ * q.z + z_ * q.w_ + x_ * q.y - y_ * q.x
 			);
 		}
 
@@ -160,7 +157,7 @@ namespace maki
 
 		float quaternion_t::dot(const quaternion_t& q) const
 		{
-			return w_*q.w_ + x_*q.x_ + y_*q.y_ + z_*q.z_;
+			return w_*q.w_ + x_*q.x + y_*q.y + z_*q.z;
 		}
 
 		float quaternion_t::norm() const
@@ -180,7 +177,7 @@ namespace maki
 
 		inline quaternion_t operator*(float s, const quaternion_t &q)
 		{
-			return quaternion_t(s*q.w_, s*q.x_, s*q.y_, s*q.z_);
+			return quaternion_t(s*q.w_, s*q.x, s*q.y, s*q.z);
 		}
 
 
@@ -273,5 +270,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

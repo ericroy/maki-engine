@@ -1,10 +1,7 @@
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		template<class T>
 		inline T clamp(T x, T low, T high)
@@ -15,5 +12,4 @@ namespace maki
 		}
 	
 	} // namespace core
-
 } // namespace maki

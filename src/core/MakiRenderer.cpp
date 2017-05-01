@@ -1,13 +1,10 @@
-#include "core/core_stdafx.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiConfig.h"
 #include "core/MakiRenderPayload.h"
 #include "core/MakiRenderCore.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		renderer_t::renderer_t(window_t *window, render_core_t *core, const config_t *config)
 		:	window_(window),
@@ -157,11 +154,11 @@ namespace maki
 			matrix44_t::affine_inverse(*matrix, current_.light_view_[light_index]);
 
 			if(fov == 0.0f) {
-				float wo2 = props->width_height_near_far_.x_ / 2.0f;
-				float ho2 = props->width_height_near_far_.y_ / 2.0f;
-				matrix44_t::ortho(-wo2, wo2, -ho2, ho2, props->width_height_near_far_.z_, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
+				float wo2 = props->width_height_near_far_.x / 2.0f;
+				float ho2 = props->width_height_near_far_.y / 2.0f;
+				matrix44_t::ortho(-wo2, wo2, -ho2, ho2, props->width_height_near_far_.z, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
 			} else {
-				matrix44_t::perspective(fov, props->width_height_near_far_.x_ / props->width_height_near_far_.y_, props->width_height_near_far_.z_, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
+				matrix44_t::perspective(fov, props->width_height_near_far_.x / props->width_height_near_far_.y, props->width_height_near_far_.z, props->width_height_near_far_.w_, current_.light_proj_[light_index]);
 			}
 		
 			if((props->flags_ & render_state_t::light_flag_shadow_) != 0 && depth_buffer != HANDLE_NONE) {

@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiConsole.h"
 #include <iostream>
 
@@ -11,10 +10,8 @@
 
 using namespace std;
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		console_t::console_t(level_t verbosity)
 			: pseudo_singleton_t<console_t>(),
@@ -69,5 +66,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiMaterial.h"
 #include "core/MakiEngine.h"
 #include "core/MakiCoreManagers.h"
@@ -8,10 +7,8 @@
 #include "core/MakiTextureSetManager.h"
 #include "core/MakiShaderProgramManager.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		material_t::material_t()
 			: resource_t(),
@@ -21,17 +18,17 @@ namespace maki
 		{
 		}
 
-		material_t::material_t(const move_token_t<material_t> &other)
-			: resource_t((const move_token_t<resource_t> &)other),
-			uniform_count_(other.obj_->uniform_count_),
-			texture_set_(other.obj_->texture_set_),
-			shader_program_(other.obj_->shader_program_)
+		material_t::material_t(material_t &&other)
+			: resource_t((resource_t &&)other),
+			uniform_count_(other.uniform_count_),
+			texture_set_(other.texture_set_),
+			shader_program_(other.shader_program_)
 		{
-			other.obj_->uniform_count_ = 0;
-			other.obj_->texture_set_ = HANDLE_NONE;
-			other.obj_->shader_program_ = HANDLE_NONE;
-			memcpy(uniform_values_, other.obj_->uniform_values_, sizeof(uniform_value_t)*uniform_count_);
-			memset(other.obj_->uniform_values_, 0, sizeof(uniform_value_t)*max_uniforms_);
+			other.uniform_count_ = 0;
+			other.texture_set_ = HANDLE_NONE;
+			other.shader_program_ = HANDLE_NONE;
+			memcpy(uniform_values_, other.uniform_values_, sizeof(uniform_value_t)*uniform_count_);
+			memset(other.uniform_values_, 0, sizeof(uniform_value_t)*max_uniforms_);
 		}
 
 		material_t::material_t(const material_t &other)
@@ -209,5 +206,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

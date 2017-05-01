@@ -222,12 +222,9 @@ VERSION HISTORY:
 \******************************************************************* */
 
 #pragma once
-#include "core/core_stdafx.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 	
 		namespace base64
 		{
@@ -354,5 +351,4 @@ namespace maki
 		} // namespace base64
 
 	} // namespace core
-
 } // namespace maki

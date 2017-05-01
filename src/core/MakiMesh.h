@@ -1,14 +1,12 @@
 #pragma once
-#include "core/core_stdafx.h"
 #include <vector>
 #include "core/MakiResource.h"
+#include "core/MakiBoundingBox.h"
 #include "core/MakiMaterialManager.h"
 #include "core/MakiVertexFormat.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		
 
@@ -39,7 +37,7 @@ namespace maki
 		public:
 			mesh_t(bool dynamic_ = false);
 			mesh_t(object_t type, const object_args_t &args);
-			mesh_t(const move_token_t<mesh_t> &other);
+			mesh_t(mesh_t &&other);
 			mesh_t(const mesh_t &) { assert(false && "mesh_t copy construction not allowed"); }
 			~mesh_t();
 
@@ -83,9 +81,9 @@ namespace maki
 			void make_rect(const rect_args_t &args);
 
 		public:
-			std::vector<handle_t> siblings_;
-			handle_t vertex_format_;
-			bounding_box_t bounds_;
+			std::vector<handle_t> siblings;
+			handle_t vertex_format;
+			bounding_box_t bounds;
 
 		private:
 			uint8_t mesh_flags_;
@@ -113,5 +111,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

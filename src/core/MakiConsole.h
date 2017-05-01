@@ -1,12 +1,10 @@
 #pragma once
-#include "core/core_stdafx.h"
-#include "core/MakiPseudoSingleton.h"
 #include <cstdarg>
+#include <functional>
+#include "core/MakiPseudoSingleton.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 	
 #define MAKI_DEFINE_CONSOLE_METHOD(METHOD_NAME, LEVEL, PREFIX, LINE_FEED) \
 		static void METHOD_NAME(const char *format, ...) { \
@@ -61,5 +59,4 @@ namespace maki
 #undef MAKI_DEFINE_CONSOLE_METHOD
 
 	} // namespace core
-
 } // namespace maki

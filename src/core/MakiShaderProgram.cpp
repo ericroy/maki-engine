@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiShaderProgram.h"
 #include "core/MakiEngine.h"
 #include "core/MakiCoreManagers.h"
@@ -6,10 +5,8 @@
 #include "core/MakiShaderProgramManager.h"
 
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		const char *shader_program_t::variant_data_key_[variant_count_] = {
 			"data",
@@ -89,5 +86,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

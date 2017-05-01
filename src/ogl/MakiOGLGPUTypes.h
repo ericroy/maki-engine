@@ -1,10 +1,8 @@
 #pragma once
 #include "ogl/MakiOGLCommon.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 		class vertex_format_t;
 
 	} // namespace core

@@ -1,35 +1,31 @@
 #pragma once
-#include "core/core_stdafx.h"
+#include "core/MakiTypes.h"
+#include "core/MakiMacros.h"
 #include "core/MakiResource.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
-		class texture_t : public resource_t
-		{
+		class texture_t : public resource_t {
+			MAKI_NO_COPY(texture_t);
+
 		public:
-			enum texture_type_t
-			{
-				texture_type_regular_ = 0,
-				texture_type_depth_stencil_,
-				texture_type_render_target_,
+			enum texture_type_t {
+				texture_type_regular = 0,
+				texture_type_depth_stencil,
+				texture_type_render_target,
 			};
 
 		public:
-			texture_t();
-			texture_t(const move_token_t<texture_t> &) { assert(false && "texture_t move construction not allowed"); }
-			texture_t(const texture_t &) { assert(false && "texture_t copy construction not allowed"); }
+			texture_t() = default;
 			~texture_t();
 
 		public:
-			texture_type_t type_;
-			uint32_t width_;
-			uint32_t height_;
-			uint32_t handle_;
+			texture_type_t type = texture_type_regular;
+			uint32_t width = 0;
+			uint32_t height = 0;
+			uint32_t handle = (uint32_t)-1;
 		};
 
 	} // namespace core
-
 } // namespace maki

@@ -1,19 +1,17 @@
 #pragma once
-#include "core/core_stdafx.h"
+#include "core/MakiMacros.h"
 #include "core/MakiVector4.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 		class matrix44_t;
 
 		class vector2_t
 		{
 		public:
-			inline vector2_t() {}
-			inline vector2_t(float xy) : x_(xy), y_(xy) {}
-			inline vector2_t(float x, float y) : x_(x), y_(y) {}
+			inline vector2_t() : x(0.0f), y(0.0f) {}
+			inline vector2_t(float xy) : x(xy), y(xy) {}
+			inline vector2_t(float x, float y) : x(x), y(y) {}
 
 			// Member vector operations
 
@@ -24,24 +22,24 @@ namespace maki
 			inline void normalize() { normalize(*this); }
 
 			// Operator overloads
-			inline float operator*(const vector2_t &v) const { return x_*v.x_ + y_*v.y_; }
+			inline float operator*(const vector2_t &v) const { return x * v.x + y * v.y; }
 
-			inline vector2_t operator*(float s) const { return vector2_t(x_*s, y_*s); }
-			inline void operator*=(float s) { x_*=s; y_*=s; }
+			inline vector2_t operator*(float s) const { return vector2_t(x * s, y * s); }
+			inline void operator*=(float s) { x *= s; y *= s; }
 
-			inline vector2_t operator/(float s) const { assert(s != 0); return vector2_t(x_/s, y_/s); }
-			inline void operator/=(float s) { assert(s != 0); x_/=s; y_/=s; }
+			inline vector2_t operator/(float s) const { MAKI_ASSERT(s != 0); return vector2_t(x / s, y / s); }
+			inline void operator/=(float s) { MAKI_ASSERT(s != 0); x /= s; y /= s; }
 
-			inline vector2_t operator-(const vector2_t &v) const { return vector2_t(x_-v.x_, y_-v.y_); }
-			inline void operator-=(const vector2_t &v) { x_-=v.x_; y_-=v.y_; }
+			inline vector2_t operator-(const vector2_t &v) const { return vector2_t(x - v.x, y - v.y); }
+			inline void operator-=(const vector2_t &v) { x -= v.x; y -= v.y; }
 
-			inline vector2_t operator+(const vector2_t &v) const { return vector2_t(x_+v.x_, y_+v.y_); }
-			inline void operator+=(const vector2_t &v) { x_+=v.x_; y_+=v.y_; }
+			inline vector2_t operator+(const vector2_t &v) const { return vector2_t(x + v.x, y + v.y); }
+			inline void operator+=(const vector2_t &v) { x += v.x; y += v.y; }
 
-			inline vector2_t operator-() const { return vector2_t(-x_, -y_); }
+			inline vector2_t operator-() const { return vector2_t(-x, -y); }
 
-			inline bool operator==(const vector2_t &v) { return x_ == v.x_ && y_ == v.y_; }
-			inline bool operator!=(const vector2_t &v) { return x_ != v.x_ || y_ != v.y_; }
+			inline bool operator==(const vector2_t &v) { return x == v.x && y == v.y; }
+			inline bool operator!=(const vector2_t &v) { return x != v.x || y != v.y; }
 
 			// Static methods
 			static inline float dot(const vector2_t &v1, const vector2_t &v2);
@@ -51,42 +49,34 @@ namespace maki
 			static inline float length_squared(const vector2_t &v);
 
 		public:
-			union
-			{
-				struct
-				{
-					float x_, y_;
+			union {
+				struct {
+					float x, y;
 				};
-				float vals_[2];
+				float vals[2];
 			};
 		};
 
-		float vector2_t::dot(const vector2_t &v1, const vector2_t &v2)
-		{
-			return v1.x_ * v2.x_ + v1.y_ * v2.y_;
+		float vector2_t::dot(const vector2_t &v1, const vector2_t &v2) {
+			return v1.x * v2.x + v1.y * v2.y;
 		}
 
-		void vector2_t::normalize(vector2_t &v)
-		{
-			float inv_len = 1.f / sqrt(v.x_*v.x_ + v.y_*v.y_);
+		void vector2_t::normalize(vector2_t &v) {
+			float inv_len = 1.f / sqrt(v.x*v.x + v.y*v.y);
 			v *= inv_len;
 		}
 
-		float vector2_t::cross(const vector2_t &a, const vector2_t &b)
-		{
-			return a.x_*b.y_-a.y_*b.x_;
+		float vector2_t::cross(const vector2_t &a, const vector2_t &b) {
+			return a.x*b.y-a.y*b.x;
 		}
 	
-		float vector2_t::length(const vector2_t &v)
-		{
-			return sqrt(v.x_*v.x_ + v.y_*v.y_);
+		float vector2_t::length(const vector2_t &v) {
+			return sqrt(v.x*v.x + v.y*v.y);
 		}
 
-		float vector2_t::length_squared(const vector2_t &v)
-		{
-			return v.x_*v.x_ + v.y_*v.y_;
+		float vector2_t::length_squared(const vector2_t &v) {
+			return v.x*v.x + v.y*v.y;
 		}
 
 	} // namespace core
-
 } // namespace maki

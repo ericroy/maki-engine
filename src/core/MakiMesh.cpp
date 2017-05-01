@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiMesh.h"
 #include "core/MakiEngine.h"
 #include "core/MakiCoreManagers.h"
@@ -8,10 +7,8 @@
 #include "core/MakiMeshManager.h"
 
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		mesh_t::mesh_t(bool dynamic_)
 			: resource_t(),
@@ -69,8 +66,8 @@ namespace maki
 			upload();
 		}
 
-		mesh_t::mesh_t(const move_token_t<mesh_t> &other)
-			: resource_t((const move_token_t<resource_t> &)other),
+		mesh_t::mesh_t(mesh_t &&other)
+			: resource_t((resource_t &&)other),
 			vertex_count_(0),
 			face_count_(0),
 			mesh_flags_(0),
@@ -90,26 +87,26 @@ namespace maki
 			old_vertex_data_size_(-1),
 			old_index_data_size_(-1)
 		{
-			std::swap(siblings_, other.obj_->siblings_);
-			std::swap(vertex_count_, other.obj_->vertex_count_);
-			std::swap(face_count_, other.obj_->face_count_);
-			std::swap(mesh_flags_, other.obj_->mesh_flags_);
-			std::swap(vertex_attribute_flags_, other.obj_->vertex_attribute_flags_);
-			std::swap(vertex_stride_, other.obj_->vertex_stride_);
-			std::swap(indices_per_face_, other.obj_->indices_per_face_);
-			std::swap(bytes_per_index_, other.obj_->bytes_per_index_);
-			std::swap(vertex_data_size_, other.obj_->vertex_data_size_);
-			std::swap(vertex_data_, other.obj_->vertex_data_);
-			std::swap(index_data_size_, other.obj_->index_data_size_);
-			std::swap(index_data_, other.obj_->index_data_);
-			std::swap(vertex_format_, other.obj_->vertex_format_);
-			std::swap(buffer_, other.obj_->buffer_);
-			std::swap(vertex_insertion_index_, other.obj_->vertex_insertion_index_);
-			std::swap(index_insertion_index_, other.obj_->index_insertion_index_);
-			std::swap(dynamic_, other.obj_->dynamic_);
-			std::swap(old_vertex_data_size_, other.obj_->old_vertex_data_size_);
-			std::swap(old_index_data_size_, other.obj_->old_index_data_size_);
-			std::swap(bounds_, other.obj_->bounds_);
+			std::swap(siblings_, other.siblings_);
+			std::swap(vertex_count_, other.vertex_count_);
+			std::swap(face_count_, other.face_count_);
+			std::swap(mesh_flags_, other.mesh_flags_);
+			std::swap(vertex_attribute_flags_, other.vertex_attribute_flags_);
+			std::swap(vertex_stride_, other.vertex_stride_);
+			std::swap(indices_per_face_, other.indices_per_face_);
+			std::swap(bytes_per_index_, other.bytes_per_index_);
+			std::swap(vertex_data_size_, other.vertex_data_size_);
+			std::swap(vertex_data_, other.vertex_data_);
+			std::swap(index_data_size_, other.index_data_size_);
+			std::swap(index_data_, other.index_data_);
+			std::swap(vertex_format_, other.vertex_format_);
+			std::swap(buffer_, other.buffer_);
+			std::swap(vertex_insertion_index_, other.vertex_insertion_index_);
+			std::swap(index_insertion_index_, other.index_insertion_index_);
+			std::swap(dynamic_, other.dynamic_);
+			std::swap(old_vertex_data_size_, other.old_vertex_data_size_);
+			std::swap(old_index_data_size_, other.old_index_data_size_);
+			std::swap(bounds_, other.bounds_);
 		}
 
 
@@ -438,5 +435,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

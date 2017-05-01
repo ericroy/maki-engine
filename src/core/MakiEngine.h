@@ -1,12 +1,10 @@
 #pragma once
-#include "core/core_stdafx.h"
+#include <functional>
 #include "core/MakiPseudoSingleton.h"
 #include "core/MakiTimer.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 	
 		class config_t;
 		class asset_library_t;
@@ -52,5 +50,4 @@ namespace maki
 		};
 
 	} // namespace core
-
 } // namespace maki

@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiWindow.h"
 #include "core/MakiConfig.h"
 #include "core/MakiEngine.h"
@@ -6,10 +5,8 @@
 #include <sstream>
 
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		inline float signed_analog_input_to_float(int16_t v, int16_t dz) {
 			if(v > dz) {
@@ -409,5 +406,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

@@ -39,13 +39,10 @@ THE SOFTWARE.
 
 
 
-#include "core/core_stdafx.h"
 #include "core/MakiQuaternion.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		const float quaternion_t::epsilon_ = 1e-03f;
 		const quaternion_t quaternion_t::zero_(0.0f, 0.0f, 0.0f, 0.0f);
@@ -213,17 +210,17 @@ namespace maki
 		
 			// 0.4999999f will correspond to 89.96376 degrees
 			if(test > 0.4999999f) {
-				angles.x_ = -2.0f * atan2(w_, x_);
-				angles.y_ = MAKI_PI/2.0f;
-				angles.z_ = MAKI_PI;
+				angles.x = -2.0f * atan2(w_, x_);
+				angles.y = MAKI_PI/2.0f;
+				angles.z = MAKI_PI;
 			} else if(test < -0.4999999f) {
-				angles.x_ = -2.0f * atan2(w_, x_);
-				angles.y_ = -MAKI_PI/2.0f;
-				angles.z_ = MAKI_PI;
+				angles.x = -2.0f * atan2(w_, x_);
+				angles.y = -MAKI_PI/2.0f;
+				angles.z = MAKI_PI;
 			} else {
-				angles.x_ = atan2(2.0f * (w_ * x_ + y_ * z_), 1.0f - 2.0f * (xx + yy) );
-				angles.y_ = asin (2.0f * test);
-				angles.z_ = atan2(2.0f * (w_ * z_ + x_ * y_), 1.0f - 2.0f * (yy + zz) );
+				angles.x = atan2(2.0f * (w_ * x_ + y_ * z_), 1.0f - 2.0f * (xx + yy) );
+				angles.y = asin (2.0f * test);
+				angles.z = atan2(2.0f * (w_ * z_ + x_ * y_), 1.0f - 2.0f * (yy + zz) );
 			}
 		}
 		
@@ -238,9 +235,9 @@ namespace maki
 			float half_angle(0.5f*theta);
 			float s = sin(half_angle);
 			w_ = cos(half_angle);
-			x_ = s*axis.x_;
-			y_ = s*axis.y_;
-			z_ = s*axis.z_;
+			x_ = s*axis.x;
+			y_ = s*axis.y;
+			z_ = s*axis.z;
 		}
 
 		void quaternion_t::from_angle_axis(float theta, const vector4_t &axis)
@@ -253,9 +250,9 @@ namespace maki
 			float half_angle(0.5f*theta);
 			float s = sin(half_angle);
 			w_ = cos(half_angle);
-			x_ = s*axis.x_;
-			y_ = s*axis.y_;
-			z_ = s*axis.z_;
+			x_ = s*axis.x;
+			y_ = s*axis.y;
+			z_ = s*axis.z;
 		}
 
 		void quaternion_t::to_angle_axis(float &theta, vector3_t &axis) const
@@ -267,15 +264,15 @@ namespace maki
 			if(len_sq > 0.0f) {
 				theta = 2.0f*acos(w_);
 				float inv_len = 1.0f/sqrt(len_sq);
-				axis.x_ = x_*inv_len;
-				axis.y_ = y_*inv_len;
-				axis.z_ = z_*inv_len;
+				axis.x = x_*inv_len;
+				axis.y = y_*inv_len;
+				axis.z = z_*inv_len;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
-				axis.x_ = 1.0f;
-				axis.y_ = 0.0f;
-				axis.z_ = 0.0f;
+				axis.x = 1.0f;
+				axis.y = 0.0f;
+				axis.z = 0.0f;
 			}
 		}
 
@@ -288,15 +285,15 @@ namespace maki
 			if(len_sq > 0.0f) {
 				theta = 2.0f*acos(w_);
 				float inv_len = 1.0f/sqrt(len_sq);
-				axis.x_ = x_*inv_len;
-				axis.y_ = y_*inv_len;
-				axis.z_ = z_*inv_len;
+				axis.x = x_*inv_len;
+				axis.y = y_*inv_len;
+				axis.z = z_*inv_len;
 			} else {
 				// angle is 0 (mod 2*pi), so any axis will do
 				theta = 0.0f;
-				axis.x_ = 1.0f;
-				axis.y_ = 0.0f;
-				axis.z_ = 0.0f;
+				axis.x = 1.0f;
+				axis.y = 0.0f;
+				axis.z = 0.0f;
 			}
 		}
 
@@ -304,7 +301,7 @@ namespace maki
 		{
 			// Calculate the quaternion that will rotate vector "start" to vector "end"
 			vector3_t perp = start.cross(end);
-			x_ = perp.x_; y_ = perp.y_; z_ = perp.z_;
+			x_ = perp.x; y_ = perp.y; z_ = perp.z;
 			w_ = sqrt(start.length_squared() * end.length_squared()) + start.dot(end);
 			normalize();
 		}
@@ -342,15 +339,15 @@ namespace maki
 			if(fabs(s) >= epsilon_)
 			{
 				float coeff = s/angle;
-				result.x_ = coeff*x_;
-				result.y_ = coeff*y_;
-				result.z_ = coeff*z_;
+				result.x = coeff*x_;
+				result.y = coeff*y_;
+				result.z = coeff*z_;
 			}
 			else
 			{
-				result.x_ = x_;
-				result.y_ = y_;
-				result.z_ = z_;
+				result.x = x_;
+				result.y = y_;
+				result.z = z_;
 			}
 
 			return result;
@@ -370,16 +367,16 @@ namespace maki
 				float s = sin(angle);
 				if(fabs(s) >= epsilon_) {
 					float coeff = angle/s;
-					result.x_ = coeff*x_;
-					result.y_ = coeff*y_;
-					result.z_ = coeff*z_;
+					result.x = coeff*x_;
+					result.y = coeff*y_;
+					result.z = coeff*z_;
 					return result;
 				}
 			}
 
-			result.x_ = x_;
-			result.y_ = y_;
-			result.z_ = z_;
+			result.x = x_;
+			result.y = y_;
+			result.z = z_;
 			return result;
 		}
 
@@ -441,5 +438,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

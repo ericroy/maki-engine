@@ -1,4 +1,3 @@
-#include "core/core_stdafx.h"
 #include "core/MakiEngine.h"
 #include "core/MakiRenderer.h"
 #include "core/MakiWindow.h"
@@ -7,10 +6,8 @@
 #include "core/MakiInputState.h"
 #include "core/MakiConfig.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		engine_t::engine_t(window_t *window, time_source_t *time_source, render_core_t *core, const asset_library_t *assets, const config_t *config)
 			: pseudo_singleton_t<engine_t>(),
@@ -64,5 +61,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki

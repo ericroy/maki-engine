@@ -1,11 +1,8 @@
-#include "core/core_stdafx.h"
 #include "core/MakiMatrix44.h"
 #include <cmath>
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		const matrix44_t matrix44_t::identity_(true);
 	
@@ -37,15 +34,15 @@ namespace maki
 		}
 
 		void matrix44_t::translation(const vector4_t &trans, matrix44_t &m) {
-			m.cols_[3][0] = trans.x_;
-			m.cols_[3][1] = trans.y_;
-			m.cols_[3][2] = trans.z_;
+			m.cols_[3][0] = trans.x;
+			m.cols_[3][1] = trans.y;
+			m.cols_[3][2] = trans.z;
 			m.cols_[3][3] = 1.0f;
 		}
 		void matrix44_t::translation(const vector3_t &trans, matrix44_t &m) {
-			m.cols_[3][0] = trans.x_;
-			m.cols_[3][1] = trans.y_;
-			m.cols_[3][2] = trans.z_;
+			m.cols_[3][0] = trans.x;
+			m.cols_[3][1] = trans.y;
+			m.cols_[3][2] = trans.z;
 			m.cols_[3][3] = 1.0f;
 		}
 		void matrix44_t::translation(float x, float y, float z, matrix44_t &m) {
@@ -56,14 +53,14 @@ namespace maki
 		}
 
 		void matrix44_t::scale(const vector4_t &scale, matrix44_t &m) {
-			m.cols_[0][0] = scale.x_;
-			m.cols_[1][1] = scale.y_;
-			m.cols_[2][2] = scale.z_;
+			m.cols_[0][0] = scale.x;
+			m.cols_[1][1] = scale.y;
+			m.cols_[2][2] = scale.z;
 		}
 		void matrix44_t::scale(const vector3_t &scale, matrix44_t &m) {
-			m.cols_[0][0] = scale.x_;
-			m.cols_[1][1] = scale.y_;
-			m.cols_[2][2] = scale.z_;
+			m.cols_[0][0] = scale.x;
+			m.cols_[1][1] = scale.y;
+			m.cols_[2][2] = scale.z;
 		}
 		void matrix44_t::scale(float sx, float sy, float sz, matrix44_t &m) {
 			m.cols_[0][0] = sx;
@@ -267,9 +264,9 @@ namespace maki
 		//	
 		//	// Use the inverse rotation to calculate the inverse translation
 		//	vector4_t temp = out * -translation;
-		//	out.cols_[3][0] = temp.x_;
-		//	out.cols_[3][1] = temp.y_;
-		//	out.cols_[3][2] = temp.z_;
+		//	out.cols_[3][0] = temp.x;
+		//	out.cols_[3][1] = temp.y;
+		//	out.cols_[3][2] = temp.z;
 		//	out.cols_[3][3] = temp.w_;
 
 		//	out.cols_[0][3] = 0.0f;
@@ -338,5 +335,4 @@ namespace maki
 
 
 	} // namespace core
-
 } // namespace maki

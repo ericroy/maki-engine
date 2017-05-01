@@ -1,11 +1,8 @@
-#include "core/core_stdafx.h"
 #include "core/MakiVertexFormat.h"
 #include "core/MakiEngine.h"
 
-namespace maki
-{
-	namespace core
-	{
+namespace maki {
+	namespace core {
 
 		const uint8_t vertex_format_t::data_type_sizes_[data_type_count_] = {4, 4, 2, 1};
 
@@ -39,5 +36,4 @@ namespace maki
 		}
 
 	} // namespace core
-
 } // namespace maki
