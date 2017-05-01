@@ -10,6 +10,8 @@
 #	define MAKI_FSEEK64 fseeko64
 #endif
 
+using namespace std;
+
 namespace maki {
 	namespace core {
 
@@ -78,24 +80,23 @@ namespace maki {
 			return entries_[i].file_name.c_str();
 		}
 
-		char *archive_t::alloc_read(const char *path, uint64_t *bytes_read) const {
+		array_t<char> archive_t::alloc_read(const char *path) const {
 			assert(fp_ != nullptr);
 			for(uint32_t i = 0; i < entries_.length(); i++) {
 				if(entries_[i].file_name == path) {
 					uint64_t rid = rid_start_ + i;
-					return alloc_read(MAKI_TO_RID(rid), bytes_read);
+					return alloc_read(MAKI_TO_RID(rid));
 				}
 			}
-
 			console_t::error("Failed to find resource in archive: %s", path);
 			return nullptr;
 		}
 
-		char *archive_t::alloc_read(rid_t rid, uint64_t *bytes_read) const {
+		array_t<char> archive_t::alloc_read(rid_t rid) const {
 			assert(fp_ != nullptr);
 			uint64_t i = (uint64_t)rid - rid_start_;
 
-			char *dest = (char *)allocator_t::malloc(entries_[i].uncompressed_length + 1);
+			auto dest = array_t<char>(entries_[i].uncompressed_length + 1);
 			dest[entries_[i].uncompressed_length] = 0;
 
 			if((entries_[i].flags & flag_zlib_compressed) != 0) {
@@ -103,7 +104,7 @@ namespace maki {
 
 				z_stream stream;
 				memset(&stream, 0, sizeof(stream));
-				stream.next_out = (uint8_t *)dest;
+				stream.next_out = (uint8_t *)dest.data();
 				stream.avail_out = entries_[i].uncompressed_length;
 				inflateInit(&stream);
 				
@@ -113,7 +114,7 @@ namespace maki {
 					stream.next_in = (const uint8_t *)buffer_;
 					stream.avail_in = (uint32_t)fread(buffer_, sizeof(char), (uint32_t)std::min(decompression_buffer_size_, remaining), fp_);
 					status = inflate(&stream, Z_SYNC_FLUSH);
-					stream.next_out = (uint8_t *)(dest + stream.total_out);
+					stream.next_out = (uint8_t *)(dest.data() + stream.total_out);
 					stream.avail_out = (uint32_t)(entries_[i].uncompressed_length - stream.total_out);
 					remaining = entries_[i].compressed_length - stream.total_in;
 				}
@@ -122,12 +123,10 @@ namespace maki {
 				assert(status == Z_OK);
 			} else {
 				MAKI_FSEEK64(fp_, body_offset_ + entries_[i].offset, SEEK_SET);
-				uint64_t read = fread(dest, sizeof(char), entries_[i].uncompressed_length, fp_);
+				uint64_t read = fread(dest.data(), sizeof(char), entries_[i].uncompressed_length, fp_);
 				assert(read == entries_[i].uncompressed_length);
 			}
 
-			if(bytes_read != nullptr)
-				*bytes_read = entries_[i].uncompressed_length;
 			return dest;
 		}
 

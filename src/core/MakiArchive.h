@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "core/MakiTypes.h"
 #include "core/MakiMacros.h"
 #include "core/MakiArray.h"
 
@@ -31,13 +32,23 @@ namespace maki {
 			archive_t(archive_t &&other);
 			virtual ~archive_t();
 
-			inline bool is_loaded() const { return fp_ != nullptr; }
-			inline void set_rid_start(uint32_t rid_start) { rid_start_ = rid_start; }
-			inline bool contains(rid_t rid) const { return (uint64_t)rid >= rid_start_ && (uint64_t)rid < rid_start_ + entries_.length(); }
+			inline bool is_loaded() const {
+				return fp_ != nullptr;
+			}
+			
+			inline void set_rid_start(uint32_t rid_start) {
+				rid_start_ = rid_start;
+			}
+
+			inline bool contains(rid_t rid) const {
+				return (uint64_t)rid >= rid_start_ && (uint64_t)rid < rid_start_ + entries_.length();
+			}
+
 			bool load(const char *archive_path, uint64_t rid_start = 0);
 			const char *get_path(rid_t rid) const;
-			char *alloc_read(const char *path, uint64_t *bytes_read = nullptr) const;
-			char *alloc_read(rid_t rid, uint64_t *bytes_read = nullptr) const;
+			
+			array_t<char> alloc_read(const char *path) const;
+			array_t<char> alloc_read(rid_t rid) const;
 
 		private:
 			FILE *fp_ = nullptr;

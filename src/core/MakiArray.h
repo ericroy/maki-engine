@@ -7,14 +7,14 @@ namespace maki {
 	namespace core {
 
 		template<typename T>
-		class array_t
-		{
+		class array_t {
 			// Can't use MAKI_NO_COPY here because it's a template type
 			array_t(const array_t<T> &) = delete;
 			void operator=(const array_t<T> &) = delete;
 
 		public:
 			array_t() = default;
+			array_t(decltype(nullptr)) {}
 			
 			array_t(uint64_t length) {
 				set_length(length);
@@ -80,6 +80,10 @@ namespace maki {
 
 			inline const T &operator[](uint64_t index) const {
 				return data_[index];
+			}
+
+			inline operator bool() const {
+				return data_ != nullptr;
 			}
 
 		private:

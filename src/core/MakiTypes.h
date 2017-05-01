@@ -1,23 +1,34 @@
 #pragma once
 #include <stdint.h>
+#include <string>
+#include <vector>
+#include <limits>
+#include <memory>
 
-namespace maki
-{
-	// handle_t to an item in stored in a resource_pool_t.
-	typedef uint64_t handle_t;
-	const handle_t HANDLE_NONE = (uint64_t)-1;
+namespace maki {
+
+	using std::vector;
+	using std::string;
+	using std::unique_ptr;
+	using std::move;
+
+	typedef uint32_t handle_t;
+	const handle_t HANDLE_NONE = (handle_t)-1;
+
+	typedef uint16_t ref_count_t;
+	const ref_count_t REF_COUNT_MAX = ::std::numeric_limits<ref_count_t>::max();
 
 	// resource_t Id
 	// A unique identifier for a file resource from the resource_library_t
 	// Rids cannot be a simple typedef because we need them to have a distinct type from a handle_t
-	typedef struct _Rid {
-		uint64_t index_;
-		inline bool operator==(const _Rid &other) const { return index_ == other.index_; }
-		inline bool operator!=(const _Rid &other) const { return index_ != other.index_; }
-		inline _Rid &operator=(const uint64_t &u) { index_ = u; return *this; }
-		inline operator uint64_t() const { return index_; }
+	typedef struct _rid_t {
+		uint32_t index_;
+		inline bool operator==(const _rid_t &other) const { return index_ == other.index_; }
+		inline bool operator!=(const _rid_t &other) const { return index_ != other.index_; }
+		inline _rid_t &operator=(const uint32_t &u) { index_ = u; return *this; }
+		inline operator uint32_t() const { return index_; }
 	} rid_t;
-	const rid_t RID_NONE = {(uint64_t)-1};
+	const rid_t RID_NONE = {(uint32_t)-1};
 
 	const float MAKI_PI = 3.14159265358979323846f;
 	const float MAKI_DEG_TO_RAD = MAKI_PI / 180.0f;

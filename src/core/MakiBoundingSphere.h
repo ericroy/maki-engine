@@ -7,12 +7,19 @@ namespace maki {
 		{
 		public:
 			bounding_sphere_t() = default;
-			bounding_sphere_t(const vector4_t &pos, float radius) : empty(false), pos(pos), radius(radius) {}
-			bounding_sphere_t(const vector3_t &pos, float radius) : empty(false), pos(pos.x, pos.y, pos.z, 1.0f), radius(radius) {}
+			
+			bounding_sphere_t(const vector4_t &pos, float radius)
+				: empty(false), pos(pos), radius(radius) {
+			}
+			
+			bounding_sphere_t(const vector3_t &pos, float radius)
+				: empty(false), pos(pos.x, pos.y, pos.z, 1.0f), radius(radius) {
+			}
 
 			inline void merge(const bounding_sphere_t &other) {
 				if(other.empty)
 					return;
+
 				if(empty) {
 					pos = other.pos;
 					radius = other.radius;

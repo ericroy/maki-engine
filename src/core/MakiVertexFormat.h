@@ -15,7 +15,7 @@ namespace maki {
 				attribute_color1,
 				attribute_tex_coord,
 				attribute_bone_weight,
-				attribute_count
+				attribute_max = attribute_bone_weight
 			};
 
 			// These must match the flags in the python script that compiles the meshes
@@ -25,7 +25,8 @@ namespace maki {
 				attribute_flag_color = 1 << 2,
 				attribute_flag_color1 = 1 << 3,
 				attribute_flag_text_coord = 1 << 4,
-				attribute_flag_bone_weight = 1 << 5
+				attribute_flag_bone_weight = 1 << 5,
+				attribute_flag_max = attribute_flag_bone_weight
 			};
 		
 			enum data_type_t : uint8_t {
@@ -33,10 +34,10 @@ namespace maki {
 				data_type_unsigned_int32,
 				data_type_unsigned_int16,
 				data_type_unsigned_int8,
-				data_type_count
+				data_type_max = data_type_unsigned_int8
 			};
 
-			static const uint8_t data_type_sizes[data_type_count];
+			static const uint8_t data_type_sizes[data_type_max + 1];
 
 		private:
 			struct format_t {
@@ -81,7 +82,7 @@ namespace maki {
 			union {
 				struct {
 					uint8_t attr_flags_;
-					format_t formats_[attribute_count];
+					format_t formats_[attribute_max + 1];
 				};
 				uint64_t equality_key_ = 0;
 			};

@@ -21,7 +21,9 @@ namespace maki {
 				draw_command_t draw_command;
 			};
 
-			static inline bool draw_command_sort_comparator_t(const key_entry_t &a, const key_entry_t &b) { return a.key < b.key; }
+			static inline bool draw_command_sort_comparator_t(const key_entry_t &a, const key_entry_t &b) {
+				return a.key < b.key;
+			}
 
 		public:
 			draw_command_list_t(uint64_t capacity) {

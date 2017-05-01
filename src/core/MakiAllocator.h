@@ -20,13 +20,13 @@ namespace maki {
 
 #if MAKI_OS_WIN
 
-		inline void *aligned_malloc(std::size_t size, std::size_t alignment = 8) { return _aligned_malloc(size, alignment); }
-		inline void *aligned_realloc(void *existing, std::size_t size, std::size_t alignment = 8) { return _aligned_realloc(existing, size, alignment); }
+		inline void *aligned_malloc(size_t size, size_t alignment = 8) { return _aligned_malloc(size, alignment); }
+		inline void *aligned_realloc(void *existing, size_t size, size_t alignment = 8) { return _aligned_realloc(existing, size, alignment); }
 		inline void aligned_free(void *p) { _aligned_free(p); }
 
 #else
 
-		inline void *aligned_malloc(std::size_t size, std::size_t alignment = 8) {
+		inline void *aligned_malloc(size_t size, size_t alignment = 8) {
 			// Alignment must be at least 4, which is the default alignment of malloc for a 32 bit system.
 			assert(alignment >= 4);
 
@@ -34,23 +34,23 @@ namespace maki {
 			assert((alignment & (alignment - 1)) == 0);
 
 			// Allow for space to store the alignment value before the part of the buffer that we will return.
-			char *p = static_cast<char *>(malloc(size + sizeof(std::size_t) + alignment - 1)) + sizeof(std::size_t);
+			char *p = static_cast<char *>(malloc(size + sizeof(size_t) + alignment - 1)) + sizeof(size_t);
 
-			std::size_t lower_bits = reinterpret_cast<uintptr_t>(p) & (alignment - 1);
-			std::size_t shift = lower_bits != 0 ? alignment - lower_bits : 0;
+			size_t lower_bits = reinterpret_cast<uintptr_t>(p) & (alignment - 1);
+			size_t shift = lower_bits != 0 ? alignment - lower_bits : 0;
 			p += shift;
 
 			// Stash the alignment value immediately before the 
-			*reinterpret_cast<std::size_t *>(p - sizeof(std::size_t)) = shift;
+			*reinterpret_cast<size_t *>(p - sizeof(size_t)) = shift;
 
 			return p;
 		}
 
-		inline void *aligned_realloc(void *existing, std::size_t size, std::size_t alignment = 8) {
+		inline void *aligned_realloc(void *existing, size_t size, size_t alignment = 8) {
 			char *base = nullptr;
 			if(existing != nullptr) {
-				std::size_t shift = *reinterpret_cast<std::size_t *>(static_cast<char *>(existing)-sizeof(std::size_t));
-				base = static_cast<char *>(existing)-shift - sizeof(std::size_t);
+				size_t shift = *reinterpret_cast<size_t *>(static_cast<char *>(existing)-sizeof(size_t));
+				base = static_cast<char *>(existing)-shift - sizeof(size_t);
 			}
 
 			// Alignment must be at least 4, which is the default alignment of malloc for a 32 bit system.
@@ -60,60 +60,59 @@ namespace maki {
 			assert((alignment & (alignment - 1)) == 0);
 
 			// Allow for space to store the alignment value before the part of the buffer that we will return.
-			char *p = static_cast<char *>(realloc(base, size + sizeof(std::size_t) + alignment - 1)) + sizeof(std::size_t);
+			char *p = static_cast<char *>(realloc(base, size + sizeof(size_t) + alignment - 1)) + sizeof(size_t);
 
-			std::size_t lower_bits = reinterpret_cast<uintptr_t>(p) & (alignment - 1);
-			std::size_t shift = lower_bits != 0 ? alignment - lower_bits : 0;
+			size_t lower_bits = reinterpret_cast<uintptr_t>(p) & (alignment - 1);
+			size_t shift = lower_bits != 0 ? alignment - lower_bits : 0;
 			p += shift;
 
 			// Stash the alignment value immediately before the 
-			*reinterpret_cast<std::size_t *>(p - sizeof(std::size_t)) = shift;
+			*reinterpret_cast<size_t *>(p - sizeof(size_t)) = shift;
 
 			return p;
 		}
 
 		inline void aligned_free(void *p) {
-			std::size_t shift = *reinterpret_cast<std::size_t *>(static_cast<char *>(p) - sizeof(std::size_t));
-			char *base = static_cast<char *>(p) - shift - sizeof(std::size_t);
+			size_t shift = *reinterpret_cast<size_t *>(static_cast<char *>(p) - sizeof(size_t));
+			char *base = static_cast<char *>(p) - shift - sizeof(size_t);
 			free(base);
 		}
 
 #endif
 
-
 		template<int ALIGNMENT>
 		class aligned_t {
 		public:
-			inline void *operator new(std::size_t size) {
+			inline void *operator new(size_t size) {
 				void *p = aligned_malloc(size, ALIGNMENT);
 				if(p == nullptr)
-					throw std::bad_alloc();
+					throw ::std::bad_alloc();
 				return p;
 			}
-			inline void *operator new(std::size_t size, const std::nothrow_t &) throw() { return aligned_malloc(size, ALIGNMENT); }
-			inline void *operator new(std::size_t size, void *p) throw() { return p; }
+			inline void *operator new(size_t size, const ::std::nothrow_t &) throw() { return aligned_malloc(size, ALIGNMENT); }
+			inline void *operator new(size_t size, void *p) throw() { return p; }
 
 			inline void operator delete(void *p) throw() { aligned_free(p); }
-			inline void operator delete(void *p, const std::nothrow_t&) throw() { aligned_free(p); }
+			inline void operator delete(void *p, const ::std::nothrow_t&) throw() { aligned_free(p); }
 			inline void operator delete(void *p, void *) throw() { aligned_free(p); }
 
-			inline void *operator new[](std::size_t size) { return aligned_malloc(size, ALIGNMENT); }
-			inline void *operator new[](std::size_t size, const std::nothrow_t& nothrow_constant) throw() { return aligned_malloc(size, ALIGNMENT); }
-			inline void *operator new[](std::size_t size, void *p) throw() { return p; }
+			inline void *operator new[](size_t size) { return aligned_malloc(size, ALIGNMENT); }
+			inline void *operator new[](size_t size, const ::std::nothrow_t& nothrow_constant) throw() { return aligned_malloc(size, ALIGNMENT); }
+			inline void *operator new[](size_t size, void *p) throw() { return p; }
 
 			inline void operator delete[](void *p) throw() { aligned_free(p); }
-			inline void operator delete[](void *p, const std::nothrow_t &) throw() { aligned_free(p); }
+			inline void operator delete[](void *p, const ::std::nothrow_t &) throw() { aligned_free(p); }
 			inline void operator delete[](void *p, void *) throw() { aligned_free(p); }
 		};
 
 
 		class allocator_t {
 		public:
-			inline static void *malloc(std::size_t size, std::size_t alignment = 8) {
+			inline static void *malloc(size_t size, size_t alignment = 8) {
 				return aligned_malloc(size, alignment);
 			}
 
-			inline static void *realloc(void *p, std::size_t size, std::size_t alignment = 8) {
+			inline static void *realloc(void *p, size_t size, size_t alignment = 8) {
 				return aligned_realloc(p, size, alignment = 8);
 			}
 

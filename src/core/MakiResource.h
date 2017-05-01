@@ -19,8 +19,18 @@ namespace maki {
 			resource_t(resource_t &&other);
 			explicit resource_t(const resource_t &other) { rid_ = other.rid_; }
 			virtual ~resource_t() = default;
-			inline rid_t rid() const { return rid_; }
-			inline bool operator==(const resource_t &other) const { return rid_ == other.rid_; }
+			
+			inline rid_t rid() const {
+				return rid_;
+			}
+
+			inline void set_rid(rid_t rid) {
+				rid_ = rid;
+			}
+			
+			inline bool operator==(const resource_t &other) const {
+				return rid_ == other.rid_;
+			}
 
 		protected:
 			// Resource id

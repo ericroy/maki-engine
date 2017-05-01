@@ -2,6 +2,7 @@
 #include <vector>
 #include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
+#include "core/MakiArray.h"
 
 namespace maki {
 	namespace core {
@@ -27,15 +28,15 @@ namespace maki {
 			rid_t path_to_rid(const char *path) const;
 			rid_t full_path_to_rid(const char *path) const;
 			const char *get_path(rid_t rid) const;
-			char *alloc_read(rid_t rid, uint64_t *bytes_read = nullptr) const;
+			array_t<char> alloc_read(rid_t rid) const;
 
 		public:
 			// Allow a path prefix to be applied for all assets, but only in debug mode
-			std::string debug_mode_path_adjustment;
+			string debug_mode_path_adjustment;
 
 		private:
-			uint64_t total_asset_count_ = 0;
-			std::vector<group_t> groups_;
+			uint32_t total_asset_count_ = 0;
+			vector<group_t> groups_;
 		};
 
 		

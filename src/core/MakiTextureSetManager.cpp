@@ -3,26 +3,30 @@
 namespace maki {
 	namespace core {
 
-		texture_set_manager_t::texture_set_manager_t(uint64_t capacity)
-			: manager_t<texture_set_t, texture_set_manager_t>(capacity, "texture_set_manager_t") {
+		texture_set_manager_t::texture_set_manager_t(uint32_t capacity) {
+			res_pool_.reset(new resource_pool_t<texture_set_t>(capacity));
 		}
 
-		handle_t texture_set_manager_t::load(uint8_t count, rid_t *texture_rids) {
-			predicate_t p;
-			p.count = count;
-			p.texture_rids = texture_rids;
-			handle_t handle = res_pool_->match(p) | manager_id_;
-			if(handle != HANDLE_NONE)
-				return handle;
+		ref_t<texture_set_t> get(uint8_t count, rid_t *rids) {
+			return res_pool_->find([&rids, count](const texture_set_t &ts) {
+				if (count != ts.texture_count)
+					return false;
+				for (uint8_t i = 0; i < count; i++) {
+					if (rids[i] != ts.texture_rids[i] || rids[i] == RID_NONE)
+						return false;
+				}
+				return true;
+			});
+		}
 
-			handle = res_pool_->alloc() | manager_id_;
-			texture_set_t *ts = res_pool_->get(handle & handle_value_mask_);
-			new(ts) texture_set_t();
-			if(!ts->load(count, texture_rids)) {
-				res_pool_->free(handle & handle_value_mask_);
-				return HANDLE_NONE;
-			}
-			return handle;
+		ref_t<texture_set_t> load(uint8_t count, rid_t *rids) {
+			auto ts = res_pool_->alloc();
+			return ts->load(count, rids) ? ts : nullptr;
+		}
+
+		ref_t<texture_set_t> get_or_load(uint8_t count, rid_t *rids) {
+			auto ts = get(count, rids);
+			return ts ? ts : load(count, rids);
 		}
 
 

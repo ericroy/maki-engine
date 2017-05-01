@@ -9,21 +9,15 @@ namespace maki {
 		config_t::config_t(asset_library_t *lib, rid_t rid)
 		{
 			doc_.reset(new document_t());
-
-			uint64_t bytes;
-			char *data = lib->alloc_read(rid, &bytes);
-			if(data == nullptr) {
+			auto data = lib->alloc_read(rid);
+			if(!data) {
 				console_t::error("Failed to open config file");
-				MAKI_SAFE_FREE(data);
 				return;
 			}
-			if(!doc_->load(data, bytes)) {
+			if(!doc_->load(data.data(), data.length())) {
 				console_t::error("Failed to parse config file");
-				MAKI_SAFE_FREE(data);
 				return;
 			}
-
-			MAKI_SAFE_FREE(data);
 		}
 
 		const char *config_t::get_string(const char *key_path, const char *default_value) const
