@@ -1,7 +1,9 @@
 #pragma once
 #include <cstdlib>
+#include <iostream>
 #include <vector>
 #include "core/MakiMacros.h"
+#include "core/MakiTypes.h"
 
 namespace maki {
 	namespace core {
@@ -27,6 +29,7 @@ namespace maki {
 
 				inline uint64_t length() const { return length_; }
 				inline const node_t &operator[](uint64_t i) const { return *children_[i]; }
+				inline node_t &operator[](uint64_t i) { return *children_[i]; }
 
 				void append_child(node_t *n);
 				inline void append_sibling(node_t *n) { assert(parent_ != nullptr); parent_->append_child(n); }
@@ -52,11 +55,11 @@ namespace maki {
 			
 				// Path resolution helpers:
 				const node_t *resolve(const char *node_path) const;
-				char *resolve_value(const char *node_path) const;
+				const char *resolve_value(const char *node_path) const;
 				bool resolve_as_int(const char *node_path, int64_t *out) const;
-				int64_t resolve_as_int(const char *node_path, int64_t default_value = 0) const;
+				int64_t resolve_as_int(const char *node_path, int64_t default_value = 0ll) const;
 				bool resolve_as_uint(const char *node_path, uint64_t *out) const;
-				uint64_t resolve_as_uint(const char *node_path, uint64_t default_value = 0) const;
+				uint64_t resolve_as_uint(const char *node_path, uint64_t default_value = 0ull) const;
 				bool resolve_as_float(const char *node_path, float *out) const;
 				float resolve_as_float(const char *node_path, float default_value = 0.0f) const;
 				bool resolve_as_bool(const char *node_path, bool *out) const;
@@ -98,12 +101,12 @@ namespace maki {
 		public:
 			document_text_serializer_t(document_t &doc);
 			bool serialize(char *path, const char *indent_token = "\t");
-			bool serialize(std::ostream &out, const char *indent_token = "\t");
+			bool serialize(::std::ostream &out, const char *indent_token = "\t");
 			bool deserialize(char *data, uint32_t length);
 
 		private:
-			bool add_node(const document_t::node_t &n, int32_t indent_level, document_t::node_t **previous, int32_t &previous_indent_level, bool &clean_line, bool &append_sibling);
-			void serialize_node(const document_t::node_t &n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token);
+			bool add_node(document_t::node_t *n, int32_t indent_level, document_t::node_t **previous, int32_t &previous_indent_level, bool &clean_line, bool &append_sibling);
+			void serialize_node(document_t::node_t *n, uint32_t depth, ::std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token);
 
 		private:
 			document_t &doc_;
@@ -123,12 +126,12 @@ namespace maki {
 		public:
 			document_binary_serializer_t(document_t &doc);
 			bool serialize(char *path);
-			bool serialize(std::ostream &out);
+			bool serialize(::std::ostream &out);
 			bool deserialize(char *data, uint32_t length);
 
 		private:
-			uint16_t get_or_add(std::vector<std::string> &string_table, char *str);
-			void serialize_node(document_t::node_t *n, std::ostream &body, std::vector<std::string> &string_table, uint32_t &level);
+			uint16_t get_or_add(::std::vector<::std::string> &string_table, char *str);
+			void serialize_node(document_t::node_t *n, ::std::ostream &body, ::std::vector<::std::string> &string_table, uint32_t &level);
 
 		private:
 			document_t &doc_;

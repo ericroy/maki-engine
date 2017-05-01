@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include "core/MakiTypes.h"
 #include "core/MakiPseudoSingleton.h"
 #include "core/MakiTimer.h"
 
@@ -15,14 +16,10 @@ namespace maki {
 		class timer_t;
 		class time_source_t;
 
-		
-		
-
-		class engine_t : public pseudo_singleton_t<engine_t>
-		{
+		class engine_t : public pseudo_singleton_t<engine_t> {
 		public:
-			static const uint32_t default_updates_per_second_ = 60;
-			static const uint32_t default_max_skipped_frames_ = 6;
+			static const uint32_t default_updates_per_second = 60;
+			static const uint32_t default_max_skipped_frames = 6;
 
 		public:
 			engine_t(window_t *window, time_source_t *time_source, render_core_t *core, const asset_library_t *assets, const config_t *config);
@@ -30,17 +27,17 @@ namespace maki {
 			void tick();
 
 		public:
-			std::function<void(float)> frame_update_;
-			std::function<void()> frame_draw_;
-			const config_t *config_;
-			const asset_library_t *assets_;
+			std::function<void(float)> frame_update;
+			std::function<void()> frame_draw;
+			const config_t *config;
+			const asset_library_t *assets;
 		
-			timer_t update_timer_;
-			timer_t render_timer_;
+			timer_t update_timer;
+			timer_t render_timer;
 		
-			input_state_t *input_state_;
-			renderer_t *renderer_;
-			window_t *window_;
+			input_state_t *input_state;
+			renderer_t *renderer;
+			window_t *window;
 
 		private:
 			time_source_t *time_source_;

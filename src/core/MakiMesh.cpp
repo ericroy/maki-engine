@@ -5,124 +5,62 @@
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiVertexFormatManager.h"
 #include "core/MakiMeshManager.h"
+#include "core/MakiConsole.h"
 
+using namespace std;
 
 namespace maki {
 	namespace core {
 
-		mesh_t::mesh_t(bool dynamic_)
-			: resource_t(),
-			vertex_count_(0),
-			face_count_(0),
-			mesh_flags_(0),
-			vertex_attribute_flags_(0),
-			vertex_stride_(0),
-			indices_per_face_(0),
-			bytes_per_index_(0),
-			vertex_data_size_(0),
-			vertex_data_(nullptr),
-			index_data_size_(0),
-			index_data_(nullptr),
-			vertex_format_(HANDLE_NONE),
-			buffer_(nullptr),
-			vertex_insertion_index_(0),
-			index_insertion_index_(0),
-			dynamic_(dynamic_),
-			old_vertex_data_size_(-1),
-			old_index_data_size_(-1)
-		{
+		mesh_t::mesh_t(bool dynamic) : resource_t(), dynamic_(dynamic) {
 		}
 
-		mesh_t::mesh_t(object_t type, const object_args_t &args)
-			: resource_t(),
-			vertex_count_(0),
-			face_count_(0),
-			mesh_flags_(0),
-			vertex_attribute_flags_(0),
-			vertex_stride_(0),
-			indices_per_face_(0),
-			bytes_per_index_(0),
-			vertex_data_size_(0),
-			vertex_data_(nullptr),
-			index_data_size_(0),
-			index_data_(nullptr),
-			vertex_format_(HANDLE_NONE),
-			buffer_(nullptr),
-			vertex_insertion_index_(0),
-			index_insertion_index_(0),
-			dynamic_(false),
-			old_vertex_data_size_(-1),
-			old_index_data_size_(-1)
-		{
+		mesh_t::mesh_t(object_t type, const object_args_t &args) : resource_t() {
 			switch(type) {
-			case object_rect_:
+			case object_rect:
 				make_rect((const rect_args_t &)args);
 				break;
 			default:
 				console_t::error("Invalid premade object type: %d", type);
-				assert(false);
+				MAKI_ASSERT(false);
 			}
 			calculate_bounds();
 			upload();
 		}
 
-		mesh_t::mesh_t(mesh_t &&other)
-			: resource_t((resource_t &&)other),
-			vertex_count_(0),
-			face_count_(0),
-			mesh_flags_(0),
-			vertex_attribute_flags_(0),
-			vertex_stride_(0),
-			indices_per_face_(0),
-			bytes_per_index_(0),
-			vertex_data_size_(0),
-			vertex_data_(nullptr),
-			index_data_size_(0),
-			index_data_(nullptr),
-			vertex_format_(HANDLE_NONE),
-			buffer_(nullptr),
-			vertex_insertion_index_(0),
-			index_insertion_index_(0),
-			dynamic_(false),
-			old_vertex_data_size_(-1),
-			old_index_data_size_(-1)
-		{
-			std::swap(siblings_, other.siblings_);
-			std::swap(vertex_count_, other.vertex_count_);
-			std::swap(face_count_, other.face_count_);
-			std::swap(mesh_flags_, other.mesh_flags_);
-			std::swap(vertex_attribute_flags_, other.vertex_attribute_flags_);
-			std::swap(vertex_stride_, other.vertex_stride_);
-			std::swap(indices_per_face_, other.indices_per_face_);
-			std::swap(bytes_per_index_, other.bytes_per_index_);
-			std::swap(vertex_data_size_, other.vertex_data_size_);
-			std::swap(vertex_data_, other.vertex_data_);
-			std::swap(index_data_size_, other.index_data_size_);
-			std::swap(index_data_, other.index_data_);
-			std::swap(vertex_format_, other.vertex_format_);
-			std::swap(buffer_, other.buffer_);
-			std::swap(vertex_insertion_index_, other.vertex_insertion_index_);
-			std::swap(index_insertion_index_, other.index_insertion_index_);
-			std::swap(dynamic_, other.dynamic_);
-			std::swap(old_vertex_data_size_, other.old_vertex_data_size_);
-			std::swap(old_index_data_size_, other.old_index_data_size_);
-			std::swap(bounds_, other.bounds_);
+		mesh_t::mesh_t(mesh_t &&other) : resource_t((resource_t &&)other) {
+			swap(siblings_, other.siblings_);
+			swap(vertex_count_, other.vertex_count_);
+			swap(face_count_, other.face_count_);
+			swap(mesh_flags_, other.mesh_flags_);
+			swap(vertex_attribute_flags_, other.vertex_attribute_flags_);
+			swap(vertex_stride_, other.vertex_stride_);
+			swap(indices_per_face_, other.indices_per_face_);
+			swap(bytes_per_index_, other.bytes_per_index_);
+			swap(vertex_data_size_, other.vertex_data_size_);
+			swap(vertex_data_, other.vertex_data_);
+			swap(index_data_size_, other.index_data_size_);
+			swap(index_data_, other.index_data_);
+			swap(vertex_format_, other.vertex_format_);
+			swap(buffer_, other.buffer_);
+			swap(vertex_insertion_index_, other.vertex_insertion_index_);
+			swap(index_insertion_index_, other.index_insertion_index_);
+			swap(dynamic_, other.dynamic_);
+			swap(old_vertex_data_size_, other.old_vertex_data_size_);
+			swap(old_index_data_size_, other.old_index_data_size_);
+			swap(bounds_, other.bounds_);
 		}
 
-
-		mesh_t::~mesh_t()
-		{
-			if(buffer_ != nullptr) {
-				engine_t::get()->renderer_->free_buffer(buffer_);
-			}
+		mesh_t::~mesh_t() {
+			if(buffer_ != nullptr)
+				engine_t::get()->renderer->free_buffer(buffer_);
 			vertex_format_manager_t::free(vertex_format_);
 			mesh_manager_t::free(siblings_.size(), siblings_.data());
 			MAKI_SAFE_FREE(vertex_data_);
 			MAKI_SAFE_FREE(index_data_);
 		}
 
-		void mesh_t::clear_data()
-		{
+		void mesh_t::clear_data() {
 			mesh_flags_ = 0;
 			vertex_attribute_flags_ = 0;
 			vertex_stride_ = 0;
@@ -136,19 +74,18 @@ namespace maki {
 			siblings_.clear();
 		}
 
-		void mesh_t::push_vertex_data(uint32_t size_in_bytes, char *data)
-		{
-			assert(size_in_bytes % vertex_stride_ == 0);
+		void mesh_t::push_vertex_data(uint32_t size_in_bytes, char *data) {
+			MAKI_ASSERT(size_in_bytes % vertex_stride_ == 0);
 
 			if(vertex_insertion_index_+size_in_bytes > vertex_data_size_) {
 				// Enlarge by some margin
 				uint32_t overflow = vertex_insertion_index_ + size_in_bytes - vertex_data_size_;
-				uint32_t more = std::max(std::max(overflow, 256U), vertex_data_size_/2);
+				uint32_t more = max(max(overflow, 256U), vertex_data_size_/2);
 				vertex_data_size_ += more;
 				vertex_data_ = (char *)allocator_t::realloc(vertex_data_, vertex_data_size_);
-				assert(vertex_data_);
+				MAKI_ASSERT(vertex_data_);
 			}
-			assert(vertex_insertion_index_+size_in_bytes <= vertex_data_size_);
+			MAKI_ASSERT(vertex_insertion_index_+size_in_bytes <= vertex_data_size_);
 
 			if(data != nullptr) {
 				memcpy(&vertex_data_[vertex_insertion_index_], data, size_in_bytes);
@@ -157,19 +94,18 @@ namespace maki {
 			vertex_count_ += size_in_bytes / vertex_stride_;
 		}
 
-		void mesh_t::push_index_data(uint32_t size_in_bytes, char *data)
-		{
-			assert(size_in_bytes % (bytes_per_index_ * indices_per_face_) == 0);
+		void mesh_t::push_index_data(uint32_t size_in_bytes, char *data) {
+			MAKI_ASSERT(size_in_bytes % (bytes_per_index_ * indices_per_face_) == 0);
 
 			if(index_insertion_index_+size_in_bytes > index_data_size_) {
 				// Enlarge by some margin
 				uint32_t overflow = index_insertion_index_ + size_in_bytes - index_data_size_;
-				uint32_t more = std::max(std::max(overflow, 256U), index_data_size_/2);
+				uint32_t more = max(max(overflow, 256U), index_data_size_/2);
 				index_data_size_ += more;
 				index_data_ = (char *)allocator_t::realloc(index_data_, index_data_size_);
-				assert(index_data_);
+				MAKI_ASSERT(index_data_);
 			}
-			assert(index_insertion_index_+size_in_bytes <= index_data_size_);
+			MAKI_ASSERT(index_insertion_index_+size_in_bytes <= index_data_size_);
 
 			if(data != nullptr) {
 				memcpy(&index_data_[index_insertion_index_], data, size_in_bytes);
@@ -178,8 +114,7 @@ namespace maki {
 			face_count_ += size_in_bytes / (indices_per_face_ * bytes_per_index_);
 		}
 
-		bool mesh_t::load(rid_t rid, bool upload)
-		{
+		bool mesh_t::load(rid_t rid, bool upload) {
 			uint32_t bytes_read;
 			char *data;
 			char *start = data = engine_t::get()->assets_->alloc_read(rid, &bytes_read);
@@ -188,7 +123,7 @@ namespace maki {
 			}
 
 			if(strncmp(data, "maki", 4) != 0) {
-				console_t::error("Invalid binary file type identifier <rid %d>", rid);
+				console_t::error("Invalid binary file type identifier <rid %ull>", rid);
 				MAKI_SAFE_FREE(start);
 				return false;
 			}
@@ -210,7 +145,7 @@ namespace maki {
 			} else if((uint32_t)(data - start) < bytes_read) {
 				console_t::error("Still more bytes to be read in the mesh data!");
 			}
-			assert(data == start + bytes_read);
+			MAKI_ASSERT(data == start + bytes_read);
 			MAKI_SAFE_FREE(start);
 
 			calculate_bounds();
@@ -219,8 +154,7 @@ namespace maki {
 			return true;
 		}
 
-		uint32_t mesh_t::load_mesh_data(char *start, bool upload)
-		{
+		uint32_t mesh_t::load_mesh_data(char *start, bool upload) {
 			char *data = start;
 		
 			// Read mesh properties
@@ -232,9 +166,9 @@ namespace maki {
 													data += sizeof(uint8_t);	// Pad byte
 		
 			// Allocate a buffer_ for the vertex data
-			vertex_data_size_ = std::max(vertex_data_size_, vertex_stride_ * vertex_count_);
+			vertex_data_size_ = max(vertex_data_size_, vertex_stride_ * vertex_count_);
 			vertex_data_ = (char *)allocator_t::realloc(vertex_data_, vertex_data_size_);
-			assert(vertex_data_);
+			MAKI_ASSERT(vertex_data_);
 
 			// Fill the buffer_ with vertex data
 			memcpy(vertex_data_, data, vertex_stride_ * vertex_count_);
@@ -246,9 +180,9 @@ namespace maki {
 			}
 
 			// Allocate a buffer_ for index data
-			index_data_size_ = std::max(index_data_size_, bytes_per_index_ * indices_per_face_ * face_count_);
+			index_data_size_ = max(index_data_size_, bytes_per_index_ * indices_per_face_ * face_count_);
 			index_data_ = (char *)allocator_t::realloc(index_data_, index_data_size_);
-			assert(index_data_);
+			MAKI_ASSERT(index_data_);
 
 			// Fill the buffer_ with index data
 			memcpy(index_data_, data, bytes_per_index_ * indices_per_face_ * face_count_);
@@ -260,16 +194,14 @@ namespace maki {
 			}
 
 			// Build gpu buffers from the vertex and index data
-			if(upload) {
+			if(upload)
 				this->upload();
-			}
 
 			// Return how much we have advanced the pointer
 			return data - start;
 		}
 
-		void mesh_t::set_vertex_attributes(uint32_t vertex_attribute_flags_)
-		{
+		void mesh_t::set_vertex_attributes(uint32_t vertex_attribute_flags_) {
 			this->vertex_attribute_flags_ = vertex_attribute_flags_;
 			vertex_stride_ = 3*sizeof(float);
 			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
@@ -292,14 +224,12 @@ namespace maki {
 			}
 		}
 
-		void mesh_t::set_index_attributes(uint8_t indices_per_face_, uint8_t bytes_per_index_)
-		{
+		void mesh_t::set_index_attributes(uint8_t indices_per_face_, uint8_t bytes_per_index_) {
 			this->indices_per_face_ = indices_per_face_;
 			this->bytes_per_index_ = bytes_per_index_;
 		}
 
-		int32_t mesh_t::get_attribute_offset(vertex_format_t::attribute_t attr)
-		{
+		int32_t mesh_t::get_attribute_offset(vertex_format_t::attribute_t attr) {
 			uint32_t offset = 0;
 			if(attr == vertex_format_t::attribute_position_) {
 				return offset;
@@ -351,8 +281,7 @@ namespace maki {
 			return -1;
 		}
 	
-		void mesh_t::upload()
-		{		
+		void mesh_t::upload() {		
 			vertex_format_t vf;
 			vf.push_attribute(vertex_format_t::attribute_position_, vertex_format_t::data_type_float_, 3);
 			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
@@ -388,8 +317,7 @@ namespace maki {
 			old_index_data_size_ = index_data_size_;
 		}
 
-		void mesh_t::calculate_bounds()
-		{
+		void mesh_t::calculate_bounds() {
 			bounds_.reset();
 
 			if(vertex_data_ != nullptr) {
@@ -409,8 +337,7 @@ namespace maki {
 			}
 		}
 
-		void mesh_t::make_rect(const rect_args_t &args)
-		{
+		void mesh_t::make_rect(const rect_args_t &args) {
 			set_vertex_attributes(vertex_format_t::attribute_flag_color_|vertex_format_t::attribute_flag_text_coord_);
 			indices_per_face_ = 3;
 			bytes_per_index_ = 2;

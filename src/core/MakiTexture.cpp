@@ -6,7 +6,7 @@ namespace maki {
 	namespace core {
 
 		texture_t::~texture_t() {
-			engine_t::get()->renderer_->delete_texture(this);
+			engine_t::get()->renderer->delete_texture(this);
 		}
 
 	

@@ -13,7 +13,7 @@ namespace maki {
 			struct find_predicate_t : public std::unary_function<const shader_program_t *, bool> {
 				find_predicate_t(rid_t rid, shader_program_t::variant_t variant) : rid(rid), variant(variant) {}
 				inline bool operator()(const shader_program_t *res) const {
-					return res->rid == rid && res->variant == variant;
+					return res->rid() == rid && res->variant == variant;
 				}
 				rid_t rid = RID_NONE;
 				shader_program_t::variant_t variant = shader_program_t::variant_normal;

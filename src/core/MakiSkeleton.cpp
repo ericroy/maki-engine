@@ -10,7 +10,7 @@ namespace maki {
 		
 			document_t doc;
 			if(!doc.load(rid)) {
-				console_t::error("Could not parse file as document <rid %d>", rid);
+				console_t::error("Could not parse file as document <rid %ull>", rid);
 				return false;
 			}
 

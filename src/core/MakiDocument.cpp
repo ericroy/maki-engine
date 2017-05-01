@@ -165,59 +165,59 @@ namespace maki {
 			return nullptr;
 		}
 
-		bool document_t::node_t::resolve_as_int(const char *node_path, int32_t *out) const {
+		bool document_t::node_t::resolve_as_int(const char *node_path, int64_t *out) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_int(out)
+			if (n)
+				return n->value_as_int(out);
 			return false;
 		}
 
-		int32_t document_t::node_t::resolve_as_int(const char *node_path, int32_t default_value = 0) const {
+		int64_t document_t::node_t::resolve_as_int(const char *node_path, int64_t default_value) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_int(default_value)
+			if (n)
+				return n->value_as_int(default_value);
 			return default_value;
 		}
 
-		bool document_t::node_t::resolve_as_uint(const char *node_path, uint32_t *out) const {
+		bool document_t::node_t::resolve_as_uint(const char *node_path, uint64_t *out) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_uint(out)
+			if (n)
+				return n->value_as_uint(out);
 			return false;
 		}
-
-		uint32_t document_t::node_t::resolve_as_uint(const char *node_path, uint32_t default_value = 0) {
+		
+		uint64_t document_t::node_t::resolve_as_uint(const char *node_path, uint64_t default_value) {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_uint(default_value)
+			if (n)
+				return n->value_as_uint(default_value);
 			return default_value;
 		}
 
 		bool document_t::node_t::resolve_as_float(const char *node_path, float *out) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_float(out)
+			if (n)
+				return n->value_as_float(out);
 			return false;
 		}
 
-		float document_t::node_t::resolve_as_float(const char *node_path, float default_value = 0.0f) {
+		float document_t::node_t::resolve_as_float(const char *node_path, float default_value) {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_float(default_value)
+			if (n)
+				return n->value_as_float(default_value);
 			return default_value;
 		}
 
 		bool document_t::node_t::resolve_as_bool(const char *node_path, bool *out) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_bool(out)
+			if (n)
+				return n->value_as_bool(out);
 			return false;
 		}
 
-		bool document_t::node_t::resolve_as_bool(const char *node_path, bool default_value = false) const {
+		bool document_t::node_t::resolve_as_bool(const char *node_path, bool default_value) const {
 			const auto *n = resolve(node_path);
-			if(n)
-				return n->value_as_bool(default_value)
+			if (n)
+				return n->value_as_bool(default_value);
 			return default_value;
 		}
 
@@ -251,7 +251,7 @@ namespace maki {
 
 	#ifndef MAKI_TOOLS
 		bool document_t::load(rid_t rid) {
-			uint32_t bytes;
+			uint64_t bytes;
 			char *data = engine_t::get()->assets_->alloc_read(rid, &bytes);
 			if(data == nullptr) {
 				console_t::error("Failed to alloc_read document bytes");
@@ -318,12 +318,12 @@ namespace maki {
 			}
 
 			for(uint32_t i = 0; i < doc_.root().length(); i++) {
-				serialize_node(doc_.root()[i], 0, out, false, false, false, indent_token);
+				serialize_node(&doc_.root()[i], 0, out, false, false, false, indent_token);
 			}
 			return true;
 		}
 
-		void document_text_serializer_t::serialize_node(document_t::node_t *n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token) {
+		void document_text_serializer_t::serialize_node(const document_t::node_t *n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token) {
 			if(stacking) {
 				out << " ";
 			} else {

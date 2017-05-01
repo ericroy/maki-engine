@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include "core/MakiTypes.h"
 #include "core/MakiTextureSet.h"
 #include "core/MakiManager.h"
 
@@ -8,7 +9,7 @@ namespace maki {
 
 		class texture_set_manager_t : public manager_t<texture_set_t, texture_set_manager_t> {
 		private:
-			class predicate_t : public std::unary_function<const texture_set_t *, bool> {
+			class predicate_t : public ::std::unary_function<const texture_set_t *, bool> {
 			public:
 				inline bool operator()(const texture_set_t *ts) const;
 				uint8_t count = 0;
@@ -22,8 +23,7 @@ namespace maki {
 		};
 
 
-		inline bool texture_set_manager_t::predicate_t::operator()(const texture_set_t *ts) const
-		{
+		inline bool texture_set_manager_t::predicate_t::operator()(const texture_set_t *ts) const {
 			if(count != ts->texture_count)
 				return false;
 			for(uint8_t i = 0; i < count; i++) {

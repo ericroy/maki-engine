@@ -1,71 +1,89 @@
 #pragma once
+#include "core/MakiMacros.h"
 #include "core/MakiVector2.h"
 
 namespace maki {
 	namespace core {
 	
-		class frustum_t
-		{
+		class frustum_t {
 		public:
-			frustum_t() {}
+			frustum_t() = default;
 		
-			frustum_t(float left, float right, float bottom, float top, float near_plane, float far_plane, float fov = 0.0f)
-				: left_(left), right_(right), bottom_(bottom), top_(top), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
-			{
+			frustum_t(float left, float right, float bottom, float top, float near, float far, float fov = 0.0f)
+				: left_(left), right_(right), bottom_(bottom), top_(top), near_(near), far_(far), fov_(fov) {
 			}
 
-			frustum_t(float width, float height, float near_plane, float far_plane, float fov = 0.0f)
-				: left_(-width/2), right_(width/2), bottom_(-height/2), top_(height/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
-			{
+			frustum_t(float width, float height, float near, float far, float fov = 0.0f)
+				: left_(-width / 2), right_(width / 2), bottom_(-height / 2), top_(height / 2), near_(near), far_(far), fov_(fov) {
 			}
 
-			frustum_t(const vector2_t &width_height, float near_plane, float far_plane, float fov = 0.0f)
-				: left_(-width_height.x/2), right_(width_height.x/2), bottom_(-width_height.y/2), top_(width_height.y/2), near_plane_(near_plane), far_plane_(far_plane), fov_(fov)
-			{
+			frustum_t(const vector2_t &width_height, float near, float far, float fov = 0.0f)
+				: left_(-width_height.x / 2), right_(width_height.x / 2), bottom_(-width_height.y / 2), top_(width_height.y / 2), near_(near), far_(far), fov_(fov) {
 			}
 
-			inline void set(float width, float height, float near_plane, float far_plane, float fov = 0.0f)
-			{
+			inline float left() const { return left_; }
+			inline float right() const { return right_; }
+			inline float top() const { return top_; }
+			inline float bottom() const { return bottom_; }
+			inline float near() const { return near_; }
+			inline float far() const { return far_; }
+			inline float fov() const { return fov_; }
+
+			inline void set(float width, float height, float near, float far, float fov = 0.0f) {
 				float wo2 = width / 2.0f;
 				float ho2 = height / 2.0f;
 				left_ = -wo2;
 				right_ = wo2;
 				bottom_ = -ho2;
 				top_ = ho2;
-				near_plane_ = near_plane;
-				far_plane_ = far_plane;
+				near_ = near;
+				far_ = far;
 				fov_ = fov;
 			}
-			inline void set(const vector2_t &width_height, float near_plane, float far_plane, float fov = 0.0f) { set(width_height.x, width_height.y, near_plane, far_plane, fov); }
-			inline void set(float width, float height) { set(width, height, near_plane_, far_plane_, fov_); }		
-			inline void set(const vector2_t &width_height) { set(width_height.x, width_height.y, near_plane_, far_plane_, fov_); }
+			
+			inline void set(const vector2_t &width_height, float near, float far, float fov = 0.0f) {
+				set(width_height.x, width_height.y, near, far, fov);
+			}
+			
+			inline void set(float width, float height) {
+				set(width, height, near_, far_, fov_);
+			}
 
-			inline void set(float left, float right, float bottom, float top, float near_plane, float far_plane, float fov = 0.0f)
-			{
+			inline void set(const vector2_t &width_height) {
+				set(width_height.x, width_height.y, near_, far_, fov_);
+			}
+
+			inline void set(float left, float right, float bottom, float top, float near, float far, float fov = 0.0f) {
 				left_ = left;
 				right_ = right;
 				bottom_ = bottom;
 				top_ = top;
-				near_plane_ = near_plane;
-				far_plane_ = far_plane;
+				near_ = near;
+				far_ = far;
 				fov_ = fov;
 			}
-			inline void set(float left, float right, float bottom, float top) { set(left, right, bottom, top, near_plane_, far_plane_, fov_); }
+			
+			inline void set(float left, float right, float bottom, float top) {
+				set(left, right, bottom, top, near_, far_, fov_);
+			}
 
+			inline float width() const {
+				return right_ - left_;
+			}
+			
+			inline float height() const {
+				return top_ - bottom_;
+			}
 
-			inline float get_width() const { return right_ - left_; }
-			inline float get_height() const { return top_ - bottom_; }
-			inline float get_aspect() const
-			{
+			inline float aspect() const {
 				float h = top_ - bottom_;
 				return h != 0.0f ? (right_ - left_) / h : 1.0f;
 			}
 
-			void extract_planes(vector4_t planes[6]) const
-			{
+			void extract_planes(vector4_t planes[6]) const {
 				// Near, Far
-				planes[0] = vector4_t(0.0f, 0.0f, 1.0f, -near_plane_); 
-				planes[1] = vector4_t(0.0f, 0.0f, -1.0f, far_plane_);
+				planes[0] = vector4_t(0.0f, 0.0f, 1.0f, -near_); 
+				planes[1] = vector4_t(0.0f, 0.0f, -1.0f, far_);
 
 				if(fov_ == 0.0f) {
 					// Left, right
@@ -76,13 +94,13 @@ namespace maki {
 					planes[4] = vector4_t(0.0f, 1.0f, 0.0f, top_);
 					planes[5] = vector4_t(0.0f, -1.0f, 0.0f, -bottom_);
 				} else {
-					float hh = far_plane_ * std::tan(fov_ * MAKI_DEG_TO_RAD / 2.0f);
-					float hw = hh * get_aspect();
+					float hh = far_ * std::tan(fov_ * MAKI_DEG_TO_RAD / 2.0f);
+					float hw = hh * aspect();
 
-					vector4_t far_top_right(hw, hh, far_plane_, 1.0f);
-					vector4_t far_top_left(-hw, hh, far_plane_, 1.0f);
-					vector4_t far_bottom_left(-hw, -hh, far_plane_, 1.0f);
-					vector4_t far_bottom_right(hw, -hh, far_plane_, 1.0f);
+					vector4_t far_top_right(hw, hh, far_, 1.0f);
+					vector4_t far_top_left(-hw, hh, far_, 1.0f);
+					vector4_t far_bottom_left(-hw, -hh, far_, 1.0f);
+					vector4_t far_bottom_right(hw, -hh, far_, 1.0f);
 
 					// Left, right
 					planes[2] = far_top_left.cross(far_bottom_left);
@@ -102,13 +120,13 @@ namespace maki {
 				}
 			}
 
-		public:
+		private:
 			float left_;
 			float right_;
 			float bottom_;
 			float top_;
-			float near_plane_;
-			float far_plane_;
+			float near_;
+			float far_;
 			// zero implies orthographic
 			float fov_;
 		};

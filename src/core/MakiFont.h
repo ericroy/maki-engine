@@ -1,5 +1,7 @@
 #pragma once
 #include "dependencies/stb_truetype.h"
+#include "core/MakiTypes.h"
+#include "core/MakiMacros.h"
 #include "core/MakiResource.h"
 
 
@@ -8,8 +10,8 @@ namespace maki {
 
 		class mesh_t;
 
-		class font_t : public resource_t
-		{
+		class font_t : public resource_t {
+			MAKI_NO_COPY(font_t);
 			friend class font_manager_t;
 	
 		private:
@@ -19,17 +21,15 @@ namespace maki {
 
 		public:
 			font_t();
-			font_t(font_t &&) { assert(false && "font_t move construction not allowed"); }
-			font_t(const font_t &) { assert(false && "font_t copy construction not allowed"); }
 			virtual ~font_t();
 			bool operator==(const font_t &other) const;
 			bool load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size);
 			void render_as_mesh(const char *s, mesh_t *m);
 
 		public:
-			handle_t material_;
-			rid_t shader_program_rid_;
-			uint32_t pixel_size_;
+			handle_t material;
+			rid_t shader_program_rid;
+			uint32_t pixel_size;
 	
 		private:
 			uint32_t texture_width_;

@@ -99,7 +99,7 @@ namespace maki {
 			virtual void reset() {
 				uint64_t size = res_pool_->get_capacity();
 #if _DEBUG
-				std::string debug_name = res_pool_->debug_name;
+				::std::string debug_name = res_pool_->debug_name;
 				MAKI_SAFE_DELETE(res_pool_);
 				res_pool_ = new resource_pool_t<T>(size, debug_name.c_str());
 #else
@@ -109,14 +109,14 @@ namespace maki {
 			}
 
 			void dump_stats(const char *label) {
-				uint64_t size = res_pool_->get_size();
-				uint64_t cap = res_pool_->get_capacity();
+				uint64_t size = res_pool_->size();
+				uint64_t cap = res_pool_->capacity();
 				console_t::info("%s: %d/%d (%d b / %d b)", label, size, cap, sizeof(T)*size, sizeof(T)*cap);
 			}
 
 			void dump_items() {
 				console_t::info("manager_t items:");
-				for(auto iter = std::begin(res_pool_); iter != std::end(res_pool_); ++iter)
+				for(auto iter = ::std::begin(res_pool_); iter != ::std::end(res_pool_); ++iter)
 					console_t::info("Item handle=%d refcount=%d", iter.index(), iter.ref_count());
 			}
 

@@ -37,14 +37,11 @@ namespace maki {
 				this->texture_rids[i] = texture_rids_[i];
 				this->textures[i] = res->texture_manager_->load(texture_rids_[i]);
 				if(this->textures[i] == HANDLE_NONE) {
-					goto failed;
+					texture_manager_t::free(texture_count, textures);
+					return false;
 				}
 			}
 			return true;
-
-		failed:
-			texture_manager_t::free(texture_count, textures);
-			return false;
 		}
 
 	} // namespace core

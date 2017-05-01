@@ -55,8 +55,7 @@ namespace maki {
 				nodes_ = new node_t[capacity_+1];
 
 				// Link up the nodes_
-				for(uint64_t i = 0; i < capacity_; i++)
-				{
+				for(uint64_t i = 0; i < capacity_; i++) {
 					nodes_[i].next = i+1;
 					nodes_[i].prev = i-1;
 				}
@@ -236,9 +235,9 @@ namespace maki {
 				return 0;
 			}
 
-			inline uint64_t get_capacity() const { return capacity_; }
-			inline uint64_t get_size() const { return count_; }
-			inline const T *get_base_addr() const { return data_; }
+			inline uint64_t capacity() const { return capacity_; }
+			inline uint64_t size() const { return count_; }
+			inline const T *base_addr() const { return data_; }
 
 		private:
 			// The array of data_

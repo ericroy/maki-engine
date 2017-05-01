@@ -34,19 +34,19 @@ namespace maki {
 			if(mesh_handle != HANDLE_NONE) {
 				mesh_manager_t::add_ref(mesh_handle);
 				mesh_ = mesh_handle;
-				fields_.mesh_ = mesh_ & mesh_manager_t::handle_value_mask;
-				fields_.mesh_manager_id_ = mesh_ >> mesh_manager_t::manager_id_shift;
+				fields_.mesh = mesh_ & mesh_manager_t::handle_value_mask;
+				fields_.mesh_manager_id = mesh_ >> mesh_manager_t::manager_id_shift;
 		
 				const mesh_t *m = mesh_manager_t::get(mesh_);
-				if(m->get_mesh_flag(mesh_t::mesh_flag_has_translucency_)) {
-					fields_.translucency_type_ = translucency_type_translucent;
+				if(m->get_mesh_flag(mesh_t::mesh_flag_has_translucency)) {
+					fields_.translucency_type = translucency_type_translucent;
 				}
 			
-				if(m->vertex_format_ != HANDLE_NONE) {
-					vertex_format_manager_t::add_ref(m->vertex_format_);
+				if(m->vertex_format != HANDLE_NONE) {
+					vertex_format_manager_t::add_ref(m->vertex_format);
 					vertex_format_ = m->vertex_format;
-					fields_.vertex_format_ = vertex_format_ & vertex_format_manager_t::handle_value_mask;
-					fields_.vertex_format_manager_id_ = vertex_format_ >> vertex_format_manager_t::manager_id_shift;
+					fields_.vertex_format = vertex_format_ & vertex_format_manager_t::handle_value_mask;
+					fields_.vertex_format_manager_id = vertex_format_ >> vertex_format_manager_t::manager_id_shift;
 				}
 			}
 		}

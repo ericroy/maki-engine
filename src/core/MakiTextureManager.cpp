@@ -66,7 +66,7 @@ namespace maki {
 			char *data = eng->assets_->alloc_read(rid, &bytes_read);
 
 			if(!eng->renderer_->create_texture(tex_, (char *)data, bytes_read)) {
-				console_t::error("Failed to create texture <rid %d>", rid);
+				console_t::error("Failed to create texture <rid %ull>", rid);
 				MAKI_SAFE_FREE(data);
 				return false;
 			}

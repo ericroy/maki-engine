@@ -84,7 +84,7 @@ namespace maki
 			}
 			std::map< rid_t, std::function<void(rid_t)> >::iterator iter = listeners_.find(rid);
 			if(iter != listeners_.end()) {
-				console_t::info("Notifying registered listener about changes to <rid %d>", rid);
+				console_t::info("Notifying registered listener about changes to <rid %ull>", rid);
 				iter->second(rid);
 			}
 		}

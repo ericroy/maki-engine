@@ -112,7 +112,7 @@ namespace maki {
 
 			document_t doc;
 			if(!doc.load(rid)) {
-				console_t::error("Failed to parse material file <rid %d>", rid);
+				console_t::error("Failed to parse material file <rid %ull>", rid);
 				return false;
 			}
 
@@ -190,7 +190,7 @@ namespace maki {
 						}
 					}
 					if(push_constant(uniform->value_, value_count*4, buffer) == -1) {
-						console_t::warning("warning, material has unbound uniforms <rid %d>", rid);
+						console_t::warning("warning, material has unbound uniforms <rid %ull>", rid);
 					}
 				}
 			}

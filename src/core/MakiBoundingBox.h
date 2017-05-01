@@ -25,14 +25,14 @@ namespace maki {
 				}
 
 				vector4_t max_corner(
-					std::max<float>(pos.x + radii.x, other.pos.x + other.radii.x),
-					std::max<float>(pos.y + radii.y, other.pos.y + other.radii.y),
-					std::max<float>(pos.z + radii.z, other.pos.z + other.radii.z),
+					::std::max<float>(pos.x + radii.x, other.pos.x + other.radii.x),
+					::std::max<float>(pos.y + radii.y, other.pos.y + other.radii.y),
+					::std::max<float>(pos.z + radii.z, other.pos.z + other.radii.z),
 					1.0f);
 				vector4_t min_corner(
-					std::min<float>(pos.x - radii.x, other.pos.x - other.radii.x),
-					std::min<float>(pos.y - radii.y, other.pos.y - other.radii.y),
-					std::min<float>(pos.z - radii.z, other.pos.z - other.radii.z),
+					::std::min<float>(pos.x - radii.x, other.pos.x - other.radii.x),
+					::std::min<float>(pos.y - radii.y, other.pos.y - other.radii.y),
+					::std::min<float>(pos.z - radii.z, other.pos.z - other.radii.z),
 					1.0f);
 				pos = (max_corner + min_corner) / 2.0f;
 				radii = max_corner - pos;
@@ -46,14 +46,14 @@ namespace maki {
 				}
 
 				vector4_t max_corner(
-					std::max<float>(pos.x + radii.x, x),
-					std::max<float>(pos.y + radii.y, y),
-					std::max<float>(pos.z + radii.z, z),
+					::std::max<float>(pos.x + radii.x, x),
+					::std::max<float>(pos.y + radii.y, y),
+					::std::max<float>(pos.z + radii.z, z),
 					1.0f);
 				vector4_t min_corner(
-					std::min<float>(pos.x - radii.x, x),
-					std::min<float>(pos.y - radii.y, y),
-					std::min<float>(pos.z - radii.z, z),
+					::std::min<float>(pos.x - radii.x, x),
+					::std::min<float>(pos.y - radii.y, y),
+					::std::min<float>(pos.z - radii.z, z),
 					1.0f);
 				pos = (max_corner + min_corner) / 2.0f;
 				radii = max_corner - pos;

@@ -45,7 +45,7 @@ namespace maki {
 
 			char *font_data = eng->assets_->alloc_read(font_rid);
 			if(font_data == nullptr) {
-				console_t::error("Failed to load font <rid %d>", font_rid);
+				console_t::error("Failed to load font <rid %ull>", font_rid);
 				return false;
 			}
 

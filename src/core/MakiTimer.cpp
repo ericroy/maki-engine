@@ -4,9 +4,7 @@
 namespace maki {
 	namespace core {
 
-		timer_t::timer_t(time_source_t *source)
-			: source_(source)
-		{
+		timer_t::timer_t(time_source_t *source) : source_(source) {
 			last_time_ = source_->get_time_micro();
 
 			update_count_ = 0;
@@ -19,16 +17,14 @@ namespace maki {
 			elapsed_micros_ = 0;
 		}
 
-		void timer_t::update_history()
-		{
+		void timer_t::update_history() {
 			uint32_t index = update_count_ % n_frame_average_;
 
 			// If N frames have gone by, calculate new average values
 			if(update_count_ > n_frame_average_ && index == 0) {
 				float average_delta = 0;
-				for(uint32_t i = 0; i < n_frame_average_; i++ ) {
+				for(uint32_t i = 0; i < n_frame_average_; i++ )
 					average_delta += delta_history_[i];
-				}
 				average_delta /= n_frame_average_;
 				average_fps_ = 1.0f / average_delta;
 			}
@@ -41,9 +37,8 @@ namespace maki {
 			update_count_++;
 
 			uint64_t now = source_->get_time_micro();
-			if(now < last_time_) {
+			if(now < last_time_)
 				now = last_time_;
-			}
 
 			delta_micros_ = now - last_time_;
 			elapsed_micros_ += delta_micros_;
