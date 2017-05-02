@@ -38,7 +38,7 @@ namespace maki {
 			return rid_ == other.rid_ && pixel_size_ == other.pixel_size_;
 		}
 
-		bool font_t::load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size)
+		bool font_t::load(rid_t font_rid, rid_t shader_program_rid, uint32_t pixel_size)
 		{
 			core_managers_t *res = core_managers_t::get();
 			engine_t *eng = engine_t::get();

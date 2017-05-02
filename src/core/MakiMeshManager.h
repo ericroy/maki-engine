@@ -1,20 +1,22 @@
 #pragma once
+#include "core/MakiTypes.h"
 #include "core/MakiMacros.h"
-#include "core/MakiManager.h"
 #include "core/MakiMesh.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class mesh_manager_t : public manager_t<mesh_t, mesh_manager_t> {
+		class mesh_manager_t {
 			MAKI_NO_COPY(mesh_manager_t);
-
 		public:
-			mesh_manager_t(uint64_t capacity);	
+			mesh_manager_t(uint32_t capacity);
 			virtual ~mesh_manager_t() = default;
-			handle_t load(rid_t rid);
-			void reload_assets();
-			bool reload_asset(rid_t rid);
+			ref_t<mesh_t> get(rid_t rid);
+			ref_t<mesh_t> load(rid_t rid);
+			ref_t<mesh_t> get_or_load(rid_t rid);
+		private:
+			unique_ptr<resource_pool_t<mesh_t>> res_pool_;
 		};
 
 	} // namespace core

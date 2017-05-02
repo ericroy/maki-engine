@@ -1,7 +1,6 @@
 #pragma once
 #include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
-#include "core/MakiArray.h"
 #include "core/MakiTextureSet.h"
 #include "core/MakiResourcePool.h"
 

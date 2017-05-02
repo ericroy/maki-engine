@@ -186,7 +186,7 @@ namespace maki {
 			return false;
 		}
 		
-		uint64_t document_t::node_t::resolve_as_uint(const char *node_path, uint64_t default_value) {
+		uint64_t document_t::node_t::resolve_as_uint(const char *node_path, uint64_t default_value) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_uint(default_value);
@@ -200,7 +200,7 @@ namespace maki {
 			return false;
 		}
 
-		float document_t::node_t::resolve_as_float(const char *node_path, float default_value) {
+		float document_t::node_t::resolve_as_float(const char *node_path, float default_value) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_float(default_value);
@@ -252,14 +252,12 @@ namespace maki {
 	#ifndef MAKI_TOOLS
 		bool document_t::load(rid_t rid) {
 			uint64_t bytes;
-			char *data = engine_t::get()->assets_->alloc_read(rid, &bytes);
-			if(data == nullptr) {
+			array_t<char> data = engine_t::get()->assets->alloc_read(rid);
+			if(!data) {
 				console_t::error("Failed to alloc_read document bytes");
 				return false;
 			}
-			bool success = load(data, bytes);
-			MAKI_SAFE_FREE(data);
-			return success;
+			return load(data.data(), data.length());
 		}
 	#endif
 
@@ -623,7 +621,7 @@ namespace maki {
 			uint16_t *string_table_offsets = new uint16_t[string_table_count+1];
 			char *string_table_start = p;
 			for(uint16_t i = 0; i < string_table_count; i++) {
-				string_table_offsets[i] = p - string_table_start;
+				string_table_offsets[i] = (uint16_t)(p - string_table_start);
 				while(*p != 0)
 					p++;
 				p++;

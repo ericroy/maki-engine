@@ -115,12 +115,12 @@ namespace maki {
 		}
 
 		bool mesh_t::load(rid_t rid, bool upload) {
-			uint32_t bytes_read;
-			char *data;
-			char *start = data = engine_t::get()->assets_->alloc_read(rid, &bytes_read);
-			if(start == nullptr) {
+			array_t<char> bytes = engine_t::get()->assets_->alloc_read(rid);
+			if (!bytes)
 				return false;
-			}
+
+			char *start = bytes.data();
+			char *data = bytes.data();
 
 			if(strncmp(data, "maki", 4) != 0) {
 				console_t::error("Invalid binary file type identifier <rid %ull>", rid);
@@ -140,17 +140,15 @@ namespace maki {
 				siblings_.push_back(res->mesh_manager_->add(maki_move(next_mesh)));
 			}
 
-			if((uint32_t)(data - start) > bytes_read) {
+			if((uint32_t)(data - start) > bytes_read)
 				console_t::error("Read past the end of the mesh data!");
-			} else if((uint32_t)(data - start) < bytes_read) {
+			else if((uint32_t)(data - start) < bytes_read) {
 				console_t::error("Still more bytes to be read in the mesh data!");
-			}
+
 			MAKI_ASSERT(data == start + bytes_read);
-			MAKI_SAFE_FREE(start);
 
 			calculate_bounds();
-
-			this->rid_ = rid;
+			set_rid(rid);
 			return true;
 		}
 
@@ -201,9 +199,9 @@ namespace maki {
 			return data - start;
 		}
 
-		void mesh_t::set_vertex_attributes(uint32_t vertex_attribute_flags_) {
-			this->vertex_attribute_flags_ = vertex_attribute_flags_;
-			vertex_stride_ = 3*sizeof(float);
+		void mesh_t::set_vertex_attributes(uint32_t vertex_attribute_flags) {
+			vertex_attribute_flags_ = vertex_attribute_flags;
+			vertex_stride_ = 3 * sizeof(float);
 			if((vertex_attribute_flags_ & vertex_format_t::attribute_flag_normal_) != 0) {
 				vertex_stride_ += 3*sizeof(float);
 			}
@@ -224,9 +222,9 @@ namespace maki {
 			}
 		}
 
-		void mesh_t::set_index_attributes(uint8_t indices_per_face_, uint8_t bytes_per_index_) {
-			this->indices_per_face_ = indices_per_face_;
-			this->bytes_per_index_ = bytes_per_index_;
+		void mesh_t::set_index_attributes(uint8_t indices_per_face, uint8_t bytes_per_index) {
+			indices_per_face_ = indices_per_face;
+			bytes_per_index_ = bytes_per_index;
 		}
 
 		int32_t mesh_t::get_attribute_offset(vertex_format_t::attribute_t attr) {
@@ -308,9 +306,7 @@ namespace maki {
 			buffer_ = engine_t::get()->renderer_->upload_buffer(buffer_, &vf, vertex_data_, vertex_count_, index_data_, face_count_, indices_per_face_, bytes_per_index_, dynamic_, length_changed);
 
 			// get or create vertex format
-			handle_t new_vertex_format = core_managers_t::get()->vertex_format_manager_->find_or_add(vf);
-			vertex_format_manager_t::free(vertex_format_);
-			vertex_format_ = new_vertex_format;
+			vertex_format_ = core_managers_t::get()->vertex_format_manager->get_or_add(vf);
 
 			// Record the data sizes so if upload is called again later, we can see if the buffers have changed length
 			old_vertex_data_size_ = vertex_data_size_;

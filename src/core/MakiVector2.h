@@ -6,8 +6,7 @@ namespace maki {
 	namespace core {
 		class matrix44_t;
 
-		class vector2_t
-		{
+		class vector2_t {
 		public:
 			inline vector2_t() : x(0.0f), y(0.0f) {}
 			inline vector2_t(float xy) : x(xy), y(xy) {}

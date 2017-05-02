@@ -5,8 +5,7 @@ namespace maki {
 	namespace core {
 		class matrix44_t;
 
-		class vector4_t
-		{
+		class vector4_t {
 		public:
 			static const vector4_t unit_x;
 			static const vector4_t unit_y;

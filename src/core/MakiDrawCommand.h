@@ -1,6 +1,7 @@
 #pragma once
 #include "core/MakiAllocator.h"
 #include "core/MakiEngine.h"
+#include "core/MakiResourcePool.h"
 #include "core/MakiMeshManager.h"
 #include "core/MakiMaterialManager.h"
 #include "core/MakiVertexFormatManager.h"
@@ -42,28 +43,19 @@ namespace maki {
 
 			// Listed from low to high bits (low to high sorting priority)
 			struct key_fields_t {
-				// These fields contain the actual handle_ value to a resource.
-				// Make sure there are enough bits to represent every handle_ up to the maximum size of the manager's pool.
+				// These fields contain the actual handle value to a resource.
 				uint64_t mesh : bits_per_mesh;
-				uint64_t mesh_manager_id : mesh_manager_t::bits_per_manager_id;
-
 				uint64_t material : bits_per_material;
-				uint64_t material_manager_id : material_manager_t::bits_per_manager_id;
-
 				uint64_t texture_set : bits_per_texture_set;
-				uint64_t texture_set_manager_id_ : texture_set_manager_t::bits_per_manager_id;
-
 				uint64_t shader_program : bits_per_shader_program;
-				uint64_t shader_program_manager_id_ : shader_program_manager_t::bits_per_manager_id;
-
 				uint64_t vertex_format : bits_per_vertex_format;
-				uint64_t vertex_format_manager_id : vertex_format_manager_t::bits_per_manager_id;
 
 				uint64_t inverse_depth : 11;
 
 				// Other higher priority sorting properties
 				uint64_t translucency_type : 1;
 			};
+			static_assert(sizeof(key_fields_t) <= sizeof(uint64_t), "Draw command fields have exceeded one uint64 in size!");
 
 		public:
 			draw_command_t() = default;
@@ -71,8 +63,8 @@ namespace maki {
 			~draw_command_t();
 
 			inline uint64_t get_key() const { return key_; }
-			void set_mesh(handle_t mesh);
-			void set_material(handle_t material);
+			void set_mesh(const ref_t<mesh_t> &mesh);
+			void set_material(const ref_t<material_t> &material);
 			inline void clear();
 			inline void copy(const draw_command_t &other);
 
@@ -81,12 +73,11 @@ namespace maki {
 				key_fields_t fields_;	
 				uint64_t key_ = 0;
 			};
-		
-			handle_t mesh_ = HANDLE_NONE;
-			handle_t material_ = HANDLE_NONE;
-			handle_t texture_set_ = HANDLE_NONE;
-			handle_t shader_program_ = HANDLE_NONE;
-			handle_t vertex_format_ = HANDLE_NONE;
+			ref_t<mesh_t> mesh_;
+			ref_t<material_t> material_;
+			ref_t<texture_set_t> texture_set_;
+			ref_t<shader_program_t> shader_program_;
+			ref_t<vertex_format_t> vertex_format_;
 		};
 
 		static_assert(sizeof(draw_command_t::key_fields_t) == 8, "draw_command_t key has exceeded 64 bits");
@@ -95,28 +86,20 @@ namespace maki {
 
 		inline void draw_command_t::copy(const draw_command_t &other) {
 			key_ = other.key_;
-
 			mesh_ = other.mesh_;
 			material_ = other.material_;
 			shader_program_ = other.shader_program_;
 			texture_set_ = other.texture_set_;
 			vertex_format_ = other.vertex_format_;
-
-			mesh_manager_t::add_ref(mesh_);
-			material_manager_t::add_ref(material_);
-			shader_program_manager_t::add_ref(shader_program_);
-			texture_set_manager_t::add_ref(texture_set_);
-			vertex_format_manager_t::add_ref(vertex_format_);
 		}
 	
 		inline void draw_command_t::clear() {
 			key_ = 0;
-
-			mesh_manager_t::free(mesh_);
-			material_manager_t::free(material_);
-			shader_program_manager_t::free(shader_program_);
-			texture_set_manager_t::free(texture_set_);
-			vertex_format_manager_t::free(vertex_format_);
+			mesh_.release();
+			material_.release();
+			texture_set_.release();
+			shader_program_.release();
+			vertex_format_.release();
 		}
 
 

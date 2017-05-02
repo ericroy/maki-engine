@@ -20,7 +20,6 @@ namespace maki {
 			auto *eng = engine_t::get();
 			if (!eng->renderer->create_shader_program(sh.ptr()))
 				return nullptr;
-			sh->set_rid(rid);
 			return sh;
 		}
 

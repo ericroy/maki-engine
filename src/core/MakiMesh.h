@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
 #include "core/MakiTypes.h"
 #include "core/MakiMacros.h"
 #include "core/MakiResource.h"
+#include "core/MakiVector4.h"
 #include "core/MakiBoundingBox.h"
 #include "core/MakiMaterialManager.h"
 #include "core/MakiVertexFormat.h"
@@ -12,7 +12,6 @@ namespace maki {
 
 		class mesh_t : public resource_t {
 			MAKI_NO_COPY(mesh_t);
-
 		public:
 			enum mesh_flag_t {
 				 mesh_flag_has_translucency = 1 << 0,
@@ -20,7 +19,7 @@ namespace maki {
 
 			enum object_t {
 				object_rect = 0,
-				object_count,
+				object_max = object_rect,
 			};
 
 			struct object_args_t {
@@ -28,10 +27,10 @@ namespace maki {
 
 			struct rect_args_t : public object_args_t {
 				vector4_t facing_axis;
-				float left;
-				float right;
-				float top;
-				float bottom;
+				float left = 0.0f;
+				float right = 0.0f;
+				float top = 0.0f;
+				float bottom = 0.0f;
 			};
 
 		public:
@@ -44,8 +43,8 @@ namespace maki {
 			bool load(rid_t rid, bool upload = true);
 		
 			// Populate object directly using these
-			void set_vertex_attributes(uint32_t vertex_attribute_flags_);
-			void set_index_attributes(uint8_t indices_per_face_, uint8_t bytes_per_index_);
+			void set_vertex_attributes(uint32_t vertex_attribute_flags);
+			void set_index_attributes(uint8_t indices_per_face, uint8_t bytes_per_index);
 			
 			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
 			void push_vertex_data(uint32_t size_in_bytes, char *data);
@@ -90,11 +89,11 @@ namespace maki {
 				return bounds_;
 			}
 
-			inline const ::std::vector<handle_t> &siblings() const {
+			inline const vector<ref_t<mesh_t>> &siblings() const {
 				return siblings_;
 			}
 
-			inline handle_t vertex_format() const {
+			inline const ref_t<vertex_format_t> &vertex_format() const {
 				return vertex_format_;
 			}
 
@@ -124,8 +123,8 @@ namespace maki {
 			void make_rect(const rect_args_t &args);
 
 		private:
-			::std::vector<handle_t> siblings_;
-			handle_t vertex_format_ = HANDLE_NONE;
+			vector<ref_t<mesh_t>> siblings_;
+			ref_t<vertex_format_t> vertex_format_;
 			bounding_box_t bounds_;
 
 			uint8_t mesh_flags_ = 0;

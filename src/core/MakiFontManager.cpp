@@ -3,33 +3,24 @@
 namespace maki {
 	namespace core {
 
-		inline bool font_manager_t::predicate_t::operator()(const font_t *font) const {
-			return font->rid == font_rid && font->pixel_size == pixel_size && font->shader_program_rid == shader_program_rid;
+		font_manager_t::font_manager_t(uint32_t capacity) {
+			res_pool_.reset(new resouce_pool_t<font_t>(capacity, "font_manager_t"));
 		}
 
-		font_manager_t::font_manager_t(uint64_t capacity)
-			: manager_t<font_t, font_manager_t>(capacity, "font_manager_t") {
+		ref_t<font_t> font_manager_t::get(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size) {
+			return res_pool_->find([rid, shader_program_rid, pixel_size](const font_t &f) {
+				return rid == f.rid() && pixel_size == f.pixel_size && shader_program_rid == f.shader_program_rid;
+			});
 		}
 
-		handle_t font_manager_t::load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size) {
-			predicate_t p;
-			p.font_rid = font_rid;
-			p.shader_program_rid = shader_program_rid;
-			p.pixel_size = pixel_size;
-			handle_t handle = res_pool_->match(p);
-		
-			if(handle != HANDLE_NONE)
-				return handle;
+		ref_t<font_t> font_manager_t::load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size) {
+			auto font = res_pool_->alloc();
+			return font->load(rid, shader_program_rid, pixel_size) ? font : nullptr;
+		}
 
-			handle = res_pool_->alloc();
-			assert(handle != HANDLE_NONE && "font_t pool depleted");
-			font_t *font = res_pool_->get(handle);
-			new(font) font_t();
-			if(!font->load(shader_program_rid, font_rid, pixel_size)) {
-				res_pool_->free(handle);
-				return HANDLE_NONE;
-			}
-			return handle;
+		ref_t<font_t> font_manager_t::get_or_load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size) {
+			auto font = get(rid, shader_program_rid, pixel_size);
+			return font ? font : load(rid, shader_program_rid, pixel_size);
 		}
 
 	} // namespace core

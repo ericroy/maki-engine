@@ -23,7 +23,7 @@ namespace maki {
 			font_t();
 			virtual ~font_t();
 			bool operator==(const font_t &other) const;
-			bool load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size);
+			bool load(rid_t font_rid, rid_t shader_program_rid, uint32_t pixel_size);
 			void render_as_mesh(const char *s, mesh_t *m);
 
 		public:

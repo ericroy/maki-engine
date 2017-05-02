@@ -2,24 +2,23 @@
 #include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 #include "core/MakiVertexFormat.h"
-#include "core/MakiManager.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class vertex_format_manager_t : public manager_t<vertex_format_t, vertex_format_manager_t> {
+		class vertex_format_manager_t {
 			MAKI_NO_COPY(vertex_format_manager_t);
-
 		public:
-			vertex_format_manager_t(uint64_t capacity);	
+			vertex_format_manager_t(uint32_t capacity);	
 			virtual ~vertex_format_manager_t() = default;
-
-			inline handle_t find_or_add(const vertex_format_t &vf) {
-				handle_t vertex_format = find(vf);
-				if(vertex_format == HANDLE_NONE)
-					return add(vf);
-				return vertex_format;
+			inline handle_t get_or_add(const vertex_format_t &vf) {
+				return res_pool_->find([&vf](const vertex_format_t &vf2) {
+					return vf == vf2;
+				});
 			}
+		private:
+			unique_ptr<resource_pool_t<vertex_format_t>> res_pool_;
 		};
 
 	} // namespace core

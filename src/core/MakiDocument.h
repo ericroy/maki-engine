@@ -1,22 +1,19 @@
 #pragma once
 #include <cstdlib>
 #include <iostream>
-#include <vector>
 #include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 
 namespace maki {
 	namespace core {
 
-		class document_t
-		{
+		class document_t {
 			MAKI_NO_COPY(document_t);
 			friend class document_text_serializer_t;
 			friend class document_binary_serializer_t;
 
 		public:
-			class node_t
-			{
+			class node_t {
 				MAKI_NO_COPY(node_t);
 				friend class document_t;
 				friend class document_text_serializer_t;
@@ -32,7 +29,7 @@ namespace maki {
 				inline node_t &operator[](uint64_t i) { return *children_[i]; }
 
 				void append_child(node_t *n);
-				inline void append_sibling(node_t *n) { assert(parent_ != nullptr); parent_->append_child(n); }
+				inline void append_sibling(node_t *n) { MAKI_ASSERT(parent_ != nullptr); parent_->append_child(n); }
 				node_t *remove_child(uint32_t index);
 				bool remove_child(node_t *n);
 				void detach();
@@ -91,10 +88,8 @@ namespace maki {
 		};
 
 
-		class document_text_serializer_t
-		{
+		class document_text_serializer_t {
 			MAKI_NO_COPY(document_text_serializer_t);
-
 		private:
 			static const int32_t stack_children_count_threshold_ = 4;
 
@@ -113,10 +108,8 @@ namespace maki {
 		};
 
 
-		class document_binary_serializer_t
-		{
+		class document_binary_serializer_t {
 			MAKI_NO_COPY(document_binary_serializer_t);
-
 		private:
 			static const uint8_t BINARY_HEADER[4];
 

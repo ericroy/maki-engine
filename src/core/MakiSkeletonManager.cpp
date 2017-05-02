@@ -1,58 +1,26 @@
 #include "core/MakiSkeletonManager.h"
-#include "core/MakiSkeleton.h"
-#include "core/MakiEngine.h"
 
 namespace maki {
 	namespace core {
 
-		skeleton_manager_t::skeleton_manager_t(uint64_t capacity)
-			: manager_t<skeleton_t, skeleton_manager_t>(capacity, "skeleton_manager_t") {
+		skeleton_manager_t::skeleton_manager_t(uint32_t capacity) {
+			res_pool_.reset(new resource_pool_t<skeleton_t>(capacity, "skeleton_manager_t"));
 		}
 
-		handle_t skeleton_manager_t::load(rid_t rid) {
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE)
-				return handle;
-
-			handle = res_pool_->alloc() | manager_id_;
-			skeleton_t *skel = res_pool_->get(handle & handle_value_mask_);
-			new(skel) skeleton_t();
-		
-			if(!skel->load(rid)) {
-				res_pool_->free(handle & handle_value_mask_);
-				return HANDLE_NONE;
-			}
-			return handle;
+		ref_t<skeleton_t> skeleton_manager_t::get(rid_t rid) {
+			return res_pool_->find([rid](const skeleton_t &m) {
+				return rid == m.rid();
+			});
 		}
 
-		void skeleton_manager_t::reload_assets() {
-			engine_t *eng = engine_t::get();
-
-			for(auto iter = std::begin(res_pool_); iter != std::end(res_pool_); ++iter) {
-				auto *skel = iter.ptr();
-				auto rid = skel->rid;
-				if(rid != RID_NONE) {
-					skel->~skeleton_t();
-					new(skel) skeleton_t();
-					skel->load(rid);
-				}
-			}
+		ref_t<skeleton_t> skeleton_manager_t::load(rid_t rid) {
+			auto sk = res_pool_->alloc();
+			return sk->load(rid) ? sk : nullptr;
 		}
 
-		bool skeleton_manager_t::reload_asset(rid_t rid) {
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE)
-				return false;
-
-			auto *skel = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
-
-			if(rid != RID_NONE) {
-				skel->~skeleton_t();
-				new(skel) skeleton_t();
-				return skel->load(rid);
-			}
-			return true;
+		ref_t<skeleton_t> skeleton_manager_t::get_or_load(rid_t rid) {
+			auto sk = get(rid);
+			return sk ? sk : load(rid);
 		}
 
 	} // namespace core

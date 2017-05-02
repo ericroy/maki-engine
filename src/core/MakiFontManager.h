@@ -1,26 +1,22 @@
 #pragma once
+#include "core/MakiTypes.h"
 #include "core/MakiMacros.h"
 #include "core/MakiFont.h"
-#include "core/MakiManager.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class font_manager_t : public manager_t<font_t, font_manager_t> {
+		class font_manager_t {
 			MAKI_NO_COPY(font_manager_t);
-
-		private:
-			struct predicate_t : std::unary_function<const font_t *, bool> {
-				inline bool operator()(const font_t *font) const;
-				rid_t shader_program_rid = RID_NONE;
-				rid_t font_rid = RID_NONE;
-				uint32_t pixel_size = 0;
-			};
-		
 		public:
-			font_manager_t(uint64_t capacity);	
+			font_manager_t(uint32_t capacity);	
 			virtual ~font_manager_t() = default;
-			handle_t load(rid_t shader_program_rid, rid_t font_rid, uint32_t pixel_size);
+			ref_t<font_t> get(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size);
+			ref_t<font_t> load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size);
+			ref_t<font_t> get_or_load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size);
+		private:
+			unique_ptr<resource_pool_t<font_t>> res_pool_;
 		};
 
 	} // namespace core

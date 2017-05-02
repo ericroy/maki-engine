@@ -1,4 +1,5 @@
 #pragma once
+#include "core/MakiTypes.h"
 #include "core/MakiRect.h"
 #include "core/MakiMatrix44.h"
 #include "core/MakiShaderProgram.h"
@@ -60,10 +61,10 @@ namespace maki {
 				vector4_t diffuse_color;
 				vector4_t specular_color;
 				vector4_t width_height_near_far;
-				float attenuation;
-				float spot_factor;
-				float fov;
-				uint32_t flags;
+				float attenuation = 0.0f;
+				float spot_factor = 0.0f;
+				float fov = 0.0f;
+				uint32_t flags = 0;
 			};
 
 			struct shadow_map_properties_t {
@@ -72,7 +73,7 @@ namespace maki {
 			};
 
 			struct camera_split_distances_t {
-				float splits[max_cascades - 1];
+				float splits[max_cascades - 1] = {};
 			};
 
 			struct __declspec(align(MAKI_SIMD_ALIGN)) light_split_region_t : public aligned_t<MAKI_SIMD_ALIGN> {
@@ -81,51 +82,18 @@ namespace maki {
 			};
 
 		public:
-			render_state_t()
-			{
-				memset(light_properties_, 0, sizeof(light_properties_));
-				render_target_type_ = render_target_default;
-				depth_stencil_type_ = depth_stencil_default;
-				clear_render_target_ = false;
-				clear_depth_stencil_ = false;
-				depth_test_ = depth_test_less;
-				depth_write_ = true;
-				wire_frame_ = false;
-				global_ambient_color_ = vector4_t(0.0f);
-				cull_mode_ = cull_mode_back;
-				shader_variant_ = shader_program_t::variant_normal;
-			
-				light_count_ = 0;
-				shadow_light_count_ = 0;
-				cascaded_shadow_light_count_ = 0;
-
-				render_target_ = HANDLE_NONE;
-				depth_stencil_ = HANDLE_NONE;
-				for(uint32_t i = 0; i < max_shadow_lights; i++) {
-					shadow_maps_[i] = HANDLE_NONE;
-				}
-			}
-
-			~render_state_t()
-			{
+			render_state_t() = default;
+			~render_state_t() {
 				clear();
 			}
-
-			void copy(const render_state_t &s)
-			{
+			void copy(const render_state_t &s) {
 				*this = s;
-				for(uint32_t i = 0; i < max_shadow_lights; i++)
-					texture_manager_t::add_ref(shadow_maps_[i]);
-				texture_manager_t::add_ref(render_target_);
-				texture_manager_t::add_ref(depth_stencil_);
 			}
-
-			void clear()
-			{
-				for(uint32_t i = 0; i < max_shadow_lights; i++)
-					texture_manager_t::free(shadow_maps_[i]);
-				texture_manager_t::free(render_target_);
-				texture_manager_t::free(depth_stencil_);
+			void clear() {
+				for (auto &tex : shadow_maps)
+					tex.release();
+				render_target.release();
+				depth_stencil.release();
 			}
 
 		private:
@@ -133,46 +101,46 @@ namespace maki {
 
 		public:
 			// Camera data
-			matrix44_t view_;
-			matrix44_t projection_;
-			camera_split_distances_t camera_split_distances_;
-			vector4_t camera_width_height_near_far_;
+			matrix44_t view;
+			matrix44_t projection;
+			camera_split_distances_t camera_split_distances;
+			vector4_t camera_width_height_near_far;
 
 			// light_t and shadow data
-			uint32_t light_count_;
-			uint32_t shadow_light_count_;
-			uint32_t cascaded_shadow_light_count_;
-			light_properties_t light_properties_[max_lights];
-			light_split_region_t light_split_regions_[max_split_shadow_lights][max_cascades];
-			shadow_map_properties_t shadow_map_properties_[max_shadow_lights];
-			handle_t shadow_maps_[max_shadow_lights];
-			matrix44_t light_world_[max_lights];
-			matrix44_t light_view_[max_lights];
-			matrix44_t light_proj_[max_lights];
-			matrix44_t light_view_proj_[max_lights];
-			vector4_t light_positions_[max_lights];
-			vector4_t light_directions_[max_lights];
+			uint32_t light_count = 0;
+			uint32_t shadow_light_count = 0;
+			uint32_t cascaded_shadow_light_count = 0;
+			light_properties_t light_properties[max_lights];
+			light_split_region_t light_split_regions[max_split_shadow_lights][max_cascades];
+			shadow_map_properties_t shadow_map_properties[max_shadow_lights];
+			ref_t<texture_t> shadow_maps[max_shadow_lights];
+			matrix44_t light_world[max_lights];
+			matrix44_t light_view[max_lights];
+			matrix44_t light_proj[max_lights];
+			matrix44_t light_view_proj[max_lights];
+			vector4_t light_positions[max_lights];
+			vector4_t light_directions[max_lights];
 
 			// Basic render state
-			uint32_t window_width_;
-			uint32_t window_height_;
-			rect_t view_port_rect_;
-			render_state_t::render_target_t render_target_type_;
-			handle_t render_target_;
-			render_state_t::depth_stencil_t depth_stencil_type_;
-			handle_t depth_stencil_;
-			depth_test_t depth_test_;
-			bool depth_write_;
-			bool wire_frame_;
-			cull_mode_t cull_mode_;
-			vector4_t global_ambient_color_;
-			shader_program_t::variant_t shader_variant_;
+			uint32_t window_width;
+			uint32_t window_height;
+			rect_t view_port_rect;
+			render_state_t::render_target_t render_target_type = render_target_default;
+			ref_t<texture_t> render_target;
+			render_state_t::depth_stencil_t depth_stencil_type = depth_stencil_default;
+			ref_t<texture_t> depth_stencil;
+			depth_test_t depth_test = depth_test_less;
+			bool depth_write = true;
+			bool wire_frame = false;
+			cull_mode_t cull_mode = cull_mode_back;
+			vector4_t global_ambient_color;
+			shader_program_t::variant_t shader_variant = shader_program_t::variant_normal;
 
 			// Actions
-			bool clear_render_target_;
-			vector4_t render_target_clear_value_;
-			bool clear_depth_stencil_;
-			float depth_clear_value_;		
+			bool clear_render_target = false;
+			vector4_t render_target_clear_value;
+			bool clear_depth_stencil = false;
+			float depth_clear_value = 1.0f;		
 		};
 
 

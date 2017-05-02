@@ -5,56 +5,25 @@
 namespace maki {
 	namespace core {
 
-		skeleton_animation_manager_t::skeleton_animation_manager_t(uint64_t capacity)
-			: manager_t<skeleton_animation_t, skeleton_animation_manager_t>(capacity, "skeleton_animation_manager_t") {
-		}
-	
-		handle_t skeleton_animation_manager_t::load(rid_t rid) {
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
-			if(handle != HANDLE_NONE)
-				return handle;
-
-			handle = res_pool_->alloc() | manager_id_;
-			skeleton_animation_t *skel_anim = res_pool_->get(handle & handle_value_mask_);
-			new(skel_anim) skeleton_animation_t();
-		
-			if(!skel_anim->load(rid)) {
-				res_pool_->free(handle & handle_value_mask_);
-				return HANDLE_NONE;
-			}
-			return handle;
+		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32_t capacity) {
+			res_pool_.reset(new resource_pool_t<skeleton_animation_t>(capacity, "skeleton_animation_manager_t"));
 		}
 
-		void skeleton_animation_manager_t::reload_assets() {
-			engine_t *eng = engine_t::get();
-
-			for(auto iter = std::begin(res_pool_); iter != std::end(res_pool_); ++iter) {
-				auto *skel_anim = iter.ptr();
-				auto rid = skel_anim->rid;
-				if(rid != RID_NONE) {
-					skel_anim->~skeleton_animation_t();
-					new(skel_anim) skeleton_animation_t();
-					skel_anim->load(rid);
-				}
-			}
-		}
-		
-		bool skeleton_animation_manager_t::reload_asset(rid_t rid) {
-			handle_t handle = res_pool_->match(resource_t::find_predicate_t<skeleton_animation_t>(rid)) | manager_id_;
-			if(handle == HANDLE_NONE)
-				return false;
-
-			auto *skel_anim = res_pool_->get(handle & handle_value_mask_);
-			res_pool_->free(handle & handle_value_mask_);
-
-			if(rid != RID_NONE) {
-				skel_anim->~skeleton_animation_t();
-				new(skel_anim) skeleton_animation_t();
-				return skel_anim->load(rid);
-			}
-			return true;
+		ref_t<skeleton_animation_t> skeleton_animation_manager_t::get(rid_t rid) {
+			return res_pool_->find([rid](const skeleton_animation_t &ska) {
+				return rid == ska.rid();
+			});
 		}
 
+		ref_t<skeleton_animation_t> skeleton_animation_manager_t::load(rid_t rid) {
+			auto ska = res_pool_->alloc();
+			return ska->load(rid) ? ska : nullptr;
+		}
+
+		ref_t<skeleton_animation_t> skeleton_animation_manager_t::get_or_load(rid_t rid) {
+			auto ska = get(rid);
+			return ska ? ska : load(rid);
+		}
 
 	} // namespace core
 } // namespace maki

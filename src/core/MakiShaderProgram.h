@@ -3,27 +3,27 @@
 #include "core/MakiTypes.h"
 #include "core/MakiResource.h"
 #include "core/MakiShader.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
 		class shader_program_t : public resource_t {
 			MAKI_NO_COPY(shader_program_t);
-
 		public:
 			enum variant_t {
 				variant_normal = 0,
 				variant_depth,
 				variant_shadow,
-				variant_count
+				variant_max = variant_shadow
 			};
 
 		private:
-			static const char *variant_data_key_[variant_count];
-			static const char *variant_meta_key_[variant_count];
+			static const char *variant_data_key_[variant_max + 1];
+			static const char *variant_meta_key_[variant_max + 1];
 
 		public:
-			shader_program_t();
+			shader_program_t() = default;
 			~shader_program_t();
 			bool load(rid_t rid, variant_t variant);
 			inline bool operator==(const shader_program_t &other) const {
@@ -35,7 +35,7 @@ namespace maki {
 			shader_t vertex_shader;
 			shader_t pixel_shader;
 			variant_t variant = variant_normal;
-			handle_t variants[variant_count - 1];
+			ref_t<shader_program_t> variants[variant_max];
 			intptr_t handle = 0;
 		};
 

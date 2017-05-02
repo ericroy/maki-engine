@@ -5,11 +5,9 @@
 namespace maki {
 	namespace core {
 
-		template<class T>
-		class resource_pool_t;
+		template<class T> class resource_pool_t;
 
-		template<class T>
-		class ref_t {
+		template<class T> class ref_t {
 			friend class resource_pool_t<T>;
 		
 		private:
@@ -30,6 +28,25 @@ namespace maki {
 			~ref_t() {
 				release();
 			}
+			inline void operator=(const ref_t<T> &other) {
+				if (&other != this) {
+					release();
+					pool_ = other.pool_;
+					handle_ = other.handle_;
+					if (handle_ != HANDLE_NONE) {
+						MAKI_ASSERT(pool_->reference_counts_[handle_] < REF_COUNT_MAX);
+						pool_->reference_counts_[handle_]++;
+					}
+				}
+			}
+			inline void operator=(ref_t<T> &&other) {
+				if (&other != this) {
+					release();
+					pool_ = other.pool_;
+					handle_ = other.handle_;
+					other.handle_ = HANDLE_NONE;
+				}
+			}
 			inline T &operator*() const {
 				MAKI_ASSERT(handle_ != HANDLE_NONE);
 				return pool_->data_[handle_];
@@ -44,20 +61,11 @@ namespace maki {
 					handle_ = HANDLE_NONE;
 				}
 			}
-			inline void take_ref(ref_t<T> &other) {
-				release();
-				pool_ = other.pool_;
-				handle_ = other.handle_;
-				other.handle_ = HANDLE_NONE;
+			inline ref_count_t ref_count() const {
+				return (pool_ != nullptr && handle_ != HANDLE_NONE) ? pool_->reference_counts_[handle_] : 0;
 			}
-			inline void clone_ref(ref_t<T> &other) {
-				release();
-				pool_ = other.pool_;
-				handle_ = other.handle_;
-				if (handle_ != HANDLE_NONE) {
-					MAKI_ASSERT(pool_->reference_counts_[handle_] < REF_COUNT_MAX);
-					pool_->reference_counts_[handle_]++;
-				}
+			inline handle_t handle() const {
+				return handle_;
 			}
 			inline operator bool() const {
 				return handle_ != HANDLE_NONE;
@@ -68,10 +76,6 @@ namespace maki {
 			inline bool operator!=(const ref_t<T> &other) const {
 				return pool_ != other.pool_ || handle_ != other.handle_;
 			}
-		private:
-			void operator=(const ref_t<class U> &) = delete;
-			void operator=(ref_t<class U> &&) = delete;
-
 		private:
 			resource_pool_t<T> *pool_ = nullptr;
 			handle_t handle_ = HANDLE_NONE;
@@ -86,8 +90,9 @@ namespace maki {
 		count falls to zero.  References are increased whenever a handle is given
 		out, and decreased whenever a handle is freed.
 		*/
-		template<class T>
-		class resource_pool_t {
+		template<class T> class resource_pool_t {
+			friend class ref_t<T>;
+
 		private:
 			struct node_t {
 				uint32_t next, prev;
@@ -154,34 +159,34 @@ namespace maki {
 				end_ = head_ = free_head_ = -1;
 			}
 
-			inline ref_t alloc(T &&value) {
+			inline ref_t<T> alloc(T &&value) {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
 				T *mem = get(handle);
 				MAKI_ASSERT(mem);
 				// Use placement new to call move constructor
 				new(mem) T(value);
-				return ref_t(this, handle);
+				return ref_t<T>(this, handle);
 			}
 
-			inline ref_t alloc(const T &value) {
+			inline ref_t<T> alloc(const T &value) {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
 				T *mem = get(handle);
 				MAKI_ASSERT(mem);
 				// Use placement new to call copy constructor
 				new(mem) T(value);
-				return ref_t(this, handle);
+				return ref_t<T>(this, handle);
 			}
 
-			inline ref_t alloc() {
+			inline ref_t<T> alloc() {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
 				T *mem = get(handle);
 				MAKI_ASSERT(mem);
 				// Use placement new to call default constructor
 				new(mem) T();
-				return ref_t(this, handle);
+				return ref_t<T>(this, handle);
 			}
 
 			inline iterator_t begin() const { return iterator_t(this, head_); }
@@ -190,7 +195,7 @@ namespace maki {
 			inline size_t capacity() const { return capacity_; }
 
 			template<class Predicate>
-			ref_t find(Predicate pred) {
+			ref_t<T> find(Predicate pred) {
 				for (auto handle = head_; handle != end_; handle = nodes_[handle].next) {
 					MAKI_ASSERT(reference_counts_[handle] > 0);
 					if (pred(data_[handle])) {

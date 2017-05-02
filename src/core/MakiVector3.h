@@ -13,7 +13,7 @@ namespace maki {
 			static const vector3_t unit_z;
 
 		public:
-			inline vector3_t() {}
+			inline vector3_t() : x(0.0f), y(0.0f), z(0.0f) {}
 			inline vector3_t(float xyz) : x(xyz), y(xyz), z(xyz) {}
 			inline vector3_t(float x, float y, float z) : x(x), y(y), z(z) {}
 			inline vector3_t(const vector4_t &v) : x(v.x), y(v.y), z(v.z) {}

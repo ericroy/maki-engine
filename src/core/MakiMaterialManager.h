@@ -1,23 +1,22 @@
 #pragma once
+#include "core/MakiTypes.h"
+#include "core/MakiMacros.h"
 #include "core/MakiMaterial.h"
-#include "core/MakiManager.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class material_manager_t : public manager_t<material_t, material_manager_t> {
+		class material_manager_t {
 		public:
-			static handle_t duplicate_if_shared(handle_t handle);
-
-		public:
-			material_manager_t(uint64_t capacity);	
+			material_manager_t(uint32_t capacity);
 			virtual ~material_manager_t() = default;
-			handle_t load(rid_t rid);
-			void reload_assets();
-			bool reload_asset(rid_t rid);
-
+			ref_t<material_t> get(rid_t rid);
+			ref_t<material_t> load(rid_t rid);
+			ref_t<material_t> get_or_load(rid_t rid);
+			ref_t<material_t> clone_if_shared(const ref_t<material_t> &mat);
 		private:
-			void reload(material_t *mat);
+			unique_ptr<resource_pool_t<material_t>> res_pool_;
 		};
 
 	} // namespace core
