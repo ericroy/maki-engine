@@ -6,6 +6,7 @@
 #include "core/MakiMesh.h"
 #include "core/MakiTextureSet.h"
 #include "core/MakiTextureSetManager.h"
+#include "core/MakiConsole.h"
 
 namespace maki {
 	namespace core {
@@ -25,7 +26,7 @@ namespace maki {
 			auto *res = core_managers_t::get();
 			auto *eng = engine_t::get();
 
-			array_t<char> font_data = eng->assets_->alloc_read(font_rid);
+			auto font_data = eng->assets->alloc_read(font_rid);
 			if(!font_data) {
 				console_t::error("Failed to load font <rid %u>", font_rid);
 				return false;
@@ -36,30 +37,29 @@ namespace maki {
 			array_t<char> pixels(texture_width_ * texture_height_);
 			
 			int ret;
-			while((ret = stbtt_BakeFontBitmap((const uint8_t *)font_data.data(), 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
+			while((ret = stbtt_BakeFontBitmap((const uint8_t *)font_data.data(), 0, (float)pixel_size, (unsigned char *)pixels.data(), texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
 				texture_height_ *= 2;
 				pixels.set_length(texture_width_ * texture_height_);
 			}
 
-			auto glyph_atlas = res->texture_manager->alloc_texture(texture_t::texture_type_regular, texture_width_, texture_height_, 1);
+			auto glyph_atlas = res->texture_manager->create(texture_type_regular, texture_width_, texture_height_, 1);
 			eng->renderer->write_to_texture(glyph_atlas.ptr(), 0, 0, 0, 0, texture_width_, texture_height_, texture_width_, 1, pixels.data());
 		
-			material = res->material_manager->create();
-			material->shader_program = res->shader_program_manager->get_or_load(shader_program_rid);
-			auto ts = res->texture_set_manager->create();
-			ts.texture_count = 1;
-			ts.textures[0] = glyph_atlas;
-			ts.texture_rids[0] = glyph_atlas.rid;
-			material->texture_set = move(ts);
+			material_ = res->material_manager->create();
+			material_->set_shader_program(move(res->shader_program_manager->get_or_load(shader_program_rid)));
 
-			this->shader_program_rid = shader_program_rid;
-			this->pixel_size = pixel_size;
-			this->rid = font_rid;
+			ref_t<texture_t> textures[] = { glyph_atlas };
+			auto ts = res->texture_set_manager->create(1, textures);
+			material_->set_texture_set(move(ts));
+
+			shader_program_rid_ = shader_program_rid;
+			pixel_size_ = pixel_size;
+			rid_ = font_rid;
 			return true;
 		}
 
 		void font_t::render_as_mesh(const char *s, mesh_t *m) {
-			m->set_vertex_attributes(vertex_format_t::attribute_flag_text_coord);
+			m->set_vertex_attributes(attribute_flag_tex_coord);
 			m->set_index_attributes(3, 2);
 			m->set_mesh_flag(mesh_t::mesh_flag_has_translucency);
 

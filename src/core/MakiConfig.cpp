@@ -28,12 +28,12 @@ namespace maki {
 			return n[0].value();
 		}
 
-		int64_t config_t::get_int(const char *key_path, int64_t default_value) const
+		int32_t config_t::get_int(const char *key_path, int32_t default_value) const
 		{
 			const auto *n = doc_->root().resolve(key_path);
 			if(n == nullptr || n->length() == 0)
 				return default_value;
-			int64_t out;
+			int32_t out;
 			if(!n[0].value_as_int(&out)) {
 				console_t::warning("config_t value '%s' was not an int", key_path);
 				return default_value;
@@ -41,12 +41,12 @@ namespace maki {
 			return out;
 		}
 
-		uint64_t config_t::get_uint(const char *key_path, uint64_t default_value) const
+		uint32_t config_t::get_uint(const char *key_path, uint32_t default_value) const
 		{
 			const auto *n = doc_->root().resolve(key_path);
 			if(n == nullptr || n->length() == 0)
 				return default_value;
-			uint64_t out;
+			uint32_t out;
 			if(!n[0].value_as_uint(&out)) {
 				console_t::warning("config_t value '%s' was not a uint", key_path);
 				return default_value;

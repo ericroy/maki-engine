@@ -39,12 +39,10 @@ THE SOFTWARE.
 // http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 
 
-
 namespace maki {
 	namespace core {
 
-		class quaternion_t
-		{
+		class quaternion_t {
 			friend quaternion_t operator*(float s, const quaternion_t &q);
     
 		public:
@@ -66,16 +64,16 @@ namespace maki {
 			static quaternion_t squad(float t, const quaternion_t& p, const quaternion_t& a, const quaternion_t& b, const quaternion_t& q);
 
 			// Cutoff for sine near zero
-			static const float epsilon_;
-			static const quaternion_t zero_;
-			static const quaternion_t identity_;
+			static const float epsilon;
+			static const quaternion_t zero;
+			static const quaternion_t identity;
 
 
 			// Default constructor, initializes to identity rotation (aka 0 rads)
-			inline quaternion_t() : w_(1), x_(0), y_(0), z_(0) {}
+			inline quaternion_t() : x(0), y(0), z(0), w(1) {}
 			inline quaternion_t(float theta_x, float theta_y, float theta_z) { from_euler_angles(theta_x, theta_y, theta_z); }
 			inline quaternion_t(const vector3_t &euler_angles) { from_euler_angles(euler_angles); }
-			inline quaternion_t(float w_, float x_, float y_, float z_) : w_(w_), x_(x_), y_(y_), z_(z_) {}
+			inline quaternion_t(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
 
 			void to_matrix(matrix44_t &rot) const;
 			void from_matrix(const matrix44_t &m);
@@ -119,73 +117,62 @@ namespace maki {
 			vector4_t operator*(const vector4_t &v) const;
 
 		public:
-			float w_, x_, y_, z_;
+			float w, x, y, z;
 		};
 
 
-		quaternion_t quaternion_t::operator+(const quaternion_t &q) const
-		{
-			return quaternion_t(w_+q.w_, x_+q.x, y_+q.y, z_+q.z);
+		quaternion_t quaternion_t::operator+(const quaternion_t &q) const {
+			return quaternion_t(w + q.w, x + q.x, y + q.y, z + q.z);
 		}
 
-		quaternion_t quaternion_t::operator-(const quaternion_t &q) const
-		{
-			return quaternion_t(w_-q.w_, x_-q.x, y_-q.y, z_-q.z);
+		quaternion_t quaternion_t::operator-(const quaternion_t &q) const {
+			return quaternion_t(w - q.w, x - q.x, y - q.y, z - q.z);
 		}
 
-		quaternion_t quaternion_t::operator*(float s) const
-		{
-			return quaternion_t(s*w_,s*x_,s*y_,s*z_);
+		quaternion_t quaternion_t::operator*(float s) const {
+			return quaternion_t(s * w, s * x, s * y, s * z);
 		}
 
-		quaternion_t quaternion_t::operator*(const quaternion_t &q) const
-		{
+		quaternion_t quaternion_t::operator*(const quaternion_t &q) const {
 			// NOTE:  Multiplication is not generally commutative, so in most
 			// cases p*q != q*p.
 			return quaternion_t(
-				w_ * q.w_ - x_ * q.x - y_ * q.y - z_ * q.z,
-				w_ * q.x + x_ * q.w_ + y_ * q.z - z_ * q.y,
-				w_ * q.y + y_ * q.w_ + z_ * q.x - x_ * q.z,
-				w_ * q.z + z_ * q.w_ + x_ * q.y - y_ * q.x
+				w * q.w - x * q.x - y * q.y - z * q.z,
+				w * q.x + x * q.w + y * q.z - z * q.y,
+				w * q.y + y * q.w + z * q.x - x * q.z,
+				w * q.z + z * q.w + x * q.y - y * q.x
 			);
 		}
 
-		quaternion_t quaternion_t::operator-() const
-		{
-			return quaternion_t(-w_, -x_, -y_, -z_);
+		quaternion_t quaternion_t::operator-() const {
+			return quaternion_t(-w, -x, -y, -z);
 		}
 
-		float quaternion_t::dot(const quaternion_t& q) const
-		{
-			return w_*q.w_ + x_*q.x + y_*q.y + z_*q.z;
+		float quaternion_t::dot(const quaternion_t& q) const {
+			return w * q.w + x * q.x + y * q.y + z * q.z;
 		}
 
-		float quaternion_t::norm() const
-		{
-			return w_*w_ + x_*x_ + y_*y_ + z_*z_;
+		float quaternion_t::norm() const {
+			return w * w + x * x + y * y + z * z;
 		}
 
-		void quaternion_t::normalize(void)
-		{
+		void quaternion_t::normalize(void) {
 			float factor = 1.0f / sqrt(norm());
-			w_ *= factor;
-			x_ *= factor;
-			y_ *= factor;
-			z_ *= factor;
+			w *= factor;
+			x *= factor;
+			y *= factor;
+			z *= factor;
 		}
 
 
-		inline quaternion_t operator*(float s, const quaternion_t &q)
-		{
-			return quaternion_t(s*q.w_, s*q.x, s*q.y, s*q.z);
+		inline quaternion_t operator*(float s, const quaternion_t &q) {
+			return quaternion_t(s * q.w, s * q.x, s * q.y, s * q.z);
 		}
 
 
 		// Based on Jonathan Blow's code presented here:
 		// http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
-		//
-		quaternion_t quaternion_t::slerp(float t, const quaternion_t &v0, const quaternion_t &v1)
-		{
+		quaternion_t quaternion_t::slerp(float t, const quaternion_t &v0, const quaternion_t &v1) {
 			// assert: v0, v1 are unit length
 			float dot = v0.dot(v1);
 
@@ -205,13 +192,9 @@ namespace maki {
 
 			// clamp dot product (in case inputs were not *quite* normalized)
 			if(dot < -1.0f)
-			{
 				dot = -1.0f;
-			}
 			else if(dot > 1.0f)
-			{
 				dot = 1.0f;
-			}
 
 			// theta = angle between v0 and the result
 			float theta = std::acos(dot) * t;
@@ -223,8 +206,7 @@ namespace maki {
 			return v0 * std::cos(theta) + v2 * std::sin(theta);
 		}
 
-		quaternion_t quaternion_t::nlerp(float t, const quaternion_t &v0, const quaternion_t &v1)
-		{
+		quaternion_t quaternion_t::nlerp(float t, const quaternion_t &v0, const quaternion_t &v1) {
 			// assert: v0, v1 are unit length
 			float dot = v0.dot(v1);
 
@@ -241,16 +223,14 @@ namespace maki {
 		}
 
 
-		quaternion_t quaternion_t::billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_up_axis)
-		{
+		quaternion_t quaternion_t::billboard_face(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_up_axis) {
 			// to_camera, sprite_face_axis, and sprite_pivot_axis must be normalized
 			quaternion_t ret;
 			ret.from_rotation_arc(sprite_face_axis, to_camera);
 			return ret;
 		}
 
-		quaternion_t quaternion_t::billboard_pivot(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_pivot_axis)
-		{
+		quaternion_t quaternion_t::billboard_pivot(const vector4_t &to_camera, const vector4_t &sprite_face_axis, const vector4_t &sprite_pivot_axis) {
 			// to_camera, sprite_face_axis, and sprite_pivot_axis must be normalized
 		
 			// find the destination facing direction, as for normal billboarding.

@@ -3,18 +3,17 @@
 namespace maki {
 	namespace core {
 
-		skeleton_manager_t::skeleton_manager_t(uint32_t capacity) {
-			res_pool_.reset(new resource_pool_t<skeleton_t>(capacity, "skeleton_manager_t"));
+		skeleton_manager_t::skeleton_manager_t(uint32_t capacity) : res_pool_(capacity, "skeleton_manager_t") {
 		}
 
 		ref_t<skeleton_t> skeleton_manager_t::get(rid_t rid) {
-			return res_pool_->find([rid](const skeleton_t &m) {
-				return rid == m.rid();
+			return res_pool_.find([rid](const skeleton_t &m) {
+				return rid == m.rid;
 			});
 		}
 
 		ref_t<skeleton_t> skeleton_manager_t::load(rid_t rid) {
-			auto sk = res_pool_->alloc();
+			auto sk = res_pool_.alloc();
 			return sk->load(rid) ? sk : nullptr;
 		}
 

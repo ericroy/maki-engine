@@ -15,7 +15,7 @@ namespace maki {
 			ref_t<skeleton_t> load(rid_t rid);
 			ref_t<skeleton_t> get_or_load(rid_t rid);
 		private:
-			unique_ptr<resource_pool_t<skeleton_t>> res_pool_;
+			resource_pool_t<skeleton_t> res_pool_;
 		};
 
 	} // namespace core

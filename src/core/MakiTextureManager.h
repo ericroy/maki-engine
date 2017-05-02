@@ -15,9 +15,9 @@ namespace maki {
 			ref_t<texture_t> get(rid_t rid);
 			ref_t<texture_t> load(rid_t rid);
 			ref_t<texture_t> get_or_load(rid_t rid);
-			ref_t<texture_t> create(texture_t::texture_type_t type, uint32_t width, uint32_t height, uint8_t channels);
+			ref_t<texture_t> create(texture_type_t type, uint32_t width, uint32_t height, uint8_t channels);
 		private:
-			unique_ptr<resource_pool_t<texture_t>> res_pool_;
+			resource_pool_t<texture_t> res_pool_;
 		};
 
 	} // namespace core

@@ -2,6 +2,7 @@
 #include "core/MakiEngine.h"
 #include "core/MakiCoreManagers.h"
 #include "core/MakiTextureSet.h"
+#include "core/MakiConsole.h"
 #include "core/MakiDocument.h"
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiTextureSetManager.h"
@@ -11,20 +12,20 @@ namespace maki {
 	namespace core {
 
 		material_t::material_t(material_t &&other) {
-			texture_set = move(other.texture_set);
-			shader_program = move(other.shader_program);
-			for (int32_t i = 0; i < other.uniform_count; i++)
-				uniform_values[i] = move(other.uniform_values[i])
-			uniform_count = other.uniform_count;
-			other.uniform_count = 0;
+			texture_set_ = move(other.texture_set_);
+			shader_program_ = move(other.shader_program_);
+			for (int32_t i = 0; i < other.uniform_count_; i++)
+				uniform_values_[i] = move(other.uniform_values_[i])
+			uniform_count_ = other.uniform_count_;
+			other.uniform_count_ = 0;
 		}
 
 		int32_t material_t::push_constant(const char *key, const array_t<char> &data) {
-			if(!shader_program) {
+			if(!shader_program_) {
 				console_t::warning("Cannot push constant, must set shader program first");
 				return -1;
 			}
-			if(uniform_count >= max_uniforms) {
+			if(uniform_count_ >= max_uniforms) {
 				console_t::error("Cannot push constant, limit of %d constants reached", max_uniforms);
 				return -1;
 			}
@@ -37,8 +38,8 @@ namespace maki {
 				return -1;
 			}
 
-			int32_t index = uniform_count++;
-			auto &value = uniform_values[index];
+			int32_t index = uniform_count_++;
+			auto &value = uniform_values_[index];
 			value.ps_location = ps_location;
 			value.vs_location = vs_location;
 			value.data = data;
@@ -132,9 +133,9 @@ namespace maki {
 				}
 			}
 
-			shader_program = move(shader_temp);
-			texture_set = move(ts_temp);
-			this->rid = rid;
+			shader_program_ = move(shader_temp);
+			texture_set_ = move(ts_temp);
+			rid_ = rid;
 			return true;
 		}
 

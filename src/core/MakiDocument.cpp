@@ -67,15 +67,15 @@ namespace maki {
 				parent_->remove_child(this);
 		}
 	
-		int64_t document_t::node_t::value_as_int(int64_t default_value) const {
-			int64_t v;
+		int32_t document_t::node_t::value_as_int(int32_t default_value) const {
+			int32_t v;
 			if(value_as_int(&v))
 				return v;
 			return default_value;
 		}
-		bool document_t::node_t::value_as_int(int64_t *out) const {
+		bool document_t::node_t::value_as_int(int32_t *out) const {
 			char *end;
-			int64_t v = strtol(value_, &end, 10);
+			int32_t v = strtol(value_, &end, 10);
 			if(end == value_)
 				return false;
 			if(out != nullptr)
@@ -83,15 +83,15 @@ namespace maki {
 			return true;
 		}
 
-		uint64_t document_t::node_t::value_as_uint(uint64_t default_value) const {
-			uint64_t v;
+		uint32_t document_t::node_t::value_as_uint(uint32_t default_value) const {
+			uint32_t v;
 			if(value_as_uint(&v))
 				return v;
 			return default_value;
 		}
-		bool document_t::node_t::value_as_uint(uint64_t *out) const {
+		bool document_t::node_t::value_as_uint(uint32_t *out) const {
 			char *end;
-			uint64_t v = strtoul(value_, &end, 10);
+			uint32_t v = strtoul(value_, &end, 10);
 			if(end == value_)
 				return false;
 			if(out != nullptr)
@@ -165,28 +165,28 @@ namespace maki {
 			return nullptr;
 		}
 
-		bool document_t::node_t::resolve_as_int(const char *node_path, int64_t *out) const {
+		bool document_t::node_t::resolve_as_int(const char *node_path, int32_t *out) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_int(out);
 			return false;
 		}
 
-		int64_t document_t::node_t::resolve_as_int(const char *node_path, int64_t default_value) const {
+		int32_t document_t::node_t::resolve_as_int(const char *node_path, int32_t default_value) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_int(default_value);
 			return default_value;
 		}
 
-		bool document_t::node_t::resolve_as_uint(const char *node_path, uint64_t *out) const {
+		bool document_t::node_t::resolve_as_uint(const char *node_path, uint32_t *out) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_uint(out);
 			return false;
 		}
 		
-		uint64_t document_t::node_t::resolve_as_uint(const char *node_path, uint64_t default_value) const {
+		uint32_t document_t::node_t::resolve_as_uint(const char *node_path, uint32_t default_value) const {
 			const auto *n = resolve(node_path);
 			if (n)
 				return n->value_as_uint(default_value);
@@ -251,8 +251,7 @@ namespace maki {
 
 	#ifndef MAKI_TOOLS
 		bool document_t::load(rid_t rid) {
-			uint64_t bytes;
-			array_t<char> data = engine_t::get()->assets->alloc_read(rid);
+			auto data = engine_t::get()->assets->alloc_read(rid);
 			if(!data) {
 				console_t::error("Failed to alloc_read document bytes");
 				return false;
@@ -261,7 +260,7 @@ namespace maki {
 		}
 	#endif
 
-		bool document_t::load(char *data, uint64_t length) {
+		bool document_t::load(char *data, size_t length) {
 			if(document_binary_serializer_t::is_binary_document(data, length)) {
 				document_binary_serializer_t serial(*this);
 				return serial.deserialize(data, length);
@@ -302,7 +301,7 @@ namespace maki {
 			}
 
 			for(uint32_t i = 0; i < doc_.root().length(); i++) {
-				serialize_node(doc_.root()[i], 0, file, false, false, false, indent_token);
+				serialize_node(&doc_.root()[i], 0, file, false, false, false, indent_token);
 			}
 
 			file.close();
@@ -321,7 +320,7 @@ namespace maki {
 			return true;
 		}
 
-		void document_text_serializer_t::serialize_node(const document_t::node_t *n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token) {
+		void document_text_serializer_t::serialize_node(document_t::node_t *n, uint32_t depth, std::ostream &out, bool stacking, bool first_in_stack, bool last_in_stack, const char *indent_token) {
 			if(stacking) {
 				out << " ";
 			} else {
@@ -352,7 +351,7 @@ namespace maki {
 			// Check for a special case where we will stack a small number of leaf nodes on the
 			// same line for readability (vectors, particularly)
 			bool stack_children = false;
-			if(n->length() > 0 && n->length() <= stack_children_length_threshold_) {
+			if(n->length() > 0 && n->length() <= stack_children_count_threshold_) {
 				stack_children = true;
 				for(uint32_t i = 0; i < n->length(); i++) {
 					if(n->children_[i]->length() != 0) {
@@ -375,7 +374,7 @@ namespace maki {
 			}
 		}
 
-		bool document_text_serializer_t::deserialize(char *data, uint32_t length) {
+		bool document_text_serializer_t::deserialize(char *data, size_t length) {
 			MAKI_SAFE_DELETE(doc_.root_);
 			doc_.root_ = new document_t::node_t("<root_>", 6);
 		
@@ -505,7 +504,7 @@ namespace maki {
 
 		const uint8_t document_binary_serializer_t::BINARY_HEADER[4] = {'\0', 'H', 'D', '\0'};
 
-		bool document_binary_serializer_t::is_binary_document(char *data, uint32_t length) {
+		bool document_binary_serializer_t::is_binary_document(char *data, size_t length) {
 			return data != nullptr && length >= sizeof(BINARY_HEADER) && memcmp(data, BINARY_HEADER, sizeof(BINARY_HEADER)) == 0;
 		}
 
@@ -542,7 +541,7 @@ namespace maki {
 			// serialize our document to the stringstream, constructing a stringtable along the way
 			for(uint32_t i = 0; i < doc_.root().length(); i++) {
 				uint32_t level = 0;
-				serialize_node(doc_.root()[i], body, table, level);
+				serialize_node(&doc_.root()[i], body, table, level);
 			}
 
 			// write header ident
@@ -605,7 +604,7 @@ namespace maki {
 			level--;
 		}
 
-		bool document_binary_serializer_t::deserialize(char *data, uint32_t length) {
+		bool document_binary_serializer_t::deserialize(char *data, size_t length) {
 			if(!is_binary_document(data, length)) {
 				console_t::error("Data did not contain a binary document");
 				return false;
@@ -626,7 +625,7 @@ namespace maki {
 					p++;
 				p++;
 			}
-			string_table_offsets[string_table_count] = p - string_table_start;
+			string_table_offsets[string_table_count] = (uint16_t)(p - string_table_start);
 
 			// Align
 			while((p-data) % 2 != 0)

@@ -47,11 +47,23 @@ namespace maki {
 					other.handle_ = HANDLE_NONE;
 				}
 			}
-			inline T &operator*() const {
+			inline T &operator*() {
 				MAKI_ASSERT(handle_ != HANDLE_NONE);
 				return pool_->data_[handle_];
 			}
-			inline T *ptr() {
+			inline const T &operator*() const {
+				MAKI_ASSERT(handle_ != HANDLE_NONE);
+				return pool_->data_[handle_];
+			}
+			inline T *operator->() {
+				MAKI_ASSERT(handle_ != HANDLE_NONE);
+				return &pool_->data_[handle_];
+			}
+			inline const T *operator->() const {
+				MAKI_ASSERT(handle_ != HANDLE_NONE);
+				return &pool_->data_[handle_];
+			}
+			inline T *ptr() const {
 				MAKI_ASSERT(handle_ != HANDLE_NONE);
 				return &pool_->data_[handle_];
 			}
@@ -162,7 +174,7 @@ namespace maki {
 			inline ref_t<T> alloc(T &&value) {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
-				T *mem = get(handle);
+				T *mem = &data_[handle];
 				MAKI_ASSERT(mem);
 				// Use placement new to call move constructor
 				new(mem) T(value);
@@ -172,7 +184,7 @@ namespace maki {
 			inline ref_t<T> alloc(const T &value) {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
-				T *mem = get(handle);
+				T *mem = &data_[handle];
 				MAKI_ASSERT(mem);
 				// Use placement new to call copy constructor
 				new(mem) T(value);
@@ -182,7 +194,7 @@ namespace maki {
 			inline ref_t<T> alloc() {
 				handle_t handle = alloc_inner();
 				MAKI_ASSERT(handle != HANDLE_NONE);
-				T *mem = get(handle);
+				T *mem = &data_[handle];
 				MAKI_ASSERT(mem);
 				// Use placement new to call default constructor
 				new(mem) T();
@@ -201,7 +213,7 @@ namespace maki {
 					if (pred(data_[handle])) {
 						MAKI_ASSERT(reference_counts_[handle] < REF_COUNT_MAX);
 						reference_counts_[handle]++;
-						return ref_t(this, handle);
+						return ref_t<T>(this, handle);
 					}
 				}
 				return nullptr;

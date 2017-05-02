@@ -16,17 +16,11 @@ namespace maki {
 				 mesh_flag_has_translucency = 1 << 0,
 			};
 
-			enum object_t {
-				object_rect = 0,
-				object_max = object_rect,
-			};
-
-			static void build_quad(mesh_t &m);
-
 		public:
 			mesh_t(bool dynamic_ = false);
 			mesh_t(mesh_t &&other);
 			~mesh_t();
+			void reset();
 
 			// Populate object directly using these
 			void set_vertex_attributes(uint32_t vertex_attribute_flags);
@@ -35,8 +29,6 @@ namespace maki {
 			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
 			void push_vertex_data(uint32_t size_in_bytes, char *data);
 			void push_index_data(uint32_t size_in_bytes, char *data);
-			
-			void reset(bool keep_buffers = true);
 
 			inline uint8_t has_mesh_flag(mesh_flag_t flag) const {
 				return (mesh_flags_ & flag) != 0;
@@ -57,7 +49,7 @@ namespace maki {
 				return vertex_count_;
 			}
 
-			int32_t attribute_offset(vertex_format_t::attribute_t attr);
+			int32_t get_attribute_offset(attribute_t attr);
 
 			inline uint8_t bytes_per_index() const {
 				return bytes_per_index_;
@@ -83,7 +75,6 @@ namespace maki {
 				return vertex_format_;
 			}
 
-			//inline void set_vertex_count(uint32_t count) { vertex_count_ = count; }
 			inline char *vertex_data() {
 				return vertex_data_.data();
 			}
@@ -121,11 +112,9 @@ namespace maki {
 			uint32_t face_count_ = 0;
 
 			uint32_t vertex_insertion_index_ = 0;
-			uint32_t vertex_data_size_ = 0;
 			array_t<char> vertex_data_;
 
 			uint32_t index_insertion_index_ = 0;
-			uint32_t index_data_size_ = 0;
 			array_t<char> index_data_;
 
 			// The data sizes at the time of last upload
@@ -138,16 +127,15 @@ namespace maki {
 
 		class mesh_loader_t {
 		public:
-			// Initialize object from mesh file
-			static bool load(ref_t<mesh_t> &out, rid_t rid, bool upload = true);
+			static ref_t<mesh_t> load(rid_t rid);
 
 		private:
-			static uint32_t load_data(char *data, bool upload);
+			static uint32_t load_mesh(ref_t<mesh_t> &out, char *data);
 		};
 
 		class mesh_builder_t {
 		public:
-			static void make_quad(ref_t<mesh_t> &out, bool upload = true);
+			static ref_t<mesh_t> make_quad();
 		};
 
 	} // namespace core

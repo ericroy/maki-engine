@@ -5,8 +5,7 @@
 namespace maki {
 	namespace core {
 
-		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32_t capacity) {
-			res_pool_.reset(new resource_pool_t<skeleton_animation_t>(capacity, "skeleton_animation_manager_t"));
+		skeleton_animation_manager_t::skeleton_animation_manager_t(uint32_t capacity): res_pool_(capacity, "skeleton_animation_manager_t") {
 		}
 
 		ref_t<skeleton_animation_t> skeleton_animation_manager_t::get(rid_t rid) {

@@ -9,32 +9,30 @@ using namespace std;
 namespace maki {
 	namespace core {
 
-		const char *shader_t::frame_uniform_names[frame_uniform_max + 1] = {
-			"uView",
-			"uProjection",
-			"uViewProjection",
-			"uLightPositions",
-			"uLightDirections",
-			"uLightViewProj",
-			"uLightProperties",
-			"uShadowMapProperties",
-			"uLightSplitRegions",
-			"uCameraSplitDistances",
-			"uGlobalAmbientColor",
-			"uCameraWithHeightNearFar",
-		};
-	
-		const char *shader_t::object_uniform_names[object_uniform_max + 1] = {
-			"uModel",
-			"uModelView",
-			"uModelViewProjection"
-		};
-
-		shader_t::material_uniform_location_t::material_uniform_location_t(int32_t location, char *name) : location(location) {
-			strcpy(this->name, name);
+		namespace {
+			const char *frame_uniform_names[frame_uniform_max + 1] = {
+				"uView",
+				"uProjection",
+				"uViewProjection",
+				"uLightPositions",
+				"uLightDirections",
+				"uLightViewProj",
+				"uLightProperties",
+				"uShadowMapProperties",
+				"uLightSplitRegions",
+				"uCameraSplitDistances",
+				"uGlobalAmbientColor",
+				"uCameraWithHeightNearFar",
+			};
+		
+			const char *object_uniform_names[object_uniform_max + 1] = {
+				"uModel",
+				"uModelView",
+				"uModelViewProjection"
+			};
 		}
 
-		shader_t::frame_uniform_t shader_t::get_frame_uniform_by_name(const char *name) {
+		frame_uniform_t get_frame_uniform_by_name(const char *name) {
 			for(int32_t i = 0; i <= frame_uniform_max; i++) {
 				if(strcmp(frame_uniform_names[i], name) == 0)
 					return (frame_uniform_t)i;
@@ -42,7 +40,7 @@ namespace maki {
 			return frame_uniform_none;
 		}
 
-		shader_t::object_uniform_t shader_t::get_object_uniform_by_name(const char *name) {
+		object_uniform_t get_object_uniform_by_name(const char *name) {
 			for(int32_t i = 0; i <= object_uniform_max; i++) {
 				if(strcmp(object_uniform_names[i], name) == 0)
 					return (object_uniform_t)i;
@@ -50,6 +48,11 @@ namespace maki {
 			return object_uniform_none;
 		}
 
+
+		material_uniform_location_t::material_uniform_location_t(int32_t location, char *name) : location(location) {
+			strncpy(this->name, name, sizeof(this->name));
+			this->name[sizeof(this->name) - 1] = 0;
+		}
 
 
 		bool shader_t::init(const document_t::node_t &shader_node, const char *data_key, const char *meta_key) {
@@ -79,7 +82,7 @@ namespace maki {
 
 			auto *engine_per_frame = meta_node->resolve("engine_per_frame");
 			if(engine_per_frame != nullptr) {
-				if(!engine_per_frame->resolve_as_int("slot.#0", &frame_uniform_buffer_location))
+				if(!engine_per_frame->resolve_as_int("slot.#0", &frame_uniform_buffer_location_))
 					return false;
 
 				auto *uniforms = engine_per_frame->resolve("uniforms");
@@ -95,14 +98,14 @@ namespace maki {
 
 					uint32_t offset = (uint32_t)uni[0].>value_as_uint();
 					uint32_t size = (uint32_t)uni[1].>value_as_uint();
-					engine_frame_uniform_locations[c] = (int32_t)offset;				
-					engine_frame_uniform_bytes = max(offset + size, engine_frame_uniform_bytes);
+					engine_frame_uniform_locations_[c] = (int32_t)offset;				
+					engine_frame_uniform_bytes_ = max(offset + size, engine_frame_uniform_bytes_);
 				}		
 			}
 
 			auto *engine_per_object = meta_node->resolve("engine_per_object");
 			if(engine_per_object != nullptr) {
-				if(!engine_per_object->resolve_as_int("slot.#0", &object_uniform_buffer_location))
+				if(!engine_per_object->resolve_as_int("slot.#0", &object_uniform_buffer_location_))
 					return false;
 
 				auto *uniforms = engine_per_object->resolve("uniforms");
@@ -118,14 +121,14 @@ namespace maki {
 
 					uint32_t offset = (uint32_t)uni[0].value_as_uint();
 					uint32_t size = (uint32_t)uni[1].value_as_uint();
-					engine_object_uniform_locations[c] = (int32_t)offset;				
-					engine_object_uniform_bytes = max(offset + size, engine_object_uniform_bytes);
+					engine_object_uniform_locations_[c] = (int32_t)offset;				
+					engine_object_uniform_bytes_ = max(offset + size, engine_object_uniform_bytes_);
 				}		
 			}
 
 			auto *material = meta_node->resolve("material");
 			if(material != nullptr) {
-				if(!material->resolve_as_int("slot.#0", &material_uniform_buffer_location))
+				if(!material->resolve_as_int("slot.#0", &material_uniform_buffer_location_))
 					return false;
 
 				auto *uniforms = material->resolve("uniforms");
@@ -138,8 +141,8 @@ namespace maki {
 					uint32_t offset = (uint32_t)uni[0].value_as_uint();
 					uint32_t size = (uint32_t)uni[1].value_as_uint();
 				
-					material_uniform_locations.push_back(material_uniform_location_t((int32_t)offset, uni.value()));
-					material_uniform_bytes = max(offset + size, material_uniform_bytes);
+					material_uniform_locations_.push_back(material_uniform_location_t((int32_t)offset, uni.value()));
+					material_uniform_bytes_ = max(offset + size, material_uniform_bytes_);
 				}		
 			}
 
@@ -147,10 +150,10 @@ namespace maki {
 		}
 
 		int32_t shader_t::find_material_constant_location(const char *name) {
-			const uint32_t count = material_uniform_locations.size();
+			const uint32_t count = material_uniform_locations_.size();
 			for(uint32_t i = 0; i < count; i++) {
-				if(strcmp(name, material_uniform_locations[i].name) == 0) {
-					return material_uniform_locations[i].location;
+				if(strcmp(name, material_uniform_locations_[i].name) == 0) {
+					return material_uniform_locations_[i].location;
 			}
 			return -1;
 		}

@@ -12,12 +12,13 @@ namespace maki {
 			vertex_format_manager_t(uint32_t capacity);	
 			virtual ~vertex_format_manager_t() = default;
 			inline handle_t get_or_add(const vertex_format_t &vf) {
-				return res_pool_->find([&vf](const vertex_format_t &vf2) {
+				auto ref = res_pool_.find([&vf](const vertex_format_t &vf2) {
 					return vf == vf2;
 				});
+				return ref ? ref : res_pool_.alloc(vf);
 			}
 		private:
-			unique_ptr<resource_pool_t<vertex_format_t>> res_pool_;
+			resource_pool_t<vertex_format_t> res_pool_;
 		};
 
 	} // namespace core

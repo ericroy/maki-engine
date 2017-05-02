@@ -6,7 +6,7 @@ namespace maki {
 
 		class skeleton_t;
 
-		class skeleton_animation_t : public resource_t {
+		class skeleton_animation_t {
 			MAKI_NO_COPY(skeleton_animation_t);
 
 		public:
@@ -14,7 +14,7 @@ namespace maki {
 			public:
 				state_t() = default;
 				state_t(uint32_t length);
-				void set_length(uint64_t length);
+				void set_length(uint32_t length);
 
 			public:
 				array_t<uint32_t> current_key_frames;
@@ -37,11 +37,11 @@ namespace maki {
 			inline uint64_t frame_count() const { return frame_count_; }
 			inline float frame_rate() const { return frame_rate_; }
 			inline uint64_t bone_count() const { return data_.length(); }
-
-		public:
-			rid_t rid = RID_NONE;
+			inline rid_t rid() const { return rid_; }
+			inline void set_rid(rid_t rid) { rid_ = rid; }
 
 		private:
+			rid_t rid_ = RID_NONE;
 			float frame_rate_ = 0.0f;
 			uint64_t frame_count_ = 0;
 			// Indexed as data[bone_index][key_frame_index]

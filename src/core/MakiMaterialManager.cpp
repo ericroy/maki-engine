@@ -7,8 +7,8 @@
 namespace maki {
 	namespace core {
 
-		material_manager_t::material_manager_t(uint32_t capacity) {
-			res_pool_.reset(new resouce_pool_t<material_t>(capacity, "material_manager_t"));
+		material_manager_t::material_manager_t(uint32_t capacity) : res_pool_(capacity, "material_manager_t") {
+			MAKI_ASSERT(capacity <= (1 << draw_command_t::bits_per_material) && "assign more bits to material in draw command bitfield");
 		}
 
 		ref_t<material_t> material_manager_t::create() {

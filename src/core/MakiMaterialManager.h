@@ -16,7 +16,7 @@ namespace maki {
 			ref_t<material_t> get_or_load(rid_t rid);
 			ref_t<material_t> clone_if_shared(const ref_t<material_t> &mat);
 		private:
-			unique_ptr<resource_pool_t<material_t>> res_pool_;
+			resource_pool_t<material_t> res_pool_;
 		};
 
 	} // namespace core

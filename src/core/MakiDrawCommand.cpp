@@ -29,8 +29,8 @@ namespace maki {
 				fields_.mesh = mesh_.handle();
 				if(mesh_->has_mesh_flag(mesh_t::mesh_flag_has_translucency))
 					fields_.translucency_type = translucency_type_translucent;
-				if (mesh_->vertex_format) {
-					vertex_format_ = mesh_->vertex_format;
+				if (mesh_->vertex_format()) {
+					vertex_format_ = mesh_->vertex_format();
 					fields_.vertex_format = vertex_format_.handle();
 				}
 			}

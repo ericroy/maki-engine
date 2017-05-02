@@ -7,25 +7,23 @@ namespace maki {
 		class draw_command_list_t;
 		class core_managers_t;
 
-		class render_payload_t
-		{
+		class render_payload_t {
 		public:
-			enum command_t
-			{
-				command_abort_ = 0,
-				command_init_,
-				command_draw_,
-				command_present_,
+			enum command_t {
+				command_abort = 0,
+				command_init,
+				command_draw,
+				command_present,
 			};
 
 		public:
-			render_payload_t() : cmd_(command_abort_), state_(nullptr), commands_(nullptr) {}
-			render_payload_t(command_t cmd) : cmd_(cmd), state_(nullptr), commands_(nullptr) {}
+			render_payload_t() = default;
+			render_payload_t(command_t cmd) : cmd(cmd) {}
 
 		public:
-			command_t cmd_;
-			render_state_t *state_;
-			draw_command_list_t *commands_;
+			command_t cmd = command_abort;
+			render_state_t *state = nullptr;
+			draw_command_list_t *commands = nullptr;
 		};
 
 	} // namespace core

@@ -6,33 +6,47 @@
 namespace maki {
 	namespace core {
 
+		enum shader_program_variant_t : uint8_t {
+			shader_program_variant_normal = 0,
+			shader_program_variant_depth,
+			shader_program_variant_shadow,
+			shader_program_variant_max = shader_program_variant_shadow
+		};
+
+		namespace {
+			const char *variant_data_key[shader_program_variant_max + 1];
+			const char *variant_meta_key[shader_program_variant_max + 1];
+		}
+
 		class shader_program_t {
 			MAKI_NO_COPY(shader_program_t);
 		public:
-			enum variant_t {
-				variant_normal = 0,
-				variant_depth,
-				variant_shadow,
-				variant_max = variant_shadow
-			};
-
-		private:
-			static const char *variant_data_key_[variant_max + 1];
-			static const char *variant_meta_key_[variant_max + 1];
-
-		public:
 			shader_program_t() = default;
 			~shader_program_t();
-			bool load(rid_t rid, variant_t variant);
 
-		public:
-			rid_t rid = RID_NONE;
-			uint32_t input_attribute_count = 0;
-			shader_t vertex_shader;
-			shader_t pixel_shader;
-			variant_t variant = variant_normal;
-			ref_t<shader_program_t> variants[variant_max];
-			intptr_t handle = 0;
+			inline rid_t rid() const { return rid_; }
+			inline void set_rid(rid_t rid) { rid_ = rid; }
+			inline shader_program_variant_t variant() const { return variant_; }
+			inline const shader_t &vertex_shader() const { return vertex_shader_; }
+			inline const shader_t &fragment_shader() const { return fragment_shader_; }
+			inline uint32_t input_attribute_count() const { return input_attribute_count_; }
+			inline uintptr_t handle() const { return handle_; }
+			inline void set_handle(uintptr_t handle) { handle_ = handle; }
+			inline const ref_t<shader_program_t> &get_variant(shader_program_variant_t variant) {
+				MAKI_ASSERT(variant != shader_program_variant_normal);
+				return variants_[(uint32_t)variant - 1];
+			}
+
+			bool load(rid_t rid, shader_program_variant_t variant = shader_program_variant_normal);
+
+		private:
+			rid_t rid_ = RID_NONE;
+			uint32_t input_attribute_count_ = 0;
+			shader_t vertex_shader_;
+			shader_t fragment_shader_;
+			shader_program_variant_t variant_ = shader_program_variant_normal;
+			ref_t<shader_program_t> variants_[shader_program_variant_max];
+			uintptr_t handle_ = 0;
 		};
 
 	} // namespace core

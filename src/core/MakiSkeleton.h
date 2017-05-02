@@ -1,6 +1,7 @@
 #pragma once
 #include "core/MakiArray.h"
 #include "core/MakiMatrix44.h"
+#include "core/MakiQuaternion.h"
 
 namespace maki {
 	namespace core {

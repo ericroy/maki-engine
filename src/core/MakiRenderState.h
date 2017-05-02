@@ -134,7 +134,7 @@ namespace maki {
 			bool wire_frame = false;
 			cull_mode_t cull_mode = cull_mode_back;
 			vector4_t global_ambient_color;
-			shader_program_t::variant_t shader_variant = shader_program_t::variant_normal;
+			shader_program_variant_t shader_variant = shader_program_variant_normal;
 
 			// Actions
 			bool clear_render_target = false;

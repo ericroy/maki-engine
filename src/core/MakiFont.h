@@ -24,13 +24,17 @@ namespace maki {
 			bool load(rid_t font_rid, rid_t shader_program_rid, uint32_t pixel_size);
 			void render_as_mesh(const char *s, mesh_t *m);
 
-		public:
-			rid_t rid = RID_NONE;
-			ref_t<material_t> material;
-			rid_t shader_program_rid;
-			uint32_t pixel_size = 0;
-	
+			inline rid_t rid() const { return rid_; }
+			inline void set_rid(rid_t rid) { rid_ = rid; }
+			inline rid_t shader_program_rid() const { return shader_program_rid_; }
+			inline const ref_t<material_t> &material() const { return material_; }
+			inline uint32_t pixel_size() const { return pixel_size_; }
+
 		private:
+			rid_t rid_ = RID_NONE;
+			ref_t<material_t> material_;
+			rid_t shader_program_rid_;
+			uint32_t pixel_size_ = 0;
 			uint32_t texture_width_ = 0;
 			uint32_t texture_height_ = 0;
 			stbtt_bakedchar baked_chars_[char_code_count_] = {};

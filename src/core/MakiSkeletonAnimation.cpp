@@ -1,6 +1,7 @@
 #include "core/MakiSkeletonAnimation.h"
 #include "core/MakiSkeleton.h"
 #include "core/MakiDocument.h"
+#include "core/MakiConsole.h"
 
 namespace maki {
 	namespace core {
@@ -8,11 +9,11 @@ namespace maki {
 		float skeleton_animation_t::debug_rate_coeff = 1.0f;
 	
 
-		skeleton_animation_t::state_t::state_t(uint64_t length) {
+		skeleton_animation_t::state_t::state_t(uint32_t length) {
 			set_length(length);
 		}
 
-		void skeleton_animation_t::state_t::set_size(uint64_t length) {
+		void skeleton_animation_t::state_t::set_length(uint32_t length) {
 			current_key_frames.set_length(length);
 			current_key_frames.zero();
 		}
@@ -73,7 +74,7 @@ namespace maki {
 				}
 			}
 
-			this->rid = rid;
+			rid_ = rid;
 			return true;
 		}
 
