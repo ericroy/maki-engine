@@ -33,7 +33,7 @@ namespace maki {
 
 			document_t doc;
 			if(!doc.load(rid)) {
-				console_t::error("Could not parse file as document <rid %ull>", rid);
+				console_t::error("Could not parse file as document <rid %u>", rid);
 				return false;
 			}
 
@@ -73,7 +73,7 @@ namespace maki {
 				}
 			}
 
-			this->rid_ = rid;
+			this->rid = rid;
 			return true;
 		}
 

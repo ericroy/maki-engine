@@ -1,6 +1,5 @@
 #pragma once
 #include "core/MakiTypes.h"
-#include "core/MakiMacros.h"
 #include "core/MakiArray.h"
 
 namespace maki {

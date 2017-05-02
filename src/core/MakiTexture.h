@@ -1,12 +1,10 @@
 #pragma once
 #include "core/MakiTypes.h"
-#include "core/MakiMacros.h"
-#include "core/MakiResource.h"
 
 namespace maki {
 	namespace core {
 
-		class texture_t : public resource_t {
+		class texture_t {
 			MAKI_NO_COPY(texture_t);
 
 		public:
@@ -21,6 +19,7 @@ namespace maki {
 			~texture_t();
 
 		public:
+			rid_t rid = RID_NONE;
 			texture_type_t type = texture_type_regular;
 			uint32_t width = 0;
 			uint32_t height = 0;

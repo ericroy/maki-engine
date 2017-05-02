@@ -225,9 +225,7 @@ VERSION HISTORY:
 
 namespace maki {
 	namespace core {
-	
-		namespace base64
-		{
+		namespace base64 {
 	
 			// translation Table as described in RFC1113
 			static const char cb64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -241,8 +239,7 @@ namespace maki {
 			**
 			** encode 3 8-bit binary bytes as 4 '6-bit' characters
 			*/
-			inline void encode_block(unsigned char *in, unsigned char *out, int len)
-			{
+			inline void encode_block(unsigned char *in, unsigned char *out, int len) {
 				out[0] = (unsigned char)cb64[ (int)(in[0] >> 2) ];
 				out[1] = (unsigned char)cb64[ (int)(((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4)) ];
 				out[2] = (unsigned char)(len > 1 ? cb64[ (int)(((in[1] & 0x0f) << 2) | ((in[2] & 0xc0) >> 6)) ] : '=');
@@ -254,8 +251,7 @@ namespace maki {
 			**
 			** decode 4 '6-bit' characters into 3 8-bit binary bytes
 			*/
-			inline void decode_block(unsigned char *in, unsigned char *out)
-			{   
+			inline void decode_block(unsigned char *in, unsigned char *out) {   
 				out[0] = (unsigned char)(in[0] << 2 | in[1] >> 4);
 				out[1] = (unsigned char)(in[1] << 4 | in[2] >> 2);
 				out[2] = (unsigned char)(((in[2] << 6) & 0xc0) | in[3]);
@@ -263,8 +259,7 @@ namespace maki {
 
 
 
-			bool decode(std::istream &src, std::ostream &dst)
-			{
+			bool decode(std::istream &src, std::ostream &dst) {
 				int retcode = 0;
 				unsigned char in[4];
 				unsigned char out[3];
@@ -307,8 +302,7 @@ namespace maki {
 				return true;
 			}
 
-			bool encode(std::istream &src, std::ostream &dst, int linesize = 1024)
-			{
+			bool encode(std::istream &src, std::ostream &dst, int linesize = 1024) {
 				unsigned char in[3];
 				unsigned char out[4];
 				int i, len, blocksout = 0;
@@ -349,6 +343,5 @@ namespace maki {
 			}
 
 		} // namespace base64
-
 	} // namespace core
 } // namespace maki

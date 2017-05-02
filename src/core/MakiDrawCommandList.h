@@ -1,5 +1,5 @@
 #pragma once
-#include <algorithm>
+#include "core/MakiTypes.h"
 #include "core/MakiAllocator.h"
 #include "core/MakiArray.h"
 #include "core/MakiMatrix44.h"

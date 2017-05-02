@@ -11,7 +11,7 @@ namespace maki {
 		}
 
 		ref_t<texture_t> texture_manager_t::get(rid_t rid) {
-			return res_pool_->find([rid](const texture_t &res) { return rid == res.rid(); });
+			return res_pool_->find([rid](const texture_t &res) { return rid == res.rid; });
 		}
 
 		ref_t<texture_t> texture_manager_t::load(rid_t rid) {
@@ -21,10 +21,10 @@ namespace maki {
 				return nullptr;
 			auto tex = res_pool_->alloc();
 			if (!eng->renderer->create_texture(tex, data.data(), data.length())) {
-				console_t::error("Failed to create texture <rid %ull>", rid);
+				console_t::error("Failed to create texture <rid %u>", rid);
 				return nullptr;
 			}
-			tex->set_rid(rid);
+			tex->rid = rid;
 			return tex;
 		}
 

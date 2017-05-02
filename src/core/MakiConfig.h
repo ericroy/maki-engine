@@ -1,6 +1,4 @@
 #pragma once
-#include <memory>
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 
 namespace maki {
@@ -9,10 +7,8 @@ namespace maki {
 		class asset_library_t;
 		class document_t;
 
-		class config_t
-		{
+		class config_t {
 			MAKI_NO_COPY(config_t);
-
 		public:
 			config_t(asset_library_t *lib, rid_t rid);
 

@@ -1,14 +1,12 @@
 #pragma once
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
-#include "core/MakiResource.h"
 #include "core/MakiShader.h"
 #include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class shader_program_t : public resource_t {
+		class shader_program_t {
 			MAKI_NO_COPY(shader_program_t);
 		public:
 			enum variant_t {
@@ -26,11 +24,9 @@ namespace maki {
 			shader_program_t() = default;
 			~shader_program_t();
 			bool load(rid_t rid, variant_t variant);
-			inline bool operator==(const shader_program_t &other) const {
-				return rid_ == other.rid_ && variant == other.variant;
-			}
 
 		public:
+			rid_t rid = RID_NONE;
 			uint32_t input_attribute_count = 0;
 			shader_t vertex_shader;
 			shader_t pixel_shader;

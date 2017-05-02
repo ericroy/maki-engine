@@ -1,12 +1,15 @@
+#include <sstream>
 #include "core/MakiShader.h"
 #include "core/MakiEngine.h"
 #include "core/MakiBase64.h"
-#include <sstream>
+#include "core/MakiConsole.h"
+
+using namespace std;
 
 namespace maki {
 	namespace core {
 
-		const char *shader_t::frame_uniform_names[frame_uniform_count] = {
+		const char *shader_t::frame_uniform_names[frame_uniform_max + 1] = {
 			"uView",
 			"uProjection",
 			"uViewProjection",
@@ -21,7 +24,7 @@ namespace maki {
 			"uCameraWithHeightNearFar",
 		};
 	
-		const char *shader_t::object_uniform_names[object_uniform_count] = {
+		const char *shader_t::object_uniform_names[object_uniform_max + 1] = {
 			"uModel",
 			"uModelView",
 			"uModelViewProjection"
@@ -32,7 +35,7 @@ namespace maki {
 		}
 
 		shader_t::frame_uniform_t shader_t::get_frame_uniform_by_name(const char *name) {
-			for(int32_t i = 0; i < frame_uniform_count; i++) {
+			for(int32_t i = 0; i <= frame_uniform_max; i++) {
 				if(strcmp(frame_uniform_names[i], name) == 0)
 					return (frame_uniform_t)i;
 			}
@@ -40,7 +43,7 @@ namespace maki {
 		}
 
 		shader_t::object_uniform_t shader_t::get_object_uniform_by_name(const char *name) {
-			for(int32_t i = 0; i < object_uniform_count; i++) {
+			for(int32_t i = 0; i <= object_uniform_max; i++) {
 				if(strcmp(object_uniform_names[i], name) == 0)
 					return (object_uniform_t)i;
 			}
@@ -48,10 +51,6 @@ namespace maki {
 		}
 
 
-
-		shader_t::~shader_t() {
-			MAKI_SAFE_FREE(program_data);
-		}
 
 		bool shader_t::init(const document_t::node_t &shader_node, const char *data_key, const char *meta_key) {
 			auto *data_node = shader_node.resolve(data_key);
@@ -64,18 +63,15 @@ namespace maki {
 				return false;
 			}
 
-			std::stringstream in(encoded_data);
-			std::stringstream out(std::ios::out | std::ios::binary);
+			stringstream in(encoded_data);
+			stringstream out(ios::out | ios::binary);
 			if(!base64::decode(in, out)) {
 				console_t::error("Failed to base64 decode shader program");
 				return false;
 			}
-			std::string data = out.str();
-			program_data_bytes = data.length();
-
-			MAKI_SAFE_FREE(program_data_);
-			program_data = (char *)allocator_t::malloc(program_data_bytes);
-			memcpy(program_data, data.c_str(), program_data_bytes);
+			string data = out.str();
+			program_data.set_length(data.length());
+			memcpy(program_data.data(), data.c_str(), data.length());
 
 			auto *meta_node = shader_node.resolve(meta_key);
 			if(meta_node == nullptr)
@@ -100,7 +96,7 @@ namespace maki {
 					uint32_t offset = (uint32_t)uni[0].>value_as_uint();
 					uint32_t size = (uint32_t)uni[1].>value_as_uint();
 					engine_frame_uniform_locations[c] = (int32_t)offset;				
-					engine_frame_uniform_bytes = std::max(offset + size, engine_frame_uniform_bytes);
+					engine_frame_uniform_bytes = max(offset + size, engine_frame_uniform_bytes);
 				}		
 			}
 
@@ -123,7 +119,7 @@ namespace maki {
 					uint32_t offset = (uint32_t)uni[0].value_as_uint();
 					uint32_t size = (uint32_t)uni[1].value_as_uint();
 					engine_object_uniform_locations[c] = (int32_t)offset;				
-					engine_object_uniform_bytes = std::max(offset + size, engine_object_uniform_bytes);
+					engine_object_uniform_bytes = max(offset + size, engine_object_uniform_bytes);
 				}		
 			}
 
@@ -143,7 +139,7 @@ namespace maki {
 					uint32_t size = (uint32_t)uni[1].value_as_uint();
 				
 					material_uniform_locations.push_back(material_uniform_location_t((int32_t)offset, uni.value()));
-					material_uniform_bytes = std::max(offset + size, material_uniform_bytes);
+					material_uniform_bytes = max(offset + size, material_uniform_bytes);
 				}		
 			}
 

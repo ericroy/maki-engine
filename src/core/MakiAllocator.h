@@ -4,6 +4,7 @@
 #include <new>
 #include <cassert>
 #include <limits>
+#include "core/MakiTypes.h"
 
 // #ifdef _CRTDBG_MAP_ALLOC
 // #	define _MAKI_ALIGNED_MALLOC(a, b) _aligned_malloc_dbg(a, b, __FILE__, __LINE__)
@@ -19,13 +20,10 @@ namespace maki {
 	namespace core {
 
 #if MAKI_OS_WIN
-
 		inline void *aligned_malloc(size_t size, size_t alignment = 8) { return _aligned_malloc(size, alignment); }
 		inline void *aligned_realloc(void *existing, size_t size, size_t alignment = 8) { return _aligned_realloc(existing, size, alignment); }
 		inline void aligned_free(void *p) { _aligned_free(p); }
-
 #else
-
 		inline void *aligned_malloc(size_t size, size_t alignment = 8) {
 			// Alignment must be at least 4, which is the default alignment of malloc for a 32 bit system.
 			assert(alignment >= 4);
@@ -77,11 +75,9 @@ namespace maki {
 			char *base = static_cast<char *>(p) - shift - sizeof(size_t);
 			free(base);
 		}
-
 #endif
 
-		template<int ALIGNMENT>
-		class aligned_t {
+		template<int ALIGNMENT> class aligned_t {
 		public:
 			inline void *operator new(size_t size) {
 				void *p = aligned_malloc(size, ALIGNMENT);

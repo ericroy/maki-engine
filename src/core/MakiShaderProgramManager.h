@@ -1,6 +1,5 @@
 #pragma once
 #include "core/MakiTypes.h"
-#include "core/MakiMacros.h"
 #include "core/MakiManager.h"
 #include "core/MakiShaderProgram.h"
 #include "core/MakiResourcePool.h"

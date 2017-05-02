@@ -1,5 +1,5 @@
 #pragma once
-#include "core/MakiMacros.h"
+#include "core/MakiTypes.h"
 #include "core/MakiVector2.h"
 
 namespace maki {

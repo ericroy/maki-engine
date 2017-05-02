@@ -10,7 +10,7 @@ namespace maki {
 		
 			document_t doc;
 			if(!doc.load(rid)) {
-				console_t::error("Could not parse file as document <rid %ull>", rid);
+				console_t::error("Could not parse file as document <rid %u>", rid);
 				return false;
 			}
 
@@ -40,11 +40,11 @@ namespace maki {
 				j->rot.from_euler_angles(euler_angles);
 			}
 
-			rid_ = rid;
-
 			inverse_bind_pose.free();
 			inverse_bind_pose.set_size(joints.length);
 			calculate_inverse_bind_pose(joints.data(), inverse_bind_pose_.data());
+
+			this->rid = rid;
 			return true;
 		}
 

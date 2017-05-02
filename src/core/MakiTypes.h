@@ -1,16 +1,44 @@
 #pragma once
+#include <cassert>
 #include <stdint.h>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <limits>
 #include <memory>
+#include <algorithm>
+#include <functional>
+
+using std::vector;
+using std::string;
+using std::unique_ptr;
+using std::move;
+using std::forward;
+using std::ifstream;
+using std::ofstream;
+using std::stringstream;
+using std::function;
+
+
+#define MAKI_SAFE_DELETE(x) if((x)) { delete (x); (x) = nullptr; }
+
+#define MAKI_SAFE_FREE(x) if((x)) { core::allocator_t::free((x)); (x) = nullptr; }
+
+#define MAKI_SAFE_DELETE_ARRAY(x) if((x)) { delete[] (x); (x) = nullptr; }
+
+#define MAKI_SAFE_RELEASE(x) if((x)) { (x)->Release(); (x) = nullptr; }
+
+#define MAKI_TO_RID(x) *(rid_t *)&(x)
+
+#define MAKI_NO_COPY(TYPENAME) \
+	TYPENAME(const TYPENAME &) = delete;\
+	void operator=(const TYPENAME &) = delete;
+
+#define MAKI_ASSERT(X) assert(X)
+
 
 namespace maki {
-
-	using std::vector;
-	using std::string;
-	using std::unique_ptr;
-	using std::move;
 
 	typedef uint32_t handle_t;
 	const handle_t HANDLE_NONE = (handle_t)-1;
@@ -18,7 +46,7 @@ namespace maki {
 	typedef uint16_t ref_count_t;
 	const ref_count_t REF_COUNT_MAX = ::std::numeric_limits<ref_count_t>::max();
 
-	// resource_t Id
+	// Resource id
 	// A unique identifier for a file resource from the resource_library_t
 	// Rids cannot be a simple typedef because we need them to have a distinct type from a handle_t
 	typedef struct _rid_t {

@@ -10,100 +10,47 @@
 namespace maki {
 	namespace core {
 
-		material_t::material_t()
-			: resource_t(),
-			uniform_count_(0),
-			texture_set_(HANDLE_NONE),
-			shader_program_(HANDLE_NONE)
-		{
+		material_t::material_t(material_t &&other) {
+			texture_set = move(other.texture_set);
+			shader_program = move(other.shader_program);
+			for (int32_t i = 0; i < other.uniform_count; i++)
+				uniform_values[i] = move(other.uniform_values[i])
+			uniform_count = other.uniform_count;
+			other.uniform_count = 0;
 		}
 
-		material_t::material_t(material_t &&other)
-			: resource_t((resource_t &&)other),
-			uniform_count_(other.uniform_count_),
-			texture_set_(other.texture_set_),
-			shader_program_(other.shader_program_)
-		{
-			other.uniform_count_ = 0;
-			other.texture_set_ = HANDLE_NONE;
-			other.shader_program_ = HANDLE_NONE;
-			memcpy(uniform_values_, other.uniform_values_, sizeof(uniform_value_t)*uniform_count_);
-			memset(other.uniform_values_, 0, sizeof(uniform_value_t)*max_uniforms_);
-		}
-
-		material_t::material_t(const material_t &other)
-		:	resource_t(other),
-			uniform_count_(other.uniform_count_),
-			texture_set_(other.texture_set_),
-			shader_program_(other.shader_program_)
-		{
-			texture_set_manager_t::add_ref(texture_set_);
-			shader_program_manager_t::add_ref(shader_program_);
-		
-			memcpy(uniform_values_, other.uniform_values_, sizeof(uniform_value_t)*uniform_count_);
-			for(uint32_t i = 0; i < uniform_count_; i++) {
-				uniform_value_t &val = uniform_values_[i];
-				char *old_data = val.data_;
-				val.data_ = (char *)allocator_t::malloc(val.bytes_);
-				memcpy(val.data_, old_data, val.bytes_);
-			}
-		}
-
-		material_t::~material_t()
-		{
-			shader_program_manager_t::free(shader_program_);
-			texture_set_manager_t::free(texture_set_);
-		}
-
-		void material_t::set_shader_program(rid_t shader_rid)
-		{
-			handle_t new_shader_program = core_managers_t::get()->shader_program_manager_->load(shader_rid);
-			shader_program_manager_t::free(shader_program_);
-			shader_program_ = new_shader_program;
-		}
-	
-		void material_t::set_textures(uint8_t count, rid_t *texture_rids)
-		{
-			handle_t new_texture_set = core_managers_t::get()->texture_set_manager_->load(count, texture_rids);
-			texture_set_manager_t::free(texture_set_);
-			texture_set_ = new_texture_set;
-		}
-
-		int32_t material_t::push_constant(const char *key, uint32_t bytes, char *data)
-		{
-			if(shader_program_ == HANDLE_NONE) {
+		int32_t material_t::push_constant(const char *key, const array_t<char> &data) {
+			if(!shader_program) {
 				console_t::warning("Cannot push constant, must set shader program first");
 				return -1;
 			}
-			if(uniform_count_ >= max_uniforms_) {
-				console_t::error("Cannot push constant, limit of %d constants reached", max_uniforms_);
+			if(uniform_count >= max_uniforms) {
+				console_t::error("Cannot push constant, limit of %d constants reached", max_uniforms);
 				return -1;
 			}
 
-			shader_program_t *shader = shader_program_manager_t::get(shader_program_);
-
 			// find constant in vertex shader
-			int32_t vs_location = shader->vertex_shader_.find_material_constant_location(key);
-			int32_t ps_location = shader->pixel_shader_.find_material_constant_location(key);
-
+			int32_t vs_location = shader_program->vertex_shader.find_material_constant_location(key);
+			int32_t ps_location = shader_program->pixel_shader.find_material_constant_location(key);
 			if(vs_location == -1 && ps_location == -1) {
 				console_t::error("Constant not found in vertex or pixel shader: %s", key);
 				return -1;
 			}
 
-			int32_t index = uniform_count_++;
-			uniform_value_t &value = uniform_values_[index];
-			value.ps_location_ = ps_location;
-			value.vs_location_ = vs_location;
-			value.bytes_ = bytes;
-			value.data_ = data;
+			int32_t index = uniform_count++;
+			auto &value = uniform_values[index];
+			value.ps_location = ps_location;
+			value.vs_location = vs_location;
+			value.data = data;
 			return index;
 		}
 
-		bool material_t::load(rid_t rid)
-		{
-			core_managers_t *res = core_managers_t::get();
-			engine_t *eng = engine_t::get();
+		bool material_t::load(rid_t rid) {
+			auto *res = core_managers_t::get();
+			auto *eng = engine_t::get();
+
+			ref_t<shader_program_t> shader_temp;
+			ref_t<texture_set_t> ts_temp;
 
 			if(rid == RID_NONE) {
 				console_t::error("Failed to load material, rid is RID_NONE");
@@ -112,96 +59,83 @@ namespace maki {
 
 			document_t doc;
 			if(!doc.load(rid)) {
-				console_t::error("Failed to parse material file <rid %ull>", rid);
+				console_t::error("Failed to parse material file <rid %u>", rid);
 				return false;
 			}
 
-			shader_program_t *shader = nullptr;
-			rid_t shader_program_rid = RID_NONE;
-			document_t::node_t *n = nullptr;
-
-			char *shader_program_path = doc.root_->resolve_value("shader.#0");
-			if(shader_program_path == nullptr) {
-				console_t::error("material_t did not specify a shader");
-				goto failed;
+			char *path = doc.root_->resolve_value("shader.#0");
+			if(path == nullptr) {
+				console_t::error("Material did not specify a shader");
+				return false;
 			}
-			shader_program_rid = engine_t::get()->assets_->path_to_rid(shader_program_path);
-			if(shader_program_rid == RID_NONE) {
-				console_t::error("Could not resolve rid from shader program path: %s", shader_program_path);
-				goto failed;
+			auto rid = engine_t::get()->assets->path_to_rid(path);
+			if(rid == RID_NONE) {
+				console_t::error("Could not resolve rid from shader program path: %s", path);
+				return false;
 			}
 
-		
-			shader_program_ = res->shader_program_manager_->load(shader_program_rid);
-			if(shader_program_ == HANDLE_NONE) {
-				goto failed;
-			}
-			shader = shader_program_manager_t::get(shader_program_);
+			shader_temp = res->shader_program_manager->get_or_load(rid);
+			if(!shader_temp)
+				return false;
 
-		
-			n = doc.root_->resolve("texture_set");
+			auto  *n = doc.root_->resolve("texture_set");
 			if(n != nullptr) {
-				rid_t texture_set_rids[texture_set_t::max_textures_per_set_];
-				uint32_t texture_set_size = n->count_;
-				assert(texture_set_size < texture_set_t::max_textures_per_set_);
-				for(uint32_t i = 0; i < n->count_; i++) {
-					rid_t tex_rid = eng->assets_->path_to_rid(n->children_[i]->value_);
-					if(tex_rid == RID_NONE) {
-						console_t::error("Could not resolve rid from texture path: %s", n->children_[i]->value_);
-						goto failed;
+				rid_t texture_rids[texture_set_t::max_textures_per_set];
+				MAKI_ASSERT(n->length() < texture_set_t::max_textures_per_set);
+				for(uint32_t i = 0; i < n->length(); i++) {
+					rid_t rid = eng->assets->path_to_rid((*n)[i].value());
+					if(rid == RID_NONE) {
+						console_t::error("Could not resolve rid from texture path: %s", (*n)[i].value());
+						return false;
 					}
-					texture_set_rids[i] = tex_rid;
+					texture_rids[i] = rid;
 				}
-				texture_set_ = res->texture_set_manager_->load(texture_set_size, texture_set_rids);
-				if(texture_set_ == HANDLE_NONE) {
+				ts_temp = res->texture_set_manager_->get_or_load(n->length(), texture_rids);
+				if(!ts_temp) {
 					console_t::error("Failed to construct texture set from rid list");
-					goto failed;
+					return false;
 				}
 			}
 
 
 			n = doc.root_->resolve("uniforms");
 			if(n != nullptr) {
-				for(uint32_t i = 0; i < n->count_; i++) {
-					document_t::node_t *uniform = n->children_[i];
-					if(uniform->count_ != 1) {
+				for(uint32_t i = 0; i < n->length(); i++) {
+					document_t::node_t *uniform = (*n)[i];
+					if(uniform->length() != 1) {
 						console_t::error("Uniform node must have a single child specifying data type");
-						goto failed;
+						return false;
 					}
-					document_t::node_t *data_type = uniform->children_[0];
-					if(data_type->count_ == 0) {
+					document_t::node_t *data_type = (*uniform)[0];
+					if(data_type->length() == 0) {
 						console_t::error("Uniform data type node must have at least one child");
-						goto failed;
+						return false;
 					}
 
-					uint32_t value_count = data_type->count_;
-					char *buffer = (char *)allocator_t::malloc(value_count*4);
+					uint32_t value_count = data_type->length();
+					array_t<char> buffer(value_count * 4);
 					for(uint32_t i = 0; i < value_count; i++) {
-						if(data_type->value_[0] == 'f') {
-							((float *)buffer)[i] = data_type->children_[i]->value_as_float();
-						} else if(data_type->value_[0] == 'u') {
-							((uint32_t *)buffer)[i] = (uint32_t)data_type->children_[i]->value_as_int();
-						} else if(data_type->value_[0] == 'i') {
-							((int32_t *)buffer)[i] = (int32_t)data_type->children_[i]->value_as_int();
+						if(data_type->value()[0] == 'f') {
+							((float *)buffer.data())[i] = (*data_type)[i].value_as_float();
+						} else if(data_type->value()[0] == 'u') {
+							((uint32_t *)buffer.data())[i] = (uint32_t)(*data_type)[i].value_as_int();
+						} else if(data_type->value()[0] == 'i') {
+							((int32_t *)buffer.data())[i] = (int32_t)(*data_type)[i].value_as_int();
 						} else {
-							MAKI_SAFE_DELETE_ARRAY(buffer);
-							console_t::error("Unrecognized uniform data type: %s", data_type->value_);
-							goto failed;
+							console_t::error("Unrecognized uniform data type: %s", data_type->value());
+							return false;
 						}
 					}
-					if(push_constant(uniform->value_, value_count*4, buffer) == -1) {
-						console_t::warning("warning, material has unbound uniforms <rid %ull>", rid);
+					if(push_constant(uniform->value(), value_count * 4, buffer) == -1) {
+						console_t::warning("warning, material has unbound uniforms <rid %u>", rid);
 					}
 				}
 			}
 
-			this->rid_ = rid;
+			shader_program = move(shader_temp);
+			texture_set = move(ts_temp);
+			this->rid = rid;
 			return true;
-
-		failed:
-			texture_set_manager_t::free(texture_set_);
-			shader_program_manager_t::free(shader_program_);
-			return false;
 		}
 
 

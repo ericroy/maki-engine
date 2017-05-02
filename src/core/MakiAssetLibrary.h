@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 #include "core/MakiArray.h"
 
@@ -14,8 +13,7 @@ namespace maki {
 			MAKI_NO_COPY(asset_library_t);
 
 		private:
-			struct group_t
-			{
+			struct group_t {
 				asset_manifest_t *manifest = nullptr;
 				archive_t *archive = nullptr;
 			};
@@ -39,7 +37,6 @@ namespace maki {
 			vector<group_t> groups_;
 		};
 
-		
 
 	} // namespace core
 } // namespace maki

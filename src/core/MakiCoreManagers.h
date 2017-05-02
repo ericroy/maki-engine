@@ -1,10 +1,10 @@
 #pragma once
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 #include "core/MakiPseudoSingleton.h"
 
 namespace maki {
 	namespace core {
+
 		class config_t;
 		class draw_command_manager_t;
 		class texture_manager_t;
@@ -19,25 +19,20 @@ namespace maki {
 
 		class core_managers_t : public pseudo_singleton_t<core_managers_t> {
 			MAKI_NO_COPY(core_managers_t);
-
 		public:
 			core_managers_t() = default;
 			core_managers_t(const config_t *config);
-			virtual ~core_managers_t();
-			void dump_manager_stats();
-			virtual void reload_assets();
-			virtual bool reload_asset(rid_t rid);
 
 		public:
-			texture_manager_t *texture_manager_ = nullptr;
-			texture_set_manager_t *texture_set_manager_ = nullptr;
-			material_manager_t *material_manager_ = nullptr;
-			mesh_manager_t *mesh_manager_ = nullptr;
-			vertex_format_manager_t *vertex_format_manager_ = nullptr;
-			shader_program_manager_t *shader_program_manager_ = nullptr;
-			font_manager_t *font_manager_ = nullptr;
-			skeleton_manager_t *skeleton_manager_ = nullptr;
-			skeleton_animation_manager_t *skeleton_animation_manager_ = nullptr;
+			unique_ptr<texture_manager_t> texture_manager;
+			unique_ptr<texture_set_manager_t> texture_set_manager;
+			unique_ptr<material_manager_t> material_manager;
+			unique_ptr<mesh_manager_t> mesh_manager;
+			unique_ptr<vertex_format_manager_t> vertex_format_manager;
+			unique_ptr<shader_program_manager_t> shader_program_manager;
+			unique_ptr<font_manager_t> font_manager;
+			unique_ptr<skeleton_manager_t> skeleton_manager;
+			unique_ptr<skeleton_animation_manager_t> skeleton_animation_manager;
 		};
 
 	} // namespace core

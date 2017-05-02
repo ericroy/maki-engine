@@ -36,36 +36,36 @@ namespace maki {
 
 			auto *input_attribute_count_node = doc.root().resolve("input_attribute_count.#0");
 			if(input_attribute_count_node == nullptr) {
-				console_t::error("Failed to parse shader. Shader doc requires an input_attribute_count node.  <rid %ull>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires an input_attribute_count node.  <rid %u>", rid);
 				return false;
 			}
 			input_attribute_count = input_attribute_count_node->value_as_uint(0);
 		
 			auto *vertex_shader_node = doc.root().resolve("vertex_shader");
 			if(vertex_shader_node == nullptr) {
-				console_t::error("Failed to parse shader. Shader doc requires a vertex_shader node.  <rid %ull>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires a vertex_shader node.  <rid %u>", rid);
 				return false;
 			}
 			if(!vertex_shader.init(vertex_shader_node, variant_data_key_[variant], variant_meta_key_[variant])) {
 				if(variant == variant_normal)
-					console_t::error("Failed to load vertex shader <rid %ull>", rid);
+					console_t::error("Failed to load vertex shader <rid %u>", rid);
 				return false;
 			}
 
 			auto *pixel_shader_node = doc.root().resolve("pixel_shader");
 			if(pixel_shader_node == nullptr) {
-				console_t::error("Failed to parse shader. Shader doc requires a pixel_shader node.  <rid %ull>", rid);
+				console_t::error("Failed to parse shader. Shader doc requires a pixel_shader node.  <rid %u>", rid);
 				return false;
 			}
 			if(!pixel_shader.init(pixel_shader_node, variant_data_key_[variant], variant_meta_key_[variant])) {
 				if(variant == variant_normal)
-					console_t::error("Failed to load pixel shader <rid %ull>", rid);
+					console_t::error("Failed to load pixel shader <rid %u>", rid);
 				return false;
 			}
 
 			// Regular shader is responsible for loading up variants_
 			this->variant = variant;
-			set_rid(rid);
+			this->rid = rid;
 			if(variant == variant_normal) {
 				auto *res = core_managers_t::get();
 				for(uint32_t i = 0; i < variant_max; i++)

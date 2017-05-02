@@ -1,10 +1,12 @@
 #pragma once
+#include "core/MakiTypes.h"
+#include "core/MakiVector4.h"
+#include "core/MakiVector3.h"
 
 namespace maki {
 	namespace core {
 
-		class bounding_sphere_t
-		{
+		class bounding_sphere_t {
 		public:
 			bounding_sphere_t() = default;
 			

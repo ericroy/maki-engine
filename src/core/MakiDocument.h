@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdlib>
 #include <iostream>
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 
 namespace maki {
@@ -27,6 +26,10 @@ namespace maki {
 				inline uint64_t length() const { return length_; }
 				inline const node_t &operator[](uint64_t i) const { return *children_[i]; }
 				inline node_t &operator[](uint64_t i) { return *children_[i]; }
+				inline node_t *begin() { return children_[0]; }
+				inline node_t *end() { return children_[length_]; }
+				inline const node_t *begin() const { return children_[0]; }
+				inline const node_t *end() const { return children_[length_]; }
 
 				void append_child(node_t *n);
 				inline void append_sibling(node_t *n) { MAKI_ASSERT(parent_ != nullptr); parent_->append_child(n); }

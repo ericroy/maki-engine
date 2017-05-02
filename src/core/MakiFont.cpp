@@ -10,8 +10,7 @@
 namespace maki {
 	namespace core {
 
-		inline uint32_t next_power_of_two(uint32_t v)
-		{
+		inline uint32_t next_power_of_two(uint32_t v) {
 			v--;
 			v |= v >> 1;
 			v |= v >> 2;
@@ -22,79 +21,52 @@ namespace maki {
 			return v;
 		}
 
+		bool font_t::load(rid_t font_rid, rid_t shader_program_rid, uint32_t pixel_size) {
+			auto *res = core_managers_t::get();
+			auto *eng = engine_t::get();
 
-		font_t::font_t()
-			: resource_t(), material_(HANDLE_NONE), pixel_size_(0), texture_width_(0), texture_height_(0)
-		{
-		}
-
-		font_t::~font_t()
-		{
-			material_manager_t::free(material_);
-		}
-
-		bool font_t::operator==(const font_t &other) const
-		{
-			return rid_ == other.rid_ && pixel_size_ == other.pixel_size_;
-		}
-
-		bool font_t::load(rid_t font_rid, rid_t shader_program_rid, uint32_t pixel_size)
-		{
-			core_managers_t *res = core_managers_t::get();
-			engine_t *eng = engine_t::get();
-
-			char *font_data = eng->assets_->alloc_read(font_rid);
-			if(font_data == nullptr) {
-				console_t::error("Failed to load font <rid %ull>", font_rid);
+			array_t<char> font_data = eng->assets_->alloc_read(font_rid);
+			if(!font_data) {
+				console_t::error("Failed to load font <rid %u>", font_rid);
 				return false;
 			}
 
 			texture_width_ = 512;
 			texture_height_ = next_power_of_two(pixel_size);
-			uint8_t *pixels = (uint8_t *)allocator_t::realloc(nullptr, texture_width_ * texture_height_);
-
+			array_t<char> pixels(texture_width_ * texture_height_);
+			
 			int ret;
-			while((ret = stbtt_BakeFontBitmap((const uint8_t *)font_data, 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
+			while((ret = stbtt_BakeFontBitmap((const uint8_t *)font_data.data(), 0, (float)pixel_size, pixels, texture_width_, texture_height_, min_char_code_, char_code_count_, baked_chars_)) <= 0) {
 				texture_height_ *= 2;
-				pixels = (uint8_t *)allocator_t::realloc(pixels, texture_width_ * texture_height_);
+				pixels.set_length(texture_width_ * texture_height_);
 			}
 
-			handle_t glyph_atlas = res->texture_manager_->alloc_texture(texture_t::texture_type_regular_, texture_width_, texture_height_, 1);
-			texture_t *tex_ = texture_manager_t::get(glyph_atlas);
-			eng->renderer_->write_to_texture(tex_, 0, 0, 0, 0, texture_width_, texture_height_, texture_width_, 1, (char *)pixels);
+			auto glyph_atlas = res->texture_manager->alloc_texture(texture_t::texture_type_regular, texture_width_, texture_height_, 1);
+			eng->renderer->write_to_texture(glyph_atlas.ptr(), 0, 0, 0, 0, texture_width_, texture_height_, texture_width_, 1, pixels.data());
 		
-			allocator_t::free(pixels);
-			MAKI_SAFE_FREE(font_data);
+			material = res->material_manager->create();
+			material->shader_program = res->shader_program_manager->get_or_load(shader_program_rid);
+			auto ts = res->texture_set_manager->create();
+			ts.texture_count = 1;
+			ts.textures[0] = glyph_atlas;
+			ts.texture_rids[0] = glyph_atlas.rid;
+			material->texture_set = move(ts);
 
-			material_t mat;
-			mat.set_shader_program(shader_program_rid);
-
-			texture_set_t ts;
-			// The texture set will take ownership of the glyph_atlas handle_
-			ts.textures_[ts.texture_count_++] = glyph_atlas;
-
-			// The material will take ownership of the new texture set handle_
-			mat.texture_set_ = res->texture_set_manager_->add(maki_move(ts));
-
-			// And finally, we will accept ownerhip of the material handle_
-			material_ = res->material_manager_->add(maki_move(mat));
-
-
-			pixel_size_ = pixel_size;
-			rid_ = font_rid;
+			this->shader_program_rid = shader_program_rid;
+			this->pixel_size = pixel_size;
+			this->rid = font_rid;
 			return true;
 		}
 
-		void font_t::render_as_mesh(const char *s, mesh_t *m)
-		{
-			m->set_vertex_attributes(vertex_format_t::attribute_flag_text_coord_);
+		void font_t::render_as_mesh(const char *s, mesh_t *m) {
+			m->set_vertex_attributes(vertex_format_t::attribute_flag_text_coord);
 			m->set_index_attributes(3, 2);
-			m->set_mesh_flag(mesh_t::mesh_flag_has_translucency_);
+			m->set_mesh_flag(mesh_t::mesh_flag_has_translucency);
 
 			float pen_x = 0.0f;
 			float pen_y = 0.0f;
 		
-			struct V {
+			struct vertex_t {
 				float pos[3];
 				float uv[2];
 			};
@@ -109,7 +81,7 @@ namespace maki {
 			
 				stbtt_GetBakedQuad(baked_chars_, texture_width_, texture_height_, s[i] - min_char_code_, &pen_x, &pen_y, &q, 1);
 
-				V v[4] = {
+				vertex_t v[4] = {
 					{q.x0, q.y0, 0, q.s0, q.t0},
 					{q.x0, q.y1, 0, q.s0, q.t1},
 					{q.x1, q.y1, 0, q.s1, q.t1},

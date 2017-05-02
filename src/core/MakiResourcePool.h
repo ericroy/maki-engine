@@ -19,7 +19,7 @@ namespace maki {
 			ref_t(ref_t<T> &&other) : pool_(other.pool_), handle_(other.handle_) {
 				other.handle_ = HANDLE_NONE;
 			}
-			ref_t(ref_t<T> &other) : pool_(other.pool_), handle_(other.handle_) {
+			ref_t(const ref_t<T> &other) : pool_(other.pool_), handle_(other.handle_) {
 				if (handle_ != HANDLE_NONE) {
 					MAKI_ASSERT(pool_->reference_counts_[handle_] < REF_COUNT_MAX);
 					pool_->reference_counts_[handle_]++;

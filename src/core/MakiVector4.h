@@ -1,11 +1,28 @@
 #pragma once
-#include "core/MakiMacros.h"
+#include "core/MakiTypes.h"
 
 namespace maki {
 	namespace core {
-		class matrix44_t;
 
 		class vector4_t {
+		public:
+			static inline float dot(const vector4_t &v1, const vector4_t &v2) { return dot3(v1, v2); }
+			static inline float dot4(const vector4_t &v1, const vector4_t &v2);
+			static inline float dot3(const vector4_t &v1, const vector4_t &v2);
+
+			static inline void normalize(vector4_t &v) { return normalize3(v); }
+			static inline void normalize3(vector4_t &v);
+			static inline void normalize4(vector4_t &v);
+
+			static inline vector4_t cross(const vector4_t &a, const vector4_t &b) { return cross3(a, b); }
+			static inline vector4_t cross3(const vector4_t &a, const vector4_t &b);
+
+			static inline float length(const vector4_t &v) { return length3(v); }
+			static inline float length3(const vector4_t &v);
+
+			static inline float length_squared(const vector4_t &v) { return length_squared3(v); }
+			static inline float length_squared3(const vector4_t &v);
+
 		public:
 			static const vector4_t unit_x;
 			static const vector4_t unit_y;
@@ -43,25 +60,6 @@ namespace maki {
 
 			inline bool operator==(const vector4_t &v) { return (x == v.x && y == v.y && z == v.z && w == v.w); }
 			inline bool operator!=(const vector4_t &v) { return (x != v.x || y != v.y || z != v.z || w != v.w); }
-
-			// Static methods
-
-			static inline float dot(const vector4_t &v1, const vector4_t &v2) { return dot3(v1, v2); }
-			static inline float dot4(const vector4_t &v1, const vector4_t &v2);
-			static inline float dot3(const vector4_t &v1, const vector4_t &v2);
-
-			static inline void normalize(vector4_t &v) { return normalize3(v); }
-			static inline void normalize3(vector4_t &v);
-			static inline void normalize4(vector4_t &v);
-
-			static inline vector4_t cross(const vector4_t &a, const vector4_t &b) { return cross3(a, b); }
-			static inline vector4_t cross3(const vector4_t &a, const vector4_t &b);
-
-			static inline float length(const vector4_t &v) { return length3(v); }
-			static inline float length3(const vector4_t &v);
-
-			static inline float length_squared(const vector4_t &v) { return length_squared3(v); }
-			static inline float length_squared3(const vector4_t &v);
 
 		public:
 			union {

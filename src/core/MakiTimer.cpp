@@ -6,15 +6,6 @@ namespace maki {
 
 		timer_t::timer_t(time_source_t *source) : source_(source) {
 			last_time_ = source_->get_time_micro();
-
-			update_count_ = 0;
-			average_fps_ = 0.0f;
-
-			delta_seconds_ = 0.0f;
-			delta_micros_ = 0;
-
-			elapsed_seconds_ = 0.0;
-			elapsed_micros_ = 0;
 		}
 
 		void timer_t::update_history() {

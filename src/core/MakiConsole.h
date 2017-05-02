@@ -19,30 +19,26 @@ namespace maki {
 
 		
 
-		class console_t : public pseudo_singleton_t<console_t>
-		{
+		class console_t : public pseudo_singleton_t<console_t> {
 		public:
-			enum level_t
-			{
-				level_info_ = 0,
-				level_warning_,
-				level_error_,
-				level_die_,
+			enum level_t {
+				level_info = 0,
+				level_warning,
+				level_error,
+				level_die,
+				level_max = level_die
 			};
 		
 		public:
-			static const int32_t max_buffer_size_ = 8192;
+			static const int32_t max_buffer_size = 8192;
 		
 		public:
-			MAKI_DEFINE_CONSOLE_METHOD(info, level_info_,       "INFO  : ", true)
-			MAKI_DEFINE_CONSOLE_METHOD(lua, level_info_,        "LUA   : ", true)
-			MAKI_DEFINE_CONSOLE_METHOD(warning, level_warning_, "WARN  : ", true)
-			MAKI_DEFINE_CONSOLE_METHOD(lua_error, level_error_, "LUAERR: ", true)
-			MAKI_DEFINE_CONSOLE_METHOD(error, level_error_,     "ERROR : ", true)			
-			MAKI_DEFINE_CONSOLE_METHOD(die, level_die_,         "DIE   : ", true)
-		public:
-			console_t(level_t verbosity_ = level_info_);
-			virtual ~console_t();
+			MAKI_DEFINE_CONSOLE_METHOD(info, level_info,       "INFO  : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(lua, level_info,        "LUA   : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(warning, level_warning, "WARN  : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(lua_error, level_error, "LUAERR: ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(error, level_error,     "ERROR : ", true)
+			MAKI_DEFINE_CONSOLE_METHOD(die, level_die,         "DIE   : ", true)
 
 			inline void set_verbosity(level_t level) { verbosity_ = level; }
 			inline void set_print_callback(std::function<void(const char *)> func) { print_callback_ = func; }
@@ -51,9 +47,9 @@ namespace maki {
 			void write(level_t level, bool line_feed, const char *prefix, const char *format, va_list args);
 
 		private:
-			std::function<void(const char *)> print_callback_;
-			char buffer_[max_buffer_size_];
-			level_t verbosity_;
+			std::function<void(const char *)> print_callback_ = nullptr;
+			char buffer_[max_buffer_size] = "";
+			level_t verbosity_ = level_info;
 		};
 
 #undef MAKI_DEFINE_CONSOLE_METHOD

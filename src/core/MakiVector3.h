@@ -1,12 +1,18 @@
 #pragma once
-#include "core/MakiMacros.h"
+#include "core/MakiTypes.h"
 #include "core/MakiVector4.h"
 
 namespace maki {
 	namespace core {
-		class matrix44_t;
-
+		
 		class vector3_t {
+		public:
+			static inline float dot(const vector3_t &v1, const vector3_t &v2);
+			static inline void normalize(vector3_t &v);
+			static inline vector3_t cross(const vector3_t &a, const vector3_t &b);
+			static inline float length(const vector3_t &v);
+			static inline float length_squared(const vector3_t &v);
+
 		public:
 			static const vector3_t unit_x;
 			static const vector3_t unit_y;
@@ -19,7 +25,6 @@ namespace maki {
 			inline vector3_t(const vector4_t &v) : x(v.x), y(v.y), z(v.z) {}
 
 			// Member vector operations
-
 			inline float length() const { return length(*this); }
 			inline float length_squared() const { return length_squared(*this); }
 			inline float dot(const vector3_t &v) const { return dot(*this, v); }
@@ -45,13 +50,6 @@ namespace maki {
 
 			inline bool operator==(const vector3_t &v) { return x == v.x && y == v.y && z == v.z; }
 			inline bool operator!=(const vector3_t &v) { return x != v.x || y != v.y || z != v.z; }
-
-			// Static methods
-			static inline float dot(const vector3_t &v1, const vector3_t &v2);
-			static inline void normalize(vector3_t &v);
-			static inline vector3_t cross(const vector3_t &a, const vector3_t &b);
-			static inline float length(const vector3_t &v);
-			static inline float length_squared(const vector3_t &v);
 
 		public:
 			union {
@@ -82,7 +80,6 @@ namespace maki {
 		float vector3_t::length_squared(const vector3_t &v) {
 			return v.x * v.x + v.y * v.y + v.z * v.z;
 		}
-
 
 	} // namespace core
 } // namespace maki

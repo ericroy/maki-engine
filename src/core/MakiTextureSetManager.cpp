@@ -7,6 +7,10 @@ namespace maki {
 			res_pool_.reset(new resource_pool_t<texture_set_t>(capacity));
 		}
 
+		ref_t<texture_set_t> texture_set_manager_t::create() {
+			return res_pool_->alloc();
+		}
+
 		ref_t<texture_set_t> texture_set_manager_t::get(uint8_t count, rid_t *rids) {
 			return res_pool_->find([&rids, count](const texture_set_t &ts) {
 				if (count != ts.texture_count)

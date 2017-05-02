@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include "core/MakiTypes.h"
 #include "core/MakiPseudoSingleton.h"
 #include "core/MakiTimer.h"
@@ -13,7 +12,6 @@ namespace maki {
 		class render_core_t;
 		class window_t;
 		class input_state_t;
-		class timer_t;
 		class time_source_t;
 
 		class engine_t : public pseudo_singleton_t<engine_t> {
@@ -27,17 +25,17 @@ namespace maki {
 			void tick();
 
 		public:
-			std::function<void(float)> frame_update;
-			std::function<void()> frame_draw;
+			function<void(float)> frame_update;
+			function<void()> frame_draw;
+
 			const config_t *config;
 			const asset_library_t *assets;
-		
-			timer_t update_timer;
-			timer_t render_timer;
-		
 			input_state_t *input_state;
 			renderer_t *renderer;
 			window_t *window;
+			
+			timer_t update_timer;
+			timer_t render_timer;
 
 		private:
 			time_source_t *time_source_;

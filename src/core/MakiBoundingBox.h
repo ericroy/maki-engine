@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include "core/MakiTypes.h"
 #include "core/MakiVector4.h"
 #include "core/MakiVector3.h"

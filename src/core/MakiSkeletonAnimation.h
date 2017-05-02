@@ -1,6 +1,4 @@
 #pragma once
-#include "core/MakiMacros.h"
-#include "core/MakiResource.h"
 #include "core/MakiSkeleton.h"
 
 namespace maki {
@@ -39,6 +37,9 @@ namespace maki {
 			inline uint64_t frame_count() const { return frame_count_; }
 			inline float frame_rate() const { return frame_rate_; }
 			inline uint64_t bone_count() const { return data_.length(); }
+
+		public:
+			rid_t rid = RID_NONE;
 
 		private:
 			float frame_rate_ = 0.0f;

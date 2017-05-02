@@ -1,4 +1,5 @@
 #pragma once
+#include "core/MakiTypes.h"
 #include "core/MakiAllocator.h"
 #include "core/MakiEngine.h"
 #include "core/MakiResourcePool.h"

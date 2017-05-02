@@ -1,6 +1,5 @@
 #pragma once
 #include "core/MakiTypes.h"
-#include "core/MakiMacros.h"
 
 namespace maki {
 	namespace core {
@@ -22,15 +21,15 @@ namespace maki {
 			void update_history();
 
 		private:
-			uint64_t delta_micros_;
-			float delta_seconds_;
-			double elapsed_seconds_;
-			uint64_t elapsed_micros_;
-			float average_fps_;
-			uint64_t last_time_;
-			uint64_t update_count_;
-			float delta_history_[n_frame_average_];
-			time_source_t *source_;
+			uint64_t delta_micros_ = 0;
+			float delta_seconds_ = 0.0f;
+			double elapsed_seconds_ = 0.0;
+			uint64_t elapsed_micros_ = 0;
+			float average_fps_ = 0.0f;
+			uint64_t last_time_ = 0;
+			uint64_t update_count_ = 0;
+			float delta_history_[n_frame_average_] = {};
+			time_source_t *source_ = nullptr;
 		};
 
 

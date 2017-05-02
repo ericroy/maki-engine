@@ -1,6 +1,5 @@
 #pragma once
 #include "core/MakiTypes.h"
-#include "core/MakiMacros.h"
 
 namespace maki {
 	namespace core {
@@ -9,7 +8,7 @@ namespace maki {
 		public:
 			static const int32_t max_players = 4;
 
-			enum key_id_t {
+			enum key_id_t : uint8_t {
 				key_l_button = 0x01,
 				key_r_button = 0x02,
 				key_cancel = 0x03,
@@ -309,8 +308,8 @@ namespace maki {
 
 		private:
 			uint8_t controller_count_ = 0;
-			controller_t controllers_[max_players] = {};
-			player_t players_[max_players] = {};
+			controller_t controllers_[max_players];
+			player_t players_[max_players];
 		};
 
 	} // namespace core

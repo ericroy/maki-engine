@@ -1,6 +1,5 @@
 #pragma once
-#include "core/MakiMacros.h"
-#include "core/MakiResource.h"
+#include "core/MakiTypes.h"
 #include "core/MakiDocument.h"
 
 namespace maki {
@@ -36,7 +35,7 @@ namespace maki {
 				frame_uniform_camera_split_distances,
 				frame_uniform_global_ambient_color,
 				frame_uniform_camera_with_height_hear_far,
-				frame_uniform_count
+				frame_uniform_max = frame_uniform_camera_with_height_hear_far,
 			};
 
 			enum object_uniform_t {
@@ -44,38 +43,34 @@ namespace maki {
 				object_uniform_model = 0,
 				object_uniform_model_view,
 				object_uniform_model_view_projection,
-				object_uniform_count
+				object_uniform_max = object_uniform_model_view_projection
 			};
 		
 			static frame_uniform_t get_frame_uniform_by_name(const char *name);
 			static object_uniform_t get_object_uniform_by_name(const char *name);
 
-			static const char *frame_uniform_names[frame_uniform_count];
-			static const char *object_uniform_names[object_uniform_count];
+			static const char *frame_uniform_names[frame_uniform_max + 1];
+			static const char *object_uniform_names[object_uniform_max + 1];
 
 		public:
-			shader_t() = default;
-			~shader_t();
-
 			bool init(const document_t::node_t &shader_node, const char *data_key, const char *meta_key);
 			int32_t find_material_constant_location(const char *name);
 
 		public:
 			int32_t frame_uniform_buffer_location = -1;
 			uint32_t engine_frame_uniform_bytes = 0;
-			int32_t engine_frame_uniform_locations[frame_uniform_count] = {};
+			int32_t engine_frame_uniform_locations[frame_uniform_max + 1] = {};
 
 			int32_t object_uniform_buffer_location = -1;
 			uint32_t engine_object_uniform_bytes = 0;
-			int32_t engine_object_uniform_locations[object_uniform_count] = {};
+			int32_t engine_object_uniform_locations[object_uniform_max + 1] = {};
 
 			int32_t material_uniform_buffer_location = -1;
 			uint32_t material_uniform_bytes = 0;
 
-			std::vector<material_uniform_location_t> material_uniform_locations;
+			vector<material_uniform_location_t> material_uniform_locations;
 
-			char *program_data = nullptr;
-			uint32_t program_data_bytes = 0;
+			array_t<char> program_data;
 
 			intptr_t handle = 0;
 		};

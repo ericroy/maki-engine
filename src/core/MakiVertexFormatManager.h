@@ -1,5 +1,4 @@
 #pragma once
-#include "core/MakiMacros.h"
 #include "core/MakiTypes.h"
 #include "core/MakiVertexFormat.h"
 #include "core/MakiResourcePool.h"

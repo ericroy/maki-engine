@@ -1,13 +1,11 @@
 #pragma once
-#include "core/MakiMacros.h"
 #include "core/MakiArray.h"
 #include "core/MakiMatrix44.h"
-#include "core/MakiResource.h"
 
 namespace maki {
 	namespace core {
 
-		class skeleton_t : public resource_t {
+		class skeleton_t {
 			MAKI_NO_COPY(skeleton_t);
 
 		public:
@@ -34,6 +32,9 @@ namespace maki {
 		private:
 			void calculate_inverse_bind_pose(joint_t *joint_states, matrix44_t *out);
 			void calculate_pos_recursive(uint64_t &index, const matrix44_t &current, joint_t *joint_states, matrix44_t *out);
+
+		public:
+			rid_t rid = RID_NONE;
 
 		private:
 			array_t<matrix44_t> inverse_bind_pose_;

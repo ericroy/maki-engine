@@ -11,6 +11,10 @@ namespace maki {
 			res_pool_.reset(new resouce_pool_t<material_t>(capacity, "material_manager_t"));
 		}
 
+		ref_t<material_t> material_manager_t::create() {
+			return res_pool_->alloc();
+		}
+
 		ref_t<material_t> material_manager_t::get(rid_t rid) {
 			return res_pool_->find([rid](const material_t &m) {
 				return rid == m.rid();
@@ -34,7 +38,7 @@ namespace maki {
 				// Must clear the rid_t on cloned resources, since they are no longer hot-swappable.
 				// Duplicating usually implies an intent to modify the resource, and if you hot-swapped
 				// in a new one, those modifications would be lost.
-				clone->set_rid(RID_NONE);
+				clone->rid = RID_NONE;
 				return clone;
 			}
 			return mat;

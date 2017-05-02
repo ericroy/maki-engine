@@ -1,58 +1,43 @@
 #pragma once
-#include "core/MakiResource.h"
+#include "core/MakiTypes.h"
+#include "core/MakiArray.h"
 #include "core/MakiShaderProgram.h"
+#include "core/MakiTextureSet.h"
+#include "core/MakiResourcePool.h"
 
 namespace maki {
 	namespace core {
 
-		class material_t : public resource_t
-		{
+		class material_t {
 		public:
-			static const int32_t max_uniforms_ = 16;
+			static const int32_t max_uniforms = 16;
 
-			struct uniform_value_t
-			{
-				uniform_value_t()
-					: data_(nullptr), bytes_(0), vs_location_(-1), ps_location_(-1)
-				{
-				}
-				~uniform_value_t()
-				{
-					MAKI_SAFE_FREE(data_);
-				}
-
+			struct uniform_value_t {
 				// Offset within the shader
-				int32_t vs_location_;
-				int32_t ps_location_;
-			
+				int32_t vs_location = -1;
+				int32_t ps_location = -1;
 				// Actual data for this constant
-				uint32_t bytes_;
-				char *data_;
+				array_t<char> data;
 			};
 
 		public:
-			material_t();
+			material_t() = default;
+			explicit material_t(const material_t &other) = default;
 			material_t(material_t &&other);
-			explicit material_t(const material_t &other);
-			virtual ~material_t();
 			bool load(rid_t rid);
-			void set_shader_program(rid_t shader_rid);
-			void set_textures(uint8_t count, rid_t *texture_rids);
 
-			// Push a constant buffer and give ownership of the pointer to this object.
-			// Pointer must be allocated with Maki::allocator_t.
+			// Push a constant buffer which will be copied into this object.
 			// Returns the index of the constant value in this material.
-			// Returns -1 on failure (provided pointer will be freed in this case).
-			int32_t push_constant(const char *key, uint32_t bytes, char *data);
+			// Returns -1 on failure
+			int32_t push_constant(const char *key, const array_t<char> &data);
 		
 		public:
-			handle_t texture_set_;
-			handle_t shader_program_;
-			uint8_t uniform_count_;
-			uniform_value_t uniform_values_[max_uniforms_];
+			rid_t rid = RID_NONE;
+			ref_t<texture_set_t> texture_set;
+			ref_t<shader_program_t> shader_program;
+			uint8_t uniform_count = 0;
+			uniform_value_t uniform_values[max_uniforms];
 		};
-
-
 
 	} // namespace core
 } // namespace maki
