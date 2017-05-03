@@ -11,13 +11,13 @@ namespace maki {
 		}
 
 		ref_t<shader_program_t> shader_program_manager_t::get(rid_t rid, shader_program_variant_t variant) {
-			return res_pool_->find([rid, variant](const shader_program_t &sp) {
+			return res_pool_.find([rid, variant](const shader_program_t &sp) {
 				return rid == sp.rid() && variant == sp.variant();
 			});
 		}
 
 		ref_t<shader_program_t> shader_program_manager_t::load(rid_t rid, shader_program_variant_t variant) {
-			auto sp = res_pool_->alloc();
+			auto sp = res_pool_.alloc();
 			if (!sp->load(rid, variant))
 				return nullptr;
 			auto *eng = engine_t::get();

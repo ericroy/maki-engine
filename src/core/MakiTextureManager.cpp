@@ -25,7 +25,7 @@ namespace maki {
 	
 		ref_t<texture_t> texture_manager_t::create(texture_type_t type, uint32_t width, uint32_t height, uint8_t channels) {
 			auto tex = res_pool_.alloc();
-			return tex->init(type, width, height, channels) ? tex : nullptr
+			return tex->init(type, width, height, channels) ? tex : nullptr;
 		}
 
 

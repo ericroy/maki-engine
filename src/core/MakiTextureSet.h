@@ -34,7 +34,7 @@ namespace maki {
 			
 			bool equals(uint8_t count, const rid_t *rids) const;
 			bool load(uint8_t count, rid_t *texture_rids);
-			bool create(uint8_t count, ref_t<texture_t> *textures);
+			bool init(uint8_t count, ref_t<texture_t> *textures);
 
 		private:
 			uint8_t count_ = 0;

@@ -1,21 +1,20 @@
 cmake_minimum_required(VERSION 3.4)
 project(maki-engine-core)
 
+include_directories(".")
+
 include_directories("${sdl2_includes}")
 link_directories("${sdl2_libs}")
 
-# Copy the sdl dll into our binary output directory so that pbtool
-# can be run directly without having to "install" first.
-#configure_file("${sdl2_libs}/SDL2.dll" "." COPYONLY)
-#configure_file("${sdl2_ttf_libs}/SDL2_ttf.dll" "." COPYONLY)
-#configure_file("${sdl2_ttf_libs}/zlib1.dll" "." COPYONLY)
-#configure_file("${sdl2_ttf_libs}/libfreetype-6.dll" "." COPYONLY)
-#file(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ".")
 
-include_directories(".")
 file(GLOB_RECURSE core_sources "core/*.cpp" "core/*.h")
-add_library(maki_engine_core SHARED ${core_sources})
-target_link_libraries(maki_engine_core SDL2)
+add_library(core SHARED ${core_sources})
+target_link_libraries(core SDL2)
 
-install(TARGETS maki_engine_core DESTINATION ".")
-#install(CODE "file(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_INSTALL_PREFIX})")
+file(GLOB_RECURSE d3d_sources "d3d/*.cpp" "d3d/*.h")
+add_library(d3d SHARED ${d3d_sources})
+target_link_libraries(d3d core)
+
+
+
+install(TARGETS core DESTINATION ".")

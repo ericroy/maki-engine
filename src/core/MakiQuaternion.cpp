@@ -63,29 +63,29 @@ namespace maki {
 			const float tyz = tz*y;
 			const float tzz = tz*z;
 
-			out.cols_[0][0] = 1.0f-(tyy+tzz);
-			out.cols_[1][0] = txy-twz;
-			out.cols_[2][0] = txz+twy;
-			out.cols_[0][1] = txy+twz;
-			out.cols_[1][1] = 1.0f-(txx+tzz);
-			out.cols_[2][1] = tyz-twx;
-			out.cols_[0][2] = txz-twy;
-			out.cols_[1][2] = tyz+twx;
-			out.cols_[2][2] = 1.0f-(txx+tyy);
+			out.cols[0][0] = 1.0f-(tyy+tzz);
+			out.cols[1][0] = txy-twz;
+			out.cols[2][0] = txz+twy;
+			out.cols[0][1] = txy+twz;
+			out.cols[1][1] = 1.0f-(txx+tzz);
+			out.cols[2][1] = tyz-twx;
+			out.cols[0][2] = txz-twy;
+			out.cols[1][2] = tyz+twx;
+			out.cols[2][2] = 1.0f-(txx+tyy);
 
-			out.cols_[3][0] = 0.0f;
-			out.cols_[3][1] = 0.0f;
-			out.cols_[3][2] = 0.0f;
-			out.cols_[3][3] = 1.0f;
-			out.cols_[0][3] = 0.0f;
-			out.cols_[1][3] = 0.0f;
-			out.cols_[2][3] = 0.0f;
+			out.cols[3][0] = 0.0f;
+			out.cols[3][1] = 0.0f;
+			out.cols[3][2] = 0.0f;
+			out.cols[3][3] = 1.0f;
+			out.cols[0][3] = 0.0f;
+			out.cols[1][3] = 0.0f;
+			out.cols[2][3] = 0.0f;
 		}
 
 		void quaternion_t::from_matrix(const matrix44_t &m) {
 			// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
 			// article "quaternion_t Calculus and Fast Animation".
-			float trace = m.cols_[0][0] + m.cols_[1][1] + m.cols_[2][2];
+			float trace = m.cols[0][0] + m.cols[1][1] + m.cols[2][2];
 			float root;
 
 			if(trace > 0.0) {
@@ -93,30 +93,30 @@ namespace maki {
 				root = sqrt(trace + 1.0f);  // 2w
 				w = 0.5f * root;
 				root = 0.5f / root;  // 1/(4w)
-				x = (m.cols_[1][2] - m.cols_[2][1])*root;
-				y = (m.cols_[2][0] - m.cols_[0][2])*root;
-				z = (m.cols_[0][1] - m.cols_[1][0])*root;
+				x = (m.cols[1][2] - m.cols[2][1])*root;
+				y = (m.cols[2][0] - m.cols[0][2])*root;
+				z = (m.cols[0][1] - m.cols[1][0])*root;
 			} else {
 				// |w| <= 1/2
 				static size_t next[3] = { 1, 2, 0 };
 				size_t i = 0;
 				
-				if(m.cols_[1][1] > m.cols_[0][0])
+				if(m.cols[1][1] > m.cols[0][0])
 					i = 1;
 				
-				if(m.cols_[2][2] > m.cols_[i][i])
+				if(m.cols[2][2] > m.cols[i][i])
 					i = 2;
 
 				size_t j = next[i];
 				size_t k = next[j];
 
-				root = sqrt(m.cols_[i][i] - m.cols_[j][j] - m.cols_[k][k] + 1.0f);
+				root = sqrt(m.cols[i][i] - m.cols[j][j] - m.cols[k][k] + 1.0f);
 				float *apk_quat[3] = {&x, &y, &z};
 				*apk_quat[i] = 0.5f * root;
 				root = 0.5f / root;
-				w = (m.cols_[j][k] - m.cols_[k][j]) * root;
-				*apk_quat[j] = (m.cols_[i][j] + m.cols_[j][i]) * root;
-				*apk_quat[k] = (m.cols_[i][k] + m.cols_[k][i]) * root;
+				w = (m.cols[j][k] - m.cols[k][j]) * root;
+				*apk_quat[j] = (m.cols[i][j] + m.cols[j][i]) * root;
+				*apk_quat[k] = (m.cols[i][k] + m.cols[k][i]) * root;
 			}
 		}
 	
@@ -306,7 +306,7 @@ namespace maki {
 				return quaternion_t(w*inv_norm, -x*inv_norm, -y*inv_norm, -z*inv_norm);
 			} else {
 				// return an invalid result to flag the error
-				return zero_;
+				return zero;
 			}
 		}
 
@@ -326,7 +326,7 @@ namespace maki {
 			quaternion_t result;
 			result.w = cos(angle);
 
-			if(fabs(s) >= epsilon_)
+			if(fabs(s) >= epsilon)
 			{
 				float coeff = s/angle;
 				result.x = coeff*x;
@@ -354,7 +354,7 @@ namespace maki {
 			if(fabs(w) < 1.0f) {
 				float angle = acos(w);
 				float s = sin(angle);
-				if(fabs(s) >= epsilon_) {
+				if(fabs(s) >= epsilon) {
 					float coeff = angle/s;
 					result.x = coeff*x;
 					result.y = coeff*y;

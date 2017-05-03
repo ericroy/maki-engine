@@ -38,31 +38,31 @@ namespace maki {
 				return false;
 			}
 
-			uint64_t count;
-			if(!doc.root_->resolve_as_uint("bone_count.#0", &count)) {
+			uint32_t count;
+			if(!doc.root().resolve_as_uint("bone_count.#0", &count)) {
 				console_t::error("Could not find bone count in animation document");
 				return false;
 			}
 			data_.set_length(count);
 			data_.zero();
 
-			if(!doc.root_->resolve_as_float("frame_rate.#0", &frame_rate_)) {
+			if(!doc.root().resolve_as_float("frame_rate.#0", &frame_rate_)) {
 				console_t::error("Could not find frame rate in animation document");
 				return false;
 			}
-			if(!doc.root_->resolve_as_uint("frame_count.#0", &frame_count_)) {
+			if(!doc.root().resolve_as_uint("frame_count.#0", &frame_count_)) {
 				console_t::error("Could not find frame count in animation document");
 				return false;
 			}
 		
-			for(uint64_t i = 3; i < doc.root().length(); i++) {
+			for(uint32_t i = 3; i < doc.root().length(); i++) {
 				const auto &bone_node = doc.root()[i];
-				uint64_t bone = i - 3;
+				uint32_t bone = i - 3;
 
-				data_[bone].set_size(bone_node->length());
+				data_[bone].set_length(bone_node.length());
 				data_[bone].zero();
 
-				for(uint64_t j = 0; j < bone_node.length(); j++) {
+				for(uint32_t j = 0; j < bone_node.length(); j++) {
 					const auto &n = bone_node[j];
 					auto &kf = data_[bone][j];
 
@@ -79,16 +79,16 @@ namespace maki {
 		}
 
 		void skeleton_animation_t::advance_state(float time_delta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rate_coeff) {
-			state.current_frame += time_delta * rate_coeff * debug_rate_coeff_ * frame_rate_;
+			state.current_frame += time_delta * rate_coeff * debug_rate_coeff * frame_rate_;
 			if(state.current_frame >= frame_count_) {
 				if(loop)
-					state.current_frame = state.current_frame - ((uint64_t)state.current_frame / frame_count_)*frame_count_;
+					state.current_frame = state.current_frame - ((uint32_t)state.current_frame / frame_count_) * frame_count_;
 				else
 					state.current_frame = (float)frame_count_;
 			}
 
-			for(uint64_t i = 0; i < data_.length(); i++) {
-				uint64_t &current_index = state.current_key_frames[i];
+			for(uint32_t i = 0; i < data_.length(); i++) {
+				uint32_t &current_index = state.current_key_frames[i];
 				const auto &bone_frames = data_[i];
 
 				if(bone_frames.length() == 0)

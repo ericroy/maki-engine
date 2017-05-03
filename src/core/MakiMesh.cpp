@@ -58,15 +58,14 @@ namespace maki {
 			index_data_.free();
 		}
 
-		void mesh_t::push_vertex_data(uint32_t size_in_bytes, char *data) {
+		void mesh_t::push_vertex_data(char *data, uint32_t size_in_bytes) {
 			MAKI_ASSERT(size_in_bytes % vertex_stride_ == 0);
 
 			if(vertex_insertion_index_ + size_in_bytes > vertex_data_.length()) {
 				// Enlarge by some margin
-				uint32_t overflow = vertex_insertion_index_ + size_in_bytes - vertex_data_.length();
-				uint32_t more = max(max(overflow, 256U), vertex_data_.length() / 2);
-				vertex_data_.length() += more;
-				vertex_data_.set_length(vertex_data_.length());
+				size_t overflow = vertex_insertion_index_ + size_in_bytes - vertex_data_.length();
+				size_t more = max(max<size_t>(overflow, 256u), vertex_data_.length() / 2);
+				vertex_data_.set_length(vertex_data_.length() + more);
 			}
 			MAKI_ASSERT(vertex_insertion_index_ + size_in_bytes <= vertex_data_.length());
 
@@ -77,15 +76,14 @@ namespace maki {
 			vertex_count_ += size_in_bytes / vertex_stride_;
 		}
 
-		void mesh_t::push_index_data(uint32_t size_in_bytes, char *data) {
+		void mesh_t::push_index_data(char *data, uint32_t size_in_bytes) {
 			MAKI_ASSERT(size_in_bytes % (bytes_per_index_ * indices_per_face_) == 0);
 
 			if(index_insertion_index_ + size_in_bytes > index_data_.length()) {
 				// Enlarge by some margin
-				uint32_t overflow = index_insertion_index_ + size_in_bytes - index_data_.length();
-				uint32_t more = max(max(overflow, 256U), index_data_.length() / 2);
-				index_data_.length() += more;
-				index_data_.set_length(index_data_.length());
+				size_t overflow = index_insertion_index_ + size_in_bytes - index_data_.length();
+				size_t more = max(max<size_t>(overflow, 256u), index_data_.length() / 2);
+				index_data_.set_length(index_data_.length() + more);
 			}
 			MAKI_ASSERT(index_insertion_index_ + size_in_bytes <= index_data_.length());
 
@@ -181,20 +179,20 @@ namespace maki {
 
 			bool length_changed = old_vertex_data_size_ != vertex_data_.length() || old_index_data_size_ != index_data_.length();
 
-			buffer_ = engine_t::get()->renderer->upload_buffer(buffer_, &vf, vertex_data_, vertex_count_, index_data_, face_count_, indices_per_face_, bytes_per_index_, dynamic_, length_changed);
+			buffer_ = engine_t::get()->renderer->upload_buffer(buffer_, &vf, vertex_data_.data(), vertex_count_, index_data_.data(), face_count_, indices_per_face_, bytes_per_index_, dynamic_, length_changed);
 
 			// get or create vertex format
-			vertex_format_ = core_managers_t::get()->vertex_format_manager->get_or_add(vf);
+			vertex_format_ = move(core_managers_t::get()->vertex_format_manager->get_or_add(vf));
 
 			// Record the data sizes so if upload is called again later, we can see if the buffers have changed length
-			old_vertex_data_size_ = vertex_data_.length();
-			old_index_data_size_ = index_data_.length();
+			old_vertex_data_size_ = (uint32_t)vertex_data_.length();
+			old_index_data_size_ = (uint32_t)index_data_.length();
 		}
 
 		void mesh_t::calculate_bounds() {
 			bounds_.reset();
 
-			if(vertex_data_ != nullptr) {
+			if(vertex_data_) {
 				char *p = vertex_data_.data();
 				for(uint32_t i = 0; i < vertex_count_; i++) {
 					vector3_t *v = (vector3_t *)p;
@@ -203,10 +201,9 @@ namespace maki {
 				}
 			}
 
-			const uint32_t sibling_count = siblings_.size();
 			for (auto &m : siblings_) {
-				m.calculate_bounds();
-				bounds_.merge(m.bounds());
+				m->calculate_bounds();
+				bounds_.merge(m->bounds());
 			}
 		}
 
@@ -218,7 +215,7 @@ namespace maki {
 
 
 
-		bool mesh_loader_t::load(rid_t rid, bool upload) {
+		ref_t<mesh_t> mesh_loader_t::load(rid_t rid) {
 			auto buffer = engine_t::get()->assets->alloc_read(rid);
 			if (!buffer)
 				return nullptr;
@@ -235,20 +232,20 @@ namespace maki {
 			data += sizeof(uint32_t);
 
 			auto *res = core_managers_t::get();
-			auto mesh = res->mesh_manager->alloc();
-			data += load_mesh(mesh, data);
+			auto mesh = res->mesh_manager->create();
+			data += load_mesh(data, mesh);
 			for (uint32_t i = 1; i < mesh_count; i++) {
-				auto next_mesh = res->mesh_manager->alloc();
-				data += load_mesh_data(next_mesh, data);
-				siblings_.push_back(move(next_mesh));
+				auto next_mesh = res->mesh_manager->create();
+				data += load_mesh(data, next_mesh);
+				mesh->siblings().push_back(move(next_mesh));
 			}
 
-			mesh.calculate_bounds();
-			mesh.rid = rid;
+			mesh->calculate_bounds();
+			mesh->set_rid(rid);
 			return mesh;
 		}
 
-		uint32_t mesh_loader_t::load_mesh(ref_t<mesh_t> &out, char *data) {
+		uint32_t mesh_loader_t::load_mesh(char *data, ref_t<mesh_t> &out) {
 			char *start = data;
 
 			// Read mesh properties
@@ -273,7 +270,7 @@ namespace maki {
 			data += sizeof(uint8_t);
 
 			// Add the vertex data
-			out->push_vertex_data(out->vertex_stride() * vertex_count, data);
+			out->push_vertex_data(data, out->vertex_stride() * vertex_count);
 			data += out->vertex_stride() * vertex_count;
 
 			// Align to the nearest word boundary
@@ -281,7 +278,7 @@ namespace maki {
 				data += 0x4 - ((uintptr_t)data & 0x3);
 
 			// Add the index data
-			out->push_index_data(bytes_per_index * indices_per_face * face_count, data);
+			out->push_index_data(data, bytes_per_index * indices_per_face * face_count);
 			data += bytes_per_index * indices_per_face * face_count;
 
 			// Align to the nearest word boundary
@@ -292,7 +289,7 @@ namespace maki {
 			out->upload();
 
 			// Return how much we have advanced the pointer
-			return data - start;
+			return (uint32_t)(data - start);
 		}
 
 		ref_t<mesh_t> mesh_builder_t::make_quad() {
@@ -310,13 +307,14 @@ namespace maki {
 			uint16_t f[6] = { 0, 1, 2, 0, 2, 3 };
 
 			auto *res = core_managers_t::get();
-			auto mesh = res->mesh_manager->alloc();
-			mesh->set_vertex_attributes(attribute_flag_color | attribute_flag_text_coord);
+			auto mesh = res->mesh_manager->create();
+			mesh->set_vertex_attributes(attribute_flag_color | attribute_flag_tex_coord);
 			mesh->set_index_attributes(3, 2);
-			mesh->push_vertex_data(sizeof(v), (char *)v);
-			mesh->push_index_data(sizeof(f), (char *)f);
+			mesh->push_vertex_data((char *)v, sizeof(v));
+			mesh->push_index_data((char *)f, sizeof(f));
 			mesh->calculate_bounds();
 			mesh->upload();
+			return mesh;
 		}
 
 

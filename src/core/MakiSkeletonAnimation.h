@@ -34,16 +34,16 @@ namespace maki {
 			~skeleton_animation_t();
 			bool load(rid_t rid);
 			void advance_state(float time_delta, state_t &state, array_t<skeleton_t::joint_t> &pose, bool loop, float rate_coeff);
-			inline uint64_t frame_count() const { return frame_count_; }
+			inline uint32_t frame_count() const { return frame_count_; }
 			inline float frame_rate() const { return frame_rate_; }
-			inline uint64_t bone_count() const { return data_.length(); }
+			inline uint32_t bone_count() const { return (uint32_t)data_.length(); }
 			inline rid_t rid() const { return rid_; }
 			inline void set_rid(rid_t rid) { rid_ = rid; }
 
 		private:
 			rid_t rid_ = RID_NONE;
 			float frame_rate_ = 0.0f;
-			uint64_t frame_count_ = 0;
+			uint32_t frame_count_ = 0;
 			// Indexed as data[bone_index][key_frame_index]
 			array_t<array_t<key_frame_t>> data_;
 		};

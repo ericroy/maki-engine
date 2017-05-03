@@ -33,7 +33,7 @@ namespace maki {
 				return nullptr;
 			const char *path = get_path(rid);
 
-#if _DEBUG
+#if MAKI_DEBUG
 			string full_path = debug_mode_path_adjustment + path;
 			path = full_path.c_str();
 #endif

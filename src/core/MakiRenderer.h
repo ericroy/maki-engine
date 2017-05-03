@@ -47,9 +47,8 @@ namespace maki {
 			inline void clear_color(const vector4_t &rgba);
 
 			// state_t setters
-			//void set_render_target_and_depth_stencil(render_state_t::render_target_t render_target_type, handle_t render_target, render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil);
-			void set_render_target(render_state_t::render_target_t render_target_type, handle_t render_target = HANDLE_NONE);
-			void set_depth_stencil(render_state_t::depth_stencil_t depth_stencil_type, handle_t depth_stencil = HANDLE_NONE);
+			void set_render_target(render_state_t::render_target_t render_target_type, const ref_t<texture_t> &render_target = nullptr);
+			void set_depth_stencil(render_state_t::depth_stencil_t depth_stencil_type, const ref_t<texture_t> &depth_stencil = nullptr);
 			inline void set_viewport(const rect_t &rect);
 			inline void set_view(const matrix44_t &view);
 			inline void set_camera_matrix(const matrix44_t &camera_matrix);
@@ -63,7 +62,7 @@ namespace maki {
 			inline void set_shader_variant(shader_program_variant_t variant);
 	
 			inline void set_light_count(uint32_t count, uint32_t shadow_count = 0, uint32_t split_shadow_count = 0);
-			void set_light(uint32_t light_index, const render_state_t::light_properties_t *props = nullptr, const render_state_t::shadow_map_properties_t *shad_props = nullptr, const matrix44_t *matrix = nullptr, float fov = 0.0f, handle_t depth_buffer = HANDLE_NONE);
+			void set_light(uint32_t light_index, const render_state_t::light_properties_t *props = nullptr, const render_state_t::shadow_map_properties_t *shad_props = nullptr, const matrix44_t *matrix = nullptr, float fov = 0.0f, const ref_t<texture_t> &depth_buffer = nullptr);
 			void set_light_cascade(uint32_t light_index, uint32_t cascade_index, const frustum_t &frustum);
 			inline void set_camera_split_distances(uint32_t count, float *split_distances);
 

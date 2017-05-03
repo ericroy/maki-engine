@@ -8,14 +8,18 @@ namespace maki {
 			MAKI_ASSERT(capacity <= (1 << draw_command_t::bits_per_mesh) && "assign more bits to mesh in draw command bitfield");
 		}
 	
+		ref_t<mesh_t> mesh_manager_t::create() {
+			return res_pool_.alloc();
+		}
+
 		ref_t<mesh_t> mesh_manager_t::get(rid_t rid) {
-			return res_pool_->find([rid](const mesh_t &m) {
-				return rid == m.rid;
+			return res_pool_.find([rid](const mesh_t &m) {
+				return rid == m.rid();
 			});
 		}
 
 		ref_t<mesh_t> mesh_manager_t::load(rid_t rid) {
-			auto mesh = res_pool_->alloc();
+			auto mesh = res_pool_.alloc();
 			return mesh_loader_t::load(rid) ? mesh : nullptr;
 		}
 

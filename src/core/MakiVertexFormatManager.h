@@ -11,7 +11,7 @@ namespace maki {
 		public:
 			vertex_format_manager_t(uint32_t capacity);	
 			virtual ~vertex_format_manager_t() = default;
-			inline handle_t get_or_add(const vertex_format_t &vf) {
+			inline ref_t<vertex_format_t> get_or_add(const vertex_format_t &vf) {
 				auto ref = res_pool_.find([&vf](const vertex_format_t &vf2) {
 					return vf == vf2;
 				});

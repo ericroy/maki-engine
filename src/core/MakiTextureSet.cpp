@@ -39,7 +39,7 @@ namespace maki {
 			return true;
 		}
 
-		bool texture_set_t::create(uint8_t count, ref_t<texture_t> *textures) {
+		bool texture_set_t::init(uint8_t count, ref_t<texture_t> *textures) {
 			MAKI_ASSERT(count_ == 0 && "Texture set already initialized");
 			for(uint8_t i = 0; i < count; i++) {
 				texture_rids_[i] = textures[i]->rid();

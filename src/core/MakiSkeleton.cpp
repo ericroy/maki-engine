@@ -1,6 +1,7 @@
+#include "core/MakiSkeleton.h"
 #include "core/MakiEngine.h"
 #include "core/MakiDocument.h"
-#include "core/MakiSkeleton.h"
+#include "core/MakiConsole.h"
 
 namespace maki {
 	namespace core {
@@ -40,8 +41,8 @@ namespace maki {
 				j->rot.from_euler_angles(euler_angles);
 			}
 
-			inverse_bind_pose.free();
-			inverse_bind_pose.set_size(joints.length);
+			inverse_bind_pose_.free();
+			inverse_bind_pose_.set_length(joints.length());
 			calculate_inverse_bind_pose(joints.data(), inverse_bind_pose_.data());
 
 			this->rid = rid;

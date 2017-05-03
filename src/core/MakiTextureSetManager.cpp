@@ -14,7 +14,7 @@ namespace maki {
 
 		ref_t<texture_set_t> texture_set_manager_t::create(uint8_t count, ref_t<texture_t> *textures) {
 			auto tex = res_pool_.alloc();
-			return tex->init(count, ref_t<texture_t> *textures) ? tex : nullptr;
+			return tex->init(count, textures) ? tex : nullptr;
 		}
 
 		ref_t<texture_set_t> texture_set_manager_t::get(uint8_t count, rid_t *rids) {

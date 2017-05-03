@@ -9,13 +9,13 @@ namespace maki {
 		}
 
 		ref_t<skeleton_animation_t> skeleton_animation_manager_t::get(rid_t rid) {
-			return res_pool_->find([rid](const skeleton_animation_t &ska) {
+			return res_pool_.find([rid](const skeleton_animation_t &ska) {
 				return rid == ska.rid();
 			});
 		}
 
 		ref_t<skeleton_animation_t> skeleton_animation_manager_t::load(rid_t rid) {
-			auto ska = res_pool_->alloc();
+			auto ska = res_pool_.alloc();
 			return ska->load(rid) ? ska : nullptr;
 		}
 

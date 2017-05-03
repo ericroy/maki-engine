@@ -20,15 +20,9 @@ namespace maki {
 			mesh_t(bool dynamic_ = false);
 			mesh_t(mesh_t &&other);
 			~mesh_t();
-			void reset();
 
-			// Populate object directly using these
-			void set_vertex_attributes(uint32_t vertex_attribute_flags);
-			void set_index_attributes(uint8_t indices_per_face, uint8_t bytes_per_index);
-			
-			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
-			void push_vertex_data(uint32_t size_in_bytes, char *data);
-			void push_index_data(uint32_t size_in_bytes, char *data);
+			inline rid_t rid() const { return rid_; }
+			inline void set_rid(rid_t rid) { rid_ = rid; }
 
 			inline uint8_t has_mesh_flag(mesh_flag_t flag) const {
 				return (mesh_flags_ & flag) != 0;
@@ -71,6 +65,10 @@ namespace maki {
 				return siblings_;
 			}
 
+			inline vector<ref_t<mesh_t>> &siblings() {
+				return siblings_;
+			}
+
 			inline const ref_t<vertex_format_t> &vertex_format() const {
 				return vertex_format_;
 			}
@@ -90,15 +88,23 @@ namespace maki {
 				return buffer_;
 			}
 
+			// Populate object directly using these
+			void set_vertex_attributes(uint32_t vertex_attribute_flags);
+			void set_index_attributes(uint8_t indices_per_face, uint8_t bytes_per_index);
+
+			// If data is null, simply reserves the requested number of bytes but does not initialize the memory
+			void push_vertex_data(char *data, uint32_t size_in_bytes);
+			void push_index_data(char *data, uint32_t size_in_bytes);
+
 			// Uploads (or re-uploads) data to gpu buffer
 			void upload();
 
 			void calculate_bounds();
 
-		public:
-			rid_t rid = RID_NONE;
+			void reset();
 
 		private:
+			rid_t rid_ = RID_NONE;
 			vector<ref_t<mesh_t>> siblings_;
 			ref_t<vertex_format_t> vertex_format_;
 			bounding_box_t bounds_;
@@ -130,7 +136,7 @@ namespace maki {
 			static ref_t<mesh_t> load(rid_t rid);
 
 		private:
-			static uint32_t load_mesh(ref_t<mesh_t> &out, char *data);
+			static uint32_t load_mesh(char *data, ref_t<mesh_t> &out);
 		};
 
 		class mesh_builder_t {

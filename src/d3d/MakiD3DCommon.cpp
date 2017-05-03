@@ -1,12 +1,9 @@
-#include "d3d/d3d_stdafx.h"
 #include "d3d/MakiD3DCommon.h"
 
 using namespace maki::core;
 
-namespace maki
-{
-	namespace d3d
-	{
+namespace maki {
+	namespace d3d {
 
 		bool __failed(HRESULT hr) {
 			if(FAILED(hr)) {
@@ -29,12 +26,12 @@ namespace maki
 			"POSITION", "NORMAL", "TANGENT", "COLOR", "COLOR", "TEXCOORD", "TEXCOORD"
 		};
 
-		uint32_t attr_to_semantic_index[vertex_format_t::attribute_count_] = { 0, 0, 0, 0, 1, 0, 1 };
+		uint32_t attr_to_semantic_index[attribute_max + 1] = { 0, 0, 0, 0, 1, 0, 1 };
 
-		uint8_t normalize_attribute[core::vertex_format_t::attribute_count_] = { 0, 0, 0, 1, 1, 0, 0 };
+		uint8_t normalize_attribute[attribute_max + 1] = { 0, 0, 0, 1, 1, 0, 0 };
 
 		// First index is type, second index is component count
-		const DXGI_FORMAT type_and_count_and_norm_to_format[vertex_format_t::data_type_count_][5][2] = {
+		const DXGI_FORMAT type_and_count_and_norm_to_format[attribute_type_max + 1][5][2] = {
 			// Float
 			{
 				{DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN},
@@ -96,5 +93,4 @@ namespace maki
 		};
 
 	} // namespace d3d
-
 } // namespace maki

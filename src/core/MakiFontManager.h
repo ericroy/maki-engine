@@ -15,7 +15,7 @@ namespace maki {
 			ref_t<font_t> load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size);
 			ref_t<font_t> get_or_load(rid_t rid, rid_t shader_program_rid, uint32_t pixel_size);
 		private:
-			unique_ptr<resource_pool_t<font_t>> res_pool_;
+			resource_pool_t<font_t> res_pool_;
 		};
 
 	} // namespace core

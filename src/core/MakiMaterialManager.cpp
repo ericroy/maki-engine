@@ -12,17 +12,17 @@ namespace maki {
 		}
 
 		ref_t<material_t> material_manager_t::create() {
-			return res_pool_->alloc();
+			return res_pool_.alloc();
 		}
 
 		ref_t<material_t> material_manager_t::get(rid_t rid) {
-			return res_pool_->find([rid](const material_t &m) {
+			return res_pool_.find([rid](const material_t &m) {
 				return rid == m.rid();
 			});
 		}
 
 		ref_t<material_t> material_manager_t::load(rid_t rid) {
-			auto mat = res_pool_->alloc();
+			auto mat = res_pool_.alloc();
 			return mat->load(rid) ? mat : nullptr;
 		}
 
@@ -32,13 +32,13 @@ namespace maki {
 		}
 
 		ref_t<material_t> material_manager_t::clone_if_shared(const ref_t<material_t> &mat) {
-			if (mat && mat->ref_count() > 1) {
+			if (mat && mat.ref_count() > 1) {
 				// Allocate a new item, relying on the item's copy constructor to duplicate it
-				auto clone = res_pool_->alloc(*mat);
+				auto clone = res_pool_.alloc(*mat);
 				// Must clear the rid_t on cloned resources, since they are no longer hot-swappable.
 				// Duplicating usually implies an intent to modify the resource, and if you hot-swapped
 				// in a new one, those modifications would be lost.
-				clone->rid = RID_NONE;
+				clone->set_rid(RID_NONE);
 				return clone;
 			}
 			return mat;

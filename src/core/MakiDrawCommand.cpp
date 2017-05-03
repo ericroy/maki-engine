@@ -43,12 +43,12 @@ namespace maki {
 			if(material) {
 				material_ = material;
 				fields_.material = material_.handle();
-				if(material->texture_set) {
-					texture_set_ = material->texture_set;
+				if(material->texture_set()) {
+					texture_set_ = material->texture_set();
 					fields_.texture_set = texture_set_.handle();
 				}
-				if(material->shader_program) {
-					shader_program_ = material->shader_program;
+				if(material->shader_program()) {
+					shader_program_ = material->shader_program();
 					fields_.shader_program = shader_program_.handle();
 				}
 			}

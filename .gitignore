@@ -52,3 +52,4 @@ SDL2-2*/
 
 build/
 vsbuild/
+out/

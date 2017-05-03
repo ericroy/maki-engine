@@ -16,21 +16,21 @@ namespace maki {
 
 			inline void put(const T &val) {
 				std::unique_lock<std::mutex> lock(mutex_);
-				while(available_ == items_.count_)
+				while(available_ == items_.length())
 					cond_space_available_.wait(lock);
 				items_[write_cursor_++] = val;
 				available_++;
-				if(write_cursor_ == items_.count_)
+				if(write_cursor_ == items_.length())
 					write_cursor_ = 0;
 				cond_data_available_.notify_one();
 			}
 
 			inline bool try_put(const T &val) {
 				std::lock_guard<std::mutex> lock(mutex_);
-				if(available_ < items_.count_) {
+				if(available_ < items_.length()) {
 					items_[write_cursor_++] = val;
 					available_++;
-					if(write_cursor_ == items_.count_)
+					if(write_cursor_ == items_.length())
 						write_cursor_ = 0;
 					cond_data_available_.notify_one();
 					return true;
@@ -44,7 +44,7 @@ namespace maki {
 					cond_data_available_.wait(lock);
 				out = items_[read_cursor_++];
 				available_--;
-				if(read_cursor_ == items_.count_)
+				if(read_cursor_ == items_.length())
 					read_cursor_ = 0;
 				cond_space_available_.notify_one();
 			}
@@ -54,7 +54,7 @@ namespace maki {
 				if(available_ > 0) {
 					out = items_[read_cursor_++];
 					available_--;
-					if(read_cursor_ == items_.count_)
+					if(read_cursor_ == items_.length())
 						read_cursor_ = 0;
 					cond_space_available_.notify_one();
 					return true;

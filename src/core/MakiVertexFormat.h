@@ -34,6 +34,13 @@ namespace maki {
 			attribute_type_max = attribute_type_unsigned_int8
 		};
 
+		const uint8_t attribute_type_sizes[attribute_type_max + 1] = {
+			4,
+			4,
+			2,
+			1
+		};
+
 
 		class vertex_format_t {
 		private:

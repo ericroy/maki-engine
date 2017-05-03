@@ -52,9 +52,9 @@ namespace maki {
 			key_state_report_t key_states_[256];
 
 			struct {
-				int32_t instance_id;
+				int32_t instance_id = (int32_t)-1;
 				SDL_GameController *handle = nullptr;
-				float values_[button_max + 1] = {};
+				float values[button_max + 1] = {};
 			} controllers_[input_state_t::max_players];
 		};
 

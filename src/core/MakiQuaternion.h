@@ -1,4 +1,8 @@
 #pragma once
+#include "core/MakiVector4.h"
+#include "core/MakiVector3.h"
+#include "core/MakiMatrix44.h"
+
 /*
 Parts of this file based on OGRE quaterion class, the OGRE license appears below.
 */

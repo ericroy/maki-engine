@@ -11,6 +11,7 @@ namespace maki {
 		public:
 			mesh_manager_t(uint32_t capacity);
 			virtual ~mesh_manager_t() = default;
+			ref_t<mesh_t> create();
 			ref_t<mesh_t> get(rid_t rid);
 			ref_t<mesh_t> load(rid_t rid);
 			ref_t<mesh_t> get_or_load(rid_t rid);

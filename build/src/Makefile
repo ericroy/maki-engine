@@ -57,16 +57,6 @@ CMAKE_BINARY_DIR = C:\Users\eroy\code\maki-engine\build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components\fast: list_install_components
-
-.PHONY : list_install_components\fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
@@ -100,6 +90,16 @@ rebuild_cache:
 rebuild_cache\fast: rebuild_cache
 
 .PHONY : rebuild_cache\fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components\fast: list_install_components
+
+.PHONY : list_install_components\fast
 
 # Special rule for the target install/local
 install\local: preinstall
@@ -155,23 +155,42 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src\CMakeFiles\maki_engine_core.dir\rule:
+src\CMakeFiles\core.dir\rule:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\rule
+	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\rule
 	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : src\CMakeFiles\maki_engine_core.dir\rule
+.PHONY : src\CMakeFiles\core.dir\rule
 
 # Convenience name for target.
-maki_engine_core: src\CMakeFiles\maki_engine_core.dir\rule
+core: src\CMakeFiles\core.dir\rule
 
-.PHONY : maki_engine_core
+.PHONY : core
 
 # fast build rule for target.
-maki_engine_core\fast:
+core\fast:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\build
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\build
 	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : maki_engine_core\fast
+.PHONY : core\fast
+
+# Convenience name for target.
+src\CMakeFiles\d3d.dir\rule:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\rule
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : src\CMakeFiles\d3d.dir\rule
+
+# Convenience name for target.
+d3d: src\CMakeFiles\d3d.dir\rule
+
+.PHONY : d3d
+
+# fast build rule for target.
+d3d\fast:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\build
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\fast
 
 core\MakiArchive.obj: core\MakiArchive.cpp.obj
 
@@ -180,7 +199,7 @@ core\MakiArchive.obj: core\MakiArchive.cpp.obj
 # target to build an object file
 core\MakiArchive.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiArchive.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiArchive.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiArchive.cpp.obj
 
@@ -191,7 +210,7 @@ core\MakiArchive.i: core\MakiArchive.cpp.i
 # target to preprocess a source file
 core\MakiArchive.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiArchive.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiArchive.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiArchive.cpp.i
 
@@ -202,7 +221,7 @@ core\MakiArchive.s: core\MakiArchive.cpp.s
 # target to generate assembly for a file
 core\MakiArchive.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiArchive.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiArchive.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiArchive.cpp.s
 
@@ -213,7 +232,7 @@ core\MakiAssetLibrary.obj: core\MakiAssetLibrary.cpp.obj
 # target to build an object file
 core\MakiAssetLibrary.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetLibrary.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetLibrary.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetLibrary.cpp.obj
 
@@ -224,7 +243,7 @@ core\MakiAssetLibrary.i: core\MakiAssetLibrary.cpp.i
 # target to preprocess a source file
 core\MakiAssetLibrary.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetLibrary.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetLibrary.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetLibrary.cpp.i
 
@@ -235,7 +254,7 @@ core\MakiAssetLibrary.s: core\MakiAssetLibrary.cpp.s
 # target to generate assembly for a file
 core\MakiAssetLibrary.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetLibrary.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetLibrary.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetLibrary.cpp.s
 
@@ -246,7 +265,7 @@ core\MakiAssetManifest.obj: core\MakiAssetManifest.cpp.obj
 # target to build an object file
 core\MakiAssetManifest.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetManifest.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetManifest.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetManifest.cpp.obj
 
@@ -257,7 +276,7 @@ core\MakiAssetManifest.i: core\MakiAssetManifest.cpp.i
 # target to preprocess a source file
 core\MakiAssetManifest.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetManifest.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetManifest.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetManifest.cpp.i
 
@@ -268,7 +287,7 @@ core\MakiAssetManifest.s: core\MakiAssetManifest.cpp.s
 # target to generate assembly for a file
 core\MakiAssetManifest.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiAssetManifest.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiAssetManifest.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiAssetManifest.cpp.s
 
@@ -279,7 +298,7 @@ core\MakiBoundingBox.obj: core\MakiBoundingBox.cpp.obj
 # target to build an object file
 core\MakiBoundingBox.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiBoundingBox.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiBoundingBox.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiBoundingBox.cpp.obj
 
@@ -290,7 +309,7 @@ core\MakiBoundingBox.i: core\MakiBoundingBox.cpp.i
 # target to preprocess a source file
 core\MakiBoundingBox.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiBoundingBox.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiBoundingBox.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiBoundingBox.cpp.i
 
@@ -301,7 +320,7 @@ core\MakiBoundingBox.s: core\MakiBoundingBox.cpp.s
 # target to generate assembly for a file
 core\MakiBoundingBox.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiBoundingBox.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiBoundingBox.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiBoundingBox.cpp.s
 
@@ -312,7 +331,7 @@ core\MakiConfig.obj: core\MakiConfig.cpp.obj
 # target to build an object file
 core\MakiConfig.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConfig.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConfig.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConfig.cpp.obj
 
@@ -323,7 +342,7 @@ core\MakiConfig.i: core\MakiConfig.cpp.i
 # target to preprocess a source file
 core\MakiConfig.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConfig.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConfig.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConfig.cpp.i
 
@@ -334,7 +353,7 @@ core\MakiConfig.s: core\MakiConfig.cpp.s
 # target to generate assembly for a file
 core\MakiConfig.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConfig.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConfig.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConfig.cpp.s
 
@@ -345,7 +364,7 @@ core\MakiConsole.obj: core\MakiConsole.cpp.obj
 # target to build an object file
 core\MakiConsole.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConsole.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConsole.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConsole.cpp.obj
 
@@ -356,7 +375,7 @@ core\MakiConsole.i: core\MakiConsole.cpp.i
 # target to preprocess a source file
 core\MakiConsole.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConsole.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConsole.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConsole.cpp.i
 
@@ -367,7 +386,7 @@ core\MakiConsole.s: core\MakiConsole.cpp.s
 # target to generate assembly for a file
 core\MakiConsole.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiConsole.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiConsole.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiConsole.cpp.s
 
@@ -378,7 +397,7 @@ core\MakiCoreManagers.obj: core\MakiCoreManagers.cpp.obj
 # target to build an object file
 core\MakiCoreManagers.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiCoreManagers.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiCoreManagers.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiCoreManagers.cpp.obj
 
@@ -389,7 +408,7 @@ core\MakiCoreManagers.i: core\MakiCoreManagers.cpp.i
 # target to preprocess a source file
 core\MakiCoreManagers.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiCoreManagers.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiCoreManagers.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiCoreManagers.cpp.i
 
@@ -400,7 +419,7 @@ core\MakiCoreManagers.s: core\MakiCoreManagers.cpp.s
 # target to generate assembly for a file
 core\MakiCoreManagers.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiCoreManagers.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiCoreManagers.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiCoreManagers.cpp.s
 
@@ -411,7 +430,7 @@ core\MakiDocument.obj: core\MakiDocument.cpp.obj
 # target to build an object file
 core\MakiDocument.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDocument.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDocument.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDocument.cpp.obj
 
@@ -422,7 +441,7 @@ core\MakiDocument.i: core\MakiDocument.cpp.i
 # target to preprocess a source file
 core\MakiDocument.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDocument.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDocument.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDocument.cpp.i
 
@@ -433,7 +452,7 @@ core\MakiDocument.s: core\MakiDocument.cpp.s
 # target to generate assembly for a file
 core\MakiDocument.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDocument.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDocument.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDocument.cpp.s
 
@@ -444,7 +463,7 @@ core\MakiDrawCommand.obj: core\MakiDrawCommand.cpp.obj
 # target to build an object file
 core\MakiDrawCommand.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDrawCommand.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDrawCommand.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDrawCommand.cpp.obj
 
@@ -455,7 +474,7 @@ core\MakiDrawCommand.i: core\MakiDrawCommand.cpp.i
 # target to preprocess a source file
 core\MakiDrawCommand.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDrawCommand.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDrawCommand.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDrawCommand.cpp.i
 
@@ -466,7 +485,7 @@ core\MakiDrawCommand.s: core\MakiDrawCommand.cpp.s
 # target to generate assembly for a file
 core\MakiDrawCommand.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiDrawCommand.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiDrawCommand.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiDrawCommand.cpp.s
 
@@ -477,7 +496,7 @@ core\MakiEngine.obj: core\MakiEngine.cpp.obj
 # target to build an object file
 core\MakiEngine.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiEngine.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiEngine.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiEngine.cpp.obj
 
@@ -488,7 +507,7 @@ core\MakiEngine.i: core\MakiEngine.cpp.i
 # target to preprocess a source file
 core\MakiEngine.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiEngine.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiEngine.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiEngine.cpp.i
 
@@ -499,7 +518,7 @@ core\MakiEngine.s: core\MakiEngine.cpp.s
 # target to generate assembly for a file
 core\MakiEngine.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiEngine.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiEngine.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiEngine.cpp.s
 
@@ -510,7 +529,7 @@ core\MakiFont.obj: core\MakiFont.cpp.obj
 # target to build an object file
 core\MakiFont.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFont.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFont.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFont.cpp.obj
 
@@ -521,7 +540,7 @@ core\MakiFont.i: core\MakiFont.cpp.i
 # target to preprocess a source file
 core\MakiFont.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFont.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFont.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFont.cpp.i
 
@@ -532,7 +551,7 @@ core\MakiFont.s: core\MakiFont.cpp.s
 # target to generate assembly for a file
 core\MakiFont.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFont.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFont.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFont.cpp.s
 
@@ -543,7 +562,7 @@ core\MakiFontManager.obj: core\MakiFontManager.cpp.obj
 # target to build an object file
 core\MakiFontManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFontManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFontManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFontManager.cpp.obj
 
@@ -554,7 +573,7 @@ core\MakiFontManager.i: core\MakiFontManager.cpp.i
 # target to preprocess a source file
 core\MakiFontManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFontManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFontManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFontManager.cpp.i
 
@@ -565,7 +584,7 @@ core\MakiFontManager.s: core\MakiFontManager.cpp.s
 # target to generate assembly for a file
 core\MakiFontManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiFontManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiFontManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiFontManager.cpp.s
 
@@ -576,7 +595,7 @@ core\MakiInputState.obj: core\MakiInputState.cpp.obj
 # target to build an object file
 core\MakiInputState.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiInputState.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiInputState.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiInputState.cpp.obj
 
@@ -587,7 +606,7 @@ core\MakiInputState.i: core\MakiInputState.cpp.i
 # target to preprocess a source file
 core\MakiInputState.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiInputState.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiInputState.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiInputState.cpp.i
 
@@ -598,7 +617,7 @@ core\MakiInputState.s: core\MakiInputState.cpp.s
 # target to generate assembly for a file
 core\MakiInputState.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiInputState.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiInputState.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiInputState.cpp.s
 
@@ -609,7 +628,7 @@ core\MakiMaterial.obj: core\MakiMaterial.cpp.obj
 # target to build an object file
 core\MakiMaterial.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterial.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterial.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterial.cpp.obj
 
@@ -620,7 +639,7 @@ core\MakiMaterial.i: core\MakiMaterial.cpp.i
 # target to preprocess a source file
 core\MakiMaterial.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterial.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterial.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterial.cpp.i
 
@@ -631,7 +650,7 @@ core\MakiMaterial.s: core\MakiMaterial.cpp.s
 # target to generate assembly for a file
 core\MakiMaterial.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterial.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterial.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterial.cpp.s
 
@@ -642,7 +661,7 @@ core\MakiMaterialManager.obj: core\MakiMaterialManager.cpp.obj
 # target to build an object file
 core\MakiMaterialManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterialManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterialManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterialManager.cpp.obj
 
@@ -653,7 +672,7 @@ core\MakiMaterialManager.i: core\MakiMaterialManager.cpp.i
 # target to preprocess a source file
 core\MakiMaterialManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterialManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterialManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterialManager.cpp.i
 
@@ -664,7 +683,7 @@ core\MakiMaterialManager.s: core\MakiMaterialManager.cpp.s
 # target to generate assembly for a file
 core\MakiMaterialManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMaterialManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMaterialManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMaterialManager.cpp.s
 
@@ -675,7 +694,7 @@ core\MakiMatrix44.obj: core\MakiMatrix44.cpp.obj
 # target to build an object file
 core\MakiMatrix44.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMatrix44.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMatrix44.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMatrix44.cpp.obj
 
@@ -686,7 +705,7 @@ core\MakiMatrix44.i: core\MakiMatrix44.cpp.i
 # target to preprocess a source file
 core\MakiMatrix44.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMatrix44.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMatrix44.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMatrix44.cpp.i
 
@@ -697,7 +716,7 @@ core\MakiMatrix44.s: core\MakiMatrix44.cpp.s
 # target to generate assembly for a file
 core\MakiMatrix44.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMatrix44.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMatrix44.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMatrix44.cpp.s
 
@@ -708,7 +727,7 @@ core\MakiMesh.obj: core\MakiMesh.cpp.obj
 # target to build an object file
 core\MakiMesh.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMesh.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMesh.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMesh.cpp.obj
 
@@ -719,7 +738,7 @@ core\MakiMesh.i: core\MakiMesh.cpp.i
 # target to preprocess a source file
 core\MakiMesh.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMesh.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMesh.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMesh.cpp.i
 
@@ -730,7 +749,7 @@ core\MakiMesh.s: core\MakiMesh.cpp.s
 # target to generate assembly for a file
 core\MakiMesh.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMesh.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMesh.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMesh.cpp.s
 
@@ -741,7 +760,7 @@ core\MakiMeshManager.obj: core\MakiMeshManager.cpp.obj
 # target to build an object file
 core\MakiMeshManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMeshManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMeshManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMeshManager.cpp.obj
 
@@ -752,7 +771,7 @@ core\MakiMeshManager.i: core\MakiMeshManager.cpp.i
 # target to preprocess a source file
 core\MakiMeshManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMeshManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMeshManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMeshManager.cpp.i
 
@@ -763,7 +782,7 @@ core\MakiMeshManager.s: core\MakiMeshManager.cpp.s
 # target to generate assembly for a file
 core\MakiMeshManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiMeshManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiMeshManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiMeshManager.cpp.s
 
@@ -774,7 +793,7 @@ core\MakiQuaternion.obj: core\MakiQuaternion.cpp.obj
 # target to build an object file
 core\MakiQuaternion.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiQuaternion.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiQuaternion.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiQuaternion.cpp.obj
 
@@ -785,7 +804,7 @@ core\MakiQuaternion.i: core\MakiQuaternion.cpp.i
 # target to preprocess a source file
 core\MakiQuaternion.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiQuaternion.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiQuaternion.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiQuaternion.cpp.i
 
@@ -796,7 +815,7 @@ core\MakiQuaternion.s: core\MakiQuaternion.cpp.s
 # target to generate assembly for a file
 core\MakiQuaternion.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiQuaternion.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiQuaternion.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiQuaternion.cpp.s
 
@@ -807,7 +826,7 @@ core\MakiRenderCore.obj: core\MakiRenderCore.cpp.obj
 # target to build an object file
 core\MakiRenderCore.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderCore.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderCore.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderCore.cpp.obj
 
@@ -818,7 +837,7 @@ core\MakiRenderCore.i: core\MakiRenderCore.cpp.i
 # target to preprocess a source file
 core\MakiRenderCore.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderCore.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderCore.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderCore.cpp.i
 
@@ -829,7 +848,7 @@ core\MakiRenderCore.s: core\MakiRenderCore.cpp.s
 # target to generate assembly for a file
 core\MakiRenderCore.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderCore.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderCore.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderCore.cpp.s
 
@@ -840,7 +859,7 @@ core\MakiRenderer.obj: core\MakiRenderer.cpp.obj
 # target to build an object file
 core\MakiRenderer.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderer.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderer.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderer.cpp.obj
 
@@ -851,7 +870,7 @@ core\MakiRenderer.i: core\MakiRenderer.cpp.i
 # target to preprocess a source file
 core\MakiRenderer.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderer.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderer.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderer.cpp.i
 
@@ -862,42 +881,9 @@ core\MakiRenderer.s: core\MakiRenderer.cpp.s
 # target to generate assembly for a file
 core\MakiRenderer.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiRenderer.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiRenderer.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiRenderer.cpp.s
-
-core\MakiResource.obj: core\MakiResource.cpp.obj
-
-.PHONY : core\MakiResource.obj
-
-# target to build an object file
-core\MakiResource.cpp.obj:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiResource.cpp.obj
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\MakiResource.cpp.obj
-
-core\MakiResource.i: core\MakiResource.cpp.i
-
-.PHONY : core\MakiResource.i
-
-# target to preprocess a source file
-core\MakiResource.cpp.i:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiResource.cpp.i
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\MakiResource.cpp.i
-
-core\MakiResource.s: core\MakiResource.cpp.s
-
-.PHONY : core\MakiResource.s
-
-# target to generate assembly for a file
-core\MakiResource.cpp.s:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiResource.cpp.s
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\MakiResource.cpp.s
 
 core\MakiShader.obj: core\MakiShader.cpp.obj
 
@@ -906,7 +892,7 @@ core\MakiShader.obj: core\MakiShader.cpp.obj
 # target to build an object file
 core\MakiShader.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShader.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShader.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShader.cpp.obj
 
@@ -917,7 +903,7 @@ core\MakiShader.i: core\MakiShader.cpp.i
 # target to preprocess a source file
 core\MakiShader.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShader.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShader.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShader.cpp.i
 
@@ -928,7 +914,7 @@ core\MakiShader.s: core\MakiShader.cpp.s
 # target to generate assembly for a file
 core\MakiShader.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShader.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShader.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShader.cpp.s
 
@@ -939,7 +925,7 @@ core\MakiShaderProgram.obj: core\MakiShaderProgram.cpp.obj
 # target to build an object file
 core\MakiShaderProgram.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgram.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgram.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgram.cpp.obj
 
@@ -950,7 +936,7 @@ core\MakiShaderProgram.i: core\MakiShaderProgram.cpp.i
 # target to preprocess a source file
 core\MakiShaderProgram.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgram.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgram.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgram.cpp.i
 
@@ -961,7 +947,7 @@ core\MakiShaderProgram.s: core\MakiShaderProgram.cpp.s
 # target to generate assembly for a file
 core\MakiShaderProgram.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgram.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgram.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgram.cpp.s
 
@@ -972,7 +958,7 @@ core\MakiShaderProgramManager.obj: core\MakiShaderProgramManager.cpp.obj
 # target to build an object file
 core\MakiShaderProgramManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgramManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgramManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgramManager.cpp.obj
 
@@ -983,7 +969,7 @@ core\MakiShaderProgramManager.i: core\MakiShaderProgramManager.cpp.i
 # target to preprocess a source file
 core\MakiShaderProgramManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgramManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgramManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgramManager.cpp.i
 
@@ -994,7 +980,7 @@ core\MakiShaderProgramManager.s: core\MakiShaderProgramManager.cpp.s
 # target to generate assembly for a file
 core\MakiShaderProgramManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiShaderProgramManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiShaderProgramManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiShaderProgramManager.cpp.s
 
@@ -1005,7 +991,7 @@ core\MakiSkeleton.obj: core\MakiSkeleton.cpp.obj
 # target to build an object file
 core\MakiSkeleton.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeleton.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeleton.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeleton.cpp.obj
 
@@ -1016,7 +1002,7 @@ core\MakiSkeleton.i: core\MakiSkeleton.cpp.i
 # target to preprocess a source file
 core\MakiSkeleton.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeleton.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeleton.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeleton.cpp.i
 
@@ -1027,7 +1013,7 @@ core\MakiSkeleton.s: core\MakiSkeleton.cpp.s
 # target to generate assembly for a file
 core\MakiSkeleton.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeleton.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeleton.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeleton.cpp.s
 
@@ -1038,7 +1024,7 @@ core\MakiSkeletonAnimation.obj: core\MakiSkeletonAnimation.cpp.obj
 # target to build an object file
 core\MakiSkeletonAnimation.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimation.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimation.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimation.cpp.obj
 
@@ -1049,7 +1035,7 @@ core\MakiSkeletonAnimation.i: core\MakiSkeletonAnimation.cpp.i
 # target to preprocess a source file
 core\MakiSkeletonAnimation.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimation.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimation.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimation.cpp.i
 
@@ -1060,7 +1046,7 @@ core\MakiSkeletonAnimation.s: core\MakiSkeletonAnimation.cpp.s
 # target to generate assembly for a file
 core\MakiSkeletonAnimation.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimation.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimation.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimation.cpp.s
 
@@ -1071,7 +1057,7 @@ core\MakiSkeletonAnimationManager.obj: core\MakiSkeletonAnimationManager.cpp.obj
 # target to build an object file
 core\MakiSkeletonAnimationManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimationManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimationManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimationManager.cpp.obj
 
@@ -1082,7 +1068,7 @@ core\MakiSkeletonAnimationManager.i: core\MakiSkeletonAnimationManager.cpp.i
 # target to preprocess a source file
 core\MakiSkeletonAnimationManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimationManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimationManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimationManager.cpp.i
 
@@ -1093,7 +1079,7 @@ core\MakiSkeletonAnimationManager.s: core\MakiSkeletonAnimationManager.cpp.s
 # target to generate assembly for a file
 core\MakiSkeletonAnimationManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonAnimationManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonAnimationManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonAnimationManager.cpp.s
 
@@ -1104,7 +1090,7 @@ core\MakiSkeletonManager.obj: core\MakiSkeletonManager.cpp.obj
 # target to build an object file
 core\MakiSkeletonManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonManager.cpp.obj
 
@@ -1115,7 +1101,7 @@ core\MakiSkeletonManager.i: core\MakiSkeletonManager.cpp.i
 # target to preprocess a source file
 core\MakiSkeletonManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonManager.cpp.i
 
@@ -1126,7 +1112,7 @@ core\MakiSkeletonManager.s: core\MakiSkeletonManager.cpp.s
 # target to generate assembly for a file
 core\MakiSkeletonManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiSkeletonManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiSkeletonManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiSkeletonManager.cpp.s
 
@@ -1137,7 +1123,7 @@ core\MakiTexture.obj: core\MakiTexture.cpp.obj
 # target to build an object file
 core\MakiTexture.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTexture.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTexture.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTexture.cpp.obj
 
@@ -1148,7 +1134,7 @@ core\MakiTexture.i: core\MakiTexture.cpp.i
 # target to preprocess a source file
 core\MakiTexture.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTexture.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTexture.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTexture.cpp.i
 
@@ -1159,7 +1145,7 @@ core\MakiTexture.s: core\MakiTexture.cpp.s
 # target to generate assembly for a file
 core\MakiTexture.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTexture.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTexture.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTexture.cpp.s
 
@@ -1170,7 +1156,7 @@ core\MakiTextureManager.obj: core\MakiTextureManager.cpp.obj
 # target to build an object file
 core\MakiTextureManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureManager.cpp.obj
 
@@ -1181,7 +1167,7 @@ core\MakiTextureManager.i: core\MakiTextureManager.cpp.i
 # target to preprocess a source file
 core\MakiTextureManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureManager.cpp.i
 
@@ -1192,7 +1178,7 @@ core\MakiTextureManager.s: core\MakiTextureManager.cpp.s
 # target to generate assembly for a file
 core\MakiTextureManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureManager.cpp.s
 
@@ -1203,7 +1189,7 @@ core\MakiTextureSet.obj: core\MakiTextureSet.cpp.obj
 # target to build an object file
 core\MakiTextureSet.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSet.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSet.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSet.cpp.obj
 
@@ -1214,7 +1200,7 @@ core\MakiTextureSet.i: core\MakiTextureSet.cpp.i
 # target to preprocess a source file
 core\MakiTextureSet.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSet.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSet.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSet.cpp.i
 
@@ -1225,7 +1211,7 @@ core\MakiTextureSet.s: core\MakiTextureSet.cpp.s
 # target to generate assembly for a file
 core\MakiTextureSet.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSet.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSet.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSet.cpp.s
 
@@ -1236,7 +1222,7 @@ core\MakiTextureSetManager.obj: core\MakiTextureSetManager.cpp.obj
 # target to build an object file
 core\MakiTextureSetManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSetManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSetManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSetManager.cpp.obj
 
@@ -1247,7 +1233,7 @@ core\MakiTextureSetManager.i: core\MakiTextureSetManager.cpp.i
 # target to preprocess a source file
 core\MakiTextureSetManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSetManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSetManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSetManager.cpp.i
 
@@ -1258,7 +1244,7 @@ core\MakiTextureSetManager.s: core\MakiTextureSetManager.cpp.s
 # target to generate assembly for a file
 core\MakiTextureSetManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTextureSetManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTextureSetManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTextureSetManager.cpp.s
 
@@ -1269,7 +1255,7 @@ core\MakiTimeSource.obj: core\MakiTimeSource.cpp.obj
 # target to build an object file
 core\MakiTimeSource.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimeSource.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimeSource.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimeSource.cpp.obj
 
@@ -1280,7 +1266,7 @@ core\MakiTimeSource.i: core\MakiTimeSource.cpp.i
 # target to preprocess a source file
 core\MakiTimeSource.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimeSource.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimeSource.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimeSource.cpp.i
 
@@ -1291,7 +1277,7 @@ core\MakiTimeSource.s: core\MakiTimeSource.cpp.s
 # target to generate assembly for a file
 core\MakiTimeSource.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimeSource.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimeSource.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimeSource.cpp.s
 
@@ -1302,7 +1288,7 @@ core\MakiTimer.obj: core\MakiTimer.cpp.obj
 # target to build an object file
 core\MakiTimer.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimer.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimer.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimer.cpp.obj
 
@@ -1313,7 +1299,7 @@ core\MakiTimer.i: core\MakiTimer.cpp.i
 # target to preprocess a source file
 core\MakiTimer.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimer.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimer.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimer.cpp.i
 
@@ -1324,7 +1310,7 @@ core\MakiTimer.s: core\MakiTimer.cpp.s
 # target to generate assembly for a file
 core\MakiTimer.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiTimer.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiTimer.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiTimer.cpp.s
 
@@ -1335,7 +1321,7 @@ core\MakiVector3.obj: core\MakiVector3.cpp.obj
 # target to build an object file
 core\MakiVector3.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector3.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector3.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector3.cpp.obj
 
@@ -1346,7 +1332,7 @@ core\MakiVector3.i: core\MakiVector3.cpp.i
 # target to preprocess a source file
 core\MakiVector3.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector3.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector3.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector3.cpp.i
 
@@ -1357,7 +1343,7 @@ core\MakiVector3.s: core\MakiVector3.cpp.s
 # target to generate assembly for a file
 core\MakiVector3.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector3.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector3.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector3.cpp.s
 
@@ -1368,7 +1354,7 @@ core\MakiVector4.obj: core\MakiVector4.cpp.obj
 # target to build an object file
 core\MakiVector4.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector4.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector4.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector4.cpp.obj
 
@@ -1379,7 +1365,7 @@ core\MakiVector4.i: core\MakiVector4.cpp.i
 # target to preprocess a source file
 core\MakiVector4.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector4.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector4.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector4.cpp.i
 
@@ -1390,7 +1376,7 @@ core\MakiVector4.s: core\MakiVector4.cpp.s
 # target to generate assembly for a file
 core\MakiVector4.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVector4.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVector4.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVector4.cpp.s
 
@@ -1401,7 +1387,7 @@ core\MakiVertexFormat.obj: core\MakiVertexFormat.cpp.obj
 # target to build an object file
 core\MakiVertexFormat.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormat.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormat.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormat.cpp.obj
 
@@ -1412,7 +1398,7 @@ core\MakiVertexFormat.i: core\MakiVertexFormat.cpp.i
 # target to preprocess a source file
 core\MakiVertexFormat.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormat.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormat.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormat.cpp.i
 
@@ -1423,7 +1409,7 @@ core\MakiVertexFormat.s: core\MakiVertexFormat.cpp.s
 # target to generate assembly for a file
 core\MakiVertexFormat.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormat.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormat.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormat.cpp.s
 
@@ -1434,7 +1420,7 @@ core\MakiVertexFormatManager.obj: core\MakiVertexFormatManager.cpp.obj
 # target to build an object file
 core\MakiVertexFormatManager.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormatManager.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormatManager.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormatManager.cpp.obj
 
@@ -1445,7 +1431,7 @@ core\MakiVertexFormatManager.i: core\MakiVertexFormatManager.cpp.i
 # target to preprocess a source file
 core\MakiVertexFormatManager.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormatManager.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormatManager.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormatManager.cpp.i
 
@@ -1456,7 +1442,7 @@ core\MakiVertexFormatManager.s: core\MakiVertexFormatManager.cpp.s
 # target to generate assembly for a file
 core\MakiVertexFormatManager.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiVertexFormatManager.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiVertexFormatManager.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiVertexFormatManager.cpp.s
 
@@ -1467,7 +1453,7 @@ core\MakiWindow.obj: core\MakiWindow.cpp.obj
 # target to build an object file
 core\MakiWindow.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiWindow.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiWindow.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiWindow.cpp.obj
 
@@ -1478,7 +1464,7 @@ core\MakiWindow.i: core\MakiWindow.cpp.i
 # target to preprocess a source file
 core\MakiWindow.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiWindow.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiWindow.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiWindow.cpp.i
 
@@ -1489,42 +1475,9 @@ core\MakiWindow.s: core\MakiWindow.cpp.s
 # target to generate assembly for a file
 core\MakiWindow.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\MakiWindow.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\MakiWindow.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\MakiWindow.cpp.s
-
-core\core_stdafx.obj: core\core_stdafx.cpp.obj
-
-.PHONY : core\core_stdafx.obj
-
-# target to build an object file
-core\core_stdafx.cpp.obj:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\core_stdafx.cpp.obj
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\core_stdafx.cpp.obj
-
-core\core_stdafx.i: core\core_stdafx.cpp.i
-
-.PHONY : core\core_stdafx.i
-
-# target to preprocess a source file
-core\core_stdafx.cpp.i:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\core_stdafx.cpp.i
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\core_stdafx.cpp.i
-
-core\core_stdafx.s: core\core_stdafx.cpp.s
-
-.PHONY : core\core_stdafx.s
-
-# target to generate assembly for a file
-core\core_stdafx.cpp.s:
-	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\core_stdafx.cpp.s
-	cd C:\Users\eroy\code\maki-engine\build\src
-.PHONY : core\core_stdafx.cpp.s
 
 core\dependencies\miniz.obj: core\dependencies\miniz.cpp.obj
 
@@ -1533,7 +1486,7 @@ core\dependencies\miniz.obj: core\dependencies\miniz.cpp.obj
 # target to build an object file
 core\dependencies\miniz.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\miniz.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\miniz.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\miniz.cpp.obj
 
@@ -1544,7 +1497,7 @@ core\dependencies\miniz.i: core\dependencies\miniz.cpp.i
 # target to preprocess a source file
 core\dependencies\miniz.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\miniz.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\miniz.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\miniz.cpp.i
 
@@ -1555,7 +1508,7 @@ core\dependencies\miniz.s: core\dependencies\miniz.cpp.s
 # target to generate assembly for a file
 core\dependencies\miniz.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\miniz.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\miniz.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\miniz.cpp.s
 
@@ -1566,7 +1519,7 @@ core\dependencies\stb_truetype.obj: core\dependencies\stb_truetype.cpp.obj
 # target to build an object file
 core\dependencies\stb_truetype.cpp.obj:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\stb_truetype.cpp.obj
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\stb_truetype.cpp.obj
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\stb_truetype.cpp.obj
 
@@ -1577,7 +1530,7 @@ core\dependencies\stb_truetype.i: core\dependencies\stb_truetype.cpp.i
 # target to preprocess a source file
 core\dependencies\stb_truetype.cpp.i:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\stb_truetype.cpp.i
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\stb_truetype.cpp.i
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\stb_truetype.cpp.i
 
@@ -1588,9 +1541,174 @@ core\dependencies\stb_truetype.s: core\dependencies\stb_truetype.cpp.s
 # target to generate assembly for a file
 core\dependencies\stb_truetype.cpp.s:
 	cd C:\Users\eroy\code\maki-engine\build
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\core\dependencies\stb_truetype.cpp.s
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\core\dependencies\stb_truetype.cpp.s
 	cd C:\Users\eroy\code\maki-engine\build\src
 .PHONY : core\dependencies\stb_truetype.cpp.s
+
+d3d\DDSTextureLoader.obj: d3d\DDSTextureLoader.cpp.obj
+
+.PHONY : d3d\DDSTextureLoader.obj
+
+# target to build an object file
+d3d\DDSTextureLoader.cpp.obj:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\DDSTextureLoader.cpp.obj
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\DDSTextureLoader.cpp.obj
+
+d3d\DDSTextureLoader.i: d3d\DDSTextureLoader.cpp.i
+
+.PHONY : d3d\DDSTextureLoader.i
+
+# target to preprocess a source file
+d3d\DDSTextureLoader.cpp.i:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\DDSTextureLoader.cpp.i
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\DDSTextureLoader.cpp.i
+
+d3d\DDSTextureLoader.s: d3d\DDSTextureLoader.cpp.s
+
+.PHONY : d3d\DDSTextureLoader.s
+
+# target to generate assembly for a file
+d3d\DDSTextureLoader.cpp.s:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\DDSTextureLoader.cpp.s
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\DDSTextureLoader.cpp.s
+
+d3d\MakiD3DCommon.obj: d3d\MakiD3DCommon.cpp.obj
+
+.PHONY : d3d\MakiD3DCommon.obj
+
+# target to build an object file
+d3d\MakiD3DCommon.cpp.obj:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DCommon.cpp.obj
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DCommon.cpp.obj
+
+d3d\MakiD3DCommon.i: d3d\MakiD3DCommon.cpp.i
+
+.PHONY : d3d\MakiD3DCommon.i
+
+# target to preprocess a source file
+d3d\MakiD3DCommon.cpp.i:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DCommon.cpp.i
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DCommon.cpp.i
+
+d3d\MakiD3DCommon.s: d3d\MakiD3DCommon.cpp.s
+
+.PHONY : d3d\MakiD3DCommon.s
+
+# target to generate assembly for a file
+d3d\MakiD3DCommon.cpp.s:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DCommon.cpp.s
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DCommon.cpp.s
+
+d3d\MakiD3DGPUTypes.obj: d3d\MakiD3DGPUTypes.cpp.obj
+
+.PHONY : d3d\MakiD3DGPUTypes.obj
+
+# target to build an object file
+d3d\MakiD3DGPUTypes.cpp.obj:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DGPUTypes.cpp.obj
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DGPUTypes.cpp.obj
+
+d3d\MakiD3DGPUTypes.i: d3d\MakiD3DGPUTypes.cpp.i
+
+.PHONY : d3d\MakiD3DGPUTypes.i
+
+# target to preprocess a source file
+d3d\MakiD3DGPUTypes.cpp.i:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DGPUTypes.cpp.i
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DGPUTypes.cpp.i
+
+d3d\MakiD3DGPUTypes.s: d3d\MakiD3DGPUTypes.cpp.s
+
+.PHONY : d3d\MakiD3DGPUTypes.s
+
+# target to generate assembly for a file
+d3d\MakiD3DGPUTypes.cpp.s:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DGPUTypes.cpp.s
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DGPUTypes.cpp.s
+
+d3d\MakiD3DRenderCore.obj: d3d\MakiD3DRenderCore.cpp.obj
+
+.PHONY : d3d\MakiD3DRenderCore.obj
+
+# target to build an object file
+d3d\MakiD3DRenderCore.cpp.obj:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DRenderCore.cpp.obj
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DRenderCore.cpp.obj
+
+d3d\MakiD3DRenderCore.i: d3d\MakiD3DRenderCore.cpp.i
+
+.PHONY : d3d\MakiD3DRenderCore.i
+
+# target to preprocess a source file
+d3d\MakiD3DRenderCore.cpp.i:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DRenderCore.cpp.i
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DRenderCore.cpp.i
+
+d3d\MakiD3DRenderCore.s: d3d\MakiD3DRenderCore.cpp.s
+
+.PHONY : d3d\MakiD3DRenderCore.s
+
+# target to generate assembly for a file
+d3d\MakiD3DRenderCore.cpp.s:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\MakiD3DRenderCore.cpp.s
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\MakiD3DRenderCore.cpp.s
+
+d3d\d3d_stdafx.obj: d3d\d3d_stdafx.cpp.obj
+
+.PHONY : d3d\d3d_stdafx.obj
+
+# target to build an object file
+d3d\d3d_stdafx.cpp.obj:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\d3d_stdafx.cpp.obj
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\d3d_stdafx.cpp.obj
+
+d3d\d3d_stdafx.i: d3d\d3d_stdafx.cpp.i
+
+.PHONY : d3d\d3d_stdafx.i
+
+# target to preprocess a source file
+d3d\d3d_stdafx.cpp.i:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\d3d_stdafx.cpp.i
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\d3d_stdafx.cpp.i
+
+d3d\d3d_stdafx.s: d3d\d3d_stdafx.cpp.s
+
+.PHONY : d3d\d3d_stdafx.s
+
+# target to generate assembly for a file
+d3d\d3d_stdafx.cpp.s:
+	cd C:\Users\eroy\code\maki-engine\build
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\d3d\d3d_stdafx.cpp.s
+	cd C:\Users\eroy\code\maki-engine\build\src
+.PHONY : d3d\d3d_stdafx.cpp.s
 
 # Help Target
 help:
@@ -1598,11 +1716,12 @@ help:
 	@echo ... all (the default if no target is provided)
 	@echo ... clean
 	@echo ... depend
-	@echo ... list_install_components
-	@echo ... maki_engine_core
 	@echo ... edit_cache
+	@echo ... core
+	@echo ... d3d
 	@echo ... install
 	@echo ... rebuild_cache
+	@echo ... list_install_components
 	@echo ... install/local
 	@echo ... core/MakiArchive.obj
 	@echo ... core/MakiArchive.i
@@ -1667,9 +1786,6 @@ help:
 	@echo ... core/MakiRenderer.obj
 	@echo ... core/MakiRenderer.i
 	@echo ... core/MakiRenderer.s
-	@echo ... core/MakiResource.obj
-	@echo ... core/MakiResource.i
-	@echo ... core/MakiResource.s
 	@echo ... core/MakiShader.obj
 	@echo ... core/MakiShader.i
 	@echo ... core/MakiShader.s
@@ -1724,15 +1840,27 @@ help:
 	@echo ... core/MakiWindow.obj
 	@echo ... core/MakiWindow.i
 	@echo ... core/MakiWindow.s
-	@echo ... core/core_stdafx.obj
-	@echo ... core/core_stdafx.i
-	@echo ... core/core_stdafx.s
 	@echo ... core/dependencies/miniz.obj
 	@echo ... core/dependencies/miniz.i
 	@echo ... core/dependencies/miniz.s
 	@echo ... core/dependencies/stb_truetype.obj
 	@echo ... core/dependencies/stb_truetype.i
 	@echo ... core/dependencies/stb_truetype.s
+	@echo ... d3d/DDSTextureLoader.obj
+	@echo ... d3d/DDSTextureLoader.i
+	@echo ... d3d/DDSTextureLoader.s
+	@echo ... d3d/MakiD3DCommon.obj
+	@echo ... d3d/MakiD3DCommon.i
+	@echo ... d3d/MakiD3DCommon.s
+	@echo ... d3d/MakiD3DGPUTypes.obj
+	@echo ... d3d/MakiD3DGPUTypes.i
+	@echo ... d3d/MakiD3DGPUTypes.s
+	@echo ... d3d/MakiD3DRenderCore.obj
+	@echo ... d3d/MakiD3DRenderCore.i
+	@echo ... d3d/MakiD3DRenderCore.s
+	@echo ... d3d/d3d_stdafx.obj
+	@echo ... d3d/d3d_stdafx.i
+	@echo ... d3d/d3d_stdafx.s
 .PHONY : help
 
 

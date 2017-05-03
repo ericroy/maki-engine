@@ -73,11 +73,10 @@ namespace maki {
 
 			stbtt_aligned_quad q;
 
-			const uint32_t len = strlen(s);
-			for(uint32_t i = 0; i < len; i++) {
-				if(s[i] < min_char_code_ || s[i] > max_char_code_) {
+			size_t len = strlen(s);
+			for(size_t i = 0; i < len; i++) {
+				if(s[i] < min_char_code_ || s[i] > max_char_code_)
 					continue;
-				}
 			
 				stbtt_GetBakedQuad(baked_chars_, texture_width_, texture_height_, s[i] - min_char_code_, &pen_x, &pen_y, &q, 1);
 
@@ -87,11 +86,11 @@ namespace maki {
 					{q.x1, q.y1, 0, q.s1, q.t1},
 					{q.x1, q.y0, 0, q.s1, q.t0},
 				};
-				m->push_vertex_data(sizeof(v), (char *)v);
+				m->push_vertex_data((char *)v, sizeof(v));
 
-				uint16_t base = i*4;
-				uint16_t f[6] = {base, (uint16_t)(base+1), (uint16_t)(base+2), base, (uint16_t)(base+2), (uint16_t)(base+3)};
-				m->push_index_data(sizeof(f), (char *)f);
+				uint16_t base = (uint16_t)(i * 4);
+				uint16_t f[6] = {base, (uint16_t)(base + 1), (uint16_t)(base + 2), base, (uint16_t)(base + 2), (uint16_t)(base + 3)};
+				m->push_index_data((char *)f, sizeof(f));
 			}
 
 			m->upload();

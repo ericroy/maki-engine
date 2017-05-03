@@ -35,31 +35,31 @@ namespace maki {
 					return 0.0f;
 			}
 
-			input_state_t::button_t sdl_button_to_maki_button[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
-				input_state_t::button_a, // SDL_CONTROLLER_BUTTON_A,
-				input_state_t::button_b, // SDL_CONTROLLER_BUTTON_B,
-				input_state_t::button_x, // SDL_CONTROLLER_BUTTON_X,
-				input_state_t::button_y, // SDL_CONTROLLER_BUTTON_Y,
-				input_state_t::button_back, // SDL_CONTROLLER_BUTTON_BACK,
-				input_state_t::button_invalid, // SDL_CONTROLLER_BUTTON_GUIDE,
-				input_state_t::button_start, // SDL_CONTROLLER_BUTTON_START,
-				input_state_t::button_left_thumb, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
-				input_state_t::button_right_thumb, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-				input_state_t::button_left_shoulder, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-				input_state_t::button_right_shoulder, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-				input_state_t::button_dpad_up, // SDL_CONTROLLER_BUTTON_DPAD_UP,
-				input_state_t::button_dpad_down, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-				input_state_t::button_dpad_left, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-				input_state_t::button_dpad_right, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+			button_id_t sdl_button_to_maki_button[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
+				button_a, // SDL_CONTROLLER_BUTTON_A,
+				button_b, // SDL_CONTROLLER_BUTTON_B,
+				button_x, // SDL_CONTROLLER_BUTTON_X,
+				button_y, // SDL_CONTROLLER_BUTTON_Y,
+				button_back, // SDL_CONTROLLER_BUTTON_BACK,
+				button_invalid, // SDL_CONTROLLER_BUTTON_GUIDE,
+				button_start, // SDL_CONTROLLER_BUTTON_START,
+				button_left_thumb, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
+				button_right_thumb, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+				button_left_shoulder, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+				button_right_shoulder, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+				button_dpad_up, // SDL_CONTROLLER_BUTTON_DPAD_UP,
+				button_dpad_down, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+				button_dpad_left, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+				button_dpad_right, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 			};
 
-			input_state_t::button_t sdl_axis_to_maki_button[6] = {
-				input_state_t::button_left_thumb_x,
-				input_state_t::button_left_thumb_y,
-				input_state_t::button_right_thumb_x,
-				input_state_t::button_right_thumb_y,
-				input_state_t::button_left_trigger,
-				input_state_t::button_right_trigger,
+			button_id_t sdl_axis_to_maki_button[6] = {
+				button_left_thumb_x,
+				button_left_thumb_y,
+				button_right_thumb_x,
+				button_right_thumb_y,
+				button_left_trigger,
+				button_right_trigger,
 			};
 
 			static const uint16_t gamepad_left_thumb_deadzone = 7849;
@@ -74,157 +74,155 @@ namespace maki {
 				0,
 			};
 
-			inline input_state_t::key_t sdl_key_to_maki_key(SDL_Keycode k) {
+			inline key_id_t sdl_key_to_maki_key(SDL_Keycode k) {
 				switch (k) {
-					/*case SDLK_: return input_state_t::key_l_button;
-					case SDLK_: return input_state_t::key_r_button;
-					case SDLK_: return input_state_t::key_cancel;
-					case SDLK_: return input_state_t::key_m_button;
-					case SDLK_: return input_state_t::key_x_button1;
-					case SDLK_: return input_state_t::key_x_button2;
-					case SDLK_: return input_state_t::key_back;
+					/*case SDLK_: return key_l_button;
+					case SDLK_: return key_r_button;
+					case SDLK_: return key_cancel;
+					case SDLK_: return key_m_button;
+					case SDLK_: return key_x_button1;
+					case SDLK_: return key_x_button2;
+					case SDLK_: return key_back;
 					*/
-				case SDLK_TAB: return input_state_t::key_tab;
-				case SDLK_CLEAR: return input_state_t::key_clear;
-				case SDLK_RETURN: return input_state_t::key_return;
-					//case SDLK_: return input_state_t::key_shift;
-					//case SDLK_: return input_state_t::key_control;
-				case SDLK_MENU: return input_state_t::key_menu;
-				case SDLK_PAUSE: return input_state_t::key_pause;
-				case SDLK_CAPSLOCK: return input_state_t::key_capital;
-				case SDLK_ESCAPE: return input_state_t::key_escape;
-					//case SDLK_: return input_state_t::key_convert;
-					//case SDLK_: return input_state_t::key_nonconvert;
-					//case SDLK_: return input_state_t::key_accept;
-					//case SDLK_: return input_state_t::key_modechange;
-				case SDLK_SPACE: return input_state_t::key_space;
-				case SDLK_PAGEUP: return input_state_t::key_prior;
-				case SDLK_PAGEDOWN: return input_state_t::key_next;
-				case SDLK_END: return input_state_t::key_end;
-				case SDLK_HOME: return input_state_t::key_home;
-				case SDLK_LEFT: return input_state_t::key_left;
-				case SDLK_UP: return input_state_t::key_up;
-				case SDLK_RIGHT: return input_state_t::key_right;
-				case SDLK_DOWN: return input_state_t::key_down;
-				case SDLK_SELECT: return input_state_t::key_select;
-					//case SDLK_: return input_state_t::key_print;
-				case SDLK_EXECUTE: return input_state_t::key_execute;
-				case SDLK_PRINTSCREEN: return input_state_t::key_snapshot;
-				case SDLK_INSERT: return input_state_t::key_insert;
-				case SDLK_DELETE: return input_state_t::key_delete;
-				case SDLK_HELP: return input_state_t::key_help;
-				case SDLK_0: return input_state_t::key_0;
-				case SDLK_1: return input_state_t::key_1;
-				case SDLK_2: return input_state_t::key_2;
-				case SDLK_3: return input_state_t::key_3;
-				case SDLK_4: return input_state_t::key_4;
-				case SDLK_5: return input_state_t::key_5;
-				case SDLK_6: return input_state_t::key_6;
-				case SDLK_7: return input_state_t::key_7;
-				case SDLK_8: return input_state_t::key_8;
-				case SDLK_9: return input_state_t::key_9;
-				case SDLK_a: return input_state_t::key_a;
-				case SDLK_b: return input_state_t::key_b;
-				case SDLK_c: return input_state_t::key_c;
-				case SDLK_d: return input_state_t::key_d;
-				case SDLK_e: return input_state_t::key_e;
-				case SDLK_f: return input_state_t::key_f;
-				case SDLK_g: return input_state_t::key_g;
-				case SDLK_h: return input_state_t::key_h;
-				case SDLK_i: return input_state_t::key_i;
-				case SDLK_j: return input_state_t::key_j;
-				case SDLK_k: return input_state_t::key_k;
-				case SDLK_l: return input_state_t::key_l;
-				case SDLK_m: return input_state_t::key_m;
-				case SDLK_n: return input_state_t::key_n;
-				case SDLK_o: return input_state_t::key_o;
-				case SDLK_p: return input_state_t::key_p;
-				case SDLK_q: return input_state_t::key_q;
-				case SDLK_r: return input_state_t::key_r;
-				case SDLK_s: return input_state_t::key_s;
-				case SDLK_t: return input_state_t::key_t;
-				case SDLK_u: return input_state_t::key_u;
-				case SDLK_v: return input_state_t::key_v;
-				case SDLK_w: return input_state_t::key_w;
-				case SDLK_x: return input_state_t::key_x;
-				case SDLK_y: return input_state_t::key_y;
-				case SDLK_z: return input_state_t::key_z;
-					//case SDLK_: return input_state_t::key_l_win;
-					//case SDLK_: return input_state_t::key_r_win;
-				case SDLK_APPLICATION: return input_state_t::key_apps;
-				case SDLK_SLEEP: return input_state_t::key_sleep;
-				case SDLK_KP_0: return input_state_t::key_numpad0;
-				case SDLK_KP_1: return input_state_t::key_numpad1;
-				case SDLK_KP_2: return input_state_t::key_numpad2;
-				case SDLK_KP_3: return input_state_t::key_numpad3;
-				case SDLK_KP_4: return input_state_t::key_numpad4;
-				case SDLK_KP_5: return input_state_t::key_numpad5;
-				case SDLK_KP_6: return input_state_t::key_numpad6;
-				case SDLK_KP_7: return input_state_t::key_numpad7;
-				case SDLK_KP_8: return input_state_t::key_numpad8;
-				case SDLK_KP_9: return input_state_t::key_numpad9;
-				case SDLK_KP_MULTIPLY: return input_state_t::key_multiply;
-				case SDLK_KP_PLUS: return input_state_t::key_add;
-				case SDLK_KP_VERTICALBAR: return input_state_t::key_separator;
-				case SDLK_KP_MINUS: return input_state_t::key_subtract;
-				case SDLK_KP_DECIMAL: return input_state_t::key_decimal;
-				case SDLK_KP_DIVIDE: return input_state_t::key_divide;
-				case SDLK_F1: return input_state_t::key_f1;
-				case SDLK_F2: return input_state_t::key_f2;
-				case SDLK_F3: return input_state_t::key_f3;
-				case SDLK_F4: return input_state_t::key_f4;
-				case SDLK_F5: return input_state_t::key_f5;
-				case SDLK_F6: return input_state_t::key_f6;
-				case SDLK_F7: return input_state_t::key_f7;
-				case SDLK_F8: return input_state_t::key_f8;
-				case SDLK_F9: return input_state_t::key_f9;
-				case SDLK_F10: return input_state_t::key_f10;
-				case SDLK_F11: return input_state_t::key_f11;
-				case SDLK_F12: return input_state_t::key_f12;
-				case SDLK_F13: return input_state_t::key_f13;
-				case SDLK_F14: return input_state_t::key_f14;
-				case SDLK_F15: return input_state_t::key_f15;
-				case SDLK_F16: return input_state_t::key_f16;
-				case SDLK_F17: return input_state_t::key_f17;
-				case SDLK_F18: return input_state_t::key_f18;
-				case SDLK_F19: return input_state_t::key_f19;
-				case SDLK_F20: return input_state_t::key_f20;
-				case SDLK_F21: return input_state_t::key_f21;
-				case SDLK_F22: return input_state_t::key_f22;
-				case SDLK_F23: return input_state_t::key_f23;
-				case SDLK_F24: return input_state_t::key_f24;
-				case SDLK_NUMLOCKCLEAR: return input_state_t::key_numlock;
-				case SDLK_SCROLLLOCK: return input_state_t::key_scroll;
-				case SDLK_LSHIFT: return input_state_t::key_l_shift;
-				case SDLK_RSHIFT: return input_state_t::key_r_shift;
-				case SDLK_LCTRL: return input_state_t::key_l_control;
-				case SDLK_RCTRL: return input_state_t::key_r_control;
-					//case SDLK_: return input_state_t::key_l_menu;
-					//case SDLK_: return input_state_t::key_r_menu;
-				case SDLK_AC_BACK: return input_state_t::key_browser_back;
-				case SDLK_AC_FORWARD: return input_state_t::key_browser_forward;
-				case SDLK_AC_REFRESH: return input_state_t::key_browser_refresh;
-				case SDLK_AC_STOP: return input_state_t::key_browser_stop;
-				case SDLK_AC_SEARCH: return input_state_t::key_browser_search;
-				case SDLK_AC_BOOKMARKS: return input_state_t::key_browser_favorites;
-				case SDLK_AC_HOME: return input_state_t::key_browser_home;
-				case SDLK_MUTE: return input_state_t::key_volume_mute;
-				case SDLK_VOLUMEDOWN: return input_state_t::key_volume_down;
-				case SDLK_VOLUMEUP: return input_state_t::key_volume_up;
-				case SDLK_AUDIONEXT: return input_state_t::key_media_next_track;
-				case SDLK_AUDIOPREV: return input_state_t::key_media_prev_track;
-				case SDLK_AUDIOSTOP: return input_state_t::key_media_stop;
-				case SDLK_AUDIOPLAY: return input_state_t::key_media_play_pause;
+				case SDLK_TAB: return key_tab;
+				case SDLK_CLEAR: return key_clear;
+				case SDLK_RETURN: return key_return;
+					//case SDLK_: return key_shift;
+					//case SDLK_: return key_control;
+				case SDLK_MENU: return key_menu;
+				case SDLK_PAUSE: return key_pause;
+				case SDLK_CAPSLOCK: return key_capital;
+				case SDLK_ESCAPE: return key_escape;
+					//case SDLK_: return key_convert;
+					//case SDLK_: return key_nonconvert;
+					//case SDLK_: return key_accept;
+					//case SDLK_: return key_modechange;
+				case SDLK_SPACE: return key_space;
+				case SDLK_PAGEUP: return key_prior;
+				case SDLK_PAGEDOWN: return key_next;
+				case SDLK_END: return key_end;
+				case SDLK_HOME: return key_home;
+				case SDLK_LEFT: return key_left;
+				case SDLK_UP: return key_up;
+				case SDLK_RIGHT: return key_right;
+				case SDLK_DOWN: return key_down;
+				case SDLK_SELECT: return key_select;
+					//case SDLK_: return key_print;
+				case SDLK_EXECUTE: return key_execute;
+				case SDLK_PRINTSCREEN: return key_snapshot;
+				case SDLK_INSERT: return key_insert;
+				case SDLK_DELETE: return key_delete;
+				case SDLK_HELP: return key_help;
+				case SDLK_0: return key_0;
+				case SDLK_1: return key_1;
+				case SDLK_2: return key_2;
+				case SDLK_3: return key_3;
+				case SDLK_4: return key_4;
+				case SDLK_5: return key_5;
+				case SDLK_6: return key_6;
+				case SDLK_7: return key_7;
+				case SDLK_8: return key_8;
+				case SDLK_9: return key_9;
+				case SDLK_a: return key_a;
+				case SDLK_b: return key_b;
+				case SDLK_c: return key_c;
+				case SDLK_d: return key_d;
+				case SDLK_e: return key_e;
+				case SDLK_f: return key_f;
+				case SDLK_g: return key_g;
+				case SDLK_h: return key_h;
+				case SDLK_i: return key_i;
+				case SDLK_j: return key_j;
+				case SDLK_k: return key_k;
+				case SDLK_l: return key_l;
+				case SDLK_m: return key_m;
+				case SDLK_n: return key_n;
+				case SDLK_o: return key_o;
+				case SDLK_p: return key_p;
+				case SDLK_q: return key_q;
+				case SDLK_r: return key_r;
+				case SDLK_s: return key_s;
+				case SDLK_t: return key_t;
+				case SDLK_u: return key_u;
+				case SDLK_v: return key_v;
+				case SDLK_w: return key_w;
+				case SDLK_x: return key_x;
+				case SDLK_y: return key_y;
+				case SDLK_z: return key_z;
+					//case SDLK_: return key_l_win;
+					//case SDLK_: return key_r_win;
+				case SDLK_APPLICATION: return key_apps;
+				case SDLK_SLEEP: return key_sleep;
+				case SDLK_KP_0: return key_numpad0;
+				case SDLK_KP_1: return key_numpad1;
+				case SDLK_KP_2: return key_numpad2;
+				case SDLK_KP_3: return key_numpad3;
+				case SDLK_KP_4: return key_numpad4;
+				case SDLK_KP_5: return key_numpad5;
+				case SDLK_KP_6: return key_numpad6;
+				case SDLK_KP_7: return key_numpad7;
+				case SDLK_KP_8: return key_numpad8;
+				case SDLK_KP_9: return key_numpad9;
+				case SDLK_KP_MULTIPLY: return key_multiply;
+				case SDLK_KP_PLUS: return key_add;
+				case SDLK_KP_VERTICALBAR: return key_separator;
+				case SDLK_KP_MINUS: return key_subtract;
+				case SDLK_KP_DECIMAL: return key_decimal;
+				case SDLK_KP_DIVIDE: return key_divide;
+				case SDLK_F1: return key_f1;
+				case SDLK_F2: return key_f2;
+				case SDLK_F3: return key_f3;
+				case SDLK_F4: return key_f4;
+				case SDLK_F5: return key_f5;
+				case SDLK_F6: return key_f6;
+				case SDLK_F7: return key_f7;
+				case SDLK_F8: return key_f8;
+				case SDLK_F9: return key_f9;
+				case SDLK_F10: return key_f10;
+				case SDLK_F11: return key_f11;
+				case SDLK_F12: return key_f12;
+				case SDLK_F13: return key_f13;
+				case SDLK_F14: return key_f14;
+				case SDLK_F15: return key_f15;
+				case SDLK_F16: return key_f16;
+				case SDLK_F17: return key_f17;
+				case SDLK_F18: return key_f18;
+				case SDLK_F19: return key_f19;
+				case SDLK_F20: return key_f20;
+				case SDLK_F21: return key_f21;
+				case SDLK_F22: return key_f22;
+				case SDLK_F23: return key_f23;
+				case SDLK_F24: return key_f24;
+				case SDLK_NUMLOCKCLEAR: return key_numlock;
+				case SDLK_SCROLLLOCK: return key_scroll;
+				case SDLK_LSHIFT: return key_l_shift;
+				case SDLK_RSHIFT: return key_r_shift;
+				case SDLK_LCTRL: return key_l_control;
+				case SDLK_RCTRL: return key_r_control;
+					//case SDLK_: return key_l_menu;
+					//case SDLK_: return key_r_menu;
+				case SDLK_AC_BACK: return key_browser_back;
+				case SDLK_AC_FORWARD: return key_browser_forward;
+				case SDLK_AC_REFRESH: return key_browser_refresh;
+				case SDLK_AC_STOP: return key_browser_stop;
+				case SDLK_AC_SEARCH: return key_browser_search;
+				case SDLK_AC_BOOKMARKS: return key_browser_favorites;
+				case SDLK_AC_HOME: return key_browser_home;
+				case SDLK_MUTE: return key_volume_mute;
+				case SDLK_VOLUMEDOWN: return key_volume_down;
+				case SDLK_VOLUMEUP: return key_volume_up;
+				case SDLK_AUDIONEXT: return key_media_next_track;
+				case SDLK_AUDIOPREV: return key_media_prev_track;
+				case SDLK_AUDIOSTOP: return key_media_stop;
+				case SDLK_AUDIOPLAY: return key_media_play_pause;
 				}
-				return input_state_t::key_unknown;
+				return key_unknown;
 			}
 
 		} // namespace
 
 
 		window_t::window_t(render_core_t::type_t render_core_type, const config_t *config) {
-			memset(controller_instance_ids_, 0xff, sizeof(controller_instance_ids_));
-
 			SDL_SetHint(SDL_HINT_RENDER_VSYNC, 0);
 			SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
@@ -261,13 +259,13 @@ namespace maki {
 				flags |= SDL_WINDOW_FULLSCREEN;
 			}
 
-			width = config->get_int("engine.width", 800);
-			height = config->get_int("engine.height", 600);
+			width_ = config->get_int("engine.width", 800);
+			height_ = config->get_int("engine.height", 600);
 			std::string title = config->get_string("engine.title", "");
 
-			window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width,  height, flags);
+			window_ = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_, height_, flags);
 			const char *err = SDL_GetError();
-			if(window == nullptr || strlen(err) != 0) {
+			if(window_ == nullptr || strlen(err) != 0) {
 				console_t::error("Failed to create SDL window: %s", SDL_GetError());
 				SDL_ClearError();
 			}
@@ -291,8 +289,8 @@ namespace maki {
 		}
 
 		window_t::~window_t() {
-			if(window != nullptr)
-				SDL_DestroyWindow(window);
+			if(window_ != nullptr)
+				SDL_DestroyWindow(window_);
 			SDL_Quit();
 		}
 
@@ -306,7 +304,7 @@ namespace maki {
 						// Just connected
 						state->connect_controller(i);
 					}
-					state->get_controller(i).set_values(c.values, sizeof(c.values));
+					state->get_controller(i).set_values(c.values);
 				} else if(state->get_controller(i).connected()) {
 					// Just disconnected
 					state->disconnect_controller(i);
@@ -353,8 +351,8 @@ namespace maki {
 						{
 							int32_t i = get_controller_index(e.cbutton.which);
 							if(i >= 0) {
-								input_state_t::button_t btn = sdl_button_to_maki_button[e.cbutton.button];
-								if(btn != input_state_t::button_invalid)
+								button_id_t btn = sdl_button_to_maki_button[e.cbutton.button];
+								if(btn != button_invalid)
 									controllers_[i].values[btn] = e.cbutton.state * 1.0f;
 							}
 						}
@@ -389,11 +387,11 @@ namespace maki {
 					
 					case SDL_WINDOWEVENT:
 						if(e.window.event == SDL_WINDOWEVENT_RESIZED) {
-							width = e.window.data1;
-							height = e.window.data2;
-							if(width <= 0 || height <= 0) {
-								width = 1;
-								height = 1;
+							width_ = e.window.data1;
+							height_ = e.window.data2;
+							if(width_ <= 0 || height_ <= 0) {
+								width_ = 1;
+								height_ = 1;
 							}
 						}
 						break;

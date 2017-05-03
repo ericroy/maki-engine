@@ -145,17 +145,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named maki_engine_core
+# Target rules for targets named core
 
 # Build rule for target.
-maki_engine_core: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) maki_engine_core
-.PHONY : maki_engine_core
+core: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) core
+.PHONY : core
 
 # fast build rule for target.
-maki_engine_core\fast:
-	$(MAKE) -f src\CMakeFiles\maki_engine_core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\maki_engine_core.dir\build
-.PHONY : maki_engine_core\fast
+core\fast:
+	$(MAKE) -f src\CMakeFiles\core.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\core.dir\build
+.PHONY : core\fast
+
+#=============================================================================
+# Target rules for targets named d3d
+
+# Build rule for target.
+d3d: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) d3d
+.PHONY : d3d
+
+# fast build rule for target.
+d3d\fast:
+	$(MAKE) -f src\CMakeFiles\d3d.dir\build.make /nologo -$(MAKEFLAGS) src\CMakeFiles\d3d.dir\build
+.PHONY : d3d\fast
 
 # Help Target
 help:
@@ -168,7 +181,8 @@ help:
 	@echo ... rebuild_cache
 	@echo ... list_install_components
 	@echo ... install/local
-	@echo ... maki_engine_core
+	@echo ... core
+	@echo ... d3d
 .PHONY : help
 
 

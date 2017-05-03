@@ -1,2 +1,3 @@
 C:/Users/eroy/code/maki-engine/out/./SDL2.dll
 C:/Users/eroy/code/maki-engine/out/./maki_engine_core.lib
+C:/Users/eroy/code/maki-engine/out/./maki_engine_core.dll

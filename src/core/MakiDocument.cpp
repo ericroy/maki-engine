@@ -89,6 +89,7 @@ namespace maki {
 				return v;
 			return default_value;
 		}
+
 		bool document_t::node_t::value_as_uint(uint32_t *out) const {
 			char *end;
 			uint32_t v = strtoul(value_, &end, 10);

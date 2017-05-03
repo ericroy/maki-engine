@@ -29,17 +29,17 @@ namespace maki {
 			static void look_at(const vector4_t &eye, const vector4_t &target, const vector4_t &up, matrix44_t &out);
 
 			static void frustum(float l, float r, float b, float t, float n, float f, matrix44_t &m);
-			inline static void frustum(const core::frustum_t &f, matrix44_t &m) {
+			inline static void frustum(const frustum_t &f, matrix44_t &m) {
 				matrix44_t::frustum(f.left(), f.right(), f.bottom(), f.top(), f.near(), f.far(), m);
 			}
 		
 			static void perspective(float fov_y, float aspect, float near_plane, float far_plane, matrix44_t &m);
-			inline static void perspective(const core::frustum_t &f, matrix44_t &m) {
+			inline static void perspective(const frustum_t &f, matrix44_t &m) {
 				perspective(f.fov(), f.aspect(), f.near(), f.far(), m);
 			}
 
 			static void ortho(float l, float r, float b, float t, float n, float f, matrix44_t &m);
-			inline static void ortho(const core::frustum_t &f, matrix44_t &m) {
+			inline static void ortho(const frustum_t &f, matrix44_t &m) {
 				ortho(f.left(), f.right(), f.bottom(), f.top(), f.near(), f.far(), m);
 			}
 

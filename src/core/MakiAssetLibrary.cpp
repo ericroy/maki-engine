@@ -14,7 +14,7 @@ namespace maki {
 		}
 
 		bool asset_library_t::mount(asset_manifest_t *manifest, const char *archive_path) {
-#if _DEBUG
+#if MAKI_DEBUG
 			// Stomp out the archive_ path in debug mode so we will always load loose files from disk
 			archive_path = nullptr;
 
@@ -40,10 +40,10 @@ namespace maki {
 			groups_.push_back(group);
 
 			if(archive_path == nullptr) {
-#if _DEBUG
+#if MAKI_DEBUG
 				console_t::info("Mounted loose archive rooted at: %s", (debug_mode_path_adjustment + manifest->common_path_prefix).c_str());
 #else
-				console_t::info("Mounted loose archive rooted at: %s", manifest->common_path_prefix_.c_str());
+				console_t::info("Mounted loose archive rooted at: %s", manifest->common_path_prefix.c_str());
 #endif
 			}
 			return true;
