@@ -1,6 +1,7 @@
 #include "core/MakiWindow.h"
 #include "core/MakiConfig.h"
 #include "core/MakiEngine.h"
+#include "core/MakiConsole.h"
 #include <sstream>
 
 //#if defined(_WIN32) || defined(_WIN64)
@@ -13,88 +14,89 @@
 namespace maki {
 	namespace core {
 
-		inline float signed_analog_input_to_float(int16_t v, int16_t dz) {
-			if(v > dz) {
-				float f = (v-dz) / (float)(32767-dz);
-				return f < -1.0f ? -1.0f : f;
-			} else if(v < -dz) {
-				float f = (v+dz) / (float)(32767-dz);
-				return f < -1.0f ? -1.0f : f;
-			} else {
-				return 0.0f;
+		namespace {
+
+			inline float signed_analog_input_to_float(int16_t v, int16_t dz) {
+				if (v > dz) {
+					float f = (v - dz) / (float)(32767 - dz);
+					return f < -1.0f ? -1.0f : f;
+				} else if (v < -dz) {
+					float f = (v + dz) / (float)(32767 - dz);
+					return f < -1.0f ? -1.0f : f;
+				} else {
+					return 0.0f;
+				}
 			}
-		}
 
-		inline float analog_input_to_float(uint8_t v, uint8_t dz) {
-			if(v > dz) {
-				return (v-dz) / (float)(255-dz);
-			} else {
-				return 0.0f;
+			inline float analog_input_to_float(uint8_t v, uint8_t dz) {
+				if (v > dz)
+					return (v - dz) / (float)(255 - dz);
+				else
+					return 0.0f;
 			}
-		}
 
-		input_state_t::button_t sdl_button_to_maki_button[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
-			input_state_t::button_a, // SDL_CONTROLLER_BUTTON_A,
-			input_state_t::button_b, // SDL_CONTROLLER_BUTTON_B,
-			input_state_t::button_x, // SDL_CONTROLLER_BUTTON_X,
-			input_state_t::button_y, // SDL_CONTROLLER_BUTTON_Y,
-			input_state_t::button_back, // SDL_CONTROLLER_BUTTON_BACK,
-			input_state_t::button_invalid, // SDL_CONTROLLER_BUTTON_GUIDE,
-			input_state_t::button_start, // SDL_CONTROLLER_BUTTON_START,
-			input_state_t::button_left_thumb, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
-			input_state_t::button_right_thumb, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-			input_state_t::button_left_shoulder, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-			input_state_t::button_right_shoulder, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-			input_state_t::button_dpad_up, // SDL_CONTROLLER_BUTTON_DPAD_UP,
-			input_state_t::button_dpad_down, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-			input_state_t::button_dpad_left, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-			input_state_t::button_dpad_right, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		};
+			input_state_t::button_t sdl_button_to_maki_button[SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MAX] = {
+				input_state_t::button_a, // SDL_CONTROLLER_BUTTON_A,
+				input_state_t::button_b, // SDL_CONTROLLER_BUTTON_B,
+				input_state_t::button_x, // SDL_CONTROLLER_BUTTON_X,
+				input_state_t::button_y, // SDL_CONTROLLER_BUTTON_Y,
+				input_state_t::button_back, // SDL_CONTROLLER_BUTTON_BACK,
+				input_state_t::button_invalid, // SDL_CONTROLLER_BUTTON_GUIDE,
+				input_state_t::button_start, // SDL_CONTROLLER_BUTTON_START,
+				input_state_t::button_left_thumb, // SDL_CONTROLLER_BUTTON_LEFTSTICK,
+				input_state_t::button_right_thumb, // SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+				input_state_t::button_left_shoulder, // SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+				input_state_t::button_right_shoulder, // SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+				input_state_t::button_dpad_up, // SDL_CONTROLLER_BUTTON_DPAD_UP,
+				input_state_t::button_dpad_down, // SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+				input_state_t::button_dpad_left, // SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+				input_state_t::button_dpad_right, // SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+			};
 
-		input_state_t::button_t sdl_axis_to_maki_button[6] = {
-			input_state_t::button_left_thumb_x,
-			input_state_t::button_left_thumb_y,
-			input_state_t::button_right_thumb_x,
-			input_state_t::button_right_thumb_y,
-			input_state_t::button_left_trigger,
-			input_state_t::button_right_trigger,
-		};
+			input_state_t::button_t sdl_axis_to_maki_button[6] = {
+				input_state_t::button_left_thumb_x,
+				input_state_t::button_left_thumb_y,
+				input_state_t::button_right_thumb_x,
+				input_state_t::button_right_thumb_y,
+				input_state_t::button_left_trigger,
+				input_state_t::button_right_trigger,
+			};
 
-		static const uint16_t gamepad_left_thumb_deadzone = 7849;
-		static const uint16_t gamepad_right_thumb_deadzone = 8689;
+			static const uint16_t gamepad_left_thumb_deadzone = 7849;
+			static const uint16_t gamepad_right_thumb_deadzone = 8689;
 
-		int16_t maki_button_deadzones[6] = {
-			gamepad_left_thumb_deadzone,
-			gamepad_left_thumb_deadzone,
-			gamepad_right_thumb_deadzone,
-			gamepad_right_thumb_deadzone,
-			0,
-			0,
-		};
+			int16_t maki_button_deadzones[6] = {
+				gamepad_left_thumb_deadzone,
+				gamepad_left_thumb_deadzone,
+				gamepad_right_thumb_deadzone,
+				gamepad_right_thumb_deadzone,
+				0,
+				0,
+			};
 
-		inline input_state_t::key_t sdl_key_to_maki_key(SDL_Keycode k) {
-			switch(k) {			
-				/*case SDLK_: return input_state_t::key_l_button;
-				case SDLK_: return input_state_t::key_r_button;
-				case SDLK_: return input_state_t::key_cancel;
-				case SDLK_: return input_state_t::key_m_button;
-				case SDLK_: return input_state_t::key_x_button1;
-				case SDLK_: return input_state_t::key_x_button2;
-				case SDLK_: return input_state_t::key_back;
-				*/
+			inline input_state_t::key_t sdl_key_to_maki_key(SDL_Keycode k) {
+				switch (k) {
+					/*case SDLK_: return input_state_t::key_l_button;
+					case SDLK_: return input_state_t::key_r_button;
+					case SDLK_: return input_state_t::key_cancel;
+					case SDLK_: return input_state_t::key_m_button;
+					case SDLK_: return input_state_t::key_x_button1;
+					case SDLK_: return input_state_t::key_x_button2;
+					case SDLK_: return input_state_t::key_back;
+					*/
 				case SDLK_TAB: return input_state_t::key_tab;
 				case SDLK_CLEAR: return input_state_t::key_clear;
 				case SDLK_RETURN: return input_state_t::key_return;
-				//case SDLK_: return input_state_t::key_shift;
-				//case SDLK_: return input_state_t::key_control;
+					//case SDLK_: return input_state_t::key_shift;
+					//case SDLK_: return input_state_t::key_control;
 				case SDLK_MENU: return input_state_t::key_menu;
 				case SDLK_PAUSE: return input_state_t::key_pause;
 				case SDLK_CAPSLOCK: return input_state_t::key_capital;
 				case SDLK_ESCAPE: return input_state_t::key_escape;
-				//case SDLK_: return input_state_t::key_convert;
-				//case SDLK_: return input_state_t::key_nonconvert;
-				//case SDLK_: return input_state_t::key_accept;
-				//case SDLK_: return input_state_t::key_modechange;
+					//case SDLK_: return input_state_t::key_convert;
+					//case SDLK_: return input_state_t::key_nonconvert;
+					//case SDLK_: return input_state_t::key_accept;
+					//case SDLK_: return input_state_t::key_modechange;
 				case SDLK_SPACE: return input_state_t::key_space;
 				case SDLK_PAGEUP: return input_state_t::key_prior;
 				case SDLK_PAGEDOWN: return input_state_t::key_next;
@@ -105,7 +107,7 @@ namespace maki {
 				case SDLK_RIGHT: return input_state_t::key_right;
 				case SDLK_DOWN: return input_state_t::key_down;
 				case SDLK_SELECT: return input_state_t::key_select;
-				//case SDLK_: return input_state_t::key_print;
+					//case SDLK_: return input_state_t::key_print;
 				case SDLK_EXECUTE: return input_state_t::key_execute;
 				case SDLK_PRINTSCREEN: return input_state_t::key_snapshot;
 				case SDLK_INSERT: return input_state_t::key_insert;
@@ -147,8 +149,8 @@ namespace maki {
 				case SDLK_x: return input_state_t::key_x;
 				case SDLK_y: return input_state_t::key_y;
 				case SDLK_z: return input_state_t::key_z;
-				//case SDLK_: return input_state_t::key_l_win;
-				//case SDLK_: return input_state_t::key_r_win;
+					//case SDLK_: return input_state_t::key_l_win;
+					//case SDLK_: return input_state_t::key_r_win;
 				case SDLK_APPLICATION: return input_state_t::key_apps;
 				case SDLK_SLEEP: return input_state_t::key_sleep;
 				case SDLK_KP_0: return input_state_t::key_numpad0;
@@ -197,8 +199,8 @@ namespace maki {
 				case SDLK_RSHIFT: return input_state_t::key_r_shift;
 				case SDLK_LCTRL: return input_state_t::key_l_control;
 				case SDLK_RCTRL: return input_state_t::key_r_control;
-				//case SDLK_: return input_state_t::key_l_menu;
-				//case SDLK_: return input_state_t::key_r_menu;
+					//case SDLK_: return input_state_t::key_l_menu;
+					//case SDLK_: return input_state_t::key_r_menu;
 				case SDLK_AC_BACK: return input_state_t::key_browser_back;
 				case SDLK_AC_FORWARD: return input_state_t::key_browser_forward;
 				case SDLK_AC_REFRESH: return input_state_t::key_browser_refresh;
@@ -213,10 +215,11 @@ namespace maki {
 				case SDLK_AUDIOPREV: return input_state_t::key_media_prev_track;
 				case SDLK_AUDIOSTOP: return input_state_t::key_media_stop;
 				case SDLK_AUDIOPLAY: return input_state_t::key_media_play_pause;
+				}
+				return input_state_t::key_unknown;
 			}
-			return input_state_t::key_unknown;
-		}
-		
+
+		} // namespace
 
 
 		window_t::window_t(render_core_t::type_t render_core_type, const config_t *config) {
@@ -297,28 +300,39 @@ namespace maki {
 			for(uint32_t i = 0; i < input_state_t::max_players; i++) {
 				state->get_player(i)->set_key_states(key_states_);
 
-				if(controller_handles_[i] != nullptr) {
-					if(!state->get_controller(i).connected_) {
+				auto &c = controllers_[i];
+				if(c.handle != nullptr) {
+					if(!state->get_controller(i).connected()) {
 						// Just connected
 						state->connect_controller(i);
 					}
-					memcpy(state->get_controller(i).values, controllers_[i].values, sizeof(controllers_[i].values));
-				} else if(state->get_controller(i).connected) {
+					state->get_controller(i).set_values(c.values, sizeof(c.values));
+				} else if(state->get_controller(i).connected()) {
 					// Just disconnected
 					state->disconnect_controller(i);
 				}
 			}
 		}
 
-		void window_t::connect_game_controller(int32_t i)
-		{
-			controller_handles_[i] = SDL_GameControllerOpen(i);
-			if(controller_handles_[i] == nullptr) {
-				console_t::error("Failed to open SDL game controller (%d): %s", i, SDL_GetError());
+		void window_t::connect_game_controller(int32_t joystick_index) {
+			uint32_t index = input_state_t::max_players;
+			for(uint32_t i = 0; i < input_state_t::max_players; i++) {
+				if (controllers_[i].handle == nullptr) {
+					index = i;
+					break;
+				}
+			}
+			if (index == input_state_t::max_players)
+				return;
+
+			auto &c = controllers_[index];
+			c.handle = SDL_GameControllerOpen(joystick_index);
+			if(c.handle == nullptr) {
+				console_t::error("Failed to open SDL game controller (%d): %s", joystick_index, SDL_GetError());
 				SDL_ClearError();
 			} else {
-				controller_instance_ids_[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller_handles_[i]));
-				console_t::info("controller_t connected (%d, \"%s\")", i, SDL_GameControllerName(controller_handles_[i]));
+				c.instance_id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(c.handle));
+				console_t::info("Controller connected (%d, \"%s\")", joystick_index, SDL_GameControllerName(c.handle));
 			}
 		}
 
@@ -330,9 +344,8 @@ namespace maki {
 					case SDL_CONTROLLERAXISMOTION:
 						{
 							int32_t i = get_controller_index(e.caxis.which);
-							if(i >= 0 && e.caxis.axis < sizeof(sdl_axis_to_maki_button)/sizeof(sdl_axis_to_maki_button[0])) {
-								controllers_[i].values_[sdl_axis_to_maki_button[e.caxis.axis]] = signed_analog_input_to_float(e.caxis.value, maki_button_deadzones[e.caxis.axis]);
-							}
+							if(i >= 0 && e.caxis.axis < sizeof(sdl_axis_to_maki_button) / sizeof(sdl_axis_to_maki_button[0]))
+								controllers_[i].values[sdl_axis_to_maki_button[e.caxis.axis]] = signed_analog_input_to_float(e.caxis.value, maki_button_deadzones[e.caxis.axis]);
 						}
 						break;
 					case SDL_CONTROLLERBUTTONDOWN:
@@ -341,9 +354,8 @@ namespace maki {
 							int32_t i = get_controller_index(e.cbutton.which);
 							if(i >= 0) {
 								input_state_t::button_t btn = sdl_button_to_maki_button[e.cbutton.button];
-								if(btn != input_state_t::button_invalid) {
+								if(btn != input_state_t::button_invalid)
 									controllers_[i].values[btn] = e.cbutton.state * 1.0f;
-								}
 							}
 						}
 						break;
@@ -354,11 +366,12 @@ namespace maki {
 						{
 							int32_t i = get_controller_index(e.cdevice.which);
 							if(i >= 0) {
-								SDL_GameControllerClose(controller_handles_[i]);
-								controller_handles_[i] = nullptr;
-								controller_instance_ids_[i] = -1;
-								memset(controllers_[i].values, 0, sizeof(controllers_[i].values));
-								console_t::info("controller_t disconnected (%d)", i);
+								auto &c = controllers_[i];
+								SDL_GameControllerClose(c.handle);
+								c.handle = nullptr;
+								c.instance_id = -1;
+								memset(c.values, 0, sizeof(c.values));
+								console_t::info("Controller disconnected (%d)", i);
 							}
 						}
 						break;
