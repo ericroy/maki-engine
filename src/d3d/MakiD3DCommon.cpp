@@ -22,7 +22,7 @@ namespace maki {
 			return false;
 		}
 
-		const char *attr_to_semantic_string[vertex_format_t::attribute_count_] = {
+		const char *attr_to_semantic_string[attribute_max + 1] = {
 			"POSITION", "NORMAL", "TANGENT", "COLOR", "COLOR", "TEXCOORD", "TEXCOORD"
 		};
 

@@ -1,6 +1,13 @@
 #pragma once
+#include "core/MakiTypes.h"
 #include "core/MakiUtil.h"
 #include "core/MakiAllocator.h"
+#include "core/MakiMatrix44.h"
+#include "core/MakiVector4.h"
+#include "core/MakiVector3.h"
+#include "core/MakiVector2.h"
+#include "core/MakiArray.h"
+#include "core/MakiFrustum.h"
 #include "core/MakiAssetLibrary.h"
 #include "core/MakiAssetManifest.h"
 #include "core/MakiArchive.h"
