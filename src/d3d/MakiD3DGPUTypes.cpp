@@ -18,7 +18,7 @@ namespace maki {
 		
 		ID3D11InputLayout *gpu_vertex_shader_t::get_or_create_input_layout(ID3D11Device *device, const vertex_format_t *vf) {
 			for (auto &il : input_layouts) {
-				if(il.vertex_format_key == vf->comparison_key)
+				if(il.vertex_format_key == vf->comparison_key())
 					return il.input_layout;
 			}
 
@@ -29,7 +29,7 @@ namespace maki {
 			uint32_t index = 0;
 			D3D11_INPUT_ELEMENT_DESC layout_data[core::attribute_max + 1];
 			for(uint8_t i = 0; i <= core::attribute_max; i++) {
-				vertex_format_t::attribute_t attr = (vertex_format_t::attribute_t)i;
+				attribute_t attr = (attribute_t)i;
 				if(vf->has_attribute(attr)) {
 					auto attr_type = vf->get_attribute_type(attr);
 					auto elem_count = vf->get_attribute_element_count(attr);
@@ -47,17 +47,17 @@ namespace maki {
 				}
 			}
 
-			if(MAKI_D3D_FAILED(device_->CreateInputLayout(layout_data, index, blob.data(), blob.length(), &input_layouts[input_layout_count].input_layout))) {
+			if(MAKI_D3D_FAILED(device->CreateInputLayout(layout_data, index, blob.data(), blob.length(), &input_layouts[input_layout_count].input_layout))) {
 				console_t::error("Failed to create input layout");
 				return nullptr;
 			}
-			input_layouts[input_layout_count].vertex_format_key = vf->comparison_key;
+			input_layouts[input_layout_count].vertex_format_key = vf->comparison_key();
 			return input_layouts[input_layout_count++].input_layout;
 		}
 		
 
-		gpu_pixel_shader_t::~gpu_pixel_shader_t() {
-			MAKI_SAFE_RELEASE(ps);
+		gpu_fragment_shader_t::~gpu_fragment_shader_t() {
+			MAKI_SAFE_RELEASE(fs);
 			MAKI_SAFE_RELEASE(per_frame_constants);
 			MAKI_SAFE_RELEASE(per_object_constants);
 			MAKI_SAFE_RELEASE(material_constants);

@@ -10,7 +10,7 @@ namespace maki {
 		}
 
 		bool texture_t::init(texture_type_t type, uint32_t width, uint32_t height, uint8_t channels) {
-			MAKI_ASSERT(handle_ == (uint32_t)-1 && "Texture already initialized");
+			MAKI_ASSERT(handle_ == nullptr && "Texture already initialized");
 			type_ = type;
 			width_ = width;
 			height_ = height;
@@ -39,7 +39,7 @@ namespace maki {
 		}
 		
 		bool texture_t::load(rid_t rid) {
-			MAKI_ASSERT(handle_ == (uint32_t)-1 && "Texture already initialized");
+			MAKI_ASSERT(handle_ == nullptr && "Texture already initialized");
 			auto *eng = engine_t::get();
 			auto data = eng->assets->alloc_read(rid);
 			if (!data)

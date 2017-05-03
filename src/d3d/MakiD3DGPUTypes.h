@@ -1,12 +1,8 @@
 #pragma once
+#include "Maki.h"
 #include <d3d11.h>
 
 namespace maki {
-	namespace core {
-		class vertex_format_t;
-		class array_t;
-	} // namespace core
-
 	namespace d3d {
 
 		struct buffer_t {
@@ -40,9 +36,9 @@ namespace maki {
 			core::array_t<char> blob;
 		};
 
-		struct gpu_pixel_shader_t {
-			~gpu_pixel_shader_t();
-			ID3D11PixelShader *ps = nullptr;
+		struct gpu_fragment_shader_t {
+			~gpu_fragment_shader_t();
+			ID3D11PixelShader *fs = nullptr;
 			ID3D11Buffer *per_frame_constants = nullptr;
 			ID3D11Buffer *per_object_constants = nullptr;
 			ID3D11Buffer *material_constants = nullptr;

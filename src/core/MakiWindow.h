@@ -32,6 +32,10 @@ namespace maki {
 				return fullscreen_;
 			}
 
+			inline void *handle() const {
+				return static_cast<void *>(window_);
+			}
+
 		private:
 			void connect_game_controller(int32_t i); 
 

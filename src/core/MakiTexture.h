@@ -24,15 +24,15 @@ namespace maki {
 			inline texture_type_t type() const { return type_; }
 			inline uint32_t width() const { return width_; }
 			inline uint32_t height() const { return height_; }
-			inline uint32_t handle() const { return handle_; }
-			inline void set_handle(uint32_t handle) { handle_ = handle; }
+			inline void *handle() const { return handle_; }
+			inline void set_handle(void *handle) { handle_ = handle; }
 
 		private:
 			rid_t rid_ = RID_NONE;
 			texture_type_t type_ = texture_type_regular;
 			uint32_t width_ = 0;
 			uint32_t height_ = 0;
-			uint32_t handle_ = (uint32_t)-1;
+			void *handle_ = nullptr;
 		};
 
 	} // namespace core

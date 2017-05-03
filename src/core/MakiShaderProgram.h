@@ -27,7 +27,9 @@ namespace maki {
 			inline rid_t rid() const { return rid_; }
 			inline void set_rid(rid_t rid) { rid_ = rid; }
 			inline shader_program_variant_t variant() const { return variant_; }
+			inline shader_t &vertex_shader() { return vertex_shader_; }
 			inline const shader_t &vertex_shader() const { return vertex_shader_; }
+			inline shader_t &fragment_shader() { return fragment_shader_; }
 			inline const shader_t &fragment_shader() const { return fragment_shader_; }
 			inline uint32_t input_attribute_count() const { return input_attribute_count_; }
 			inline uintptr_t handle() const { return handle_; }

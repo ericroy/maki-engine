@@ -6,16 +6,10 @@
 namespace maki {
 	namespace core {
 
-		class resource_library_t;
 		class config_t;
 		class vertex_format_t;
 		class shader_program_t;
-		class shader_t;
-		class pixel_shader_t;
-		class vertex_shader_t;
 		class texture_t;
-		class light_t;
-
 		
 		namespace {
 			const int32_t max_render_payloads = 16;

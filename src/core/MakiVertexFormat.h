@@ -74,6 +74,10 @@ namespace maki {
 				return attribute_count_;
 			}
 
+			inline uint64_t comparison_key() const {
+				return comparison_key_;
+			}
+
 			void push_attribute(attribute_t attr, attribute_type_t type, uint8_t element_count);
 			
 		private:
